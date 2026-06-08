@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SURA · Bienestar para tu equipo</title>
+
+<!-- ── Vista previa WhatsApp / redes sociales ── -->
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="EPS SURA">
+<meta property="og:title"       content="Bienestar y salud para tu equipo de trabajo">
+<meta property="og:description" content="Planes de salud voluntarios SURA: Salud para Todos, Plan Modular, Salud para Dos y Complementario 60+. Cobertura en todo Colombia con 216 IPS y 137 puntos de urgencias.">
+<meta property="og:image"       content="https://www.sura.com/images/logo-sura.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale"      content="es_CO">
+
+<!-- Twitter / WhatsApp fallback -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="Bienestar y salud para tu equipo de trabajo">
+<meta name="twitter:description" content="Planes de salud voluntarios SURA con cobertura nacional. Consulta los beneficios para tu empresa.">
+<meta name="twitter:image"       content="https://www.sura.com/images/logo-sura.png">
+
+<!-- SEO básico -->
+<meta name="description" content="Planes de salud voluntarios EPS SURA para empresas. Cobertura complementaria, atención ágil y red de más de 216 IPS en Colombia.">
+<meta name="robots"      content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:      #1A4CE8;
+    --blue-dark: #0F2E9A;
+    --lime:      #C8E52B;
+    --lime-dark: #A8C420;
+    --white:     #FFFFFF;
+    --off:       #F4F6FB;
+    --text:      #0C1733;
+    --muted:     #6B7A99;
+    --border:    rgba(26,76,232,0.12);
+    --radius:    16px;
+    --shadow:    0 4px 32px rgba(12,23,51,0.10);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--blue);
+    position: relative;
+    overflow: hidden;
+    padding: 0 24px 64px;
+    text-align: center;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(200,229,43,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 90% 80%, rgba(255,255,255,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 0;
+    position: relative;
+  }
+
+  .hero-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .hero-logo-badge {
+    width: 36px;
+    height: 36px;
+    background: var(--lime);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--blue-dark);
+    letter-spacing: -0.5px;
+  }
+
+  .hero-logo-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.2;
+  }
+
+  .hero-logo-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 400;
+  }
+
+  .asesor-chip {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .hero-content {
+    padding: 52px 0 8px;
+    position: relative;
+  }
+
+  .hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(200,229,43,0.15);
+    border: 1px solid rgba(200,229,43,0.3);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--lime);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+
+  .hero-kicker-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--lime);
+    flex-shrink: 0;
+  }
+
+  .hero-headline {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 7vw, 52px);
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 18px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-headline em {
+    font-style: italic;
+    color: var(--lime);
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: rgba(255,255,255,0.72);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+
+  .hero-empresa-name {
+    display: inline-block;
+    background: rgba(200,229,43,0.18);
+    border: 1px solid rgba(200,229,43,0.35);
+    border-radius: 8px;
+    padding: 3px 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--lime);
+    margin-bottom: 28px;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--lime);
+    color: var(--blue-dark);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 20px rgba(200,229,43,0.35);
+  }
+
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,229,43,0.45); }
+
+  /* ── CARDS BENEFICIOS ── */
+  .benefits {
+    padding: 48px 24px 0;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .benefits-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .benefit-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+
+  .benefit-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(26,76,232,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .benefit-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .benefit-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* ── BENEFIT CARD EXPANDABLE ── */
+  .benefit-card {
+    cursor: pointer;
+    transition: box-shadow .2s, transform .15s;
+  }
+  .benefit-card:hover {
+    box-shadow: 0 6px 36px rgba(26,76,232,0.13);
+    transform: translateY(-1px);
+  }
+  .benefit-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .benefit-card-header-left { flex: 1; }
+  .benefit-chevron {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(26,76,232,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: background .2s, transform .3s;
+  }
+  .benefit-card.open .benefit-chevron {
+    background: var(--blue);
+    transform: rotate(180deg);
+  }
+  .benefit-chevron svg { display: block; }
+  .benefit-expand {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .35s ease, opacity .25s ease, margin-top .25s;
+    opacity: 0;
+    margin-top: 0;
+  }
+  .benefit-card.open .benefit-expand {
+    max-height: 320px;
+    opacity: 1;
+    margin-top: 12px;
+  }
+  .benefit-expand-inner {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  /* stat chips */
+  .benefit-stats {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .benefit-stat {
+    background: rgba(26,76,232,0.07);
+    border-radius: 8px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 72px;
+    flex: 1;
+  }
+  .benefit-stat-num {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--blue);
+    line-height: 1;
+  }
+  .benefit-stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+  /* plan pills */
+  .benefit-plans {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .benefit-plan-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(26,76,232,0.05);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 11.5px;
+  }
+  .benefit-plan-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .benefit-plan-name { font-weight: 700; color: var(--text); }
+  .benefit-plan-sub { color: var(--muted); font-size: 10.5px; margin-left: auto; }
+  /* extra text */
+  .benefit-expand-text {
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .benefit-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 4px;
+  }
+  .benefit-tag {
+    background: rgba(26,76,232,0.07);
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  /* ── FORMULARIO ── */
+  .form-section {
+    padding: 0 24px 64px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .form-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 8px 48px rgba(12,23,51,0.12);
+    overflow: hidden;
+  }
+
+  .form-header {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+    padding: 28px 28px 24px;
+    text-align: center;
+  }
+
+  .form-header-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .form-header-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+  }
+
+  .form-steps {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .form-step-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transition: background .3s, width .3s;
+  }
+
+  .form-step-dot.active {
+    background: var(--lime);
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  .form-body {
+    padding: 28px;
+  }
+
+  /* Step containers */
+  .step { display: none; }
+  .step.active { display: block; }
+
+  .step-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .step-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 22px;
+    line-height: 1.55;
+  }
+
+  /* Opciones grandes de selección */
+  .option-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--off);
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+  }
+
+  .option-btn:hover {
+    border-color: var(--blue);
+    background: rgba(26,76,232,0.04);
+    transform: translateY(-1px);
+  }
+
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: rgba(26,76,232,0.06);
+  }
+
+  .option-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+
+  .option-icon.blue { background: rgba(26,76,232,0.1); }
+  .option-icon.lime { background: rgba(200,229,43,0.2); }
+  .option-icon.teal { background: rgba(6,182,212,0.1); }
+
+  .option-text-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .option-text-sub {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Inputs */
+  .input-group {
+    margin-bottom: 16px;
+  }
+
+  .input-label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .input-label span {
+    color: var(--blue);
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--off);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+
+  .form-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,76,232,0.08);
+    background: var(--white);
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Botones de acción */
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background .15s, transform .1s, box-shadow .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,76,232,0.25); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: border-color .15s, color .15s;
+  }
+
+  .btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* ── ÉXITO ── */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 28px;
+  }
+
+  .success-icon {
+    width: 72px; height: 72px;
+    background: rgba(200,229,43,0.15);
+    border: 2px solid var(--lime-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+  }
+
+  .success-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .success-sub {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    max-width: 320px;
+    margin: 0 auto 24px;
+  }
+
+  .success-card {
+    background: var(--off);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+    margin-bottom: 20px;
+  }
+
+  .success-card-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+  .success-card-value { font-size: 14px; font-weight: 600; color: var(--text); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── LOADER ── */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.35);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  .animate { animation: fadeUp .4s ease both; }
+
+  /* Mobile */
+  @media (max-width: 420px) {
+    .benefits-grid { grid-template-columns: 1fr; }
+    .input-row { grid-template-columns: 1fr; }
+    .hero-headline { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══════════════════════════════════════════════════════ -->
+<section class="hero">
+  <nav class="hero-nav">
+    <div class="hero-logo">
+      <!-- Logo oficial SURA -->
+      <svg width="110" height="42" viewBox="0 0 1000 388.086" xmlns="http://www.w3.org/2000/svg">
+        <g transform="matrix(6.4189189,0,0,6.4189189,25.000001,25.00015)" style="stroke-width:0.155789">
+          <path d="m 114.063,4.24778 c 0.38,0.48546 0.759,0.8091 1.464,1.24062 0.271,0.16182 0.488,0.32364 0.759,0.43152 l 1.735,0.91698 c 1.03,0.48546 15.83,7.5516 17.998,8.6304 2.548,1.2946 5.096,2.5352 6.289,3.1285 0.108,0 0.162,0 0.108,-0.1618 -2.765,-1.78 -13.39,-8.57645 -20.926,-13.32318 L 116.015,1.76654 115.039,1.1732 113.196,0.0404551 c -0.109,-0.0539401 -0.163,-0.0539401 -0.163,0 -0.054,0 -0.108,0.0539384 -0.108,0.1078789 0,0.2697 -0.055,1.672146 0.379,2.750946 0.217,0.43152 0.434,0.91698 0.759,1.3485 z m -0.867,7.65952 c 0.759,0.8091 1.68,1.3485 2.819,1.7261 l 0.108,0.0539 c 0.325,0.1079 19.571,5.2861 24.667,6.6886 2.222,0.5933 4.011,1.0788 4.825,1.3485 0.108,0 0.162,0 0.162,-0.1079 0,0 0,-0.054 -0.054,-0.054 -3.198,-1.3485 -23.04,-9.0619 -30.521,-12.02859 l -3.145,-1.24063 c -0.108,0 -0.162,1e-5 -0.162,0.05395 -0.055,0.05394 -0.055,0.10788 -0.055,0.10788 0.055,0.2697 0.163,1.72609 0.814,2.75099 0.162,0.2157 0.325,0.4315 0.542,0.7012 z m 33.394,13.485 c -0.921,0 -2.819,0 -5.204,0 -2.711,0 -6.126,0 -9.27,0 -4.229,0 -11.005,0 -11.005,0 0,0 -0.055,0 -0.109,0.0539 -0.054,0.054 -0.054,0.1079 0,0.1619 0.109,0.2697 0.488,1.0248 0.922,1.4563 0.813,0.8631 1.789,1.3485 2.71,1.4564 0.109,0 0.217,0 0.326,0 0.108,0 0.217,0 0.325,-0.0539 0.108,0 20.167,-2.751 21.251,-2.9128 0.054,0 0.109,-0.0539 0.109,-0.1079 0.054,-0.0539 0,-0.0539 -0.055,-0.0539 z m -11.167,9.7631 c -1.735,1.0788 -3.904,2.2655 -5.042,2.9667 -0.108,0.1079 -0.217,0.1079 -0.163,0.4316 0,0 0.055,0.3236 0.109,0.7012 0.108,1.6721 0.813,1.5103 1.789,0.7552 l 0.108,-0.1079 c 3.47,-2.8589 9.921,-8.3068 11.331,-9.4935 0.054,-0.1079 0,-0.1618 -0.055,-0.1618 -1.409,0.863 -5.041,3.0746 -8.077,4.9085 z m 9.65,-7.7134 c -1.247,0.3776 -5.964,1.5643 -10.138,2.5891 -3.632,0.917 -7.698,2.0498 -7.698,2.0498 -0.38,0.1078 -0.271,0.2697 -0.217,0.3236 0.108,0.1618 0.379,0.5394 0.596,1.0249 0.651,1.0788 1.518,0.9709 2.331,0.6472 0.109,-0.0539 14.529,-6.0412 15.18,-6.4728 0.108,-0.0539 0.054,-0.1078 0.054,-0.1078 0.054,-0.054 -0.054,-0.054 -0.108,-0.054 z m 2.819,-3.8837 c -2.548,-0.4854 -33.612,-6.1491 -33.612,-6.1491 -0.054,0 -0.108,0 -0.163,0.0539 -0.054,0.0539 -0.054,0.1079 0,0.1618 0.488,1.6182 1.681,3.2904 3.795,3.9376 0.217,0.054 0.434,0.1079 0.705,0.1079 0,0 26.347,1.834 29.275,2.0498 0.054,0 0.108,-10e-5 0.108,-0.054 0,0 -0.054,-0.1079 -0.108,-0.1079 z m -27.269,24.4888 c -2.982,1.0249 -6.289,1.9419 -9.813,2.4813 -0.054,0 -0.108,0.0539 -0.108,0.1078 0,0.054 0,0.1079 0,0.1079 0.596,0.4855 1.355,0.7552 2.277,0.8631 1.138,0.1618 2.494,0 4.12,-0.4316 1.409,-0.3775 2.765,-0.9709 4.283,-1.726 1.409,-0.7013 2.819,-1.5104 4.011,-2.3195 1.193,-0.863 2.115,-1.6721 2.657,-2.4273 0.054,-0.1078 0,-0.1618 -0.054,-0.1618 -1.898,1.2946 -4.392,2.4813 -7.373,3.5061 z m 18.107,-10.5722 -0.055,0.0539 c -1.951,1.5643 -4.824,4.0995 -7.806,6.6886 -0.271,0.2157 -0.434,0.6473 -0.542,1.1867 -0.163,0.863 -0.651,1.9957 -0.651,1.9957 -0.054,0.2158 0.054,0.3237 0.271,0.1079 2.331,-2.4812 7.482,-8.1989 8.837,-9.8171 0.054,-0.1618 0,-0.2157 -0.054,-0.2157 z m -11.114,5.34 c 0.054,-0.1078 0,-0.1618 -0.054,-0.1618 -2.873,1.1328 -9.216,2.2655 -13.174,2.8588 -3.415,0.4855 -6.342,0.5934 -7.969,0.7013 h -0.705 c -0.108,0.0539 -0.162,0.1078 -0.162,0.1618 0,0.0539 0.054,0.1079 0.054,0.1618 0.271,0.3236 1.247,1.2406 3.144,1.5103 2.223,0.3237 5.476,-0.2157 9.542,-1.4024 3.469,-0.9709 7.427,-2.6431 9.324,-3.8298 z m -0.325,5.0704 c 0,0 -0.054,0 -0.109,0.0539 -2.493,2.4273 -6.126,3.7758 -7.318,4.1534 -0.054,0 -0.109,0.054 -0.109,0.1079 0,0.054 0.055,0.1618 0.109,0.1618 0.217,0.1079 1.68,0.8631 4.445,-0.4854 1.572,-0.8091 2.386,-2.1037 3.09,-3.8298 0,-0.0539 -0.054,-0.1079 -0.108,-0.1618 z" fill="#00aec7" style="stroke-width:0.0242704"/>
+          <path d="M 15.1795,25.716 8.89082,23.9899 c -1.7348,-0.4854 -3.30695,-1.2406 -3.30695,-3.3982 0,-2.2115 1.3553,-3.2903 4.12013,-3.2903 h 5.5839 c 2.4937,0 5.4212,-0.8091 5.4212,-4.9086 H 10.1919 C 3.74065,12.4468 0,15.6832 0,20.4299 c 0,4.4231 2.76482,6.8504 7.69815,8.1989 l 5.47545,1.4564 c 2.2769,0.5933 3.0901,2.0497 3.0901,3.5061 0,2.2115 -1.4095,3.56 -4.7707,3.56 L 1.03003,37.2592 v 4.8007 H 11.6557 c 6.5054,0 10.1919,-3.5061 10.1919,-8.145 0,-4.5849 -1.789,-6.8504 -6.6681,-8.1989 z M 88.6914,12.4468 h -1.3011 c -6.8308,0 -13.2278,5.0703 -13.4989,14.9414 -0.2711,8.954 4.3912,15.265 12.252,15.265 6.4513,0 8.7282,-4.531 8.7282,-4.531 0.3795,3.0207 2.0058,3.9377 5.2044,3.9377 V 12.3928 Z m 5.8549,17.4766 c 0,4.0994 -2.3311,7.9831 -7.4271,7.9831 -4.5538,0 -7.8066,-3.0746 -7.5897,-10.4644 0.2168,-7.1201 3.578,-10.2486 8.0776,-10.2486 0.3795,0 0.7048,0 0.9758,-0.054 h 5.9634 z M 43.912,12.4468 v 20.5511 c 0,2.9667 -2.4396,4.4771 -5.6923,4.4771 -3.4154,0 -5.6923,-1.5104 -5.6923,-4.4771 L 32.4732,17.625 c 0,-4.3691 -2.7106,-5.1782 -5.096,-5.1782 v 21.8457 c 0,5.5019 4.8791,8.1989 10.6256,8.1989 5.5839,0 11.0594,-2.697 11.0051,-8.1989 V 18.3262 c 0.0543,-4.3691 -1.5721,-5.8794 -5.0959,-5.8794 z m 22.8234,0 c -6.3429,0 -10.7341,3.7218 -10.7341,11.3274 v 18.3396 h 5.1502 V 23.6124 c 0,-3.9377 2.1143,-6.311 6.0718,-6.311 h 1.5179 c 4.4997,0 5.2586,-2.3195 5.2586,-4.9086 h -7.2644 z" fill="#ffffff" style="stroke-width:0.0242704"/>
+        </g>
+      </svg>
+      <div class="hero-logo-sub" style="color:rgba(255,255,255,0.55);font-size:11px;font-weight:400;margin-top:2px;">Canal Especializado en Salud</div>
+    </div>
+    <div class="asesor-chip" id="asesorChip">Asesor SURA</div>
+  </nav>
+
+  <div class="hero-content animate">
+    <div class="hero-kicker">
+      <span class="hero-kicker-dot"></span>
+      Bienestar empresarial 2026
+    </div>
+    <h1 class="hero-headline">
+      Tu salud y la de<br>tu familia, <em>protegida</em>
+    </h1>
+    <p class="hero-sub">
+      Accede a los mejores planes de salud SURA disponibles para los colaboradores de
+    </p>
+    <div class="hero-empresa-name" id="empresaNombre">tu empresa</div>
+    <br>
+    <a href="#formulario" class="hero-cta">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      Comenzar ahora
+    </a>
+  </div>
+</section>
+
+<!-- ══ BENEFICIOS ══════════════════════════════════════════════════ -->
+<section class="benefits">
+  <div class="benefits-title">¿Por qué elegir SURA?</div>
+  <div class="benefits-grid">
+
+    <!-- CARD 1: Red de salud amplia -->
+    <div class="benefit-card animate" onclick="toggleBenefit(this)">
+      <div class="benefit-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="benefit-card-header">
+        <div class="benefit-card-header-left">
+          <div class="benefit-title">Red de salud amplia</div>
+          <div class="benefit-desc">Acceso a clínicas y especialistas en todo el país.</div>
+        </div>
+        <div class="benefit-chevron">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="benefit-expand">
+        <div class="benefit-expand-inner">
+          <div class="benefit-stats">
+            <div class="benefit-stat">
+              <div class="benefit-stat-num">216</div>
+              <div class="benefit-stat-label">IPS básicas activas</div>
+            </div>
+            <div class="benefit-stat">
+              <div class="benefit-stat-num">137</div>
+              <div class="benefit-stat-label">Puntos de urgencias</div>
+            </div>
+            <div class="benefit-stat">
+              <div class="benefit-stat-num">88</div>
+              <div class="benefit-stat-label">Municipios cubiertos</div>
+            </div>
+          </div>
+          <div class="benefit-tag-row">
+            <span class="benefit-tag">14 departamentos</span>
+            <span class="benefit-tag">Nivel 1, 2 y 3</span>
+            <span class="benefit-tag">Red PBS 2026</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2: Cobertura complementaria -->
+    <div class="benefit-card animate" onclick="toggleBenefit(this)">
+      <div class="benefit-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="benefit-card-header">
+        <div class="benefit-card-header-left">
+          <div class="benefit-title">Cobertura complementaria</div>
+          <div class="benefit-desc">Servicios adicionales que tu EPS no cubre.</div>
+        </div>
+        <div class="benefit-chevron">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="benefit-expand">
+        <div class="benefit-expand-inner">
+          <div class="benefit-expand-text">Va más allá del PBS: cubre habitación privada, medicamentos no incluidos, odontología estética y traslados en ambulancia aérea.</div>
+          <div class="benefit-tag-row">
+            <span class="benefit-tag">Hospitalización privada</span>
+            <span class="benefit-tag">Odontología</span>
+            <span class="benefit-tag">Óptica</span>
+            <span class="benefit-tag">Medicamentos NO PBS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3: Atención ágil -->
+    <div class="benefit-card animate" onclick="toggleBenefit(this)">
+      <div class="benefit-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <div class="benefit-card-header">
+        <div class="benefit-card-header-left">
+          <div class="benefit-title">Atención ágil</div>
+          <div class="benefit-desc">Citas con especialistas sin largas esperas.</div>
+        </div>
+        <div class="benefit-chevron">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="benefit-expand">
+        <div class="benefit-expand-inner">
+          <div class="benefit-expand-text">Asignación de citas en línea 24/7, telemedicina sin desplazamientos y tiempos de espera priorizados para afiliados voluntarios.</div>
+          <div class="benefit-tag-row">
+            <span class="benefit-tag">App SURA</span>
+            <span class="benefit-tag">Telemedicina</span>
+            <span class="benefit-tag">Citas 24/7</span>
+            <span class="benefit-tag">Sin filas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 4: Para toda la familia -->
+    <div class="benefit-card animate" onclick="toggleBenefit(this)">
+      <div class="benefit-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="benefit-card-header">
+        <div class="benefit-card-header-left">
+          <div class="benefit-title">Para toda la familia</div>
+          <div class="benefit-desc">Planes individuales y familiares disponibles.</div>
+        </div>
+        <div class="benefit-chevron">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="benefit-expand">
+        <div class="benefit-expand-inner">
+          <div class="benefit-plans">
+            <div class="benefit-plan-pill">
+              <div class="benefit-plan-dot" style="background:#64B5F6"></div>
+              <div>
+                <div class="benefit-plan-name">Salud para Todos Integral</div>
+                <div class="benefit-plan-sub">Clásico &amp; Preferencial</div>
+              </div>
+            </div>
+            <div class="benefit-plan-pill">
+              <div class="benefit-plan-dot" style="background:#1A4CE8"></div>
+              <div>
+                <div class="benefit-plan-name">Salud para Dos</div>
+                <div class="benefit-plan-sub">Plan Plus</div>
+              </div>
+            </div>
+            <div class="benefit-plan-pill">
+              <div class="benefit-plan-dot" style="background:#0F2E9A"></div>
+              <div>
+                <div class="benefit-plan-name">Plan Modular</div>
+                <div class="benefit-plan-sub">A tu medida</div>
+              </div>
+            </div>
+            <div class="benefit-plan-pill">
+              <div class="benefit-plan-dot" style="background:#C8E52B"></div>
+              <div>
+                <div class="benefit-plan-name">Complementario 60+</div>
+                <div class="benefit-plan-sub">Plan 60 Más</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ FORMULARIO ══════════════════════════════════════════════════ -->
+<section class="form-section" id="formulario">
+  <div class="form-card">
+
+    <!-- Header del formulario -->
+    <div class="form-header">
+      <div class="form-header-title">Regístrate en 3 pasos</div>
+      <div class="form-header-sub">Es rápido, gratis y sin compromiso</div>
+      <div class="form-steps">
+        <div class="form-step-dot active" id="dot0"></div>
+        <div class="form-step-dot" id="dot1"></div>
+        <div class="form-step-dot" id="dot2"></div>
+      </div>
+    </div>
+
+    <!-- Cuerpo del formulario -->
+    <div class="form-body">
+
+      <!-- PASO 1: ¿Estás en SURA? -->
+      <div class="step active" id="step0">
+        <div class="step-title">¿Actualmente estás afiliado a SURA EPS?</div>
+        <div class="step-sub">Cuéntanos tu situación actual para orientarte mejor.</div>
+        <div class="option-grid">
+          <button class="option-btn" onclick="seleccionarEPS('si')">
+            <div class="option-icon blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div>
+              <div class="option-text-title">Sí, soy afiliado SURA</div>
+              <div class="option-text-sub">Ya tengo mi EPS con SURA</div>
+            </div>
+          </button>
+          <button class="option-btn" onclick="seleccionarEPS('no')">
+            <div class="option-icon teal">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div>
+              <div class="option-text-title">No, estoy en otra EPS</div>
+              <div class="option-text-sub">Me interesa conocer más sobre SURA</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 2A: Afiliado SURA — ¿Voluntario? -->
+      <div class="step" id="step1a">
+        <div class="step-title">¿Te gustaría complementar tu salud?</div>
+        <div class="step-sub">Como afiliado SURA, puedes acceder a planes voluntarios que amplían tu cobertura.</div>
+        <div class="option-grid">
+          <button class="option-btn" onclick="seleccionarInteres('voluntario_si')">
+            <div class="option-icon lime">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div>
+              <div class="option-text-title">Sí, me interesa</div>
+              <div class="option-text-sub">Quiero conocer planes voluntarios SURA</div>
+            </div>
+          </button>
+          <button class="option-btn" onclick="seleccionarInteres('voluntario_no')">
+            <div class="option-icon" style="background:rgba(107,122,153,0.1);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div>
+              <div class="option-text-title">Por ahora no</div>
+              <div class="option-text-sub">Solo quiero dejar mis datos</div>
+            </div>
+          </button>
+        </div>
+        <button class="btn-secondary" onclick="goStep(0)">← Volver</button>
+      </div>
+
+      <!-- PASO 2B: No SURA — Traslado -->
+      <div class="step" id="step1b">
+        <div class="step-title">¿Te gustaría conocer SURA EPS?</div>
+        <div class="step-sub">Te explicamos cómo funciona el traslado y qué beneficios obtienes con SURA.</div>
+        <div class="option-grid">
+          <button class="option-btn" onclick="seleccionarInteres('traslado_si')">
+            <div class="option-icon blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            </div>
+            <div>
+              <div class="option-text-title">Sí, quiero saber más</div>
+              <div class="option-text-sub">Me interesa trasladarme a SURA</div>
+            </div>
+          </button>
+          <button class="option-btn" onclick="seleccionarInteres('traslado_no')">
+            <div class="option-icon" style="background:rgba(107,122,153,0.1);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div>
+              <div class="option-text-title">Por ahora no</div>
+              <div class="option-text-sub">Solo quiero dejar mis datos</div>
+            </div>
+          </button>
+        </div>
+        <button class="btn-secondary" onclick="goStep(0)">← Volver</button>
+      </div>
+
+      <!-- PASO 3: Datos de contacto -->
+      <div class="step" id="step2">
+        <div class="step-title">Tus datos de contacto</div>
+        <div class="step-sub">Un asesor SURA se comunicará contigo para orientarte personalmente.</div>
+
+        <div class="input-group">
+          <label class="input-label">Nombre completo <span>*</span></label>
+          <input type="text" class="form-input" id="fNombre" placeholder="Ej: María Camila García" autocomplete="name">
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label class="input-label">Tipo de documento</label>
+            <select class="form-input" id="fTipoDoc">
+              <option value="CC">Cédula</option>
+              <option value="CE">C. Extranjería</option>
+              <option value="PA">Pasaporte</option>
+              <option value="NIT">NIT</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Número de documento <span>*</span></label>
+            <input type="text" class="form-input" id="fDoc" placeholder="Ej: 1012345678" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Celular <span>*</span></label>
+          <input type="tel" class="form-input" id="fTelefono" placeholder="Ej: 3001234567" inputmode="tel" autocomplete="tel">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Correo electrónico</label>
+          <input type="email" class="form-input" id="fCorreo" placeholder="Ej: maria@empresa.com" autocomplete="email">
+        </div>
+
+        <div id="msgError" style="display:none;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.25);border-radius:8px;padding:10px 14px;font-size:13px;color:#DC2626;margin-bottom:14px;"></div>
+
+        <button class="btn-primary" id="btnEnviar" onclick="enviarFormulario()">
+          <span id="btnTexto">Enviar mi información</span>
+          <div class="spinner" id="btnSpinner"></div>
+          <svg id="btnIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+        <button class="btn-secondary" onclick="goStepAtras2()">← Volver</button>
+
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.6;">
+          Al enviar, autorizas el tratamiento de tus datos personales conforme a la política de privacidad de Seguros de Vida Suramericana S.A.
+        </p>
+      </div>
+
+      <!-- PANTALLA ÉXITO -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon">✅</div>
+        <div class="success-title">¡Listo, <span id="successNombre"></span>!</div>
+        <div class="success-sub">Tu información fue registrada. Un asesor SURA te contactará pronto para orientarte personalmente.</div>
+        <div class="success-card">
+          <div class="success-card-label">Tu interés registrado</div>
+          <div class="success-card-value" id="successInteres"></div>
+        </div>
+        <div class="success-card">
+          <div class="success-card-label">Asesor asignado</div>
+          <div class="success-card-value" id="successAsesor"></div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);line-height:1.6;">
+          Puedes cerrar esta página tranquilamente. Nos pondremos en contacto contigo en las próximas horas hábiles.
+        </p>
+      </div>
+
+    </div><!-- /form-body -->
+  </div><!-- /form-card -->
+</section>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <strong>Seguros de Vida Suramericana S.A.</strong> · Canal Especializado en Salud<br>
+  Información sujeta a verificación · <span id="footerAsesor"></span>
+</footer>
+
+<!-- ══ FIREBASE SDK ══════════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDQEMeKa8yGsdvyW3qoC9w1ITMCzNN0TTI",
+    authDomain:        "sura-asesor.firebaseapp.com",
+    projectId:         "sura-asesor",
+    storageBucket:     "sura-asesor.firebasestorage.app",
+    messagingSenderId: "910746092866",
+    appId:             "1:910746092866:web:ae7bd2b56615b2779d74db"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // Exponer para uso desde JS global
+  window._fbDb       = db;
+  window._fbSetDoc   = setDoc;
+  window._fbDoc      = doc;
+  window._fbReady    = true;
+</script>
+
+<!-- ══ LÓGICA DE LA LANDING ══════════════════════════════════════ -->
+<script>
+  // ── Tarjetas expandibles ─────────────────────────────────────────
+  function toggleBenefit(card) {
+    const isOpen = card.classList.contains('open');
+    // Cierra todas primero
+    document.querySelectorAll('.benefit-card').forEach(c => c.classList.remove('open'));
+    // Si no estaba abierta, la abre
+    if (!isOpen) card.classList.add('open');
+    // Actualiza color del chevron SVG
+    document.querySelectorAll('.benefit-card').forEach(c => {
+      const svg = c.querySelector('.benefit-chevron svg');
+      if (svg) svg.setAttribute('stroke', c.classList.contains('open') ? '#fff' : 'var(--blue)');
+    });
+  }
+
+  // ── Parámetros de URL ────────────────────────────────────────────
+  const params   = new URLSearchParams(window.location.search);
+  const ASESOR   = params.get('asesor') || 'Asesor SURA';
+  const UID      = params.get('uid')    || '';
+  const EMPRESA  = params.get('empresa')|| 'tu empresa';
+
+  // ── Poblar UI con datos del asesor/empresa ────────────────────────
+  document.getElementById('asesorChip').textContent   = ASESOR;
+  document.getElementById('empresaNombre').textContent = EMPRESA;
+  document.getElementById('footerAsesor').textContent  = ASESOR;
+
+  // ── Estado del formulario ─────────────────────────────────────────
+  let epsActual  = '';   // 'si' | 'no'
+  let interes    = '';   // 'voluntario_si' | 'voluntario_no' | 'traslado_si' | 'traslado_no'
+  let stepActual = 0;
+
+  const INTERES_LABEL = {
+    voluntario_si:  'Interesado en planes voluntarios SURA',
+    voluntario_no:  'Afiliado SURA — sin interés en voluntarios por ahora',
+    traslado_si:    'Interesado en traslado a SURA EPS',
+    traslado_no:    'No afiliado SURA — sin interés en traslado por ahora',
+  };
+
+  // ── Navegación entre pasos ─────────────────────────────────────────
+  function goStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.form-step-dot').forEach((d, i) => {
+      d.classList.toggle('active', i <= n);
+    });
+    const steps = ['step0','step1a','step1b','step2'];
+    stepActual = n;
+    // El paso 2 siempre es step2; los intermedios dependen de epsActual
+    if (n === 0) document.getElementById('step0').classList.add('active');
+    else if (n === 1) document.getElementById(epsActual === 'si' ? 'step1a' : 'step1b').classList.add('active');
+    else if (n === 2) document.getElementById('step2').classList.add('active');
+    window.scrollTo({ top: document.getElementById('formulario').offsetTop - 20, behavior: 'smooth' });
+  }
+
+  function seleccionarEPS(val) {
+    epsActual = val;
+    goStep(1);
+  }
+
+  function seleccionarInteres(val) {
+    interes = val;
+    goStep(2);
+  }
+
+  function goStepAtras2() {
+    goStep(1);
+  }
+
+  // ── Envío del formulario ──────────────────────────────────────────
+  async function enviarFormulario() {
+    const nombre   = document.getElementById('fNombre').value.trim();
+    const doc_num  = document.getElementById('fDoc').value.trim();
+    const tipoDoc  = document.getElementById('fTipoDoc').value;
+    const telefono = document.getElementById('fTelefono').value.trim();
+    const correo   = document.getElementById('fCorreo').value.trim();
+    const errEl    = document.getElementById('msgError');
+
+    errEl.style.display = 'none';
+
+    if (!nombre)   { mostrarError('El nombre es obligatorio.'); return; }
+    if (!doc_num)  { mostrarError('El número de documento es obligatorio.'); return; }
+    if (!telefono || telefono.length < 7) { mostrarError('Ingresa un número de celular válido.'); return; }
+
+    // Bloquear botón
+    const btn = document.getElementById('btnEnviar');
+    btn.disabled = true;
+    document.getElementById('btnTexto').textContent  = 'Enviando...';
+    document.getElementById('btnSpinner').style.display = 'block';
+    document.getElementById('btnIcon').style.display    = 'none';
+
+    const lead = {
+      nombre,
+      tipoDoc,
+      documento: doc_num,
+      telefono,
+      correo,
+      empresa:   EMPRESA,
+      asesor:    ASESOR,
+      uidAsesor: UID,
+      epsActual,
+      interes,
+      interesLabel: INTERES_LABEL[interes] || interes,
+      plan:      interes || 'landing_empresa', // requerido por reglas Firestore
+      fecha:     new Date().toISOString().split('T')[0],
+      hora:      new Date().toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' }),
+      creadoEn:  new Date().toISOString(),
+      origen:    'landing_empresa',
+      estado:    '0', // Nuevo en pipeline
+    };
+
+    try {
+      // Esperar Firebase
+      let intentos = 0;
+      while (!window._fbReady && intentos < 20) {
+        await new Promise(r => setTimeout(r, 200));
+        intentos++;
+      }
+
+      if (!window._fbReady) throw new Error('Firebase no disponible');
+
+      const leadId = `lead_${Date.now().toString(36)}_${Math.random().toString(36).substr(2,5)}`;
+
+      // Guardar lead en Firestore — colección 'leads'
+      // La app escucha esta colección con iniciarListenerLeads() y lo importa
+      // automáticamente al pipeline del asesor cuando detecta un nuevo documento.
+      await window._fbSetDoc(window._fbDoc(window._fbDb, 'leads', leadId), lead);
+
+      // Mostrar éxito
+      document.getElementById('successNombre').textContent  = nombre.split(' ')[0];
+      document.getElementById('successInteres').textContent = INTERES_LABEL[interes] || 'Información registrada';
+      document.getElementById('successAsesor').textContent  = ASESOR;
+      document.querySelector('.form-body').querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('successScreen').style.display = 'block';
+      document.querySelector('.form-steps').style.display    = 'none';
+      window.scrollTo({ top: document.getElementById('formulario').offsetTop - 20, behavior: 'smooth' });
+
+    } catch(e) {
+      console.error('Error enviando lead:', e);
+      mostrarError('Ocurrió un error al enviar. Por favor intenta de nuevo o contacta directamente al asesor.');
+      btn.disabled = false;
+      document.getElementById('btnTexto').textContent  = 'Enviar mi información';
+      document.getElementById('btnSpinner').style.display = 'none';
+      document.getElementById('btnIcon').style.display    = 'inline';
+    }
+  }
+
+  function mostrarError(msg) {
+    const el = document.getElementById('msgError');
+    el.textContent    = msg;
+    el.style.display  = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Exponer funciones al HTML
+  window.seleccionarEPS    = seleccionarEPS;
+  window.seleccionarInteres = seleccionarInteres;
+  window.goStep            = goStep;
+  window.goStepAtras2      = goStepAtras2;
+  window.enviarFormulario  = enviarFormulario;
+</script>
+
+</body>
+</html>
