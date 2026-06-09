@@ -2255,6 +2255,57 @@
             <option value="COTIZANTE">Cotizante</option>
             <option value="BENEFICIARIO">Beneficiario</option>
           </select>
+          <select class="form-control" style="width:160px;" id="filterMesComp" onchange="renderTabla()">
+            <option value="">Mes compensado</option>
+            <option value="ENERO">ENERO</option>
+            <option value="FEBRERO">FEBRERO</option>
+            <option value="MARZO">MARZO</option>
+            <option value="ABRIL">ABRIL</option>
+            <option value="MAYO">MAYO</option>
+            <option value="JUNIO">JUNIO</option>
+            <option value="JULIO">JULIO</option>
+            <option value="AGOSTO">AGOSTO</option>
+            <option value="SEPTIEMBRE">SEPTIEMBRE</option>
+            <option value="OCTUBRE">OCTUBRE</option>
+            <option value="NOVIEMBRE">NOVIEMBRE</option>
+            <option value="DICIEMBRE">DICIEMBRE</option>
+          </select>
+          <select class="form-control" style="width:130px;" id="filterAnioComp" onchange="renderTabla()">
+            <option value="">Año comp.</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+          </select>
+        </div>
+
+        <!-- Barra de totales compensado -->
+        <div id="barraCompensado" style="display:none;background:rgba(26,76,232,0.07);border:1px solid rgba(26,76,232,0.18);border-radius:10px;padding:12px 18px;margin-bottom:14px;display:none;flex-wrap:wrap;gap:18px;align-items:center;">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="font-size:11px;color:var(--text-muted);">Comisión recalculada</span>
+            <span id="barraCompRecalc" style="font-size:18px;font-weight:700;color:var(--green);">$0</span>
+            <span id="barraCompRango" style="font-size:11px;color:var(--text-muted);"></span>
+          </div>
+          <div style="width:1px;background:var(--border);height:40px;"></div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="font-size:11px;color:var(--text-muted);">Almacenada</span>
+            <span id="barraCompAlmacenada" style="font-size:15px;font-weight:600;color:var(--text-dim);">$0</span>
+          </div>
+          <div style="width:1px;background:var(--border);height:40px;"></div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="font-size:11px;color:var(--text-muted);">Registros</span>
+            <span id="barraCompCount" style="font-size:15px;font-weight:600;color:var(--text);">0</span>
+          </div>
+          <div style="width:1px;background:var(--border);height:40px;"></div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="font-size:11px;color:var(--text-muted);">Cotizantes</span>
+            <span id="barraCompCotiz" style="font-size:15px;font-weight:600;color:var(--text);">0</span>
+          </div>
+          <div style="width:1px;background:var(--border);height:40px;"></div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="font-size:11px;color:var(--text-muted);">Beneficiarios</span>
+            <span id="barraCompBenef" style="font-size:15px;font-weight:600;color:var(--text);">0</span>
+          </div>
         </div>
 
         <div class="table-wrap" style="max-height:65vh;">
@@ -12785,10 +12836,12 @@ function calcEdadAgilEdit() {
 
 function renderTabla() {
   state = getState();
-  const filterAnio = document.getElementById('filterAnio').value;
-  const filterMes = document.getElementById('filterMes').value;
-  const filterProd = document.getElementById('filterProducto').value;
-  const filterTipo = document.getElementById('filterTipo').value;
+  const filterAnio     = document.getElementById('filterAnio').value;
+  const filterMes      = document.getElementById('filterMes').value;
+  const filterProd     = document.getElementById('filterProducto').value;
+  const filterTipo     = document.getElementById('filterTipo').value;
+  const filterMesComp  = document.getElementById('filterMesComp')?.value  || '';
+  const filterAnioComp = document.getElementById('filterAnioComp')?.value || '';
 
   // Build mes options
   const mesSelect = document.getElementById('filterMes');
@@ -12801,13 +12854,63 @@ function renderTabla() {
   }
 
   let ventas = [...state.ventas].reverse();
-  // Excluir pólizas importadas desde cartera SURA — son de años anteriores
-  // y se gestionan exclusivamente desde el módulo de cartera
   ventas = ventas.filter(v => !v._importadoSura);
-  if (filterAnio) ventas = ventas.filter(v => parseFechaLocal(v.fecha).getFullYear() == filterAnio);
-  if (filterMes) ventas = ventas.filter(v => MESES[parseFechaLocal(v.fecha).getMonth()] === filterMes);
-  if (filterProd) ventas = ventas.filter(v => v.producto === filterProd);
-  if (filterTipo) ventas = ventas.filter(v => v.tipo === filterTipo);
+  if (filterAnio)     ventas = ventas.filter(v => parseFechaLocal(v.fecha).getFullYear() == filterAnio);
+  if (filterMes)      ventas = ventas.filter(v => MESES[parseFechaLocal(v.fecha).getMonth()] === filterMes);
+  if (filterProd)     ventas = ventas.filter(v => v.producto === filterProd);
+  if (filterTipo)     ventas = ventas.filter(v => v.tipo === filterTipo);
+
+  // Filtros por mes/año compensado — parsea el campo mesComp ej: "MAYO.2026"
+  if (filterMesComp) {
+    ventas = ventas.filter(v => {
+      if (!v.mesComp) return false;
+      const partes = v.mesComp.toUpperCase().split('.');
+      return partes[0] === filterMesComp.toUpperCase();
+    });
+  }
+  if (filterAnioComp) {
+    ventas = ventas.filter(v => {
+      if (!v.mesComp) return false;
+      const partes = v.mesComp.toUpperCase().split('.');
+      return partes[1] === filterAnioComp;
+    });
+  }
+
+  // Barra de totales compensado: visible cuando hay filtro de mesComp, anioComp, o producto PBS
+  const mostrarBarra = !!(filterMesComp || filterAnioComp || filterProd === 'PBS');
+  const barraEl = document.getElementById('barraCompensado');
+  if (barraEl) {
+    barraEl.style.display = mostrarBarra ? 'flex' : 'none';
+    if (mostrarBarra) {
+      // Comisión almacenada (suma directa)
+      const ventasPBS = ventas.filter(v => v.producto === 'PBS');
+      const comAlmacenada = ventasPBS.reduce((s, v) => s + (v.comision || 0), 0);
+      const cotizantes    = ventasPBS.filter(v => v.tipo === 'COTIZANTE').length;
+      const beneficiarios = ventasPBS.filter(v => v.tipo === 'BENEFICIARIO').length;
+
+      // Comisión recalculada con rango del período
+      let comRecalc = 0;
+      let rangoLabel = '';
+      if (ventasPBS.length > 0) {
+        try {
+          comRecalc  = calcComisionPeriodoPBS(ventasPBS);
+          const mc   = ventasPBS.filter(v => v.tipo === 'COTIZANTE').length;
+          const rng  = mc > 0 ? getRango(mc) : null;
+          rangoLabel = rng ? `Rango ${rng.n} · ${mc} cotizante${mc !== 1 ? 's' : ''}` : '';
+        } catch(e) {
+          comRecalc  = comAlmacenada;
+          rangoLabel = '';
+        }
+      }
+
+      document.getElementById('barraCompRecalc').textContent     = fmt(comRecalc);
+      document.getElementById('barraCompAlmacenada').textContent = fmt(comAlmacenada);
+      document.getElementById('barraCompRango').textContent      = rangoLabel;
+      document.getElementById('barraCompCount').textContent      = ventasPBS.length || ventas.length;
+      document.getElementById('barraCompCotiz').textContent      = cotizantes  || ventas.filter(v => v.tipo === 'COTIZANTE').length;
+      document.getElementById('barraCompBenef').textContent      = beneficiarios || ventas.filter(v => v.tipo === 'BENEFICIARIO').length;
+    }
+  }
 
   const tbody = document.getElementById('tablaVentas');
   if (ventas.length === 0) {
