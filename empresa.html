@@ -1205,7 +1205,7 @@
 </html>`;
   }
 
-  async function enviarCorreoProspecto(lead) {
+  window.enviarCorreoProspecto = async function enviarCorreoProspecto(lead) {
     if (!lead.correo) return; // sin correo no se envía
     try {
       await cargarEmailJS();
@@ -1380,7 +1380,7 @@
       await window._fbSetDoc(window._fbDoc(window._fbDb, 'leads', leadId), lead);
 
       // Enviar correo automático al prospecto (no bloquea si falla)
-      enviarCorreoProspecto(lead);
+      window.enviarCorreoProspecto(lead);
 
       // Mostrar éxito
       document.getElementById('successNombre').textContent  = nombre.split(' ')[0];
