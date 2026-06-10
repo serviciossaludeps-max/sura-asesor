@@ -1372,7 +1372,7 @@
 
       if (!window._fbReady) throw new Error('Firebase no disponible');
 
-      const leadId = `lead_${Date.now().toString(36)}_${Math.random().toString(36).substr(2,5)}`;
+      const leadId = `lead_cot_${Date.now().toString(36).toLowerCase()}_${Math.random().toString(36).substr(2,5).toLowerCase()}`;
 
       // Guardar lead en Firestore — colección 'leads'
       // La app escucha esta colección con iniciarListenerLeads() y lo importa
