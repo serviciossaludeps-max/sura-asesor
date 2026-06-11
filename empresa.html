@@ -997,16 +997,21 @@
 
         <div id="msgError" style="display:none;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.25);border-radius:8px;padding:10px 14px;font-size:13px;color:#DC2626;margin-bottom:14px;"></div>
 
-        <button class="btn-primary" id="btnEnviar" onclick="enviarFormulario()">
+        <button class="btn-primary" id="btnEnviar" onclick="enviarFormulario()" disabled>
           <span id="btnTexto">Enviar mi información</span>
           <div class="spinner" id="btnSpinner"></div>
           <svg id="btnIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
         <button class="btn-secondary" onclick="goStepAtras2()">← Volver</button>
 
-        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.6;">
-          Al enviar, autorizas el tratamiento de tus datos personales conforme a la política de privacidad de Seguros de Vida Suramericana S.A.
-        </p>
+        <label id="checkDatosLabel" style="display:flex;align-items:flex-start;gap:10px;margin-top:16px;cursor:pointer;padding:12px 14px;border-radius:10px;border:1px solid rgba(26,76,232,0.15);background:rgba(26,76,232,0.04);transition:border-color 0.2s;">
+          <input type="checkbox" id="checkDatos" onchange="document.getElementById('btnEnviar').disabled=!this.checked;" style="margin-top:2px;width:16px;height:16px;accent-color:#1A4CE8;flex-shrink:0;cursor:pointer;" />
+          <span style="font-size:12px;color:var(--muted);line-height:1.6;">
+            Autorizo el tratamiento de mis datos personales conforme a la
+            <a href="https://suramericana.com/politica-de-privacidad-y-tratamiento-de-datos-personales/" target="_blank" style="color:#1A4CE8;font-weight:700;text-decoration:none;">política de privacidad</a>
+            de Seguros de Vida Suramericana S.A., de acuerdo con la Ley 1581 de 2012.
+          </span>
+        </label>
       </div>
 
       <!-- PANTALLA ÉXITO -->
