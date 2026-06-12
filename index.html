@@ -25575,7 +25575,7 @@ function cotizadorLimpiar() {
 
 function cotizadorCopiarUrlWeb() {
   const uid = window.FB?.UID || localStorage.getItem('sura_last_cc') || '';
-  const base = 'https://serviciossaludeps-max.github.io/sura-asesor/cotizar.html';
+  const base = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/') + 'cotizar.html';
   const url  = uid ? `${base}?asesor=${uid}` : base;
 
   // Intentar copiar al portapapeles
