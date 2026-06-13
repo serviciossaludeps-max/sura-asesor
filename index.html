@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canal Especializado en Salud — Fran Viloria · Asesor SURA</title>
+<meta name="description" content="Asesor SURA autorizado en Colombia. Planes de salud, complementarios, pólizas empresariales y traslados de EPS. Cotiza gratis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:  #003087; --deep:  #001A52; --mid:   #0047BB;
+  --gold:  #FFB800; --gold2: #FFF8E6;
+  --off:   #F4F7FC; --border:#DDE5F0;
+  --text:  #0A1628; --muted: #526075; --white: #FFFFFF;
+  --serif: 'DM Serif Display', serif; --sans: 'Inter', sans-serif;
+  --ease:  cubic-bezier(.25,.8,.25,1);
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); color: var(--text); background: var(--white); overflow-x: hidden; }
+
+/* ─ TICKER ─ */
+.ticker-outer { background: var(--deep); overflow: hidden; height: 32px; display: flex; align-items: center; position: relative; z-index: 101; }
+.ticker-outer::before,.ticker-outer::after { content:''; position:absolute; top:0; bottom:0; width:60px; z-index:2; pointer-events:none; }
+.ticker-outer::before { left:0; background:linear-gradient(to right,var(--deep),transparent); }
+.ticker-outer::after  { right:0; background:linear-gradient(to left,var(--deep),transparent); }
+.ticker-track { display:flex; animation:tick 34s linear infinite; white-space:nowrap; }
+.ticker-track:hover { animation-play-state:paused; }
+@keyframes tick { to { transform:translateX(-50%); } }
+.ti { display:flex; align-items:center; gap:.5rem; padding:0 2rem; font-size:.68rem; color:rgba(255,255,255,.38); letter-spacing:.06em; }
+.ti b { color:rgba(255,184,0,.7); font-weight:600; }
+.ti-dot { width:3px; height:3px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+
+/* ─ NAV ─ */
+nav { position:sticky; top:0; z-index:100; background:rgba(0,26,82,.97); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,.05); }
+.nav-inner { max-width:1180px; margin:0 auto; padding:0 2rem; height:60px; display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+.nav-brand { display:flex; align-items:center; gap:.7rem; text-decoration:none; }
+.nav-sura { background:var(--gold); color:var(--deep); font-size:.58rem; font-weight:900; letter-spacing:.06em; padding:.18rem .5rem; border-radius:3px; }
+.nav-name { font-family:var(--serif); font-size:.95rem; color:#fff; line-height:1.15; }
+.nav-name small { display:block; font-family:var(--sans); font-size:.55rem; color:rgba(255,255,255,.35); text-transform:uppercase; letter-spacing:.1em; }
+.nav-links { display:flex; gap:0; list-style:none; }
+.nav-links a { font-size:.78rem; color:rgba(255,255,255,.48); text-decoration:none; font-weight:500; transition:color .18s; padding:.5rem .9rem; border-radius:5px; }
+.nav-links a:hover { color:#fff; background:rgba(255,255,255,.06); }
+.nav-links a.ext { color:rgba(255,184,0,.65); }
+.nav-links a.ext:hover { color:var(--gold); }
+.nav-links a.crm-link { color:rgba(255,255,255,.28); font-size:.72rem; }
+.nav-links a.crm-link:hover { color:rgba(255,255,255,.6); }
+.nav-btn { background:var(--gold); color:var(--deep); padding:.42rem 1rem; border-radius:4px; font-size:.78rem; font-weight:700; text-decoration:none; transition:opacity .18s; flex-shrink:0; }
+.nav-btn:hover { opacity:.88; }
+
+/* ─ HERO ─ */
+.hero { min-height:100vh; background:var(--navy); display:flex; align-items:center; padding:5rem 2rem 6rem; position:relative; overflow:hidden; }
+.hero-texture { position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(circle at 72% 38%,rgba(255,184,0,.07) 0%,transparent 52%),
+    radial-gradient(circle at 18% 80%,rgba(0,71,187,.25) 0%,transparent 44%); }
+.hero-rings { position:absolute; right:-80px; top:50%; transform:translateY(-50%); width:620px; height:620px; pointer-events:none; opacity:.04; }
+.hero-rings circle { fill:none; stroke:#fff; stroke-width:1; }
+.hero-bar { position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--gold); }
+
+.hero-inner { max-width:1180px; margin:0 auto; width:100%; display:grid; grid-template-columns:56fr 44fr; gap:5rem; align-items:center; position:relative; z-index:1; }
+
+/* Hero left animations */
+@keyframes up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+.ha { opacity:0; animation:up .65s var(--ease) forwards; }
+.ha:nth-child(1){animation-delay:.08s} .ha:nth-child(2){animation-delay:.2s}
+.ha:nth-child(3){animation-delay:.32s} .ha:nth-child(4){animation-delay:.44s}
+.ha:nth-child(5){animation-delay:.54s}
+
+.hero-kicker { display:flex; align-items:center; gap:.65rem; margin-bottom:1.75rem; }
+.hk-bar { width:26px; height:1.5px; background:var(--gold); }
+.hk-txt { font-size:.68rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.4); }
+.hero-h1 { font-family:var(--serif); font-size:clamp(2.7rem,4.5vw,3.9rem); line-height:1.06; color:#fff; margin-bottom:1.6rem; }
+.hero-h1 em { font-style:italic; color:var(--gold); }
+.hero-sub { font-size:.97rem; color:rgba(255,255,255,.5); line-height:1.85; max-width:450px; margin-bottom:2rem; }
+
+/* Decision widget */
+.decision { background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.09); border-radius:10px; padding:1.25rem; margin-bottom:1.75rem; }
+.decision-q { font-size:.72rem; color:rgba(255,255,255,.35); font-weight:500; margin-bottom:.8rem; }
+.decision-opts { display:flex; gap:.5rem; flex-wrap:wrap; }
+.dopt { flex:1; min-width:150px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:7px; padding:.7rem .875rem; color:rgba(255,255,255,.7); font-family:var(--sans); font-size:.8rem; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:.45rem; transition:all .16s; text-align:left; }
+.dopt svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; flex-shrink:0; opacity:.6; }
+.dopt:hover,.dopt.on { background:var(--gold); color:var(--deep); border-color:var(--gold); font-weight:600; }
+.dopt:hover svg,.dopt.on svg { opacity:1; }
+
+.hero-trust { display:flex; align-items:center; gap:.55rem; }
+.ht-dot { width:4px; height:4px; border-radius:50%; background:var(--gold); }
+.ht-txt { font-size:.68rem; color:rgba(255,255,255,.25); }
+
+/* Hero right */
+.hero-stats { display:flex; flex-direction:column; gap:.75rem; opacity:0; animation:up .65s .45s var(--ease) forwards; }
+.hstat { background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.07); border-radius:9px; padding:1.25rem 1.5rem; display:flex; align-items:center; gap:.875rem; transition:border-color .22s,background .22s; }
+.hstat:hover { border-color:rgba(255,184,0,.22); background:rgba(255,184,0,.035); }
+.hstat-ico { width:38px; height:38px; border-radius:7px; background:rgba(255,184,0,.1); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.hstat-ico svg { width:17px; height:17px; stroke:var(--gold); fill:none; stroke-width:1.75; }
+.hstat-lbl { font-size:.65rem; color:rgba(255,255,255,.3); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.2rem; }
+.hstat-val { font-family:var(--serif); font-size:1.55rem; color:#fff; line-height:1; }
+
+/* ─ TRUST BAR ─ */
+.tbar { background:var(--deep); padding:.85rem 2rem; border-bottom:1px solid rgba(255,255,255,.05); }
+.tbar-inner { max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:1.25rem; flex-wrap:wrap; }
+.tbar-item { display:flex; align-items:center; gap:.45rem; }
+.tbar-dot { width:3px; height:3px; border-radius:50%; background:var(--gold); }
+.tbar-txt { font-size:.7rem; color:rgba(255,255,255,.32); }
+
+/* ─ SHARED ─ */
+.sec { padding:5.5rem 2rem; }
+.wrap { max-width:1180px; margin:0 auto; }
+.ey { display:flex; align-items:center; gap:.55rem; margin-bottom:.8rem; }
+.ey-dash { width:14px; height:1.5px; background:var(--gold); }
+.ey-txt { font-size:.66rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--mid); }
+.h2 { font-family:var(--serif); font-size:clamp(1.85rem,2.7vw,2.4rem); color:var(--navy); line-height:1.12; margin-bottom:1rem; }
+.lead { font-size:.92rem; color:var(--muted); line-height:1.85; max-width:480px; }
+.rv { opacity:0; transform:translateY(18px); transition:opacity .55s var(--ease),transform .55s var(--ease); }
+.rv.in { opacity:1; transform:none; }
+
+/* ─ PLANES ─ */
+.planes-sec { background:var(--off); }
+.planes-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(248px,1fr)); gap:1rem; margin-top:2.75rem; }
+.pcard { background:var(--white); border:1px solid var(--border); border-radius:9px; padding:1.625rem; position:relative; text-decoration:none; color:inherit; display:block; transition:border-color .2s,transform .2s,box-shadow .2s; }
+.pcard:hover { border-color:var(--mid); transform:translateY(-3px); box-shadow:0 8px 28px rgba(0,48,135,.08); }
+.pcard.feat { border-color:var(--navy); }
+.pcard-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; }
+.pcard-ico { width:40px; height:40px; border-radius:7px; background:var(--off); display:flex; align-items:center; justify-content:center; }
+.pcard-ico svg { width:19px; height:19px; stroke:var(--navy); fill:none; stroke-width:1.6; }
+.pcard-ico.g { background:var(--gold2); }
+.pcard-ico.g svg { stroke:#7A5800; }
+.pcard-tag { font-size:.58rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; background:var(--gold); color:var(--deep); padding:.16rem .5rem; border-radius:3px; }
+.pcard-name { font-family:var(--serif); font-size:1.15rem; color:var(--navy); margin-bottom:.35rem; line-height:1.2; }
+.pcard-desc { font-size:.82rem; color:var(--muted); line-height:1.65; margin-bottom:1.1rem; }
+.pcard-list { list-style:none; display:flex; flex-direction:column; gap:.35rem; }
+.pcard-list li { font-size:.8rem; display:flex; align-items:flex-start; gap:.4rem; line-height:1.5; }
+.pcard-list li::before { content:''; width:4px; height:4px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:6px; }
+.pcard-arr { position:absolute; bottom:1.5rem; right:1.5rem; font-size:.8rem; color:var(--border); transition:color .18s; }
+.pcard:hover .pcard-arr { color:var(--navy); }
+
+/* ─ COTIZADOR / EMPRESA — Tabs + iframes ─ */
+.forms-sec { background:var(--navy); padding:0; }
+.forms-tabs { display:flex; background:var(--deep); border-bottom:1px solid rgba(255,255,255,.07); }
+.ftab { flex:1; padding:1.1rem 2rem; font-size:.82rem; font-weight:600; color:rgba(255,255,255,.38); cursor:pointer; transition:all .18s; border:none; background:transparent; font-family:var(--sans); display:flex; align-items:center; justify-content:center; gap:.5rem; border-bottom:2px solid transparent; }
+.ftab svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
+.ftab:hover { color:rgba(255,255,255,.65); }
+.ftab.active { color:var(--gold); border-bottom-color:var(--gold); background:rgba(255,184,0,.04); }
+.ftab-panels { position:relative; }
+.fpanel { display:none; }
+.fpanel.active { display:block; }
+.fpanel iframe { width:100%; border:none; display:block; }
+
+/* ─ BLOG ─ */
+.blog-sec { background:var(--white); }
+.blog-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:1rem; margin-top:2.75rem; }
+.bcard { border:1px solid var(--border); border-radius:9px; overflow:hidden; transition:transform .2s,border-color .2s; }
+.bcard:hover { transform:translateY(-3px); border-color:var(--navy); }
+.bthumb { height:135px; display:flex; align-items:center; justify-content:center; font-size:2.2rem; }
+.bth1 { background:linear-gradient(135deg,#EEF3FB,#C5D6EF); }
+.bth2 { background:linear-gradient(135deg,#FFF8E6,#FFE59A); }
+.bth3 { background:linear-gradient(135deg,#F0F4FF,#C8D3F0); }
+.bbody { padding:1.25rem; }
+.btag { font-size:.64rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--mid); margin-bottom:.5rem; }
+.btitle { font-family:var(--serif); font-size:1.05rem; color:var(--navy); line-height:1.28; margin-bottom:.5rem; }
+.bexc { font-size:.82rem; color:var(--muted); line-height:1.65; }
+.bfoot { padding:.65rem 1.25rem 1.25rem; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); margin-top:.65rem; }
+.bdate { font-size:.7rem; color:var(--muted); }
+.bread { font-size:.7rem; font-weight:600; color:var(--mid); text-decoration:none; }
+
+/* ─ CONTACTO ─ */
+.contact-sec { background:var(--off); }
+.contact-wrap { display:grid; grid-template-columns:1fr 1fr; gap:3.5rem; align-items:start; margin-top:2.75rem; }
+.c-info { display:flex; flex-direction:column; gap:.875rem; }
+.c-intro { font-size:.9rem; color:var(--muted); line-height:1.85; }
+.citem { display:flex; align-items:flex-start; gap:.8rem; padding:1rem 1.1rem; background:var(--white); border:1px solid var(--border); border-radius:7px; }
+.citem-ico { width:34px; height:34px; border-radius:6px; background:var(--off); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.citem-ico svg { width:15px; height:15px; stroke:var(--navy); fill:none; stroke-width:1.75; }
+.citem-lbl { font-size:.62rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.15rem; }
+.citem-val { font-size:.855rem; color:var(--navy); font-weight:500; }
+.c-form { background:var(--white); border:1px solid var(--border); border-radius:9px; padding:2rem; }
+.fg { margin-bottom:1rem; }
+.fl { display:block; font-size:.72rem; font-weight:500; color:var(--muted); margin-bottom:.35rem; }
+.fi { width:100%; background:var(--off); border:1px solid var(--border); border-radius:5px; padding:.6rem .85rem; color:var(--text); font-family:var(--sans); font-size:.855rem; outline:none; transition:border-color .16s; }
+.fi:focus { border-color:var(--navy); background:var(--white); }
+textarea.fi { resize:vertical; min-height:80px; }
+.btn-navy { background:var(--navy); color:#fff; padding:.8rem 2rem; border-radius:5px; font-size:.855rem; font-weight:600; border:none; cursor:pointer; font-family:var(--sans); transition:background .18s; width:100%; }
+.btn-navy:hover { background:var(--deep); }
+
+/* ─ FOOTER ─ */
+footer { background:var(--deep); padding:3rem 2rem 2rem; }
+.fi2 { max-width:1180px; margin:0 auto; }
+.ft { display:flex; justify-content:space-between; align-items:flex-start; gap:2rem; flex-wrap:wrap; padding-bottom:1.75rem; border-bottom:1px solid rgba(255,255,255,.06); }
+.fb-name { font-family:var(--serif); font-size:1rem; color:#fff; margin-top:.4rem; line-height:1.2; }
+.fb-sub { display:block; font-family:var(--sans); font-size:.55rem; color:rgba(255,255,255,.28); text-transform:uppercase; letter-spacing:.1em; margin-top:2px; }
+.fb-pill { display:inline-flex; align-items:center; gap:4px; background:rgba(255,184,0,.08); border:1px solid rgba(255,184,0,.15); border-radius:3px; padding:.2rem .5rem; margin-top:.55rem; }
+.fb-pill-dot { width:4px; height:4px; border-radius:50%; background:var(--gold); }
+.fb-pill-txt { font-size:.6rem; font-weight:600; color:rgba(255,255,255,.35); letter-spacing:.05em; text-transform:uppercase; }
+.fb-desc { font-size:.76rem; color:rgba(255,255,255,.24); line-height:1.75; max-width:260px; margin-top:.6rem; }
+.fc h4 { font-size:.62rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:.65rem; }
+.fc ul { list-style:none; display:flex; flex-direction:column; gap:.42rem; }
+.fc a { font-size:.76rem; color:rgba(255,255,255,.34); text-decoration:none; transition:color .18s; }
+.fc a:hover { color:#fff; }
+.fb2 { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; padding-top:1.25rem; }
+.fb2-copy { font-size:.68rem; color:rgba(255,255,255,.18); }
+.fb2-legal { display:flex; gap:1.25rem; }
+.fb2-legal a { font-size:.68rem; color:rgba(255,255,255,.18); text-decoration:none; transition:color .16s; }
+.fb2-legal a:hover { color:rgba(255,255,255,.45); }
+
+/* ─ WA FLOAT ─ */
+.wa { position:fixed; bottom:1.25rem; right:1.25rem; z-index:200; background:#25D366; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 3px 14px rgba(37,211,102,.36); transition:transform .18s; }
+.wa:hover { transform:scale(1.1); }
+.wa svg { width:23px; height:23px; fill:#fff; }
+
+@media(max-width:820px){
+  .hero-inner,.contact-wrap{grid-template-columns:1fr}
+  .hero-stats{display:none}
+  .nav-links{display:none}
+  .tbar-inner{gap:.75rem}
+  .forms-tabs{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-outer" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="ti"><span class="ti-dot"></span>Asesor certificado <b>SURA</b> Colombia</span>
+    <span class="ti"><span class="ti-dot"></span>+500 familias protegidas en Colombia</span>
+    <span class="ti"><span class="ti-dot"></span>Cotización gratuita y sin compromiso</span>
+    <span class="ti"><span class="ti-dot"></span>Planes de salud · Complementarios · Empresariales · Traslados EPS</span>
+    <span class="ti"><span class="ti-dot"></span>Respuesta en menos de 2 horas</span>
+    <span class="ti"><span class="ti-dot"></span>Red de más de <b>216 IPS</b> en Colombia</span>
+    <span class="ti"><span class="ti-dot"></span>Asesor certificado <b>SURA</b> Colombia</span>
+    <span class="ti"><span class="ti-dot"></span>+500 familias protegidas en Colombia</span>
+    <span class="ti"><span class="ti-dot"></span>Cotización gratuita y sin compromiso</span>
+    <span class="ti"><span class="ti-dot"></span>Planes de salud · Complementarios · Empresariales · Traslados EPS</span>
+    <span class="ti"><span class="ti-dot"></span>Respuesta en menos de 2 horas</span>
+    <span class="ti"><span class="ti-dot"></span>Red de más de <b>216 IPS</b> en Colombia</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#inicio" class="nav-brand">
+      <div class="nav-sura">SURA</div>
+      <div class="nav-name">Canal Especializado en Salud<small>Fran Viloria · Asesor autorizado</small></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#planes">Planes</a></li>
+      <li><a href="#forms" onclick="activarTab('cotizador')">Cotizador</a></li>
+      <li><a href="#forms" onclick="activarTab('empresa')">Empresas</a></li>
+      <li><a href="https://directoriomedico.segurossura.com.co/#/instituciones/CI/S/S/N" target="_blank" rel="noopener" class="ext">Directorio médico ↗</a></li>
+      <li><a href="#blog">Blog</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+      <li><a href="/crm" class="crm-link">Acceso asesor</a></li>
+    </ul>
+    <a href="#forms" class="nav-btn" onclick="activarTab('cotizador')">Cotizar gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-texture" aria-hidden="true"></div>
+  <svg class="hero-rings" viewBox="0 0 620 620" aria-hidden="true">
+    <circle cx="310" cy="310" r="200"/>
+    <circle cx="310" cy="310" r="280"/>
+    <circle cx="310" cy="310" r="310"/>
+  </svg>
+  <div class="hero-bar" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+    <div>
+      <div class="hero-kicker ha">
+        <div class="hk-bar"></div>
+        <span class="hk-txt">Asesor especializado SURA · Colombia</span>
+      </div>
+      <h1 class="hero-h1 ha">Protección en salud<br>con el <em>respaldo</em><br>que mereces.</h1>
+      <p class="hero-sub ha">Soy Fran Viloria, asesor del Canal Especializado en Salud de SURA. Te acompaño en elegir el plan ideal para ti, tu familia o tu empresa — en toda Colombia.</p>
+
+      <div class="decision ha">
+        <p class="decision-q">¿Qué estás buscando hoy?</p>
+        <div class="decision-opts">
+          <button class="dopt" onclick="irA('cotizador',this)">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Quiero un plan de salud
+          </button>
+          <button class="dopt" onclick="irA('empresa',this)">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>
+            Es para mi empresa
+          </button>
+          <button class="dopt" onclick="irA('cotizador',this)">
+            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            Quiero cambiarme de EPS
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-trust ha">
+        <div class="ht-dot"></div>
+        <span class="ht-txt">Asesor certificado y autorizado por Seguros SURA · Colombia</span>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="hstat-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div><div class="hstat-lbl">Familias protegidas</div><div class="hstat-val">+500</div></div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><div class="hstat-lbl">Años de experiencia</div><div class="hstat-val">8+</div></div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-ico"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div><div class="hstat-lbl">Satisfacción</div><div class="hstat-val">98%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="tbar">
+  <div class="tbar-inner">
+    <div class="tbar-item"><div class="tbar-dot"></div><span class="tbar-txt">Asesoría sin costo</span></div>
+    <div class="tbar-item"><div class="tbar-dot"></div><span class="tbar-txt">Respuesta en menos de 2 horas</span></div>
+    <div class="tbar-item"><div class="tbar-dot"></div><span class="tbar-txt">Proceso 100% digital</span></div>
+    <div class="tbar-item"><div class="tbar-dot"></div><span class="tbar-txt">Acompañamiento postventa</span></div>
+    <div class="tbar-item"><div class="tbar-dot"></div><span class="tbar-txt">Avalado por SURA Colombia</span></div>
+  </div>
+</div>
+
+<!-- PLANES -->
+<section class="sec planes-sec rv" id="planes">
+  <div class="wrap">
+    <div class="ey"><div class="ey-dash"></div><span class="ey-txt">Portafolio SURA</span></div>
+    <h2 class="h2">Planes pensados<br>para cada momento</h2>
+    <p class="lead">Desde planes individuales hasta pólizas empresariales. Te asesoro para encontrar la cobertura exacta que necesitas en toda Colombia.</p>
+    <div class="planes-grid">
+      <a href="#forms" class="pcard feat rv" onclick="activarTab('cotizador')">
+        <div class="pcard-top">
+          <div class="pcard-ico g"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <span class="pcard-tag">Popular</span>
+        </div>
+        <div class="pcard-name">Planes de Salud SURA</div>
+        <div class="pcard-desc">SPTI, Modular, Salud para Dos y Plan 60+. Red premium de clínicas y especialistas en Colombia.</div>
+        <ul class="pcard-list">
+          <li>Red de más de 216 IPS nacionales</li>
+          <li>Especialistas sin lista de espera</li>
+          <li>Hospitalización y cirugías</li>
+          <li>Urgencias sin copago</li>
+        </ul>
+        <span class="pcard-arr">→</span>
+      </a>
+      <a href="#forms" class="pcard rv" onclick="activarTab('cotizador')">
+        <div class="pcard-top"><div class="pcard-ico"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg></div></div>
+        <div class="pcard-name">Planes Complementarios</div>
+        <div class="pcard-desc">Complementa tu EPS con óptica, odontología y telemedicina desde $80.000 al mes.</div>
+        <ul class="pcard-list">
+          <li>Compatible con cualquier EPS</li>
+          <li>Cobertura óptica y dental</li>
+          <li>Telemedicina 24/7</li>
+          <li>Auxilio funerario incluido</li>
+        </ul>
+        <span class="pcard-arr">→</span>
+      </a>
+      <a href="#forms" class="pcard rv" onclick="activarTab('empresa')">
+        <div class="pcard-top"><div class="pcard-ico"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg></div></div>
+        <div class="pcard-name">Pólizas Empresariales</div>
+        <div class="pcard-desc">Beneficios de salud colectivos para tu equipo desde 3 empleados con respaldo SURA.</div>
+        <ul class="pcard-list">
+          <li>Desde 3 empleados</li>
+          <li>Facturación unificada</li>
+          <li>Reporte mensual de siniestros</li>
+          <li>Asesor dedicado</li>
+        </ul>
+        <span class="pcard-arr">→</span>
+      </a>
+      <a href="#forms" class="pcard rv" onclick="activarTab('cotizador')">
+        <div class="pcard-top"><div class="pcard-ico"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div></div>
+        <div class="pcard-name">Traslado de EPS</div>
+        <div class="pcard-desc">¿Tu EPS no responde? Te guío en el traslado paso a paso sin complicaciones.</div>
+        <ul class="pcard-list">
+          <li>Asesoría completamente gratuita</li>
+          <li>Proceso 100% digital</li>
+          <li>Sin periodos de carencia</li>
+          <li>Acompañamiento total</li>
+        </ul>
+        <span class="pcard-arr">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COTIZADOR + EMPRESA CON TABS -->
+<section class="forms-sec rv" id="forms">
+  <div class="forms-tabs">
+    <button class="ftab active" id="tab-cotizador" onclick="activarTab('cotizador')">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Cotizador de planes
+    </button>
+    <button class="ftab" id="tab-empresa" onclick="activarTab('empresa')">
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>
+      Planes para empresas
+    </button>
+  </div>
+  <div class="ftab-panels">
+    <div class="fpanel active" id="panel-cotizador">
+      <iframe id="iframe-cotizador" src="cotizar.html" title="Cotizador SURA" style="height:900px;"
+        onload="autoHeight(this)"></iframe>
+    </div>
+    <div class="fpanel" id="panel-empresa">
+      <iframe id="iframe-empresa" src="empresa.html" title="Pólizas empresariales SURA" style="height:900px;"
+        onload="autoHeight(this)"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="sec blog-sec rv" id="blog">
+  <div class="wrap">
+    <div class="ey"><div class="ey-dash"></div><span class="ey-txt">Blog de salud</span></div>
+    <h2 class="h2">Lo que deberías saber<br>sobre tu salud.</h2>
+    <div class="blog-grid">
+      <article class="bcard rv">
+        <div class="bthumb bth1">🏥</div>
+        <div class="bbody">
+          <p class="btag">EPS · Traslados</p>
+          <h3 class="btitle">¿Cuándo conviene trasladar tu EPS? Señales que no debes ignorar</h3>
+          <p class="bexc">Si llevas meses con barreras de acceso o negaciones de servicios, puede ser momento de evaluar un cambio.</p>
+        </div>
+        <div class="bfoot"><span class="bdate">Junio 2026</span><a href="#" class="bread">Leer más →</a></div>
+      </article>
+      <article class="bcard rv">
+        <div class="bthumb bth2">💊</div>
+        <div class="bbody">
+          <p class="btag">Planes de salud</p>
+          <h3 class="btitle">Plan de salud SURA vs. plan complementario: ¿cuál es la diferencia?</h3>
+          <p class="bexc">Muchos los confunden. Aquí la diferencia real, cuánto cuestan y cuál encaja mejor con tu vida.</p>
+        </div>
+        <div class="bfoot"><span class="bdate">Mayo 2026</span><a href="#" class="bread">Leer más →</a></div>
+      </article>
+      <article class="bcard rv">
+        <div class="bthumb bth3">🏢</div>
+        <div class="bbody">
+          <p class="btag">Empresas</p>
+          <h3 class="btitle">Cómo un beneficio de salud mejora la productividad de tu equipo</h3>
+          <p class="bexc">Las empresas con pólizas colectivas tienen menor ausentismo y mayor retención de talento.</p>
+        </div>
+        <div class="bfoot"><span class="bdate">Abril 2026</span><a href="#" class="bread">Leer más →</a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="sec contact-sec rv" id="contacto">
+  <div class="wrap">
+    <div class="ey"><div class="ey-dash"></div><span class="ey-txt">Contáctame</span></div>
+    <h2 class="h2">Hablemos sin<br>compromiso.</h2>
+    <div class="contact-wrap">
+      <div class="c-info">
+        <p class="c-intro">Resuelvo tus dudas sobre coberturas, traslados y planes. Sin presión y con información clara desde el primer contacto.</p>
+        <div class="citem">
+          <div class="citem-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div><p class="citem-lbl">Correo</p><p class="citem-val">fran.viloria@asesorsura.com</p></div>
+        </div>
+        <div class="citem">
+          <div class="citem-ico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.88a16 16 0 0 0 8 8l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+          <div><p class="citem-lbl">WhatsApp</p><p class="citem-val">+57 300 851 4699</p></div>
+        </div>
+        <div class="citem">
+          <div class="citem-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><p class="citem-lbl">Cobertura</p><p class="citem-val">Colombia</p></div>
+        </div>
+      </div>
+      <div class="c-form">
+        <div class="fg"><label class="fl">Nombre completo</label><input type="text" class="fi" id="cf-n" placeholder="¿Cómo te llamas?"></div>
+        <div class="fg"><label class="fl">Teléfono o WhatsApp</label><input type="tel" class="fi" id="cf-t" placeholder="300 000 0000"></div>
+        <div class="fg"><label class="fl">Ciudad</label><input type="text" class="fi" id="cf-c" placeholder="¿En qué ciudad estás?"></div>
+        <div class="fg">
+          <label class="fl">¿Qué necesitas?</label>
+          <select class="fi" id="cf-tp">
+            <option>Cotizar un plan de salud SURA</option>
+            <option>Información sobre traslado de EPS</option>
+            <option>Póliza para mi empresa</option>
+            <option>Plan complementario</option>
+            <option>Otra consulta</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Mensaje (opcional)</label><textarea class="fi" id="cf-m" placeholder="Cuéntame algo más..."></textarea></div>
+        <button class="btn-navy" onclick="enviar()">Enviar por WhatsApp →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fi2">
+    <div class="ft">
+      <div>
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <div class="nav-sura">SURA</div>
+        </div>
+        <div class="fb-name">Canal Especializado en Salud<small class="fb-sub">serviciosseguros.co</small></div>
+        <div class="fb-pill"><div class="fb-pill-dot"></div><span class="fb-pill-txt">Fran Viloria · Asesor certificado SURA Colombia</span></div>
+        <p class="fb-desc">Asesoría personalizada en planes de salud, complementarios, pólizas empresariales y traslados de EPS en toda Colombia.</p>
+      </div>
+      <div class="fc">
+        <h4>Planes</h4>
+        <ul>
+          <li><a href="#planes">Planes de salud</a></li>
+          <li><a href="#planes">Complementarios</a></li>
+          <li><a href="#forms" onclick="activarTab('empresa')">Empresariales</a></li>
+          <li><a href="#planes">Traslado EPS</a></li>
+        </ul>
+      </div>
+      <div class="fc">
+        <h4>Recursos</h4>
+        <ul>
+          <li><a href="#forms" onclick="activarTab('cotizador')">Cotizador</a></li>
+          <li><a href="https://directoriomedico.segurossura.com.co/#/instituciones/CI/S/S/N" target="_blank" rel="noopener">Directorio médico ↗</a></li>
+          <li><a href="#blog">Blog de salud</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+          <li><a href="/crm">Acceso asesor</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fb2">
+      <p class="fb2-copy">© 2026 Canal Especializado en Salud · Fran Viloria · Asesor SURA autorizado · serviciosseguros.co</p>
+      <div class="fb2-legal">
+        <a href="#">Política de privacidad</a>
+        <a href="#">Términos de uso</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- WA FLOAT -->
+<a href="https://wa.me/573008514699?text=Hola%20Fran,%20quiero%20información%20sobre%20planes%20de%20salud%20SURA" class="wa" target="_blank" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+</a>
+
+<script>
+// ─ Tabs cotizador / empresa ─
+function activarTab(id) {
+  ['cotizador','empresa'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===id);
+    document.getElementById('panel-'+t).classList.toggle('active', t===id);
+  });
+  setTimeout(() => document.getElementById('forms').scrollIntoView({behavior:'smooth'}), 80);
+}
+
+// ─ Hero decision buttons ─
+function irA(id, btn) {
+  document.querySelectorAll('.dopt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  activarTab(id);
+}
+
+// ─ Auto-height iframes ─
+function autoHeight(f) {
+  try {
+    const resize = () => {
+      const h = f.contentDocument.documentElement.scrollHeight || f.contentDocument.body.scrollHeight;
+      if (h > 400) f.style.height = h + 32 + 'px';
+    };
+    resize();
+    // Re-check after content settles
+    setTimeout(resize, 800);
+    setTimeout(resize, 2000);
+  } catch(e) {
+    // Cross-origin (local file://) — use a safe fallback height
+    f.style.height = '1100px';
+  }
+}
+
+// Listen for postMessage height updates from iframes
+window.addEventListener('message', e => {
+  if (e.data?.type === 'resize' && e.data.height) {
+    const iframes = document.querySelectorAll('iframe');
+    iframes.forEach(f => {
+      try { if (f.contentWindow === e.source) f.style.height = e.data.height + 40 + 'px'; } catch(x){}
+    });
+  }
+});
+
+// ─ Scroll reveal ─
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+// ─ Contacto WhatsApp ─
+function enviar() {
+  const n = document.getElementById('cf-n').value.trim();
+  const t = document.getElementById('cf-t').value.trim();
+  const c = document.getElementById('cf-c').value.trim();
+  const tp = document.getElementById('cf-tp').value;
+  const m = document.getElementById('cf-m').value.trim();
+  if (!n || !t) { alert('Por favor ingresa tu nombre y teléfono.'); return; }
+  let msg = `Hola Fran, mi nombre es *${n}*.\n📱 ${t}`;
+  if (c) msg += `\n📍 ${c}`;
+  msg += `\n\n🎯 ${tp}`;
+  if (m) msg += `\n\n💬 ${m}`;
+  window.open('https://wa.me/573008514699?text=' + encodeURIComponent(msg), '_blank');
+}
+</script>
+</body>
+</html>
