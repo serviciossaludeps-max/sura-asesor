@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planes de Salud SURA — Fran Viloria · Asesor Autorizado</title>
+<meta name="description" content="Conoce los planes voluntarios de salud SURA: SPTI Clásico, SPTI Preferencial, Salud para Dos Plus y Plan Modular. Coberturas detalladas y cotización gratuita.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#003087;--deep:#001A52;--mid:#0047BB;
+  --gold:#FFB800;--gold2:#FFF8E6;
+  --off:#F4F7FC;--border:#DDE5F0;
+  --text:#0A1628;--muted:#526075;--white:#FFFFFF;
+  --serif:'DM Serif Display',serif;--sans:'Inter',sans-serif;
+  --ease:cubic-bezier(.25,.8,.25,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--white);overflow-x:hidden}
+
+/* ─ NAV ─ */
+nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-brand{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-sura{background:var(--gold);color:var(--deep);font-size:.58rem;font-weight:900;letter-spacing:.06em;padding:.18rem .5rem;border-radius:3px;flex-shrink:0}
+.nav-name{font-family:var(--serif);font-size:.9rem;color:#fff;line-height:1.15}
+.nav-name small{display:block;font-family:var(--sans);font-size:.52rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em}
+.nav-back{font-size:.78rem;color:rgba(255,255,255,.5);text-decoration:none;display:flex;align-items:center;gap:.35rem;transition:color .18s}
+.nav-back:hover{color:#fff}
+.nav-btn{background:var(--gold);color:var(--deep);padding:.42rem 1rem;border-radius:4px;font-size:.78rem;font-weight:700;text-decoration:none;flex-shrink:0}
+.nav-btn:hover{opacity:.88}
+@media(max-width:480px){
+  .nav-name{font-size:.7rem;max-width:120px}
+  .nav-name small{font-size:.45rem}
+  .nav-inner{padding:0 .9rem}
+  .nav-btn{font-size:.7rem;padding:.36rem .65rem}
+}
+
+/* ─ HERO PLANES ─ */
+.hero-planes{background:var(--navy);padding:4rem 2rem 3rem;position:relative;overflow:hidden}
+.hero-planes::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,rgba(255,184,0,.07),transparent 60%);pointer-events:none}
+.hero-planes-inner{max-width:1180px;margin:0 auto;position:relative;z-index:1}
+.hp-kicker{display:flex;align-items:center;gap:.55rem;margin-bottom:1rem}
+.hp-dash{width:20px;height:1.5px;background:var(--gold)}
+.hp-txt{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.hp-h1{font-family:var(--serif);font-size:clamp(2rem,3.5vw,3rem);color:#fff;line-height:1.1;margin-bottom:.75rem}
+.hp-h1 em{font-style:italic;color:var(--gold)}
+.hp-sub{font-size:.9rem;color:rgba(255,255,255,.5);max-width:520px;line-height:1.8}
+
+/* ─ FILTRO DE PLANES ─ */
+.plan-filter{background:var(--deep);padding:1rem 2rem;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:60px;z-index:90}
+.plan-filter-inner{max-width:1180px;margin:0 auto;display:flex;gap:.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.pf-btn{flex-shrink:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:.45rem 1.1rem;font-size:.78rem;font-weight:500;color:rgba(255,255,255,.5);cursor:pointer;font-family:var(--sans);transition:all .18s;white-space:nowrap}
+.pf-btn:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+.pf-btn.active{background:var(--gold);color:var(--deep);border-color:var(--gold);font-weight:700}
+
+/* ─ CONTENEDOR PLANES ─ */
+.planes-wrap{max-width:1180px;margin:0 auto;padding:3rem 2rem 5rem}
+
+/* ─ PLAN CARD GRANDE ─ */
+.plan-block{display:none;animation:fadeUp .4s var(--ease) forwards}
+.plan-block.show{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.plan-header{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:start;margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
+@media(max-width:640px){.plan-header{grid-template-columns:1fr}}
+
+.ph-badge{display:inline-flex;align-items:center;gap:.4rem;background:var(--navy);color:var(--gold);font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .7rem;border-radius:4px;margin-bottom:.75rem}
+.ph-title{font-family:var(--serif);font-size:clamp(1.7rem,3vw,2.4rem);color:var(--navy);line-height:1.1;margin-bottom:.5rem}
+.ph-sub{font-size:.88rem;color:var(--muted);line-height:1.8;max-width:560px}
+.ph-price{background:var(--navy);border-radius:10px;padding:1.5rem 2rem;text-align:center;flex-shrink:0;min-width:200px}
+.ph-price-lbl{font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
+.ph-price-val{font-family:var(--serif);font-size:1.8rem;color:#fff;line-height:1}
+.ph-price-period{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.2rem}
+.ph-price-req{font-size:.64rem;color:rgba(255,184,0,.7);margin-top:.5rem;padding:.25rem .5rem;background:rgba(255,184,0,.08);border-radius:3px}
+
+/* ─ COBERTURAS GRID ─ */
+.cob-section{margin-bottom:2.5rem}
+.cob-title{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.cob-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.cob-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+.cob-item{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:1rem 1.1rem;display:flex;gap:.75rem;align-items:flex-start}
+.cob-item.gold{background:var(--gold2);border-color:rgba(255,184,0,.25)}
+.cob-ico{width:32px;height:32px;border-radius:6px;background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}
+.cob-item.gold .cob-ico{background:rgba(255,184,0,.15)}
+.cob-name{font-size:.82rem;font-weight:600;color:var(--navy);margin-bottom:.2rem;line-height:1.3}
+.cob-desc{font-size:.76rem;color:var(--muted);line-height:1.55}
+
+/* ─ EXCLUSIONES ─ */
+.excl-list{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
+.excl-item{display:flex;align-items:center;gap:.35rem;background:#FFF2F2;border:1px solid #FFD6D6;border-radius:5px;padding:.3rem .7rem;font-size:.74rem;color:#C0392B}
+.excl-item::before{content:'✗';font-weight:700}
+
+/* ─ VENTAJAS / CONSIDERACIONES ─ */
+.vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem}
+@media(max-width:640px){.vc-grid{grid-template-columns:1fr}}
+.vc-box{border-radius:9px;padding:1.25rem 1.5rem}
+.vc-box.verde{background:#F0FBF4;border:1px solid #B7E8C6}
+.vc-box.ambar{background:#FFFBF0;border:1px solid #FFE7A0}
+.vc-box h4{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem}
+.vc-box.verde h4{color:#1A7A3A}
+.vc-box.ambar h4{color:#8A6000}
+.vc-list{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.vc-list li{font-size:.82rem;line-height:1.55;display:flex;gap:.5rem}
+.vc-list li::before{flex-shrink:0;font-size:.8rem;margin-top:.05rem}
+.vc-box.verde .vc-list li::before{content:'✓';color:#1A7A3A;font-weight:700}
+.vc-box.ambar .vc-list li::before{content:'⚠';color:#8A6000}
+
+/* ─ CARENCIAS ─ */
+.carencias{background:var(--navy);border-radius:10px;padding:1.5rem 2rem;margin-bottom:2.5rem}
+.car-title{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:1rem}
+.car-grid{display:flex;flex-wrap:wrap;gap:.75rem}
+.car-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:.6rem 1rem;display:flex;align-items:center;gap:.55rem}
+.car-days{font-family:var(--serif);font-size:1.1rem;color:var(--gold);white-space:nowrap}
+.car-concept{font-size:.76rem;color:rgba(255,255,255,.6);line-height:1.4}
+.car-sin{background:rgba(0,200,100,.08);border-color:rgba(0,200,100,.2)}
+.car-sin .car-days{color:#4AE088}
+
+/* ─ CONDICIONADO ─ */
+.cond-box{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.5rem 2rem;margin-bottom:2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.cond-info h4{font-family:var(--serif);font-size:1.05rem;color:var(--navy);margin-bottom:.3rem}
+.cond-info p{font-size:.82rem;color:var(--muted);line-height:1.6}
+.cond-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--navy);color:#fff;padding:.7rem 1.4rem;border-radius:6px;font-size:.82rem;font-weight:600;text-decoration:none;transition:background .18s;white-space:nowrap;flex-shrink:0}
+.cond-btn:hover{background:var(--deep)}
+.cond-btn svg{width:14px;height:14px;fill:currentColor}
+
+/* ─ FORMULARIO LEAD ─ */
+.lead-form-wrap{background:var(--navy);border-radius:14px;padding:2.5rem;margin-bottom:1rem}
+.lf-header{margin-bottom:2rem}
+.lf-title{font-family:var(--serif);font-size:1.5rem;color:#fff;margin-bottom:.4rem}
+.lf-sub{font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.7}
+.lf-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:580px){.lf-grid{grid-template-columns:1fr}}
+.fg{margin-bottom:0}
+.fl{display:block;font-size:.7rem;font-weight:500;color:rgba(255,255,255,.4);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.07em}
+.fi{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:.65rem .9rem;color:#fff;font-family:var(--sans);font-size:.855rem;outline:none;transition:border-color .18s}
+.fi::placeholder{color:rgba(255,255,255,.25)}
+.fi:focus{border-color:var(--gold);background:rgba(255,255,255,.1)}
+.fi option{color:var(--text);background:#fff}
+.fg-full{grid-column:1/-1}
+.politica-lf{display:flex;align-items:flex-start;gap:.6rem;margin:1.25rem 0 1.5rem}
+.politica-lf input{margin-top:3px;accent-color:var(--gold);flex-shrink:0}
+.politica-lf label{font-size:.76rem;color:rgba(255,255,255,.4);line-height:1.55}
+.politica-lf a{color:rgba(255,184,0,.8);text-decoration:underline;cursor:pointer}
+.lf-btns{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-wa{display:inline-flex;align-items:center;gap:.55rem;background:#25D366;color:#fff;padding:.8rem 1.6rem;border-radius:6px;font-size:.88rem;font-weight:700;border:none;cursor:pointer;font-family:var(--sans);transition:background .18s;flex:1;min-width:180px;justify-content:center}
+.btn-wa:hover{background:#1EAF54}
+.btn-wa svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
+.btn-crm{display:inline-flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:.8rem 1.4rem;border-radius:6px;font-size:.82rem;font-weight:600;border:none;cursor:pointer;font-family:var(--sans);transition:all .18s;flex:1;min-width:180px;justify-content:center}
+.btn-crm:hover{background:rgba(255,255,255,.14);color:#fff}
+.lf-msg{display:none;padding:.9rem 1.1rem;border-radius:6px;font-size:.84rem;margin-top:.75rem}
+.lf-msg.ok{background:rgba(74,224,136,.12);border:1px solid rgba(74,224,136,.3);color:#4AE088}
+.lf-msg.err{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.2);color:#FF6B6B}
+
+/* ─ MODAL PRIVACIDAD ─ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--white);border-radius:12px;max-width:560px;width:100%;max-height:85vh;display:flex;flex-direction:column}
+.modal-head{padding:1.4rem 1.6rem 1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-family:var(--serif);font-size:1.15rem;color:var(--navy)}
+.modal-close{background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;padding:.2rem .4rem;line-height:1}
+.modal-body{padding:1.4rem 1.6rem;overflow-y:auto;flex:1}
+.modal-body h4{font-size:.78rem;font-weight:700;color:var(--navy);margin:1rem 0 .3rem;text-transform:uppercase;letter-spacing:.06em}
+.modal-body p,.modal-body li{font-size:.8rem;color:var(--muted);line-height:1.75}
+.modal-body ul{padding-left:1.1rem;display:flex;flex-direction:column;gap:.3rem}
+.modal-foot{padding:.9rem 1.6rem 1.4rem;border-top:1px solid var(--border);display:flex;gap:1rem;align-items:center}
+.modal-btn{background:var(--navy);color:#fff;padding:.6rem 1.4rem;border-radius:5px;font-size:.8rem;font-weight:600;border:none;cursor:pointer;font-family:var(--sans)}
+.modal-btn:hover{background:var(--deep)}
+.modal-link{font-size:.76rem;color:var(--muted);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:var(--sans)}
+
+/* ─ WA FLOAT ─ */
+.wa{position:fixed;bottom:1.25rem;right:1.25rem;z-index:200;background:#25D366;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 3px 14px rgba(37,211,102,.36);transition:transform .18s}
+.wa:hover{transform:scale(1.1)}
+.wa svg{width:23px;height:23px;fill:#fff}
+
+/* ─ FOOTER MINI ─ */
+footer{background:var(--deep);padding:2rem;text-align:center}
+footer p{font-size:.72rem;color:rgba(255,255,255,.22);line-height:1.8}
+footer a{color:rgba(255,255,255,.35);text-decoration:none}
+footer a:hover{color:#fff}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-sura">SURA</div>
+      <div class="nav-name">Canal Especializado en Salud<small>Fran Viloria · Asesor autorizado</small></div>
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Inicio
+    </a>
+    <a href="#formulario" class="nav-btn">Cotizar gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-planes">
+  <div class="hero-planes-inner">
+    <div class="hp-kicker"><div class="hp-dash"></div><span class="hp-txt">Portafolio SURA · Planes voluntarios 2026</span></div>
+    <h1 class="hp-h1">Elige el plan <em>ideal</em> para ti</h1>
+    <p class="hp-sub">Compara coberturas, carencias y tarifas de los cuatro planes voluntarios con los que trabajo. Cada uno está diseñado para un perfil distinto — te ayudo a encontrar el tuyo.</p>
+  </div>
+</div>
+
+<!-- FILTRO -->
+<div class="plan-filter">
+  <div class="plan-filter-inner">
+    <button class="pf-btn active" onclick="mostrarPlan('spti-clasico',this)">SPTI Clásico</button>
+    <button class="pf-btn" onclick="mostrarPlan('spti-preferencial',this)">SPTI Preferencial</button>
+    <button class="pf-btn" onclick="mostrarPlan('spd-plus',this)">SPD Plus</button>
+    <button class="pf-btn" onclick="mostrarPlan('plan-modular',this)">Plan Modular</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PLANES
+═══════════════════════════════════════════════════════ -->
+<div class="planes-wrap">
+
+<!-- ─────────────────────────────────────────────
+     PLAN 1: SPTI CLÁSICO
+───────────────────────────────────────────── -->
+<div class="plan-block show" id="plan-spti-clasico">
+
+  <div class="plan-header">
+    <div>
+      <div class="ph-badge">Salud para Todos · Clásico</div>
+      <h2 class="ph-title">SPTI Clásico</h2>
+      <p class="ph-sub">Complementa tu PBS SURA con hospitalización en habitación individual, acceso directo a 6 especialidades y exoneración de copagos. La entrada al mundo de la salud privada sin renunciar a tu EPS.</p>
+    </div>
+    <div class="ph-price">
+      <div class="ph-price-lbl">Tarifa desde</div>
+      <div class="ph-price-val">$147.480</div>
+      <div class="ph-price-period">/mes · vigencia anual</div>
+      <div class="ph-price-req">Requiere PBS SURA</div>
+    </div>
+  </div>
+
+  <!-- COBERTURAS INCLUIDAS -->
+  <div class="cob-section">
+    <div class="cob-title">Coberturas incluidas</div>
+    <div class="cob-grid">
+      <div class="cob-item gold">
+        <div class="cob-ico">🏥</div>
+        <div><div class="cob-name">Habitación individual</div><div class="cob-desc">Hospitalización médica o quirúrgica en habitación privada. Carencia 150 días para programada; urgencias sin carencia desde el día 1.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">👨‍⚕️</div>
+        <div><div class="cob-name">Especialistas directos · 6 especialidades</div><div class="cob-desc">Internista, Pediatra, Ginecólogo/Ginecobstetra, Oftalmólogo y Urólogo. Consultas ilimitadas con copago, sin remisión del médico general.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">💊</div>
+        <div><div class="cob-name">Exoneración copagos PBS</div><div class="cob-desc">Sin cobro en todos los copagos del PBS SURA: consultas, ayudas diagnósticas y laboratorio clínico.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🚗</div>
+        <div><div class="cob-name">Atención médica domiciliaria 24 h</div><div class="cob-desc">Médico a domicilio las 24 horas del día, con copago. Sujeto a zonas de cobertura del prestador.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🔬</div>
+        <div><div class="cob-name">Imagenología no PBS</div><div class="cob-desc">Ayudas diagnósticas de imagenología ambulatorias y hospitalarias no cubiertas por el PBS. Carencia de 60 días.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🤱</div>
+        <div><div class="cob-name">Continuidad del parto</div><div class="cob-desc">Si la madre tiene 300 días de afiliación, el ginecobstetra que hizo los controles realiza el parto. Honorarios quirúrgicos incluidos.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🦷</div>
+        <div><div class="cob-name">Urgencias odontológicas domicilio</div><div class="cob-desc">Atención de urgencias dentales a domicilio y en clínica, con copago. Disponible 24 horas. Incluye 1 limpieza dental/vigencia + 25% dto. en tratamientos.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">👶</div>
+        <div><div class="cob-name">Coberturas congénitas del recién nacido</div><div class="cob-desc">Si la madre lleva 300 días afiliada, las condiciones congénitas del recién nacido quedan cubiertas desde el nacimiento.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🚑</div>
+        <div><div class="cob-name">Traslado en ambulancia</div><div class="cob-desc">Según criterio del profesional de atención médica a domicilio.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARENCIAS -->
+  <div class="carencias">
+    <div class="car-title">Períodos de carencia</div>
+    <div class="car-grid">
+      <div class="car-item car-sin"><div class="car-days">0 días</div><div class="car-concept">Urgencias y accidentes<br><span style="font-size:.68rem;opacity:.6">Sin carencia desde el día 1</span></div></div>
+      <div class="car-item"><div class="car-days">60 días</div><div class="car-concept">Imagenología no PBS<br><span style="font-size:.68rem;opacity:.6">Ambulatoria y hospitalaria</span></div></div>
+      <div class="car-item"><div class="car-days">150 días</div><div class="car-concept">Hospitalización programada<br><span style="font-size:.68rem;opacity:.6">Habitación individual programada</span></div></div>
+      <div class="car-item"><div class="car-days">300 días</div><div class="car-concept">Parto / coberturas congénitas<br><span style="font-size:.68rem;opacity:.6">Requiere afiliación previa</span></div></div>
+    </div>
+  </div>
+
+  <!-- VENTAJAS / CONSIDERACIONES -->
+  <div class="vc-grid">
+    <div class="vc-box verde">
+      <h4>✓ Ventajas reales</h4>
+      <ul class="vc-list">
+        <li>Hospitalización individual sin copago en IPS SURA</li>
+        <li>Exonera copagos y cuotas moderadoras PBS</li>
+        <li>Especialistas directos sin proceso de autorización EPS</li>
+        <li>Atención domiciliaria 24 h disponible</li>
+        <li>Tarifa congelada al momento de la afiliación</li>
+        <li>Urgencias desde el primer día, sin carencia</li>
+      </ul>
+    </div>
+    <div class="vc-box ambar">
+      <h4>⚠ Consideraciones</h4>
+      <ul class="vc-list">
+        <li>Requiere afiliación obligatoria a PBS EPS SURA</li>
+        <li>150 días de carencia para hospitalización programada</li>
+        <li>No cubre honorarios quirúrgicos distintos al parto</li>
+        <li>No cubre insumos ni medicamentos hospitalarios</li>
+        <li>Menos especialidades directas que el plan Preferencial</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PERFIL IDEAL -->
+  <div style="background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;gap:.75rem;align-items:flex-start">
+    <div style="font-size:1.4rem;flex-shrink:0">🎯</div>
+    <div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--mid);margin-bottom:.3rem">¿Para quién es?</div>
+      <div style="font-size:.88rem;color:var(--text);line-height:1.7">Afiliado a EPS SURA que quiere mejorar su experiencia hospitalaria con habitación privada, evitar las filas para especialistas y eliminar los copagos del PBS, con la tarifa más accesible del portafolio SPTI.</div>
+    </div>
+  </div>
+
+  <!-- CONDICIONADO -->
+  <div class="cond-box">
+    <div class="cond-info">
+      <h4>Condicionado oficial SPTI Clásico</h4>
+      <p>Descarga el documento oficial con todos los términos, condiciones, coberturas detalladas y exclusiones del plan SPTI Clásico de Seguros SURA.</p>
+    </div>
+    <a href="https://www.segurossura.com.co/paginas/personas/salud/salud-para-todos.aspx" target="_blank" rel="noopener" class="cond-btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      Ver condicionado oficial ↗
+    </a>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div id="formulario" class="lead-form-wrap">
+    <div class="lf-header">
+      <div class="lf-title">Cotiza tu SPTI Clásico</div>
+      <div class="lf-sub">Déjame tus datos y te contacto en menos de 2 horas con una cotización personalizada — sin compromiso.</div>
+    </div>
+    <div class="lf-grid">
+      <div class="fg"><label class="fl">Nombre completo</label><input class="fi" type="text" id="lf-n" placeholder="¿Cómo te llamas?"></div>
+      <div class="fg"><label class="fl">Teléfono / WhatsApp</label><input class="fi" type="tel" id="lf-t" placeholder="300 000 0000"></div>
+      <div class="fg"><label class="fl">Ciudad</label><input class="fi" type="text" id="lf-c" placeholder="¿En qué ciudad estás?"></div>
+      <div class="fg"><label class="fl">Número de personas a asegurar</label>
+        <select class="fi" id="lf-p">
+          <option>Solo yo</option>
+          <option>Yo + 1 persona</option>
+          <option>Yo + 2 personas</option>
+          <option>Yo + 3 o más personas</option>
+        </select>
+      </div>
+      <div class="fg fg-full"><label class="fl">Mensaje o comentario (opcional)</label><textarea class="fi" id="lf-m" rows="3" placeholder="Cuéntame algo más sobre lo que buscas..."></textarea></div>
+    </div>
+    <div class="politica-lf">
+      <input type="checkbox" id="lf-pol">
+      <label for="lf-pol">He leído y acepto la <a onclick="abrirModal()">Política de Tratamiento de Datos Personales</a> (Ley 1581 de 2012).</label>
+    </div>
+    <div class="lf-btns">
+      <button class="btn-wa" onclick="enviarWA('SPTI Clásico')">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Enviar por WhatsApp
+      </button>
+      <button class="btn-crm" onclick="enviarCRM('SPTI Clásico')">
+        📋 Registrar en pipeline
+      </button>
+    </div>
+    <div class="lf-msg" id="lf-msg"></div>
+  </div>
+
+</div><!-- /plan-spti-clasico -->
+
+
+<!-- ─────────────────────────────────────────────
+     PLAN 2: SPTI PREFERENCIAL
+───────────────────────────────────────────── -->
+<div class="plan-block" id="plan-spti-preferencial">
+
+  <div class="plan-header">
+    <div>
+      <div class="ph-badge">Salud para Todos · Preferencial</div>
+      <h2 class="ph-title">SPTI Preferencial</h2>
+      <p class="ph-sub">La versión ampliada del Clásico: acceso directo a 11 especialidades, bioenergético incluido, y exoneración total de copagos PBS. El plan más completo del portafolio SPTI para afiliados SURA.</p>
+    </div>
+    <div class="ph-price">
+      <div class="ph-price-lbl">Tarifa desde</div>
+      <div class="ph-price-val">$167.076</div>
+      <div class="ph-price-period">/mes · vigencia anual</div>
+      <div class="ph-price-req">Requiere PBS SURA</div>
+    </div>
+  </div>
+
+  <div class="cob-section">
+    <div class="cob-title">Coberturas incluidas</div>
+    <div class="cob-grid">
+      <div class="cob-item gold">
+        <div class="cob-ico">🏥</div>
+        <div><div class="cob-name">Habitación individual</div><div class="cob-desc">Hospitalización médica o quirúrgica en habitación privada. Carencia 150 días para programada; urgencias sin carencia desde el día 1.</div></div>
+      </div>
+      <div class="cob-item gold">
+        <div class="cob-ico">👨‍⚕️</div>
+        <div><div class="cob-name">Especialistas directos · 11 especialidades</div><div class="cob-desc">Internista, Pediatra, Ginecólogo, Oftalmólogo, Urólogo, Dermatólogo, ORL, Ortopedista y Nutricionista. Consultas ilimitadas, sin remisión.</div></div>
+      </div>
+      <div class="cob-item gold">
+        <div class="cob-ico">🌿</div>
+        <div><div class="cob-name">Bioenergético</div><div class="cob-desc">Hasta 12 consultas de bioenergético por vigencia anual con copago. Exclusivo del plan Preferencial.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">💊</div>
+        <div><div class="cob-name">Exoneración copagos PBS</div><div class="cob-desc">Sin cobro en todos los copagos del PBS SURA: consultas, ayudas diagnósticas y laboratorio clínico.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🚗</div>
+        <div><div class="cob-name">Atención médica domiciliaria 24 h</div><div class="cob-desc">Médico a domicilio las 24 horas, con copago. Sujeto a zonas de cobertura.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🔬</div>
+        <div><div class="cob-name">Imagenología no PBS</div><div class="cob-desc">Ayudas diagnósticas de imagenología ambulatorias y hospitalarias no PBS. Carencia 60 días.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🤱</div>
+        <div><div class="cob-name">Continuidad del parto</div><div class="cob-desc">Con 300 días de afiliación, el ginecobstetra que hizo los controles realiza el parto. Honorarios incluidos.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🦷</div>
+        <div><div class="cob-name">Urgencias odontológicas domicilio</div><div class="cob-desc">Atención dental de urgencias 24 h a domicilio y en clínica con copago. Incluye 1 limpieza/vigencia + 25% dto. en tratamientos.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="carencias">
+    <div class="car-title">Períodos de carencia</div>
+    <div class="car-grid">
+      <div class="car-item car-sin"><div class="car-days">0 días</div><div class="car-concept">Urgencias y accidentes</div></div>
+      <div class="car-item"><div class="car-days">60 días</div><div class="car-concept">Imagenología no PBS</div></div>
+      <div class="car-item"><div class="car-days">150 días</div><div class="car-concept">Hospitalización programada</div></div>
+      <div class="car-item"><div class="car-days">300 días</div><div class="car-concept">Parto / coberturas congénitas</div></div>
+    </div>
+  </div>
+
+  <div class="vc-grid">
+    <div class="vc-box verde">
+      <h4>✓ Ventajas reales</h4>
+      <ul class="vc-list">
+        <li>Todo lo del Clásico más 5 especialidades adicionales directas</li>
+        <li>Bioenergético incluido (12 citas/año) — único en el portafolio SPTI</li>
+        <li>Más especialidades directas sin remisión ni autorización EPS</li>
+        <li>Exonera copagos y cuotas moderadoras PBS completamente</li>
+        <li>Tarifa congelada al momento de la afiliación</li>
+      </ul>
+    </div>
+    <div class="vc-box ambar">
+      <h4>⚠ Consideraciones</h4>
+      <ul class="vc-list">
+        <li>Requiere afiliación obligatoria a PBS EPS SURA</li>
+        <li>150 días de carencia para hospitalización programada</li>
+        <li>No cubre honorarios quirúrgicos distintos al parto</li>
+        <li>No cubre insumos ni medicamentos hospitalarios</li>
+        <li>Prima más alta del portafolio SPTI</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;gap:.75rem;align-items:flex-start">
+    <div style="font-size:1.4rem;flex-shrink:0">🎯</div>
+    <div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--mid);margin-bottom:.3rem">¿Para quién es?</div>
+      <div style="font-size:.88rem;color:var(--text);line-height:1.7">Afiliado a EPS SURA que consulta múltiples especialistas con frecuencia, valora la medicina alternativa (bioenergético) y quiere el mayor acceso directo posible sin procesos de autorización ni copagos del PBS.</div>
+    </div>
+  </div>
+
+  <div class="cond-box">
+    <div class="cond-info">
+      <h4>Condicionado oficial SPTI Preferencial</h4>
+      <p>Descarga el documento oficial con todos los términos, condiciones, coberturas detalladas y exclusiones del plan SPTI Preferencial de Seguros SURA.</p>
+    </div>
+    <a href="https://www.segurossura.com.co/paginas/personas/salud/salud-para-todos.aspx" target="_blank" rel="noopener" class="cond-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Ver condicionado oficial ↗
+    </a>
+  </div>
+
+  <div class="lead-form-wrap">
+    <div class="lf-header">
+      <div class="lf-title">Cotiza tu SPTI Preferencial</div>
+      <div class="lf-sub">Déjame tus datos y te contacto en menos de 2 horas con una cotización personalizada — sin compromiso.</div>
+    </div>
+    <div class="lf-grid">
+      <div class="fg"><label class="fl">Nombre completo</label><input class="fi" type="text" id="lf-n2" placeholder="¿Cómo te llamas?"></div>
+      <div class="fg"><label class="fl">Teléfono / WhatsApp</label><input class="fi" type="tel" id="lf-t2" placeholder="300 000 0000"></div>
+      <div class="fg"><label class="fl">Ciudad</label><input class="fi" type="text" id="lf-c2" placeholder="¿En qué ciudad estás?"></div>
+      <div class="fg"><label class="fl">Personas a asegurar</label>
+        <select class="fi" id="lf-p2">
+          <option>Solo yo</option><option>Yo + 1</option><option>Yo + 2</option><option>Yo + 3 o más</option>
+        </select>
+      </div>
+      <div class="fg fg-full"><label class="fl">Comentario (opcional)</label><textarea class="fi" id="lf-m2" rows="3" placeholder="Cuéntame algo más..."></textarea></div>
+    </div>
+    <div class="politica-lf"><input type="checkbox" id="lf-pol2"><label for="lf-pol2">He leído y acepto la <a onclick="abrirModal()">Política de Tratamiento de Datos Personales</a> (Ley 1581 de 2012).</label></div>
+    <div class="lf-btns">
+      <button class="btn-wa" onclick="enviarWA2('SPTI Preferencial','lf-n2','lf-t2','lf-c2','lf-p2','lf-m2','lf-pol2','lf-msg2')">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Enviar por WhatsApp
+      </button>
+      <button class="btn-crm" onclick="enviarCRM2('SPTI Preferencial','lf-n2','lf-t2','lf-c2','lf-p2','lf-m2','lf-pol2','lf-msg2')">📋 Registrar en pipeline</button>
+    </div>
+    <div class="lf-msg" id="lf-msg2"></div>
+  </div>
+
+</div><!-- /plan-spti-preferencial -->
+
+
+<!-- ─────────────────────────────────────────────
+     PLAN 3: SPD PLUS
+───────────────────────────────────────────── -->
+<div class="plan-block" id="plan-spd-plus">
+
+  <div class="plan-header">
+    <div>
+      <div class="ph-badge">Salud para Dos · Plus</div>
+      <h2 class="ph-title">SPD Plus</h2>
+      <p class="ph-sub">Plan autónomo que no requiere PBS SURA. Cubre al tomador y su asegurado con atención virtual ilimitada, 9 especialidades directas y urgencias odontológicas. Tarifa única sin importar la edad.</p>
+    </div>
+    <div class="ph-price">
+      <div class="ph-price-lbl">Tarifa desde</div>
+      <div class="ph-price-val">$96.674</div>
+      <div class="ph-price-period">/mes · tarifa única por edad</div>
+      <div class="ph-price-req">Funciona con cualquier EPS</div>
+    </div>
+  </div>
+
+  <div class="cob-section">
+    <div class="cob-title">Coberturas incluidas</div>
+    <div class="cob-grid">
+      <div class="cob-item gold">
+        <div class="cob-ico">📱</div>
+        <div><div class="cob-name">Atención virtual ilimitada</div><div class="cob-desc">Médico general y pediatra virtuales, todos los días de 7 a. m. a 7 p. m. Ilimitada. Se puede compartir con el asegurado registrado.</div></div>
+      </div>
+      <div class="cob-item gold">
+        <div class="cob-ico">👨‍⚕️</div>
+        <div><div class="cob-name">Especialistas directos · 9 especialidades</div><div class="cob-desc">Internista, Urólogo, Ginecólogo, Nutricionista, Oftalmólogo, Dermatólogo, ORL, Ortopedista y Médico General. Ilimitadas por vigencia.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🦷</div>
+        <div><div class="cob-name">Urgencias odontológicas domicilio</div><div class="cob-desc">Atención odontológica de urgencias a domicilio, ilimitada. Se puede compartir con el asegurado.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🫀</div>
+        <div><div class="cob-name">Limpieza dental anual</div><div class="cob-desc">1 limpieza oral en clínica por vigencia por persona (hasta 2 en total: tomador y beneficiario).</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🧠</div>
+        <div><div class="cob-name">Psicología · 4 consultas/año</div><div class="cob-desc">4 consultas de psicología por vigencia anual.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🧬</div>
+        <div><div class="cob-name">Psiquiatría · 2 consultas/año</div><div class="cob-desc">2 consultas de psiquiatría por vigencia anual.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">💉</div>
+        <div><div class="cob-name">Medicamentos post-atención virtual</div><div class="cob-desc">Solo los derivados de la atención prioritaria con médico general y pediatra. Máximo 14 días de formulación. Vademécum definido por la compañía.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🔬</div>
+        <div><div class="cob-name">Ayudas diagnósticas</div><div class="cob-desc">Laboratorio clínico e imagenología con bolsa definida en la carátula de la póliza. Compartible con el asegurado.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🏠</div>
+        <div><div class="cob-name">Atención médica domiciliaria</div><div class="cob-desc">Con pertinencia médica. El tomador tiene cobertura exclusiva; el plan Plus permite compartirla con el asegurado registrado.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="carencias">
+    <div class="car-title">Períodos de carencia</div>
+    <div class="car-grid">
+      <div class="car-item car-sin"><div class="car-days">Sin carencia</div><div class="car-concept">Atención virtual, especialistas directos,<br>urgencias odontológicas</div></div>
+      <div class="car-item"><div class="car-days">Bolsa limitada</div><div class="car-concept">Ayudas diagnósticas e imagenología<br>según carátula de la póliza</div></div>
+    </div>
+  </div>
+
+  <!-- EXCLUSIONES -->
+  <div class="cob-section">
+    <div class="cob-title">Lo que NO cubre este plan</div>
+    <div class="excl-list">
+      <span class="excl-item">Hospitalización</span>
+      <span class="excl-item">Cirugías programadas</span>
+      <span class="excl-item">Terapias físicas / rehabilitación</span>
+      <span class="excl-item">Reembolsos</span>
+      <span class="excl-item">Medicamentos hospitalarios</span>
+    </div>
+  </div>
+
+  <div class="vc-grid" style="margin-top:1.5rem">
+    <div class="vc-box verde">
+      <h4>✓ Ventajas reales</h4>
+      <ul class="vc-list">
+        <li>No requiere PBS SURA — cualquier EPS es válida</li>
+        <li>Cubre al tomador y su asegurado en una sola póliza</li>
+        <li>Tarifa única sin importar la edad del asegurado</li>
+        <li>9 especialidades directas ilimitadas sin remisión</li>
+        <li>Atención virtual ilimitada todos los días</li>
+        <li>Proceso de suscripción más flexible y rápido</li>
+      </ul>
+    </div>
+    <div class="vc-box ambar">
+      <h4>⚠ Consideraciones</h4>
+      <ul class="vc-list">
+        <li>No incluye hospitalización ni cirugías</li>
+        <li>No incluye terapias físicas ni rehabilitación</li>
+        <li>Ayudas diagnósticas con bolsa limitada en carátula</li>
+        <li>Medicamentos solo post-atención virtual (máx. 14 días)</li>
+        <li>No exonera copagos del PBS</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;gap:.75rem;align-items:flex-start">
+    <div style="font-size:1.4rem;flex-shrink:0">🎯</div>
+    <div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--mid);margin-bottom:.3rem">¿Para quién es?</div>
+      <div style="font-size:.88rem;color:var(--text);line-height:1.7">Persona que no tiene PBS SURA, tiene preexistencias que le complican el acceso a otros planes, o busca una opción de presupuesto ajustado con atención ambulatoria de calidad. También ideal para quienes quieren cubrir a dos personas con una sola póliza a tarifa única.</div>
+    </div>
+  </div>
+
+  <div class="cond-box">
+    <div class="cond-info">
+      <h4>Condicionado oficial SPD Plus</h4>
+      <p>Descarga el documento oficial con todos los términos, condiciones, coberturas detalladas y exclusiones del plan Salud para Dos Plus de Seguros SURA.</p>
+    </div>
+    <a href="https://www.segurossura.com.co/paginas/personas/salud/salud-para-dos.aspx" target="_blank" rel="noopener" class="cond-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Ver condicionado oficial ↗
+    </a>
+  </div>
+
+  <div class="lead-form-wrap">
+    <div class="lf-header">
+      <div class="lf-title">Cotiza tu SPD Plus</div>
+      <div class="lf-sub">Déjame tus datos y te contacto en menos de 2 horas — sin compromiso.</div>
+    </div>
+    <div class="lf-grid">
+      <div class="fg"><label class="fl">Nombre completo</label><input class="fi" type="text" id="lf-n3" placeholder="¿Cómo te llamas?"></div>
+      <div class="fg"><label class="fl">Teléfono / WhatsApp</label><input class="fi" type="tel" id="lf-t3" placeholder="300 000 0000"></div>
+      <div class="fg"><label class="fl">Ciudad</label><input class="fi" type="text" id="lf-c3" placeholder="¿En qué ciudad estás?"></div>
+      <div class="fg"><label class="fl">EPS actual</label><input class="fi" type="text" id="lf-p3" placeholder="¿Cuál es tu EPS?"></div>
+      <div class="fg fg-full"><label class="fl">Comentario (opcional)</label><textarea class="fi" id="lf-m3" rows="3" placeholder="Cuéntame algo más..."></textarea></div>
+    </div>
+    <div class="politica-lf"><input type="checkbox" id="lf-pol3"><label for="lf-pol3">He leído y acepto la <a onclick="abrirModal()">Política de Tratamiento de Datos Personales</a> (Ley 1581 de 2012).</label></div>
+    <div class="lf-btns">
+      <button class="btn-wa" onclick="enviarWA2('SPD Plus','lf-n3','lf-t3','lf-c3','lf-p3','lf-m3','lf-pol3','lf-msg3')">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Enviar por WhatsApp
+      </button>
+      <button class="btn-crm" onclick="enviarCRM2('SPD Plus','lf-n3','lf-t3','lf-c3','lf-p3','lf-m3','lf-pol3','lf-msg3')">📋 Registrar en pipeline</button>
+    </div>
+    <div class="lf-msg" id="lf-msg3"></div>
+  </div>
+
+</div><!-- /plan-spd-plus -->
+
+
+<!-- ─────────────────────────────────────────────
+     PLAN 4: PLAN MODULAR
+───────────────────────────────────────────── -->
+<div class="plan-block" id="plan-plan-modular">
+
+  <div class="plan-header">
+    <div>
+      <div class="ph-badge">Plan Modular · Acceso directo</div>
+      <h2 class="ph-title">Plan Modular</h2>
+      <p class="ph-sub">El plan más robusto del portafolio: acceso directo a 15 especialidades sin remisión, urgencias ilimitadas, hospitalización incluida, laboratorios ilimitados y Plataforma Longevo. Compatible con cualquier EPS y ampliable con módulos adicionales.</p>
+    </div>
+    <div class="ph-price">
+      <div class="ph-price-lbl">Módulo básico desde</div>
+      <div class="ph-price-val">$241.339</div>
+      <div class="ph-price-period">/mes · módulo básico</div>
+      <div class="ph-price-req">Funciona con cualquier EPS</div>
+    </div>
+  </div>
+
+  <div class="cob-section">
+    <div class="cob-title">Coberturas módulo básico</div>
+    <div class="cob-grid">
+      <div class="cob-item gold">
+        <div class="cob-ico">🚨</div>
+        <div><div class="cob-name">Urgencias ILIMITADAS</div><div class="cob-desc">Atención médica de urgencias en la red hospitalaria SURA, sin límite de eventos por vigencia.</div></div>
+      </div>
+      <div class="cob-item gold">
+        <div class="cob-ico">👨‍⚕️</div>
+        <div><div class="cob-name">15 especialidades directas</div><div class="cob-desc">Internista, Pediatría, Ginecología, Nutrición, Dermatología, Oftalmología, Urología, Ortopedia, ORL, Cirugía, Psiquiatría, Gastro, Endocrino, Cardiología, Neurología y Psicología (máx. 20/año). Sin remisión, copago fijo de $30.000.</div></div>
+      </div>
+      <div class="cob-item gold">
+        <div class="cob-ico">🏥</div>
+        <div><div class="cob-name">Hospitalización médica y quirúrgica</div><div class="cob-desc">Incluye UCI, gastos intrahospitalarios y prótesis. Carencia 4 meses para cirugía programada. Urgencias sin carencia.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">📱</div>
+        <div><div class="cob-name">Atención virtual prioritaria ilimitada</div><div class="cob-desc">Médico general y pediatra virtuales, ilimitados. Medicamentos post-atención incluidos (listado definido, máx. 14 días).</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🔬</div>
+        <div><div class="cob-name">Laboratorio clínico ilimitado</div><div class="cob-desc">Laboratorios y ayudas diagnósticas ilimitadas. TAC, resonancias y endoscopias con carencia de 4 meses.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🏃</div>
+        <div><div class="cob-name">Terapias · 70 sesiones/año</div><div class="cob-desc">Terapias físicas, ocupacionales, respiratorias y de lenguaje. 70 sesiones totales por vigencia anual.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🏠</div>
+        <div><div class="cob-name">Hospitalización domiciliaria ilimitada</div><div class="cob-desc">Hospitalización en casa sin límite de eventos por vigencia.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🚑</div>
+        <div><div class="cob-name">Traslado en ambulancia terrestre</div><div class="cob-desc">Traslado en ambulancia ilimitado por necesidad médica.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🌱</div>
+        <div><div class="cob-name">Plataforma Longevo</div><div class="cob-desc">Plataforma digital de bienestar y prevención incluida sin costo adicional.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🧠</div>
+        <div><div class="cob-name">Hospitalización psiquiátrica</div><div class="cob-desc">45 días por vigencia anual. Carencia de 12 meses.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÓDULOS OPCIONALES -->
+  <div class="cob-section">
+    <div class="cob-title">Módulos opcionales (prima adicional)</div>
+    <div class="cob-grid">
+      <div class="cob-item">
+        <div class="cob-ico">⭐</div>
+        <div><div class="cob-name">Alto costo</div><div class="cob-desc">Cáncer, VIH/SIDA, diálisis renal y trasplantes de órganos.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🤱</div>
+        <div><div class="cob-name">Maternidad</div><div class="cob-desc">Cobertura ampliada de control prenatal, parto y postparto.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🔪</div>
+        <div><div class="cob-name">Cirugía ambulatoria</div><div class="cob-desc">Procedimientos quirúrgicos ambulatorios adicionales.</div></div>
+      </div>
+      <div class="cob-item">
+        <div class="cob-ico">🏡</div>
+        <div><div class="cob-name">Emergencia domiciliaria</div><div class="cob-desc">Módulo adicional de atención de emergencias en el domicilio.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="carencias">
+    <div class="car-title">Períodos de carencia</div>
+    <div class="car-grid">
+      <div class="car-item car-sin"><div class="car-days">0 días</div><div class="car-concept">Urgencias, atención virtual,<br>especialistas directos</div></div>
+      <div class="car-item"><div class="car-days">4 meses</div><div class="car-concept">Cirugía programada,<br>TAC · RM · Endoscopias</div></div>
+      <div class="car-item"><div class="car-days">12 meses</div><div class="car-concept">Hospitalización psiquiátrica</div></div>
+      <div class="car-item"><div class="car-days">4 meses</div><div class="car-concept">Prótesis articulares</div></div>
+    </div>
+  </div>
+
+  <div class="vc-grid">
+    <div class="vc-box verde">
+      <h4>✓ Ventajas reales</h4>
+      <ul class="vc-list">
+        <li>Acceso DIRECTO a 15 especialidades sin remisión ni autorización</li>
+        <li>Urgencias ilimitadas en red hospitalaria SURA</li>
+        <li>Hospitalización incluida desde el módulo básico</li>
+        <li>Laboratorios clínicos ilimitados</li>
+        <li>70 sesiones de terapias por vigencia</li>
+        <li>Compatible con cualquier EPS (no requiere PBS SURA)</li>
+        <li>Plataforma Longevo de bienestar incluida</li>
+      </ul>
+    </div>
+    <div class="vc-box ambar">
+      <h4>⚠ Consideraciones</h4>
+      <ul class="vc-list">
+        <li>Copago fijo de $30.000 por consulta de especialista</li>
+        <li>Cirugía programada con carencia de 4 meses</li>
+        <li>TAC, resonancias y endoscopias con carencia de 4 meses</li>
+        <li>Alto costo requiere módulo adicional con prima extra</li>
+        <li>Prima más alta del portafolio voluntario</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;gap:.75rem;align-items:flex-start">
+    <div style="font-size:1.4rem;flex-shrink:0">🎯</div>
+    <div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--mid);margin-bottom:.3rem">¿Para quién es?</div>
+      <div style="font-size:.88rem;color:var(--text);line-height:1.7">Quien consulta especialistas con mucha frecuencia, valora el acceso directo sin trámites de remisión, y busca un plan robusto que incluya hospitalización, cirugías y rehabilitación física. También indicado para quienes no tienen o no quieren PBS SURA y requieren la cobertura más amplia disponible.</div>
+    </div>
+  </div>
+
+  <div class="cond-box">
+    <div class="cond-info">
+      <h4>Condicionado oficial Plan Modular</h4>
+      <p>Descarga el documento oficial con todos los términos, condiciones, coberturas detalladas y exclusiones del Plan Modular de Seguros SURA.</p>
+    </div>
+    <a href="https://www.segurossura.com.co/paginas/personas/salud/plan-modular.aspx" target="_blank" rel="noopener" class="cond-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Ver condicionado oficial ↗
+    </a>
+  </div>
+
+  <div class="lead-form-wrap">
+    <div class="lf-header">
+      <div class="lf-title">Cotiza tu Plan Modular</div>
+      <div class="lf-sub">Déjame tus datos y te contacto en menos de 2 horas con cotización de módulos personalizada — sin compromiso.</div>
+    </div>
+    <div class="lf-grid">
+      <div class="fg"><label class="fl">Nombre completo</label><input class="fi" type="text" id="lf-n4" placeholder="¿Cómo te llamas?"></div>
+      <div class="fg"><label class="fl">Teléfono / WhatsApp</label><input class="fi" type="tel" id="lf-t4" placeholder="300 000 0000"></div>
+      <div class="fg"><label class="fl">Ciudad</label><input class="fi" type="text" id="lf-c4" placeholder="¿En qué ciudad estás?"></div>
+      <div class="fg"><label class="fl">EPS actual</label><input class="fi" type="text" id="lf-p4" placeholder="¿Cuál es tu EPS?"></div>
+      <div class="fg fg-full"><label class="fl">Módulos de interés (opcional)</label><textarea class="fi" id="lf-m4" rows="3" placeholder="¿Te interesa Alto Costo, Maternidad, Cirugía ambulatoria...?"></textarea></div>
+    </div>
+    <div class="politica-lf"><input type="checkbox" id="lf-pol4"><label for="lf-pol4">He leído y acepto la <a onclick="abrirModal()">Política de Tratamiento de Datos Personales</a> (Ley 1581 de 2012).</label></div>
+    <div class="lf-btns">
+      <button class="btn-wa" onclick="enviarWA2('Plan Modular','lf-n4','lf-t4','lf-c4','lf-p4','lf-m4','lf-pol4','lf-msg4')">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Enviar por WhatsApp
+      </button>
+      <button class="btn-crm" onclick="enviarCRM2('Plan Modular','lf-n4','lf-t4','lf-c4','lf-p4','lf-m4','lf-pol4','lf-msg4')">📋 Registrar en pipeline</button>
+    </div>
+    <div class="lf-msg" id="lf-msg4"></div>
+  </div>
+
+</div><!-- /plan-modular -->
+
+</div><!-- /planes-wrap -->
+
+
+<!-- MODAL PRIVACIDAD -->
+<div class="modal-overlay" id="modal-privacidad">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-title">Política de Tratamiento de Datos</span>
+      <button class="modal-close" onclick="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p>De conformidad con la Ley 1581 de 2012 y el Decreto 1377 de 2013 sobre Protección de Datos Personales en Colombia:</p>
+      <h4>Responsable</h4>
+      <p>Fran Viloria, Asesor Canal Especializado en Salud SURA · serviciosseguros.co · fran.viloria@asesorsura.com</p>
+      <h4>Datos recopilados</h4>
+      <ul><li>Nombre completo</li><li>Teléfono / WhatsApp</li><li>Ciudad de residencia</li><li>Información de consulta o necesidad en salud</li></ul>
+      <h4>Finalidad</h4>
+      <ul><li>Asesoría personalizada en planes SURA</li><li>Contacto para responder consultas</li><li>Gestión del proceso de vinculación si así lo decides</li></ul>
+      <h4>Derechos</h4>
+      <p>Puedes conocer, actualizar, rectificar o suprimir tus datos escribiendo a fran.viloria@asesorsura.com con asunto "Datos personales".</p>
+      <h4>Compartición</h4>
+      <p>Solo con Seguros SURA S.A. para cotización y vinculación. No vendemos ni cedemos datos a terceros.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-btn" onclick="aceptarPolitica()">Entendido, acepto</button>
+      <button class="modal-link" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Canal Especializado en Salud · Fran Viloria · Asesor SURA autorizado · <a href="index.html">serviciosseguros.co</a></p>
+  <p style="margin-top:.4rem"><a href="index.html">← Volver al inicio</a> · <a href="index.html#comparador">Comparador</a> · <a href="index.html#faq">FAQ</a> · <a href="index.html#contacto">Contacto</a></p>
+</footer>
+
+<!-- WA FLOAT -->
+<a href="#" id="wa-float" class="wa" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+</a>
+
+<script>
+/* ─ WA FLOAT ─ */
+(function(){
+  var w=atob('NTczMDA4NTE0Njk5');
+  var t=encodeURIComponent('Hola Fran, quiero información sobre los planes de salud SURA');
+  var el=document.getElementById('wa-float');
+  if(el){el.href='https://wa.me/'+w+'?text='+t;el.setAttribute('target','_blank');el.setAttribute('rel','noopener noreferrer');}
+})();
+
+/* ─ FILTRO PLANES ─ */
+function mostrarPlan(id, btn) {
+  document.querySelectorAll('.plan-block').forEach(function(b){ b.classList.remove('show'); });
+  document.querySelectorAll('.pf-btn').forEach(function(b){ b.classList.remove('active'); });
+  var el = document.getElementById('plan-'+id);
+  if(el) el.classList.add('show');
+  if(btn) btn.classList.add('active');
+  // scroll al top del filtro
+  document.querySelector('.plan-filter').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ─ MODAL ─ */
+function abrirModal(){ document.getElementById('modal-privacidad').classList.add('open'); document.body.style.overflow='hidden'; }
+function cerrarModal(){ document.getElementById('modal-privacidad').classList.remove('open'); document.body.style.overflow=''; }
+function aceptarPolitica(){
+  document.querySelectorAll('[id^="lf-pol"]').forEach(function(el){ el.checked=true; });
+  cerrarModal();
+}
+document.getElementById('modal-privacidad').addEventListener('click',function(e){ if(e.target===this) cerrarModal(); });
+
+/* ─ UTILS ─ */
+var W = atob('NTczMDA4NTE0Njk5');
+var CRM_URL = '/crm'; // ajustar al endpoint real del pipeline
+function _san(s){ return (s||'').replace(/[<>&"`]/g,'').substring(0,300); }
+function _validTel(t){ return /^[\d\s+\-()\/.]{7,20}$/.test(t); }
+function _showMsg(id, ok, txt){
+  var el=document.getElementById(id);
+  if(!el) return;
+  el.className='lf-msg '+(ok?'ok':'err');
+  el.textContent=txt;
+  el.style.display='block';
+  setTimeout(function(){ el.style.display='none'; }, 5000);
+}
+function _validate(nId,tId,polId,msgId){
+  var n=document.getElementById(nId).value.trim();
+  var t=document.getElementById(tId).value.trim();
+  var pol=document.getElementById(polId);
+  if(!pol.checked){ _showMsg(msgId,false,'Debes aceptar la Política de Tratamiento de Datos para continuar.'); return null; }
+  if(!n){ _showMsg(msgId,false,'Por favor ingresa tu nombre.'); return null; }
+  if(!t||!_validTel(t)){ _showMsg(msgId,false,'Por favor ingresa un teléfono válido.'); return null; }
+  return true;
+}
+
+/* ─ FORMULARIO PLAN 1 (SPTI Clásico) ─ */
+function enviarWA(plan){
+  if(!_validate('lf-n','lf-t','lf-pol','lf-msg')) return;
+  var n=_san(document.getElementById('lf-n').value.trim());
+  var t=_san(document.getElementById('lf-t').value.trim());
+  var c=_san(document.getElementById('lf-c').value.trim());
+  var p=_san(document.getElementById('lf-p').value);
+  var m=_san(document.getElementById('lf-m').value.trim());
+  var msg='Hola Fran, soy '+n+'. Tel: '+t;
+  if(c) msg+='. Ciudad: '+c;
+  msg+='. Interesado en: '+plan+'. Grupo: '+p;
+  if(m) msg+='. '+m;
+  window.open('https://wa.me/'+W+'?text='+encodeURIComponent(msg),'_blank');
+}
+function enviarCRM(plan){
+  if(!_validate('lf-n','lf-t','lf-pol','lf-msg')) return;
+  var payload={
+    plan:plan,
+    nombre:document.getElementById('lf-n').value.trim(),
+    telefono:document.getElementById('lf-t').value.trim(),
+    ciudad:document.getElementById('lf-c').value.trim(),
+    personas:document.getElementById('lf-p').value,
+    mensaje:document.getElementById('lf-m').value.trim(),
+    origen:'planes.html',
+    fecha:new Date().toISOString()
+  };
+  _enviarFirestore(payload,'lf-msg');
+}
+
+/* ─ FORMULARIO GENÉRICO PLANES 2-4 ─ */
+function enviarWA2(plan,nId,tId,cId,pId,mId,polId,msgId){
+  if(!_validate(nId,tId,polId,msgId)) return;
+  var n=_san(document.getElementById(nId).value.trim());
+  var t=_san(document.getElementById(tId).value.trim());
+  var c=_san(document.getElementById(cId).value.trim());
+  var p=_san(document.getElementById(pId).value.trim()||document.getElementById(pId).value);
+  var m=_san(document.getElementById(mId).value.trim());
+  var msg='Hola Fran, soy '+n+'. Tel: '+t;
+  if(c) msg+='. Ciudad: '+c;
+  msg+='. Interesado en: '+plan;
+  if(p) msg+='. '+p;
+  if(m) msg+='. '+m;
+  window.open('https://wa.me/'+W+'?text='+encodeURIComponent(msg),'_blank');
+}
+function enviarCRM2(plan,nId,tId,cId,pId,mId,polId,msgId){
+  if(!_validate(nId,tId,polId,msgId)) return;
+  var payload={
+    plan:plan,
+    nombre:document.getElementById(nId).value.trim(),
+    telefono:document.getElementById(tId).value.trim(),
+    ciudad:document.getElementById(cId).value.trim(),
+    extra:document.getElementById(pId).value.trim()||document.getElementById(pId).value,
+    mensaje:document.getElementById(mId).value.trim(),
+    origen:'planes.html',
+    fecha:new Date().toISOString()
+  };
+  _enviarFirestore(payload,msgId);
+}
+
+/* ─ FIRESTORE PIPELINE ─ */
+function _enviarFirestore(payload, msgId){
+  // Ajusta PROJECT_ID al ID real de tu proyecto Firebase
+  var PROJECT_ID = 'tu-proyecto-firebase';
+  var url = 'https://firestore.googleapis.com/v1/projects/'+PROJECT_ID+'/databases/(default)/documents/pipeline_web';
+  fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      fields:{
+        plan:       {stringValue: payload.plan||''},
+        nombre:     {stringValue: payload.nombre||''},
+        telefono:   {stringValue: payload.telefono||''},
+        ciudad:     {stringValue: payload.ciudad||''},
+        extra:      {stringValue: payload.extra||payload.personas||''},
+        mensaje:    {stringValue: payload.mensaje||''},
+        origen:     {stringValue: payload.origen||'planes.html'},
+        estado:     {stringValue: 'nuevo'},
+        fecha:      {stringValue: payload.fecha||new Date().toISOString()}
+      }
+    })
+  })
+  .then(function(r){
+    if(r.ok){ _showMsg(msgId,true,'✓ Lead registrado en el pipeline. Te contacto pronto.'); }
+    else { _showMsg(msgId,false,'Error al guardar. Intenta por WhatsApp.'); }
+  })
+  .catch(function(){ _showMsg(msgId,false,'Sin conexión. Intenta por WhatsApp.'); });
+}
+</script>
+</body>
+</html>
