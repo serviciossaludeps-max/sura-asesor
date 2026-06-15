@@ -213,6 +213,62 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
 .wa:hover { transform:scale(1.1); }
 .wa svg { width:23px; height:23px; fill:#fff; }
 
+
+/* ─ COMPARADOR ─ */
+.comp-sec { background:var(--navy); }
+.comp-sec .h2 { color:#fff; }
+.comp-sec .lead { color:rgba(255,255,255,.5); }
+.comp-sec .ey-txt { color:rgba(255,255,255,.4); }
+.comp-sec .ey-dash { background:var(--gold); }
+.comp-table { width:100%; border-collapse:collapse; margin-top:2.5rem; border-radius:10px; overflow:hidden; }
+.comp-table th { background:rgba(255,255,255,.06); color:rgba(255,255,255,.5); font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.875rem 1.25rem; text-align:left; }
+.comp-table th.hl { background:rgba(255,184,0,.12); color:var(--gold); }
+.comp-table td { padding:.875rem 1.25rem; font-size:.84rem; color:rgba(255,255,255,.65); border-top:1px solid rgba(255,255,255,.05); }
+.comp-table td.feat { color:#fff; font-weight:500; }
+.comp-table td.hl { background:rgba(255,184,0,.05); color:rgba(255,255,255,.8); }
+.comp-table tr:hover td { background:rgba(255,255,255,.02); }
+.comp-check { color:var(--gold); font-size:1rem; }
+.comp-no { color:rgba(255,255,255,.2); font-size:1rem; }
+.comp-tag { display:inline-block; font-size:.6rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background:var(--gold); color:var(--deep); padding:.15rem .45rem; border-radius:3px; margin-left:.4rem; vertical-align:middle; }
+
+/* ─ FAQ ─ */
+.faq-sec { background:var(--off); }
+.faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-top:2.5rem; }
+.faq-item { background:var(--white); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.faq-q { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1.1rem 1.25rem; cursor:pointer; font-size:.875rem; font-weight:500; color:var(--navy); transition:background .18s; }
+.faq-q:hover { background:var(--off); }
+.faq-icon { width:18px; height:18px; border-radius:50%; background:var(--navy-soft,#EEF3FB); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .22s; font-size:.7rem; color:var(--navy); }
+.faq-item.open .faq-icon { transform:rotate(45deg); background:var(--gold); color:var(--deep); }
+.faq-a { display:none; padding:0 1.25rem 1.1rem; font-size:.84rem; color:var(--muted); line-height:1.75; border-top:1px solid var(--border); padding-top:.875rem; }
+.faq-item.open .faq-a { display:block; }
+
+/* ─ MODAL PRIVACIDAD ─ */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:500; align-items:center; justify-content:center; padding:1.5rem; }
+.modal-overlay.open { display:flex; }
+.modal-box { background:var(--white); border-radius:12px; max-width:580px; width:100%; max-height:85vh; display:flex; flex-direction:column; }
+.modal-head { padding:1.5rem 1.75rem 1rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.modal-title { font-family:var(--serif); font-size:1.2rem; color:var(--navy); }
+.modal-close { background:none; border:none; font-size:1.4rem; color:var(--muted); cursor:pointer; line-height:1; padding:.2rem .4rem; }
+.modal-body { padding:1.5rem 1.75rem; overflow-y:auto; flex:1; }
+.modal-body h4 { font-size:.82rem; font-weight:700; color:var(--navy); margin:1.1rem 0 .4rem; text-transform:uppercase; letter-spacing:.06em; }
+.modal-body p,.modal-body li { font-size:.82rem; color:var(--muted); line-height:1.75; }
+.modal-body ul { padding-left:1.1rem; display:flex; flex-direction:column; gap:.3rem; }
+.modal-foot { padding:1rem 1.75rem 1.5rem; border-top:1px solid var(--border); display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+.modal-btn { background:var(--navy); color:#fff; padding:.65rem 1.5rem; border-radius:5px; font-size:.82rem; font-weight:600; border:none; cursor:pointer; font-family:var(--sans); transition:background .18s; }
+.modal-btn:hover { background:var(--deep); }
+.modal-link { font-size:.78rem; color:var(--muted); text-decoration:underline; cursor:pointer; background:none; border:none; font-family:var(--sans); }
+
+/* checkbox politica en formulario */
+.politica-check { display:flex; align-items:flex-start; gap:.6rem; margin-bottom:1rem; }
+.politica-check input { margin-top:3px; accent-color:var(--navy); flex-shrink:0; }
+.politica-check label { font-size:.78rem; color:var(--muted); line-height:1.55; }
+.politica-check a { color:var(--navy); text-decoration:underline; cursor:pointer; }
+
+@media(max-width:820px){
+  .faq-grid { grid-template-columns:1fr; }
+  .comp-table { font-size:.78rem; }
+  .comp-table th,.comp-table td { padding:.65rem .75rem; }
+}
 @media(max-width:820px){
   .hero-inner,.contact-wrap{grid-template-columns:1fr}
   .hero-stats{display:none}
@@ -254,7 +310,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
       <li><a href="#forms" onclick="activarTab('cotizador')">Cotizador</a></li>
       <li><a href="#forms" onclick="activarTab('empresa')">Empresas</a></li>
       <li><a href="https://directoriomedico.segurossura.com.co/#/instituciones/CI/S/S/N" target="_blank" rel="noopener" class="ext">Directorio médico ↗</a></li>
-      <li><a href="#blog">Blog</a></li>
+      <li><a href="#comparador">Comparador</a></li><li><a href="#faq">FAQ</a></li><li><a href="#blog">Blog</a></li>
       <li><a href="#contacto">Contacto</a></li>
       <li><a href="/crm" class="crm-link">Acceso asesor</a></li>
     </ul>
@@ -492,11 +548,169 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           </select>
         </div>
         <div class="fg"><label class="fl">Mensaje (opcional)</label><textarea class="fi" id="cf-m" placeholder="Cuéntame algo más..."></textarea></div>
+        <div class="politica-check">
+          <input type="checkbox" id="cf-pol">
+          <label for="cf-pol">He leido y acepto la <a onclick="abrirModal()">Politica de Tratamiento de Datos Personales</a> (Ley 1581 de 2012).</label>
+        </div>
         <button class="btn-navy" onclick="enviar()">Enviar por WhatsApp →</button>
       </div>
     </div>
   </div>
 </section>
+
+
+<!-- COMPARADOR DE PLANES -->
+<section class="sec comp-sec rv" id="comparador">
+  <div class="wrap">
+    <div class="ey"><div class="ey-dash"></div><span class="ey-txt">Comparador de planes</span></div>
+    <h2 class="h2">¿Cuál plan es para ti?</h2>
+    <p class="lead">Compara las coberturas y elige el que mejor se adapta a tu situacion y presupuesto.</p>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Caracteristica</th>
+          <th>EPS sola</th>
+          <th class="hl">Plan SURA <span class="comp-tag">Recomendado</span></th>
+          <th>Complementario</th>
+          <th>Empresarial</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="feat">Atencion medica general</td><td><span class="comp-check">✓</span></td><td class="hl"><span class="comp-check">✓</span></td><td><span class="comp-check">✓</span></td><td><span class="comp-check">✓</span></td></tr>
+        <tr><td class="feat">Especialistas sin espera</td><td><span class="comp-no">✗</span></td><td class="hl"><span class="comp-check">✓</span></td><td><span class="comp-no">✗</span></td><td><span class="comp-check">✓</span></td></tr>
+        <tr><td class="feat">Clinicas premium SURA</td><td><span class="comp-no">✗</span></td><td class="hl"><span class="comp-check">✓</span></td><td><span class="comp-no">✗</span></td><td><span class="comp-check">✓</span></td></tr>
+        <tr><td class="feat">Cobertura optica</td><td><span class="comp-no">✗</span></td><td class="hl">Opcional</td><td><span class="comp-check">✓</span></td><td>Opcional</td></tr>
+        <tr><td class="feat">Odontologia preventiva</td><td>Basica</td><td class="hl">Completa</td><td><span class="comp-check">✓</span></td><td>Completa</td></tr>
+        <tr><td class="feat">Telemedicina 24/7</td><td><span class="comp-no">✗</span></td><td class="hl"><span class="comp-check">✓</span></td><td><span class="comp-check">✓</span></td><td><span class="comp-check">✓</span></td></tr>
+        <tr><td class="feat">Urgencias sin copago</td><td><span class="comp-no">✗</span></td><td class="hl"><span class="comp-check">✓</span></td><td><span class="comp-no">✗</span></td><td><span class="comp-check">✓</span></td></tr>
+        <tr><td class="feat">Cobertura internacional</td><td><span class="comp-no">✗</span></td><td class="hl"><span class="comp-check">✓</span></td><td><span class="comp-no">✗</span></td><td>Opcional</td></tr>
+        <tr><td class="feat">Asesor dedicado</td><td><span class="comp-no">✗</span></td><td class="hl"><span class="comp-check">✓</span></td><td><span class="comp-check">✓</span></td><td><span class="comp-check">✓</span></td></tr>
+        <tr><td class="feat">Desde (mensual)</td><td>Cotizacion EPS</td><td class="hl">$180.000</td><td>$80.000</td><td>$150.000 x persona</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec faq-sec rv" id="faq">
+  <div class="wrap">
+    <div class="ey"><div class="ey-dash"></div><span class="ey-txt">Preguntas frecuentes</span></div>
+    <h2 class="h2">Las dudas mas comunes<br>resueltas.</h2>
+    <div class="faq-grid">
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          ¿Que diferencia hay entre EPS y un plan de salud SURA?
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">La EPS es obligatoria y cubre servicios basicos del POS. Un plan de salud SURA es voluntario y te da acceso a clinicas premium, especialistas sin fila y procedimientos sin tiempos de espera. Se pueden tener los dos al mismo tiempo.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          ¿Puedo trasladarme de EPS en cualquier momento?
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">No. Por ley solo puedes trasladarte una vez al ano, entre el 1 de enero y el 31 de marzo. Sin embargo, hay causales especiales como cambio de ciudad o mala prestacion del servicio que permiten el traslado fuera de ese periodo. Te asesoro sin costo.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          ¿Los planes SURA tienen periodos de carencia?
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Si, la mayoria de planes tienen periodos de carencia para enfermedades preexistentes y ciertos procedimientos (generalmente entre 3 y 12 meses). Las urgencias y accidentes NO tienen periodo de carencia desde el primer dia.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          ¿Que es un plan complementario y para quien es?
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Es un plan que se suma a tu EPS actual para cubrir lo que ella no cubre: optica, odontologia avanzada, telemedicina y auxilios especiales. Es ideal si no quieres cambiar de EPS pero si quieres mejores beneficios desde $80.000 al mes.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          ¿La asesoria tiene algun costo?
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">No. La asesoria es completamente gratuita. Mi gestion como asesor autorizado SURA la remunera la aseguradora, no el cliente. Te acompano desde la cotizacion hasta la activacion del plan sin ningun costo adicional.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          ¿Desde cuantos empleados puedo contratar una poliza empresarial?
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Desde 3 empleados ya puedes acceder a planes colectivos SURA con tarifas preferenciales. El proceso es sencillo: cotizacion sin costo, presentacion del plan al equipo y activacion en menos de 5 dias habiles.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          ¿Como se paga un plan de salud SURA?
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Puedes pagar mensual, trimestral, semestral o anual. Los medios de pago incluyen debito automatico desde tu cuenta bancaria, PSE, tarjeta de credito y efectivo en puntos autorizados. El pago anual suele tener descuento.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          ¿Que pasa si ya tengo una enfermedad diagnosticada?
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Las enfermedades preexistentes declaradas en la solicitud tienen un periodo de carencia pero no te impiden afiliarte. Lo importante es declararlas con honestidad en el formulario. Yo te asesoro sobre que plan conviene mas segun tu situacion de salud.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- MODAL POLÍTICA DE PRIVACIDAD -->
+<div class="modal-overlay" id="modal-privacidad">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-title">Politica de Tratamiento de Datos</span>
+      <button class="modal-close" onclick="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p>De conformidad con la Ley 1581 de 2012 y el Decreto 1377 de 2013 sobre Proteccion de Datos Personales en Colombia, informamos lo siguiente:</p>
+
+      <h4>Responsable del tratamiento</h4>
+      <p>Fran Viloria, Asesor del Canal Especializado en Salud SURA, con dominio <strong>serviciosseguros.co</strong>. Contacto: fran.viloria@asesorsura.com</p>
+
+      <h4>Datos que recopilamos</h4>
+      <ul>
+        <li>Nombre completo</li>
+        <li>Numero de telefono o WhatsApp</li>
+        <li>Ciudad de residencia</li>
+        <li>Tipo de consulta o necesidad en salud</li>
+        <li>Mensaje libre (opcional)</li>
+      </ul>
+
+      <h4>Finalidad del tratamiento</h4>
+      <ul>
+        <li>Brindar asesoria personalizada en planes de salud SURA</li>
+        <li>Contactarte para responder tu consulta</li>
+        <li>Enviarte informacion sobre productos y servicios de interes</li>
+        <li>Gestionar el proceso de vinculacion a un plan si asi lo decides</li>
+      </ul>
+
+      <h4>Derechos del titular</h4>
+      <p>Como titular de tus datos tienes derecho a conocer, actualizar, rectificar y suprimir tu informacion. Para ejercerlos escribe a fran.viloria@asesorsura.com con el asunto "Datos personales".</p>
+
+      <h4>Comparticion de datos</h4>
+      <p>Tus datos podran ser compartidos exclusivamente con Seguros SURA S.A. para efectos de cotizacion y vinculacion, bajo sus propias politicas de privacidad. No vendemos ni cedemos datos a terceros.</p>
+
+      <h4>Vigencia</h4>
+      <p>Tus datos se conservaran mientras exista una relacion comercial activa o hasta que solicites su eliminacion.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-btn" onclick="aceptarPolitica()">Entendido, acepto</button>
+      <button class="modal-link" onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -533,7 +747,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
     <div class="fb2">
       <p class="fb2-copy">© 2026 Canal Especializado en Salud · Fran Viloria · Asesor SURA autorizado · serviciosseguros.co</p>
       <div class="fb2-legal">
-        <a href="#">Política de privacidad</a>
+        <a href="#" onclick="abrirModal()">Politica de privacidad</a>
         <a href="#">Términos de uso</a>
       </div>
     </div>
@@ -589,6 +803,27 @@ function _sanitize(str) {
   return str.replace(/</g,'').replace(/>/g,'').replace(/&/g,'').replace(/"/g,'"').replace(/`/g,'').replace(/https?:\/\/[^\s]+/gi,'[enlace]').substring(0,300);
 }
 function _validTel(t) { return /^[\d\s+\-()]{7,15}$/.test(t); }
+function toggleFaq(el) {
+  var item = el.parentElement;
+  var wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+  if (!wasOpen) item.classList.add('open');
+}
+function abrirModal() {
+  document.getElementById('modal-privacidad').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function cerrarModal() {
+  document.getElementById('modal-privacidad').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function aceptarPolitica() {
+  document.getElementById('cf-pol').checked = true;
+  cerrarModal();
+}
+document.getElementById('modal-privacidad').addEventListener('click', function(e) {
+  if (e.target === this) cerrarModal();
+});
 function enviar() {
   var now = Date.now();
   if (now - _rl.last > 60000) { _rl.count = 0; _rl.last = now; }
@@ -599,6 +834,8 @@ function enviar() {
   var c = document.getElementById('cf-c').value.trim();
   var tp = document.getElementById('cf-tp').value;
   var m = document.getElementById('cf-m').value.trim();
+  var pol = document.getElementById('cf-pol');
+  if (!pol || !pol.checked) { alert('Debes aceptar la Politica de Tratamiento de Datos para continuar.'); return; }
   if (!n) { alert('Por favor ingresa tu nombre.'); return; }
   if (!t || !_validTel(t)) { alert('Por favor ingresa un telefono valido.'); return; }
   var msg = 'Hola Fran, soy ' + _sanitize(n) + '. Tel: ' + _sanitize(t);
