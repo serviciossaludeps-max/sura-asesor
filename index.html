@@ -163,10 +163,9 @@ nav { position:sticky; top:0; z-index:100; background:rgba(0,26,82,.97); backdro
 .blog-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:1rem; margin-top:2.75rem; }
 .bcard { border:1px solid var(--border); border-radius:9px; overflow:hidden; transition:transform .2s,border-color .2s; }
 .bcard:hover { transform:translateY(-3px); border-color:var(--navy); }
-.bthumb { height:135px; display:flex; align-items:center; justify-content:center; font-size:2.2rem; }
-.bth1 { background:linear-gradient(135deg,#EEF3FB,#C5D6EF); }
-.bth2 { background:linear-gradient(135deg,#FFF8E6,#FFE59A); }
-.bth3 { background:linear-gradient(135deg,#F0F4FF,#C8D3F0); }
+.bthumb { height:185px; overflow:hidden; }
+.bthumb img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; transition:transform .35s var(--ease); }
+.bcard:hover .bthumb img { transform:scale(1.04); }
 .bbody { padding:1.25rem; }
 .btag { font-size:.64rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--mid); margin-bottom:.5rem; }
 .btitle { font-family:var(--serif); font-size:1.05rem; color:var(--navy); line-height:1.28; margin-bottom:.5rem; }
@@ -332,7 +331,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
       <div class="nav-name">Canal Especializado en Salud<small>Fran Viloria · Asesor autorizado</small></div>
     </a>
     <ul class="nav-links">
-      <li><a href="planes.html">Planes</a></li>
+      <li><a href="#planes">Planes</a></li>
       <li><a href="#forms" onclick="activarTab('cotizador')">Cotizador</a></li>
       <li><a href="#forms" onclick="activarTab('empresa')">Empresas</a></li>
       <li><a href="https://pagos.segurossura.com.co/pagos" target="_blank" rel="noopener" class="ext">Pagar en línea ↗</a></li>
@@ -347,7 +346,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
     </button>
   </div>
   <div class="nav-mobile" id="nav-mobile">
-    <a href="planes.html">Planes</a>
+    <a href="#planes">Planes</a>
     <a href="#forms" onclick="activarTab('cotizador');cerrarNav()">Cotizador</a>
     <a href="#forms" onclick="activarTab('empresa');cerrarNav()">Empresas</a>
     <a href="#comparador" onclick="cerrarNav()">Comparador</a>
@@ -444,7 +443,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <span class="pcard-tag">Popular</span>
         </div>
         <div class="pcard-name">Planes de Salud SURA</div>
-        <div class="pcard-desc">SPTI, Modular, Salud para Dos y Plan 60+. Red premium de clínicas y especialistas en Colombia.</div>
+        <div class="pcard-desc">SPTI Clásico, SPTI Preferencial, SPD Plus y Plan Modular. Red premium de clínicas y especialistas en Colombia.</div>
         <ul class="pcard-list">
           <li>Red de más de 216 IPS nacionales</li>
           <li>Especialistas sin lista de espera</li>
@@ -455,22 +454,22 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
       </a>
       <a href="#forms" class="pcard rv" onclick="activarTab('cotizador')">
         <div class="pcard-top"><div class="pcard-ico"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg></div></div>
-        <div class="pcard-name">Planes Complementarios</div>
-        <div class="pcard-desc">Complementa tu EPS con óptica, odontología y telemedicina desde $80.000 al mes.</div>
+        <div class="pcard-name">Plan Complementario 60+</div>
+        <div class="pcard-desc">Exclusivo para afiliados PBS SURA mayores de 60 años. Bienestar en tres dimensiones: física, prevención y social.</div>
         <ul class="pcard-list">
-          <li>Compatible con cualquier EPS</li>
-          <li>Cobertura óptica y dental</li>
-          <li>Telemedicina 24/7</li>
-          <li>Auxilio funerario incluido</li>
+          <li>Habitación individual (carencia 150 días)</li>
+          <li>Acceso directo a especialistas con Bono PAC</li>
+          <li>Ciclo anual de valoración en bienestar (5 asesorías)</li>
+          <li>Atención médica y odontológica a domicilio</li>
         </ul>
         <span class="pcard-arr">→</span>
       </a>
       <a href="#forms" class="pcard rv" onclick="activarTab('empresa')">
         <div class="pcard-top"><div class="pcard-ico"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg></div></div>
         <div class="pcard-name">Pólizas Empresariales</div>
-        <div class="pcard-desc">Beneficios de salud colectivos para tu equipo desde 3 empleados con respaldo SURA.</div>
+        <div class="pcard-desc">Beneficios de salud colectivos para tu equipo desde 10 empleados con respaldo SURA.</div>
         <ul class="pcard-list">
-          <li>Desde 3 empleados</li>
+          <li>Desde 10 empleados</li>
           <li>Facturación unificada</li>
           <li>Reporte mensual de siniestros</li>
           <li>Asesor dedicado</li>
@@ -524,7 +523,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
     <h2 class="h2">Lo que deberías saber<br>sobre tu salud.</h2>
     <div class="blog-grid">
       <article class="bcard rv">
-        <div class="bthumb bth1">🏥</div>
+        <div class="bthumb bth1"><img src="blog-traslado-eps.png" alt="¿Cuándo conviene trasladar tu EPS?"></div>
         <div class="bbody">
           <p class="btag">EPS · Traslados</p>
           <h3 class="btitle">¿Cuándo conviene trasladar tu EPS? Señales que no debes ignorar</h3>
@@ -533,7 +532,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
         <div class="bfoot"><span class="bdate">Junio 2026</span><a href="#" class="bread">Leer más →</a></div>
       </article>
       <article class="bcard rv">
-        <div class="bthumb bth2">💊</div>
+        <div class="bthumb bth2"><img src="blog-planes-vs-complementario.png" alt="Plan de salud SURA vs. plan complementario"></div>
         <div class="bbody">
           <p class="btag">Planes de salud</p>
           <h3 class="btitle">Plan de salud SURA vs. plan complementario: ¿cuál es la diferencia?</h3>
@@ -542,7 +541,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
         <div class="bfoot"><span class="bdate">Mayo 2026</span><a href="#" class="bread">Leer más →</a></div>
       </article>
       <article class="bcard rv">
-        <div class="bthumb bth3">🏢</div>
+        <div class="bthumb bth3"><img src="blog-empresas.png" alt="Cómo un beneficio de salud mejora la productividad"></div>
         <div class="bbody">
           <p class="btag">Empresas</p>
           <h3 class="btitle">Cómo un beneficio de salud mejora la productividad de tu equipo</h3>
