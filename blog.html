@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="meta-title">Blog — Canal Especializado en Salud · Fran Viloria</title>
+<meta name="description" id="meta-desc" content="Artículos sobre salud, EPS, planes complementarios y beneficios empresariales. Canal Especializado en Salud SURA.">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#003087;--deep:#001A52;--mid:#0047BB;
+  --gold:#FFB800;--gold2:#FFF8E6;
+  --off:#F4F7FC;--border:#DDE5F0;
+  --text:#0A1628;--muted:#526075;--white:#FFFFFF;
+  --serif:'DM Serif Display',serif;--sans:'Inter',sans-serif;
+  --ease:cubic-bezier(.25,.8,.25,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--white);overflow-x:hidden}
+
+/* ─ NAV ─ */
+nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
+.nav-brand{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-sura{background:var(--gold);color:var(--deep);font-size:.58rem;font-weight:900;letter-spacing:.06em;padding:.18rem .5rem;border-radius:3px}
+.nav-name{font-family:var(--serif);font-size:.95rem;color:#fff;line-height:1.15}
+.nav-name small{display:block;font-family:var(--sans);font-size:.55rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.82rem;font-weight:500;transition:color .18s}
+.nav-links a:hover{color:#fff}
+.nav-back-btn{display:inline-flex;align-items:center;gap:.45rem;color:rgba(255,255,255,.55);font-size:.78rem;font-weight:500;text-decoration:none;transition:color .18s;flex-shrink:0}
+.nav-back-btn:hover{color:var(--gold)}
+.nav-back-btn svg{width:14px;height:14px}
+@media(max-width:600px){.nav-links{display:none}.nav-name{font-size:.75rem}.nav-name small{font-size:.48rem}}
+
+/* ─ HERO DEL ARTÍCULO ─ */
+.art-hero{position:relative;height:420px;overflow:hidden;background:var(--deep)}
+.art-hero-img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;filter:brightness(.55)}
+.art-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,26,82,.92) 0%,rgba(0,26,82,.3) 60%,transparent 100%)}
+.art-hero-content{position:absolute;bottom:0;left:0;right:0;max-width:780px;margin:0 auto;padding:2.5rem 2rem}
+.art-tag{display:inline-flex;align-items:center;gap:.4rem;background:var(--gold);color:var(--deep);font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:.22rem .7rem;border-radius:3px;margin-bottom:.9rem}
+.art-title{font-family:var(--serif);font-size:clamp(1.7rem,4vw,2.6rem);color:#fff;line-height:1.15;margin-bottom:.9rem}
+.art-meta{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.art-date{font-size:.75rem;color:rgba(255,255,255,.45)}
+.art-read{font-size:.75rem;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:.3rem}
+@media(max-width:600px){.art-hero{height:320px}.art-hero-content{padding:1.5rem}}
+
+/* ─ CONTENIDO ARTÍCULO ─ */
+.art-wrap{max-width:780px;margin:0 auto;padding:3.5rem 2rem 5rem}
+
+/* Intro destacada */
+.art-intro{font-size:1.08rem;color:var(--muted);line-height:1.85;border-left:3px solid var(--gold);padding-left:1.25rem;margin-bottom:2.5rem}
+
+/* Secciones */
+.art-section{margin-bottom:2.8rem}
+.art-h2{font-family:var(--serif);font-size:1.45rem;color:var(--navy);margin-bottom:1rem;line-height:1.25}
+.art-h3{font-size:.95rem;font-weight:700;color:var(--navy);margin-bottom:.65rem;margin-top:1.5rem;display:flex;align-items:center;gap:.5rem}
+.art-h3-num{width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;font-size:.7rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.art-p{font-size:.92rem;color:var(--text);line-height:1.85;margin-bottom:1rem}
+.art-p:last-child{margin-bottom:0}
+
+/* Listas */
+.art-ul{list-style:none;display:flex;flex-direction:column;gap:.55rem;margin:.75rem 0 1rem}
+.art-ul li{font-size:.9rem;color:var(--text);line-height:1.65;display:flex;gap:.7rem;align-items:flex-start}
+.art-ul li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:.55rem}
+.art-ul.checks li::before{content:'✅';background:none;width:auto;height:auto;margin-top:0;font-size:.85rem}
+
+/* Callout box */
+.art-callout{background:var(--off);border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:0 8px 8px 0;padding:1.25rem 1.5rem;margin:1.5rem 0}
+.art-callout p{font-size:.88rem;color:var(--text);line-height:1.75}
+.art-callout strong{color:var(--navy)}
+
+/* Callout gold */
+.art-callout.gold{border-left-color:var(--gold);background:var(--gold2)}
+
+/* Cards de señales */
+.signal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin:1.5rem 0}
+.signal-card{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem}
+.signal-card-head{display:flex;align-items:center;gap:.7rem;margin-bottom:.75rem}
+.signal-num{width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.signal-title{font-size:.9rem;font-weight:700;color:var(--navy);line-height:1.3}
+.signal-list{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+.signal-list li{font-size:.8rem;color:var(--muted);line-height:1.55;display:flex;gap:.5rem;align-items:flex-start}
+.signal-list li::before{content:'→';color:var(--gold);font-weight:700;flex-shrink:0;font-size:.75rem;margin-top:.1rem}
+
+/* Stats / pills destacadas */
+.stat-row{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.5rem 0}
+.stat-pill{background:var(--navy);border-radius:8px;padding:.9rem 1.25rem;flex:1;min-width:160px;text-align:center}
+.stat-pill-val{font-family:var(--serif);font-size:1.4rem;color:var(--gold);display:block;margin-bottom:.2rem}
+.stat-pill-lbl{font-size:.72rem;color:rgba(255,255,255,.55);line-height:1.4}
+
+/* Tabla comparativa */
+.comp-table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);margin:1.5rem 0}
+.comp-table{width:100%;border-collapse:collapse;font-size:.83rem}
+.comp-table thead tr{background:var(--navy)}
+.comp-table thead th{padding:.85rem 1rem;text-align:left;font-weight:600;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.comp-table thead th:first-child{color:rgba(255,255,255,.45)}
+.comp-table thead th:not(:first-child){color:var(--gold);text-align:center}
+.comp-table tbody tr{border-top:1px solid var(--border)}
+.comp-table tbody tr:nth-child(even){background:var(--off)}
+.comp-table tbody td{padding:.8rem 1rem;color:var(--text);vertical-align:top}
+.comp-table tbody td:not(:first-child){text-align:center;color:var(--muted)}
+.comp-table tbody td strong{color:var(--navy)}
+
+/* Pros grid */
+.pros-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+@media(max-width:580px){.pros-grid{grid-template-columns:1fr}}
+.pros-box{border-radius:10px;padding:1.25rem 1.5rem}
+.pros-box.verde{background:#F0FBF4;border:1px solid #B7E8C6}
+.pros-box.azul{background:#EEF3FB;border:1px solid #C5D6EF}
+.pros-box h4{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem}
+.pros-box.verde h4{color:#1A7A3A}
+.pros-box.azul h4{color:var(--navy)}
+.pros-list{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.pros-list li{font-size:.84rem;line-height:1.6;display:flex;gap:.5rem;color:var(--text)}
+.pros-list li::before{content:'✅';flex-shrink:0;font-size:.8rem}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:.75rem;margin-top:1.25rem}
+.faq-item{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.faq-q{width:100%;background:var(--off);border:none;padding:1rem 1.25rem;text-align:left;font-family:var(--sans);font-size:.88rem;font-weight:600;color:var(--navy);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;transition:background .18s}
+.faq-q:hover{background:#EEF3FB}
+.faq-q svg{width:16px;height:16px;flex-shrink:0;transition:transform .25s;color:var(--mid)}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{display:none;padding:1rem 1.25rem;font-size:.86rem;color:var(--muted);line-height:1.75;border-top:1px solid var(--border)}
+.faq-item.open .faq-a{display:block}
+
+/* Beneficio card (empresas) */
+.benefit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin:1.5rem 0}
+.benefit-card{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.4rem;display:flex;gap:.85rem}
+.benefit-ico{width:36px;height:36px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}
+.benefit-name{font-size:.88rem;font-weight:700;color:var(--navy);margin-bottom:.25rem}
+.benefit-desc{font-size:.8rem;color:var(--muted);line-height:1.6}
+
+/* CTA bottom */
+.art-cta{background:var(--navy);border-radius:14px;padding:2.5rem;margin-top:3rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.art-cta-txt h3{font-family:var(--serif);font-size:1.4rem;color:#fff;margin-bottom:.4rem}
+.art-cta-txt p{font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.65}
+.art-cta-btns{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-wa-art{display:inline-flex;align-items:center;gap:.5rem;background:#25D366;color:#fff;padding:.8rem 1.5rem;border-radius:6px;font-size:.85rem;font-weight:700;text-decoration:none;transition:background .18s;white-space:nowrap}
+.btn-wa-art:hover{background:#1EAF54}
+.btn-wa-art svg{width:16px;height:16px;fill:#fff}
+.btn-planes-art{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);padding:.8rem 1.5rem;border-radius:6px;font-size:.85rem;font-weight:600;text-decoration:none;transition:all .18s;white-space:nowrap}
+.btn-planes-art:hover{background:rgba(255,255,255,.15);color:#fff}
+
+/* Separador */
+.art-divider{border:none;border-top:1px solid var(--border);margin:2.5rem 0}
+
+/* Más artículos */
+.mas-art{border-top:1px solid var(--border);padding:3rem 2rem}
+.mas-art-inner{max-width:1180px;margin:0 auto}
+.mas-art-title{font-family:var(--serif);font-size:1.3rem;color:var(--navy);margin-bottom:1.5rem}
+.mas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem}
+.mas-card{border:1px solid var(--border);border-radius:9px;overflow:hidden;text-decoration:none;transition:transform .2s,border-color .2s;display:block}
+.mas-card:hover{transform:translateY(-3px);border-color:var(--navy)}
+.mas-thumb{height:140px;overflow:hidden}
+.mas-thumb img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform .35s var(--ease)}
+.mas-card:hover .mas-thumb img{transform:scale(1.04)}
+.mas-body{padding:1rem}
+.mas-tag{font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--mid);margin-bottom:.4rem}
+.mas-title{font-family:var(--serif);font-size:.95rem;color:var(--navy);line-height:1.3}
+
+/* Footer */
+footer{background:var(--deep);padding:2rem;text-align:center}
+footer p{font-size:.76rem;color:rgba(255,255,255,.3);line-height:1.8}
+footer a{color:rgba(255,184,0,.7);text-decoration:none}
+
+/* Animación entrada */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.art-hero-content,.art-wrap{animation:fadeUp .5s var(--ease) forwards}
+
+/* Loader / 404 */
+.art-loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:1rem}
+.art-loading p{color:var(--muted);font-size:.9rem}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-brand">
+      <span class="nav-sura">SURA</span>
+      <span class="nav-name">Canal Especializado<br>en Salud<small>Fran Viloria · Asesor Autorizado</small></span>
+    </a>
+    <a href="/" class="nav-back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Volver al inicio
+    </a>
+  </div>
+</nav>
+
+<!-- CONTENIDO DINÁMICO -->
+<div id="art-root">
+  <div class="art-loading"><div class="spinner"></div><p>Cargando artículo…</p></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Canal Especializado en Salud · Fran Viloria · Asesor SURA autorizado<br>
+  <a href="/">serviciosseguros.co</a> · <a href="/planes.html">Ver planes</a></p>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════════
+   BASE DE DATOS DE ARTÍCULOS
+════════════════════════════════════════════════ */
+const ARTICULOS = {
+
+  /* ─────────────── ARTÍCULO 1 ─────────────── */
+  'traslado-eps': {
+    slug: 'traslado-eps',
+    tag: 'EPS · Traslados',
+    titulo: '¿Cuándo conviene trasladar tu EPS? Señales que no debes ignorar',
+    fecha: 'Junio 2026',
+    lectura: '7 min',
+    imagen: 'blog-traslado-eps.png',
+    imgAlt: '¿Cuándo conviene trasladar tu EPS?',
+    render() {
+      return `
+      <p class="art-intro">Elegir una EPS no es una decisión menor. Tu EPS es la puerta de acceso a consultas médicas, especialistas, medicamentos, exámenes, hospitalización y programas de prevención. Si estás enfrentando dificultades recurrentes, puede ser momento de evaluar un traslado.</p>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Cuándo deberías considerar cambiar de EPS?</h2>
+        <p class="art-p">En Colombia, el cambio de EPS es un derecho de los afiliados y puede realizarse bajo ciertas condiciones. Existen señales claras que indican que tu EPS actual no está respondiendo adecuadamente a tus necesidades.</p>
+        <div class="signal-grid">
+          <div class="signal-card">
+            <div class="signal-card-head"><div class="signal-num">1</div><div class="signal-title">Demoras frecuentes para asignar citas</div></div>
+            <ul class="signal-list">
+              <li>Dificultad para conseguir citas médicas</li>
+              <li>Reprogramaciones frecuentes sin justificación</li>
+              <li>Escasez de especialistas en tu ciudad</li>
+              <li>Tiempos de espera excesivos para cirugías</li>
+            </ul>
+          </div>
+          <div class="signal-card">
+            <div class="signal-card-head"><div class="signal-num">2</div><div class="signal-title">Problemas con la entrega de medicamentos</div></div>
+            <ul class="signal-list">
+              <li>Entregas incompletas o con desabastecimiento</li>
+              <li>Retrasos reiterados en autorizaciones</li>
+              <li>Interrupción de tratamientos por trámites</li>
+            </ul>
+          </div>
+          <div class="signal-card">
+            <div class="signal-card-head"><div class="signal-num">3</div><div class="signal-title">Red de atención limitada en tu zona</div></div>
+            <ul class="signal-list">
+              <li>Te mudaste de ciudad y tu EPS no tiene cobertura allí</li>
+              <li>Pocos puntos de atención disponibles</li>
+              <li>La normatividad permite el traslado en estos casos</li>
+            </ul>
+          </div>
+          <div class="signal-card">
+            <div class="signal-card-head"><div class="signal-num">4</div><div class="signal-title">Mala experiencia en atención al usuario</div></div>
+            <ul class="signal-list">
+              <li>Canales de atención que no responden</li>
+              <li>Información contradictoria al usuario</li>
+              <li>Falta de seguimiento a peticiones o quejas</li>
+            </ul>
+          </div>
+          <div class="signal-card">
+            <div class="signal-card-head"><div class="signal-num">5</div><div class="signal-title">Necesitas una red médica más robusta</div></div>
+            <ul class="signal-list">
+              <li>Mayor disponibilidad de especialistas</li>
+              <li>Mejor cobertura hospitalaria</li>
+              <li>Convenios con clínicas de mayor complejidad</li>
+            </ul>
+          </div>
+          <div class="signal-card">
+            <div class="signal-card-head"><div class="signal-num">6</div><div class="signal-title">Cambios en tus necesidades de salud</div></div>
+            <ul class="signal-list">
+              <li>Diagnóstico de una enfermedad crónica</li>
+              <li>Embarazo o necesidad de atención especializada</li>
+              <li>Tratamientos de largo plazo que requieren seguimiento</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <hr class="art-divider">
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Puedo cambiarme en cualquier momento?</h2>
+        <p class="art-p">Generalmente debes haber permanecido al menos <strong>360 días (un año)</strong> en tu EPS actual para solicitar un traslado voluntario. Sin embargo, existen excepciones:</p>
+        <ul class="art-ul">
+          <li>Unificación del grupo familiar</li>
+          <li>Cambio de residencia donde la EPS no tenga cobertura</li>
+          <li>Deficiente prestación del servicio debidamente comprobada</li>
+          <li>Suspensión de servicios por parte de la EPS o su red prestadora</li>
+        </ul>
+        <div class="art-callout gold">
+          <p><strong>¿Tiene algún costo el traslado?</strong> No. El proceso es completamente gratuito para los afiliados. Ninguna persona o entidad puede cobrar por realizar este trámite.</p>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Cómo se realiza el traslado?</h2>
+        <ul class="art-ul">
+          <li>Directamente ante la EPS receptora (EPS SURA)</li>
+          <li>A través del Sistema de Afiliación Transaccional (SAT) del Ministerio de Salud</li>
+        </ul>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Antes de cambiar de EPS, revisa estos aspectos</h2>
+        <p class="art-p">No todas las EPS tienen el mismo comportamiento en cada ciudad o departamento.</p>
+        <ul class="art-ul checks">
+          <li>Cobertura en tu municipio</li>
+          <li>Red de clínicas y hospitales disponibles</li>
+          <li>Disponibilidad de especialistas</li>
+          <li>Canales de atención y calidad de servicio</li>
+          <li>Experiencia de otros usuarios</li>
+          <li>Capacidad de atención para tu condición de salud específica</li>
+        </ul>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Preguntas frecuentes</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Pierdo mi historial médico al cambiar de EPS? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">No. La atención debe garantizar la continuidad de los tratamientos y la información clínica debe mantenerse disponible para la prestación del servicio de salud.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Pierdo antigüedad o derechos adquiridos? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">No. El sistema de salud colombiano no maneja preexistencias ni periodos de carencia como algunos planes privados. Tus derechos en salud continúan vigentes.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Puedo trasladar a todo mi grupo familiar? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">Sí. El traslado normalmente incluye al grupo familiar afiliado bajo el mismo cotizante o cabeza de familia.</div>
+          </div>
+        </div>
+      </div>`;
+    }
+  },
+
+  /* ─────────────── ARTÍCULO 2 ─────────────── */
+  'planes-vs-complementario': {
+    slug: 'planes-vs-complementario',
+    tag: 'Planes de salud',
+    titulo: 'Plan de salud SURA vs. plan complementario: ¿cuál es la diferencia?',
+    fecha: 'Mayo 2026',
+    lectura: '8 min',
+    imagen: 'blog-planes-vs-complementario.png',
+    imgAlt: 'Plan de salud SURA vs plan complementario',
+    render() {
+      return `
+      <p class="art-intro">Muchas personas creen que el Plan de Salud SURA y el Plan Complementario son lo mismo, pero son soluciones diferentes que responden a necesidades distintas. Entender sus diferencias te ayudará a elegir la opción que mejor se adapte a tu presupuesto y expectativas.</p>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Qué es el Plan Complementario?</h2>
+        <p class="art-p">El Plan Complementario (también conocido como PAC) complementa la atención que recibes a través de tu EPS, brindando beneficios adicionales como acceso más ágil a ciertos servicios, especialistas y mejores condiciones de atención.</p>
+        <div class="benefit-grid">
+          <div class="benefit-card"><div class="benefit-ico">👨‍⚕️</div><div><div class="benefit-name">Acceso directo a especialidades</div><div class="benefit-desc">Sin necesidad de remisión del médico general para acceder a los especialistas definidos en el plan.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">🏠</div><div><div class="benefit-name">Atención médica domiciliaria</div><div class="benefit-desc">Médico a domicilio disponible según zonas de cobertura del prestador.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">🏥</div><div><div class="benefit-name">Habitación individual</div><div class="benefit-desc">En caso de hospitalización, acceso a habitación privada en exceso del PBS.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">💰</div><div><div class="benefit-name">Menores pagos en PBS</div><div class="benefit-desc">Reducción o exoneración de copagos y cuotas moderadoras según el plan.</div></div></div>
+        </div>
+        <div class="art-callout">
+          <p>Su principal característica es que <strong>funciona como una extensión de la cobertura de la EPS</strong> y requiere estar afiliado al sistema de salud.</p>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Qué es un Plan de Salud SURA?</h2>
+        <p class="art-p">Los Planes de Salud SURA son seguros privados de salud que ofrecen una cobertura más amplia, mayor libertad de elección y acceso a servicios exclusivos.</p>
+        <div class="benefit-grid">
+          <div class="benefit-card"><div class="benefit-ico">⚡</div><div><div class="benefit-name">Acceso directo a especialistas</div><div class="benefit-desc">Sin remisión y con mayor variedad de especialidades disponibles según el plan.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">🔬</div><div><div class="benefit-name">Exámenes sin remisión</div><div class="benefit-desc">Diagnósticos sin necesidad de pasar por el médico general para autorizaciones.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">🏨</div><div><div class="benefit-name">Cobertura hospitalaria amplia</div><div class="benefit-desc">Atención en instituciones de alta complejidad con cobertura más robusta.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">🌍</div><div><div class="benefit-name">Cobertura nacional e internacional</div><div class="benefit-desc">Disponible en algunos planes, junto con asistencias en viajes.</div></div></div>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Comparación rápida</h2>
+        <div class="comp-table-wrap">
+          <table class="comp-table">
+            <thead>
+              <tr>
+                <th>Característica</th>
+                <th>Plan Complementario</th>
+                <th>Plan de Salud SURA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Complementa la EPS</td><td>Sí</td><td>Sí</td></tr>
+              <tr><td>Requiere EPS activa</td><td>Sí</td><td>Generalmente sí</td></tr>
+              <tr><td>Acceso a especialistas</td><td>Especialidades definidas</td><td>Más amplio</td></tr>
+              <tr><td>Red médica</td><td>Definida y limitada</td><td>Más amplia</td></tr>
+              <tr><td>Hospitalización</td><td>Habitación individual</td><td>Cobertura más robusta</td></tr>
+              <tr><td>Exámenes diagnósticos</td><td>Cobertura específica</td><td>Mayor acceso y flexibilidad</td></tr>
+              <tr><td>Cobertura internacional</td><td>No incluida</td><td>Disponible en algunos planes</td></tr>
+              <tr><td>Valor mensual</td><td><strong>Más económico</strong></td><td>Más alto</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Cuál le conviene a cada persona?</h2>
+        <div class="pros-grid">
+          <div class="pros-box verde">
+            <h4>Plan Complementario si…</h4>
+            <ul class="pros-list">
+              <li>Quieres mejorar la experiencia de tu EPS</li>
+              <li>Buscas acceso más rápido a algunos especialistas</li>
+              <li>Deseas atención domiciliaria y habitación individual</li>
+              <li>Tienes un presupuesto moderado</li>
+              <li>Tu estado de salud es bueno y buscas respaldo adicional</li>
+            </ul>
+          </div>
+          <div class="pros-box azul">
+            <h4>Plan de Salud SURA si…</h4>
+            <ul class="pros-list">
+              <li>Necesitas atención médica frecuente</li>
+              <li>Tienes enfermedades crónicas o seguimiento especializado</li>
+              <li>Buscas mayor libertad para elegir especialistas</li>
+              <li>Quieres cobertura amplia para diagnósticos y hospitalización</li>
+              <li>Valoras asistencia en viajes o cobertura internacional</li>
+            </ul>
+          </div>
+        </div>
+        <div class="art-callout gold">
+          <p>Para muchas personas, el Plan Complementario ofrece un <strong>excelente equilibrio entre costo y beneficio</strong>. Quienes requieren atención frecuente suelen encontrar más ventajas en una póliza de salud por su mayor amplitud de cobertura.</p>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Preguntas frecuentes</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Puedo tener EPS y Plan Complementario al mismo tiempo? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">Sí. De hecho, el Plan Complementario está diseñado específicamente para complementar los servicios de tu EPS.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Puedo tener EPS y una Póliza de Salud SURA? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">Sí. Muchas personas utilizan la EPS como cobertura básica y la póliza para acceder a beneficios adicionales y atención más ágil.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿El Plan Complementario reemplaza la EPS? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">No. El Plan Complementario no sustituye la EPS; únicamente amplía algunos de sus beneficios.</div>
+          </div>
+        </div>
+      </div>`;
+    }
+  },
+
+  /* ─────────────── ARTÍCULO 3 ─────────────── */
+  'beneficio-salud-productividad': {
+    slug: 'beneficio-salud-productividad',
+    tag: 'Empresas',
+    titulo: 'Cómo un beneficio de salud mejora la productividad de tu equipo',
+    fecha: 'Abril 2026',
+    lectura: '9 min',
+    imagen: 'blog-empresas.png',
+    imgAlt: 'Beneficio de salud y productividad empresarial',
+    render() {
+      return `
+      <p class="art-intro">En un entorno empresarial cada vez más competitivo, invertir en la salud de los colaboradores es una de las estrategias con mayor impacto en productividad, retención de talento y clima organizacional. Diversos estudios de organismos internacionales lo respaldan.</p>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Qué se entiende por beneficio de salud?</h2>
+        <p class="art-p">Son programas o soluciones que complementan la cobertura básica del sistema de salud y buscan facilitar el acceso de los colaboradores a servicios médicos, programas de prevención y atención especializada.</p>
+        <div class="benefit-grid">
+          <div class="benefit-card"><div class="benefit-ico">🏥</div><div><div class="benefit-name">Planes complementarios</div><div class="benefit-desc">Acceso directo a especialistas, hospitalización individual y atención domiciliaria.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">📱</div><div><div class="benefit-name">Telemedicina</div><div class="benefit-desc">Consultas médicas virtuales disponibles sin desplazamiento ni tiempos de espera.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">🧠</div><div><div class="benefit-name">Salud mental</div><div class="benefit-desc">Acceso a psicología y gestión del estrés laboral para el bienestar integral.</div></div></div>
+          <div class="benefit-card"><div class="benefit-ico">👨‍👩‍👧</div><div><div class="benefit-name">Cobertura familiar</div><div class="benefit-desc">Extensión de beneficios al grupo familiar del colaborador.</div></div></div>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">6 formas en que impacta la productividad</h2>
+
+        <h3 class="art-h3"><span class="art-h3-num">1</span> Reduce el ausentismo laboral</h3>
+        <p class="art-p">Cuando un colaborador tiene acceso rápido a consultas, exámenes diagnósticos y tratamientos, los problemas de salud se detectan y controlan de manera temprana. La OIT señala que las enfermedades generan millones de días laborales perdidos cada año.</p>
+
+        <h3 class="art-h3"><span class="art-h3-num">2</span> Mejora el bienestar físico y mental</h3>
+        <p class="art-p">La OMS señala que promover la salud en el lugar de trabajo contribuye a mejorar la calidad de vida de los trabajadores y fortalece el desempeño organizacional. Trabajadores más saludables tienen mayores niveles de concentración y energía.</p>
+
+        <h3 class="art-h3"><span class="art-h3-num">3</span> Incrementa el compromiso y la satisfacción</h3>
+        <p class="art-p">Cuando una empresa invierte en el bienestar de sus colaboradores, estos perciben que la organización se preocupa por su calidad de vida. De acuerdo con Gallup, los empleados comprometidos presentan mejores indicadores de productividad y menor rotación.</p>
+
+        <h3 class="art-h3"><span class="art-h3-num">4</span> Disminuye la rotación de personal</h3>
+        <p class="art-p">Reemplazar un colaborador implica costos de selección, capacitación y adaptación al cargo. Los beneficios de salud son uno de los incentivos más valorados por los trabajadores al momento de evaluar la permanencia en una organización.</p>
+
+        <h3 class="art-h3"><span class="art-h3-num">5</span> Favorece el rendimiento</h3>
+        <p class="art-p">Un colaborador que recibe atención médica oportuna tiene menos probabilidades de que una condición de salud afecte su desempeño. La OMS reconoce que los programas de promoción de la salud en el trabajo generan beneficios tanto para empleados como para organizaciones.</p>
+
+        <h3 class="art-h3"><span class="art-h3-num">6</span> Fortalece la marca empleadora</h3>
+        <p class="art-p">Hoy los candidatos no solo evalúan el salario. También analizan los beneficios de la empresa. Contar con programas de salud ayuda a atraer talento calificado, mejorar la reputación corporativa y diferenciar la propuesta de valor.</p>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Beneficios más valorados por los colaboradores</h2>
+        <ul class="art-ul">
+          <li>Atención prioritaria con especialistas sin tiempos de espera</li>
+          <li>Telemedicina disponible desde cualquier lugar</li>
+          <li>Atención médica domiciliaria</li>
+          <li>Programas de salud mental y gestión del estrés</li>
+          <li>Cobertura extendida para el grupo familiar</li>
+          <li>Exámenes preventivos sin remisión médica</li>
+          <li>Planes complementarios y pólizas de salud</li>
+        </ul>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Es un gasto o una inversión?</h2>
+        <div class="art-callout gold">
+          <p>Cada vez más empresas entienden que la salud de los colaboradores tiene un impacto directo en los resultados del negocio. Invertir en bienestar puede contribuir a <strong>reducir costos asociados al ausentismo, disminuir la rotación, mejorar el clima laboral e incrementar la productividad</strong>.</p>
+        </div>
+        <div class="stat-row">
+          <div class="stat-pill"><span class="stat-pill-val">↓ Ausentismo</span><span class="stat-pill-lbl">Detección temprana de enfermedades</span></div>
+          <div class="stat-pill"><span class="stat-pill-val">↑ Retención</span><span class="stat-pill-lbl">Talento que permanece más tiempo</span></div>
+          <div class="stat-pill"><span class="stat-pill-val">↑ Compromiso</span><span class="stat-pill-lbl">Equipos más motivados y productivos</span></div>
+        </div>
+      </div>`;
+    }
+  }
+};
+
+/* ════════════════════════════════════════════════
+   ARTÍCULOS RELACIONADOS (los otros 2)
+════════════════════════════════════════════════ */
+function getRelacionados(slugActual) {
+  return Object.values(ARTICULOS).filter(a => a.slug !== slugActual);
+}
+
+/* ════════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════════ */
+function renderArticulo(slug) {
+  const art = ARTICULOS[slug];
+  const root = document.getElementById('art-root');
+
+  if (!art) {
+    root.innerHTML = `
+      <div class="art-loading">
+        <p style="font-size:2rem">🔍</p>
+        <p>Artículo no encontrado.</p>
+        <a href="/" style="color:var(--navy);font-weight:600;font-size:.9rem">← Volver al inicio</a>
+      </div>`;
+    return;
+  }
+
+  // Meta
+  document.getElementById('meta-title').textContent = art.titulo + ' — Canal Especializado en Salud';
+  document.getElementById('meta-desc').setAttribute('content', art.titulo);
+
+  // Relacionados
+  const rel = getRelacionados(slug);
+  const relHTML = rel.map(r => `
+    <a href="blog.html?a=${r.slug}" class="mas-card">
+      <div class="mas-thumb"><img src="${r.imagen}" alt="${r.imgAlt}" loading="lazy"></div>
+      <div class="mas-body">
+        <div class="mas-tag">${r.tag}</div>
+        <div class="mas-title">${r.titulo}</div>
+      </div>
+    </a>`).join('');
+
+  const WA = atob('NTczMDA4NTE0Njk5');
+
+  root.innerHTML = `
+    <!-- HERO -->
+    <div class="art-hero">
+      <img src="${art.imagen}" alt="${art.imgAlt}" class="art-hero-img">
+      <div class="art-hero-overlay"></div>
+      <div class="art-hero-content">
+        <div class="art-tag">${art.tag}</div>
+        <h1 class="art-title">${art.titulo}</h1>
+        <div class="art-meta">
+          <span class="art-date">📅 ${art.fecha}</span>
+          <span class="art-read">⏱ ${art.lectura} de lectura</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUERPO -->
+    <div class="art-wrap">
+      ${art.render()}
+
+      <!-- CTA -->
+      <div class="art-cta">
+        <div class="art-cta-txt">
+          <h3>¿Tienes dudas sobre tu plan de salud?</h3>
+          <p>Te asesoro sin costo y sin compromiso. Resuelvo tus preguntas sobre planes, traslados y coberturas.</p>
+        </div>
+        <div class="art-cta-btns">
+          <a href="https://wa.me/${WA}?text=${encodeURIComponent('Hola Fran, leí el artículo «' + art.titulo + '» y tengo una consulta.')}" target="_blank" class="btn-wa-art">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            Consultar por WhatsApp
+          </a>
+          <a href="/planes.html" class="btn-planes-art">Ver planes →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- MÁS ARTÍCULOS -->
+    <div class="mas-art">
+      <div class="mas-art-inner">
+        <div class="mas-art-title">Más artículos</div>
+        <div class="mas-grid">${relHTML}</div>
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════
+   FAQ TOGGLE
+════════════════════════════════════════════════ */
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  item.classList.toggle('open');
+}
+
+/* ════════════════════════════════════════════════
+   ACTUALIZAR LINKS "Leer más" del index
+   → Cada card apunta a blog.html?a=SLUG
+════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════
+   INIT — leer ?a= de la URL
+════════════════════════════════════════════════ */
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('a') || 'traslado-eps';
+  renderArticulo(slug);
+})();
+</script>
+</body>
+</html>
