@@ -226,12 +226,43 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
 .comp-sec .ey-txt { color:rgba(255,255,255,.4); }
 .comp-sec .ey-dash { background:var(--gold); }
 .comp-table { width:100%; border-collapse:collapse; margin-top:2.5rem; border-radius:10px; overflow:hidden; }
-.comp-table th { background:rgba(255,255,255,.06); color:rgba(255,255,255,.5); font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.875rem 1.25rem; text-align:left; }
-.comp-table th.hl { background:rgba(255,184,0,.12); color:var(--gold); }
+/* Colores por columna */
+.comp-table th { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.875rem 1.25rem; text-align:left; }
 .comp-table td { padding:.875rem 1.25rem; font-size:.84rem; color:rgba(255,255,255,.65); border-top:1px solid rgba(255,255,255,.05); }
-.comp-table td.feat { color:#fff; font-weight:500; }
-.comp-table td.hl { background:rgba(255,184,0,.05); color:rgba(255,255,255,.8); }
-.comp-table tr:hover td { background:rgba(255,255,255,.02); }
+.comp-table td.feat { color:#fff; font-weight:500; background:rgba(255,255,255,.04); }
+.comp-table tr:hover td:not(.feat) { filter:brightness(1.07); }
+
+/* Col 0: característica */
+.comp-table th.ch0 { background:rgba(255,255,255,.05); color:rgba(255,255,255,.35); }
+
+/* Col 1: SPTI Clásico — azul cielo */
+.comp-table th.ch1 { background:#0B3D8C; color:#7EB8F7; }
+.comp-table td.c1  { background:#0B3D8C22; color:rgba(255,255,255,.75); }
+.comp-table tr:hover td.c1 { background:#0B3D8C44; }
+
+/* Col 2: SPTI Preferencial — gold (destacado) */
+.comp-table th.ch2 { background:rgba(255,184,0,.18); color:var(--gold); }
+.comp-table td.c2  { background:rgba(255,184,0,.06); color:rgba(255,255,255,.85); }
+.comp-table tr:hover td.c2 { background:rgba(255,184,0,.12); }
+
+/* Col 3: SPD Plus — verde azulado */
+.comp-table th.ch3 { background:#0A4D4D; color:#5DCFCF; }
+.comp-table td.c3  { background:#0A4D4D22; color:rgba(255,255,255,.75); }
+.comp-table tr:hover td.c3 { background:#0A4D4D44; }
+
+/* Col 4: Plan Modular — violeta */
+.comp-table th.ch4 { background:#2D1B5E; color:#B89EF8; }
+.comp-table td.c4  { background:#2D1B5E22; color:rgba(255,255,255,.75); }
+.comp-table tr:hover td.c4 { background:#2D1B5E44; }
+
+/* Sub-header */
+.comp-table tr.sub-hd th { font-size:.63rem; font-weight:400; padding:.4rem 1.25rem .7rem; }
+.comp-table tr.sub-hd th.ch0 { color:rgba(255,255,255,.22); }
+.comp-table tr.sub-hd th.ch1 { color:#7EB8F766; background:#0B3D8C; }
+.comp-table tr.sub-hd th.ch2 { color:rgba(255,184,0,.45); background:rgba(255,184,0,.18); }
+.comp-table tr.sub-hd th.ch3 { color:#5DCFCF66; background:#0A4D4D; }
+.comp-table tr.sub-hd th.ch4 { color:#B89EF866; background:#2D1B5E; }
+
 .comp-check { color:var(--gold); font-size:1rem; }
 .comp-no { color:rgba(255,255,255,.2); font-size:1rem; }
 .comp-tag { display:inline-block; font-size:.6rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background:var(--gold); color:var(--deep); padding:.15rem .45rem; border-radius:3px; margin-left:.4rem; vertical-align:middle; }
@@ -610,146 +641,146 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
     <table class="comp-table">
       <thead>
         <tr>
-          <th>Característica</th>
-          <th>SPTI Clásico</th>
-          <th class="hl">SPTI Preferencial <span class="comp-tag">Más completo</span></th>
-          <th>SPD Plus</th>
-          <th>Plan Modular</th>
+          <th class="ch0">Característica</th>
+          <th class="ch1">SPTI Clásico</th>
+          <th class="ch2">SPTI Preferencial <span class="comp-tag">Más completo</span></th>
+          <th class="ch3">SPD Plus</th>
+          <th class="ch4">Plan Modular</th>
         </tr>
-        <tr>
-          <th style="font-size:.65rem;color:rgba(255,255,255,.3);font-weight:400;">Salud para Todos / Dos · 1 año</th>
-          <th style="font-size:.65rem;color:rgba(255,255,255,.3);font-weight:400;">Requiere PBS SURA</th>
-          <th class="hl" style="font-size:.65rem;color:rgba(255,184,0,.5);font-weight:400;">Requiere PBS SURA</th>
-          <th style="font-size:.65rem;color:rgba(255,255,255,.3);font-weight:400;">Cualquier EPS · 2 personas</th>
-          <th style="font-size:.65rem;color:rgba(255,255,255,.3);font-weight:400;">Cualquier EPS · Acceso directo</th>
+        <tr class="sub-hd">
+          <th class="ch0" style="font-weight:400;">Salud para Todos / Dos · 1 año</th>
+          <th class="ch1">Requiere PBS SURA</th>
+          <th class="ch2">Requiere PBS SURA</th>
+          <th class="ch3">Cualquier EPS · 2 personas</th>
+          <th class="ch4">Cualquier EPS · Acceso directo</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="feat">Tarifa desde (mensual)</td>
-          <td>$147.480</td>
-          <td class="hl">$167.076</td>
-          <td>$96.674 <em style="font-size:.72rem;opacity:.6;">(tarifa única)</em></td>
-          <td>$241.339 <em style="font-size:.72rem;opacity:.6;">(módulo básico)</em></td>
+          <td class="c1">$147.480</td>
+          <td class="c2">$167.076</td>
+          <td class="c3">$96.674 <em style="font-size:.72rem;opacity:.6;">(tarifa única)</em></td>
+          <td class="c4">$241.339 <em style="font-size:.72rem;opacity:.6;">(módulo básico)</em></td>
         </tr>
         <tr>
           <td class="feat">EPS requerida</td>
-          <td>PBS SURA obligatorio</td>
-          <td class="hl">PBS SURA obligatorio</td>
-          <td><span class="comp-check">✓</span> Cualquier EPS</td>
-          <td><span class="comp-check">✓</span> Cualquier EPS</td>
+          <td class="c1">PBS SURA obligatorio</td>
+          <td class="c2">PBS SURA obligatorio</td>
+          <td class="c3"><span class="comp-check">✓</span> Cualquier EPS</td>
+          <td class="c4"><span class="comp-check">✓</span> Cualquier EPS</td>
         </tr>
         <tr>
           <td class="feat">Hospitalización individual</td>
-          <td><span class="comp-check">✓</span> Carencia 150 días</td>
-          <td class="hl"><span class="comp-check">✓</span> Carencia 150 días</td>
-          <td><span class="comp-no">✗</span> No incluye</td>
-          <td><span class="comp-check">✓</span> Carencia 4 meses</td>
+          <td class="c1"><span class="comp-check">✓</span> Carencia 150 días</td>
+          <td class="c2"><span class="comp-check">✓</span> Carencia 150 días</td>
+          <td class="c3"><span class="comp-no">✗</span> No incluye</td>
+          <td class="c4"><span class="comp-check">✓</span> Carencia 4 meses</td>
         </tr>
         <tr>
           <td class="feat">Urgencias ilimitadas</td>
-          <td><span class="comp-check">✓</span> Sin carencia</td>
-          <td class="hl"><span class="comp-check">✓</span> Sin carencia</td>
-          <td><span class="comp-no">✗</span></td>
-          <td><span class="comp-check">✓</span> Ilimitadas en red SURA</td>
+          <td class="c1"><span class="comp-check">✓</span> Sin carencia</td>
+          <td class="c2"><span class="comp-check">✓</span> Sin carencia</td>
+          <td class="c3"><span class="comp-no">✗</span></td>
+          <td class="c4"><span class="comp-check">✓</span> Ilimitadas en red SURA</td>
         </tr>
         <tr>
           <td class="feat">Especialistas directos sin remisión</td>
-          <td>6 especialidades · ilimitado</td>
-          <td class="hl">11 especialidades · ilimitado</td>
-          <td>9 especialidades · ilimitado</td>
-          <td>15 especialidades · ilimitado</td>
+          <td class="c1">6 especialidades · ilimitado</td>
+          <td class="c2">11 especialidades · ilimitado</td>
+          <td class="c3">9 especialidades · ilimitado</td>
+          <td class="c4">15 especialidades · ilimitado</td>
         </tr>
         <tr>
           <td class="feat">Exoneración copagos PBS</td>
-          <td><span class="comp-check">✓</span></td>
-          <td class="hl"><span class="comp-check">✓</span></td>
-          <td><span class="comp-no">✗</span></td>
-          <td><span class="comp-no">✗</span></td>
+          <td class="c1"><span class="comp-check">✓</span></td>
+          <td class="c2"><span class="comp-check">✓</span></td>
+          <td class="c3"><span class="comp-no">✗</span></td>
+          <td class="c4"><span class="comp-no">✗</span></td>
         </tr>
         <tr>
           <td class="feat">Atención médica domiciliaria 24 h</td>
-          <td><span class="comp-check">✓</span> Con copago</td>
-          <td class="hl"><span class="comp-check">✓</span> Con copago</td>
-          <td><span class="comp-check">✓</span> Con pertinencia médica</td>
-          <td><span class="comp-check">✓</span> Hospitalización domiciliaria ilimitada</td>
+          <td class="c1"><span class="comp-check">✓</span> Con copago</td>
+          <td class="c2"><span class="comp-check">✓</span> Con copago</td>
+          <td class="c3"><span class="comp-check">✓</span> Con pertinencia médica</td>
+          <td class="c4"><span class="comp-check">✓</span> Hospitalización domiciliaria ilimitada</td>
         </tr>
         <tr>
           <td class="feat">Atención virtual prioritaria</td>
-          <td>Afiliados PBS SURA</td>
-          <td class="hl">Afiliados PBS SURA</td>
-          <td><span class="comp-check">✓</span> Ilimitada (dom. a dom.)</td>
-          <td><span class="comp-check">✓</span> Ilimitada</td>
+          <td class="c1">Afiliados PBS SURA</td>
+          <td class="c2">Afiliados PBS SURA</td>
+          <td class="c3"><span class="comp-check">✓</span> Ilimitada (dom. a dom.)</td>
+          <td class="c4"><span class="comp-check">✓</span> Ilimitada</td>
         </tr>
         <tr>
           <td class="feat">Laboratorio clínico</td>
-          <td>Vía PBS SURA</td>
-          <td class="hl">Vía PBS SURA</td>
-          <td>Bolsa limitada en carátula</td>
-          <td><span class="comp-check">✓</span> Ilimitado (TAC/RM carencia 4 m.)</td>
+          <td class="c1">Vía PBS SURA</td>
+          <td class="c2">Vía PBS SURA</td>
+          <td class="c3">Bolsa limitada en carátula</td>
+          <td class="c4"><span class="comp-check">✓</span> Ilimitado (TAC/RM carencia 4 m.)</td>
         </tr>
         <tr>
           <td class="feat">Terapias físicas / rehabilitación</td>
-          <td><span class="comp-no">✗</span></td>
-          <td class="hl"><span class="comp-no">✗</span></td>
-          <td><span class="comp-no">✗</span></td>
-          <td><span class="comp-check">✓</span> 70 sesiones/año</td>
+          <td class="c1"><span class="comp-no">✗</span></td>
+          <td class="c2"><span class="comp-no">✗</span></td>
+          <td class="c3"><span class="comp-no">✗</span></td>
+          <td class="c4"><span class="comp-check">✓</span> 70 sesiones/año</td>
         </tr>
         <tr>
           <td class="feat">Psicología</td>
-          <td>Vía PBS SURA</td>
-          <td class="hl">Vía PBS SURA</td>
-          <td>4 consultas/año</td>
-          <td>Hasta 20 consultas/año</td>
+          <td class="c1">Vía PBS SURA</td>
+          <td class="c2">Vía PBS SURA</td>
+          <td class="c3">4 consultas/año</td>
+          <td class="c4">Hasta 20 consultas/año</td>
         </tr>
         <tr>
           <td class="feat">Bioenergético</td>
-          <td><span class="comp-no">✗</span></td>
-          <td class="hl"><span class="comp-check">✓</span> Hasta 12 citas/año</td>
-          <td><span class="comp-no">✗</span></td>
-          <td><span class="comp-no">✗</span></td>
+          <td class="c1"><span class="comp-no">✗</span></td>
+          <td class="c2"><span class="comp-check">✓</span> Hasta 12 citas/año</td>
+          <td class="c3"><span class="comp-no">✗</span></td>
+          <td class="c4"><span class="comp-no">✗</span></td>
         </tr>
         <tr>
           <td class="feat">Urgencias odontológicas domicilio</td>
-          <td><span class="comp-check">✓</span> Con copago</td>
-          <td class="hl"><span class="comp-check">✓</span> Con copago</td>
-          <td><span class="comp-check">✓</span> Ilimitadas</td>
-          <td><span class="comp-no">✗</span></td>
+          <td class="c1"><span class="comp-check">✓</span> Con copago</td>
+          <td class="c2"><span class="comp-check">✓</span> Con copago</td>
+          <td class="c3"><span class="comp-check">✓</span> Ilimitadas</td>
+          <td class="c4"><span class="comp-no">✗</span></td>
         </tr>
         <tr>
           <td class="feat">Plataforma Longevo (bienestar)</td>
-          <td><span class="comp-no">✗</span></td>
-          <td class="hl"><span class="comp-no">✗</span></td>
-          <td><span class="comp-no">✗</span></td>
-          <td><span class="comp-check">✓</span> Ilimitada</td>
+          <td class="c1"><span class="comp-no">✗</span></td>
+          <td class="c2"><span class="comp-no">✗</span></td>
+          <td class="c3"><span class="comp-no">✗</span></td>
+          <td class="c4"><span class="comp-check">✓</span> Ilimitada</td>
         </tr>
         <tr>
           <td class="feat">Módulos opcionales</td>
-          <td>Bono especialistas / domiciliaria</td>
-          <td class="hl">Bono especialistas / domiciliaria</td>
-          <td><span class="comp-no">✗</span></td>
-          <td>Alto costo, maternidad, cirugía amb., emergencia dom.</td>
+          <td class="c1">Bono especialistas / domiciliaria</td>
+          <td class="c2">Bono especialistas / domiciliaria</td>
+          <td class="c3"><span class="comp-no">✗</span></td>
+          <td class="c4">Alto costo, maternidad, cirugía amb., emergencia dom.</td>
         </tr>
         <tr>
           <td class="feat">Copago por consulta especialista</td>
-          <td>Aplica según plan</td>
-          <td class="hl">Exonerado en PBS</td>
-          <td>Sin copago</td>
-          <td>$30.000 fijo por consulta</td>
+          <td class="c1">Aplica según plan</td>
+          <td class="c2">Exonerado en PBS</td>
+          <td class="c3">Sin copago</td>
+          <td class="c4">$30.000 fijo por consulta</td>
         </tr>
         <tr>
           <td class="feat">Tarifa congelada al afiliarse</td>
-          <td><span class="comp-check">✓</span></td>
-          <td class="hl"><span class="comp-check">✓</span></td>
-          <td>Tarifa única sin importar la edad</td>
-          <td>Variable según módulos</td>
+          <td class="c1"><span class="comp-check">✓</span></td>
+          <td class="c2"><span class="comp-check">✓</span></td>
+          <td class="c3">Tarifa única sin importar la edad</td>
+          <td class="c4">Variable según módulos</td>
         </tr>
         <tr>
           <td class="feat">Ideal para</td>
-          <td>Afiliado SURA que quiere mejor experiencia hospitalaria</td>
-          <td class="hl">Afiliado SURA con mayor acceso a especialistas directos</td>
-          <td>Sin PBS SURA, preexistencias o presupuesto ajustado</td>
-          <td>Quien consulta especialistas con frecuencia y valora acceso directo</td>
+          <td class="c1">Afiliado SURA que quiere mejor experiencia hospitalaria</td>
+          <td class="c2">Afiliado SURA con mayor acceso a especialistas directos</td>
+          <td class="c3">Sin PBS SURA, preexistencias o presupuesto ajustado</td>
+          <td class="c4">Quien consulta especialistas con frecuencia y valora acceso directo</td>
         </tr>
       </tbody>
     </table>
