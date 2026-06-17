@@ -181,6 +181,23 @@ footer{background:var(--deep);padding:2rem;text-align:center}
 footer p{font-size:.72rem;color:rgba(255,255,255,.22);line-height:1.8}
 footer a{color:rgba(255,255,255,.35);text-decoration:none}
 footer a:hover{color:#fff}
+/* ─ VISOR DE PDF CONDICIONADO ─ */
+.pdf-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:600; align-items:center; justify-content:center; padding:1rem; }
+.pdf-modal-overlay.open { display:flex; }
+.pdf-modal-box { background:var(--white); border-radius:10px; width:100%; max-width:900px; height:90vh; display:flex; flex-direction:column; overflow:hidden; }
+.pdf-modal-head { background:var(--navy); padding:.875rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.pdf-modal-title { font-size:.85rem; font-weight:600; color:#fff; }
+.pdf-modal-actions { display:flex; gap:.6rem; align-items:center; }
+.pdf-modal-dl { font-size:.75rem; font-weight:600; color:var(--deep); background:var(--gold); border:none; border-radius:5px; padding:.4rem .85rem; cursor:pointer; text-decoration:none; transition:opacity .18s; }
+.pdf-modal-dl:hover { opacity:.88; }
+.pdf-modal-close { background:none; border:none; color:rgba(255,255,255,.6); font-size:1.3rem; cursor:pointer; line-height:1; padding:0 .3rem; }
+.pdf-modal-close:hover { color:#fff; }
+.pdf-modal-body { flex:1; background:#525659; position:relative; }
+.pdf-modal-body iframe { width:100%; height:100%; border:none; }
+.pdf-modal-loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.6); font-size:.85rem; }
+.pdf-modal-fallback { display:none; position:absolute; inset:0; background:var(--white); flex-direction:column; align-items:center; justify-content:center; gap:1rem; padding:2rem; text-align:center; }
+.pdf-modal-fallback.show { display:flex; }
+.pdf-modal-fallback p { font-size:.85rem; color:var(--muted); max-width:380px; }
 </style>
 </head>
 <body>
@@ -1197,21 +1214,3 @@ function _enviarFirestore(payload, msgId){
 </script>
 </body>
 </html>
-
-/* ─ VISOR DE PDF CONDICIONADO ─ */
-.pdf-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:600; align-items:center; justify-content:center; padding:1rem; }
-.pdf-modal-overlay.open { display:flex; }
-.pdf-modal-box { background:var(--white); border-radius:10px; width:100%; max-width:900px; height:90vh; display:flex; flex-direction:column; overflow:hidden; }
-.pdf-modal-head { background:var(--navy); padding:.875rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-.pdf-modal-title { font-size:.85rem; font-weight:600; color:#fff; }
-.pdf-modal-actions { display:flex; gap:.6rem; align-items:center; }
-.pdf-modal-dl { font-size:.75rem; font-weight:600; color:var(--deep); background:var(--gold); border:none; border-radius:5px; padding:.4rem .85rem; cursor:pointer; text-decoration:none; transition:opacity .18s; }
-.pdf-modal-dl:hover { opacity:.88; }
-.pdf-modal-close { background:none; border:none; color:rgba(255,255,255,.6); font-size:1.3rem; cursor:pointer; line-height:1; padding:0 .3rem; }
-.pdf-modal-close:hover { color:#fff; }
-.pdf-modal-body { flex:1; background:#525659; position:relative; }
-.pdf-modal-body iframe { width:100%; height:100%; border:none; }
-.pdf-modal-loading { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.6); font-size:.85rem; }
-.pdf-modal-fallback { display:none; position:absolute; inset:0; background:var(--white); flex-direction:column; align-items:center; justify-content:center; gap:1rem; padding:2rem; text-align:center; }
-.pdf-modal-fallback.show { display:flex; }
-.pdf-modal-fallback p { font-size:.85rem; color:var(--muted); max-width:380px; }
