@@ -1098,7 +1098,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
       </div>
       <div class="admin-pin-body">
         <p class="admin-pin-desc">Ingresa tu PIN de administrador para continuar.</p>
-        <input type="password" class="admin-pin-input" id="admin-pin-input" placeholder="••••••" maxlength="8" onkeydown="if(event.key==='Enter')verificarPin()">
+        <input type="password" class="admin-pin-input" id="admin-pin-input" placeholder="••••••" maxlength="32" onkeydown="if(event.key==='Enter')verificarPin()">
         <div class="admin-pin-error" id="admin-pin-error"></div>
         <button class="admin-save" onclick="verificarPin()">Ingresar</button>
       </div>
