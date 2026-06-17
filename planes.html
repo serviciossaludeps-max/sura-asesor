@@ -198,6 +198,50 @@ footer a:hover{color:#fff}
 .pdf-modal-fallback { display:none; position:absolute; inset:0; background:var(--white); flex-direction:column; align-items:center; justify-content:center; gap:1rem; padding:2rem; text-align:center; }
 .pdf-modal-fallback.show { display:flex; }
 .pdf-modal-fallback p { font-size:.85rem; color:var(--muted); max-width:380px; }
+/* ─ COBERTURA POR CIUDADES ─ */
+.cov-sec { background:var(--off); padding:4rem 2rem; }
+.cov-wrap { max-width:1100px; margin:0 auto; }
+.cov-head { text-align:center; max-width:560px; margin:0 auto 2.5rem; }
+.cov-eyebrow { display:inline-flex; align-items:center; gap:.5rem; font-size:.66rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--mid); margin-bottom:.75rem; }
+.cov-eyebrow-dash { width:14px; height:1.5px; background:var(--gold); }
+.cov-title { font-family:var(--serif); font-size:clamp(1.6rem,2.6vw,2.1rem); color:var(--navy); margin-bottom:.6rem; }
+.cov-sub { font-size:.9rem; color:var(--muted); line-height:1.7; }
+
+.cov-tabs { display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap; margin-bottom:1.75rem; }
+.cov-tab { background:var(--white); border:1px solid var(--border); border-radius:30px; padding:.55rem 1.25rem; font-size:.8rem; font-weight:600; color:var(--muted); cursor:pointer; transition:all .2s; font-family:var(--sans); }
+.cov-tab:hover { border-color:var(--navy); color:var(--navy); }
+.cov-tab.active { background:var(--navy); border-color:var(--navy); color:#fff; }
+
+.cov-panel { background:var(--white); border:1px solid var(--border); border-radius:14px; padding:2.25rem; }
+.cov-panel-fade { animation:covFade .4s ease; }
+@keyframes covFade { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+.cov-region { margin-bottom:1.5rem; }
+.cov-region:last-child { margin-bottom:0; }
+.cov-region-name { display:flex; align-items:center; gap:.5rem; font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--navy); margin-bottom:.75rem; }
+.cov-region-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+.cov-chips { display:flex; flex-wrap:wrap; gap:.5rem; }
+.cov-chip { background:var(--off); border:1px solid var(--border); border-radius:20px; padding:.4rem 1rem; font-size:.78rem; color:var(--text); font-weight:500; opacity:0; transform:translateY(6px) scale(.96); animation:chipIn .35s ease forwards; transition:border-color .18s,background .18s; }
+.cov-chip:hover { border-color:var(--mid); background:rgba(0,71,187,.05); }
+@keyframes chipIn { to{opacity:1;transform:none} }
+
+.cov-empty { text-align:center; padding:2rem; color:var(--muted); font-size:.85rem; }
+.cov-search-cta { margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border); text-align:center; }
+.cov-search-cta p { font-size:.82rem; color:var(--muted); margin-bottom:.85rem; }
+.cov-search-input-wrap { display:flex; gap:.5rem; max-width:380px; margin:0 auto; }
+.cov-search-input { flex:1; background:var(--off); border:1px solid var(--border); border-radius:6px; padding:.6rem .9rem; font-family:var(--sans); font-size:.85rem; outline:none; transition:border-color .16s; }
+.cov-search-input:focus { border-color:var(--navy); }
+.cov-search-btn { background:var(--navy); color:#fff; border:none; border-radius:6px; padding:.6rem 1.2rem; font-size:.82rem; font-weight:600; cursor:pointer; font-family:var(--sans); transition:background .18s; }
+.cov-search-btn:hover { background:var(--deep); }
+.cov-search-result { margin-top:1rem; font-size:.85rem; }
+.cov-result-yes { color:#15803d; font-weight:600; }
+.cov-result-no { color:#b45309; font-weight:600; }
+
+@media(max-width:640px){
+  .cov-panel { padding:1.5rem; }
+  .cov-tabs { gap:.4rem; }
+  .cov-tab { padding:.5rem 1rem; font-size:.76rem; }
+}
 </style>
 </head>
 <body>
@@ -994,6 +1038,20 @@ footer a:hover{color:#fff}
 
 </div><!-- /planes-wrap -->
 
+<!-- COBERTURA POR CIUDADES -->
+<section class="cov-sec" id="cobertura">
+  <div class="cov-wrap">
+    <div class="cov-head">
+      <div class="cov-eyebrow"><span class="cov-eyebrow-dash"></span>Cobertura geográfica</div>
+      <h2 class="cov-title">¿Tu ciudad tiene cobertura?</h2>
+      <p class="cov-sub">Cada plan tiene su propia red de ciudades. Explora cuáles aplican para ti antes de cotizar.</p>
+    </div>
+
+    <div class="cov-tabs" id="cov-tabs"></div>
+    <div class="cov-panel" id="cov-panel"></div>
+  </div>
+</section>
+
 
 <!-- MODAL PRIVACIDAD -->
 <div class="modal-overlay" id="modal-privacidad">
@@ -1103,6 +1161,113 @@ function cerrarCondicionado() {
 document.getElementById('pdf-modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) cerrarCondicionado();
 });
+
+/* ─ COBERTURA POR CIUDADES ─
+   Para actualizar: agrega o quita ciudades directamente en este objeto.
+   Cada plan tiene "regiones" con un nombre y un array de ciudades. */
+var COBERTURA = {
+  'salud-para-todos': {
+    nombre: 'SPTI Clásico · Preferencial · SPD',
+    regiones: [
+      { nombre: 'Zona Centro', ciudades: ['Bogotá', 'Chía'] },
+      { nombre: 'Antioquia', ciudades: ['Medellín', 'Rionegro', 'Marinilla', 'La Ceja'] },
+      { nombre: 'Eje Cafetero', ciudades: ['Manizales', 'Pereira', 'Armenia'] },
+      { nombre: 'Zona Occidente', ciudades: ['Cali', 'Palmira'] },
+      { nombre: 'Zona Norte', ciudades: ['Barranquilla', 'Cartagena', 'Santa Marta'] },
+      { nombre: 'Zona Oriente', ciudades: ['Bucaramanga'] }
+    ]
+  },
+  'plan-modular': {
+    nombre: 'Plan Modular',
+    regiones: [
+      { nombre: 'Ciudades principales (red completa)', ciudades: ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena', 'Cúcuta', 'Pereira', 'Manizales', 'Armenia'] },
+      { nombre: 'Ciudades intermedias (convenio)', ciudades: ['Floridablanca', 'Envigado', 'Itagüí', 'Sabaneta', 'Bello', 'Soledad', 'Guadalajara de Buga', 'Buenaventura', 'Palmira', 'Cartago', 'Tuluá'] }
+    ]
+  },
+  'plan-60-mas': {
+    nombre: 'Plan 60+',
+    regiones: [
+      { nombre: 'Ciudades con cobertura', ciudades: ['Bogotá', 'Chía', 'Medellín', 'Rionegro', 'Cali', 'Barranquilla', 'Bucaramanga', 'Cartagena', 'Manizales', 'Pereira', 'Armenia'] }
+    ]
+  }
+};
+
+function renderCobertura(key) {
+  var data = COBERTURA[key];
+  var panel = document.getElementById('cov-panel');
+  if (!data) { panel.innerHTML = '<div class="cov-empty">No hay información de cobertura disponible.</div>'; return; }
+
+  var html = '';
+  data.regiones.forEach(function(region) {
+    html += '<div class="cov-region">';
+    html += '<div class="cov-region-name"><span class="cov-region-dot"></span>' + region.nombre + '</div>';
+    html += '<div class="cov-chips">';
+    region.ciudades.forEach(function(ciudad, i) {
+      html += '<span class="cov-chip" style="animation-delay:' + (i * 0.04) + 's">' + ciudad + '</span>';
+    });
+    html += '</div></div>';
+  });
+
+  html += '<div class="cov-search-cta">';
+  html += '<p>¿No encuentras tu ciudad? Pregúntame directamente y te confirmo.</p>';
+  html += '<div class="cov-search-input-wrap">';
+  html += '<input type="text" class="cov-search-input" id="cov-search-input" placeholder="Escribe tu ciudad...">';
+  html += '<button class="cov-search-btn" onclick="buscarCiudad()">Buscar</button>';
+  html += '</div><div class="cov-search-result" id="cov-search-result"></div>';
+  html += '</div>';
+
+  panel.innerHTML = html;
+  panel.classList.remove('cov-panel-fade');
+  void panel.offsetWidth;
+  panel.classList.add('cov-panel-fade');
+}
+
+function activarCovTab(key, btn) {
+  document.querySelectorAll('.cov-tab').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderCobertura(key);
+}
+
+function buscarCiudad() {
+  var input = document.getElementById('cov-search-input');
+  var result = document.getElementById('cov-search-result');
+  if (!input || !result) return;
+  var q = input.value.trim().toLowerCase();
+  if (!q) { result.innerHTML = ''; return; }
+
+  var encontrados = [];
+  Object.keys(COBERTURA).forEach(function(key) {
+    var plan = COBERTURA[key];
+    var match = plan.regiones.some(function(r) {
+      return r.ciudades.some(function(c) { return c.toLowerCase().indexOf(q) !== -1; });
+    });
+    if (match) encontrados.push(plan.nombre);
+  });
+
+  if (encontrados.length > 0) {
+    result.innerHTML = '<span class="cov-result-yes">✓ Cobertura encontrada en:</span> ' + encontrados.join(', ');
+  } else {
+    result.innerHTML = '<span class="cov-result-no">No encontramos esa ciudad en nuestras listas. Escríbeme por WhatsApp y lo confirmamos juntos.</span>';
+  }
+}
+
+function initCobertura() {
+  var tabsEl = document.getElementById('cov-tabs');
+  if (!tabsEl) return;
+  var keys = Object.keys(COBERTURA);
+  var html = '';
+  keys.forEach(function(key, i) {
+    html += '<button class="cov-tab' + (i===0?' active':'') + '" data-cov-key="' + key + '">' + COBERTURA[key].nombre + '</button>';
+  });
+  tabsEl.innerHTML = html;
+  tabsEl.querySelectorAll('.cov-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      activarCovTab(btn.getAttribute('data-cov-key'), btn);
+    });
+  });
+  renderCobertura(keys[0]);
+}
+initCobertura();
 
 /* ─ WA FLOAT ─ */
 (function(){
