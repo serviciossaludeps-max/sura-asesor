@@ -1150,6 +1150,25 @@ var ASESOR_DEFAULT = {
 };
 var ASESOR_ACTIVO = null;
 
+// NAVEGACION MOVIL
+function toggleNav() {
+  var t = document.getElementById('nav-toggle');
+  var m = document.getElementById('nav-mobile');
+  if (t) t.classList.toggle('open');
+  if (m) m.classList.toggle('open');
+}
+function cerrarNav() {
+  var t = document.getElementById('nav-toggle');
+  var m = document.getElementById('nav-mobile');
+  if (t) t.classList.remove('open');
+  if (m) m.classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  var nav = document.querySelector('nav');
+  var toggle = document.getElementById('nav-toggle');
+  if (nav && !nav.contains(e.target)) cerrarNav();
+});
+
 function cargarAsesor() {
   var params = new URLSearchParams(window.location.search);
   var id = params.get('asesor');
