@@ -1167,7 +1167,7 @@ function cargarAsesor() {
       aplicarAsesor();
       if (encontrado && !encontrado.admin) mostrarBanner();
       if (ASESOR_ACTIVO.admin) {
-        if (data.admin_pin) _ADMIN_PIN = data.admin_pin;
+        if (data.admin_pin) { try { _ADMIN_PIN = atob(data.admin_pin); } catch(e) { _ADMIN_PIN = data.admin_pin; } }
         cargarListaAdmin(data.asesores);
       }
     })
