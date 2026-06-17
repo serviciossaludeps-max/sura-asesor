@@ -16811,7 +16811,7 @@ function renderCarteraTabla(filas, pagos) {
 
     // ── Historial de pagos (línea de tiempo) ─────────────────────────────
     const pagosVenta = getPagosVenta(v.id);
-    const historial = pagosVenta.slice().reverse().slice(0,4);
+    const historial = pagosVenta.slice().reverse();
     const histHtml = historial.length
       ? historial.map(p => {
           const fp = new Date(p.fecha).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});
