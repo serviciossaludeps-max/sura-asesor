@@ -1,0 +1,15 @@
+{
+  "admin_pin": "Q2FuYWwyMDI2",
+  "asesores": [
+    {
+      "id": "fran-viloria",
+      "nombre": "Fran Viloria",
+      "nombre_corto": "Fran",
+      "whatsapp": "573008514699",
+      "correo": "fran.viloria@asesorsura.com",
+      "ciudad": "Colombia",
+      "activo": true,
+      "admin": true
+    }
+  ]
+}

@@ -319,10 +319,134 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
 .comp-scroll-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-top:2.5rem; border-radius:10px; }
 .comp-scroll-wrap .comp-table { margin-top:0; min-width:860px; }
 
+
+
+/* ─ ADMIN PIN ─ */
+.admin-pin-modal { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:400; display:none; align-items:center; justify-content:center; }
+.admin-pin-modal.open { display:flex; }
+.admin-pin-box { background:var(--white); border-radius:10px; width:280px; overflow:hidden; box-shadow:0 8px 32px rgba(0,26,82,.2); }
+.admin-pin-head { background:var(--navy); padding:.875rem 1.1rem; display:flex; justify-content:space-between; align-items:center; }
+.admin-pin-title { font-size:.78rem; font-weight:600; color:#fff; }
+.admin-pin-body { padding:1.25rem; display:flex; flex-direction:column; gap:.75rem; }
+.admin-pin-desc { font-size:.78rem; color:var(--muted); }
+.admin-pin-input { width:100%; background:var(--off); border:1px solid var(--border); border-radius:5px; padding:.65rem .875rem; font-family:var(--sans); font-size:1rem; text-align:center; letter-spacing:.3em; outline:none; transition:border-color .18s; }
+.admin-pin-input:focus { border-color:var(--navy); }
+.admin-pin-error { font-size:.72rem; color:#dc2626; min-height:1rem; text-align:center; }
+
+/* Botón discreto — solo un pequeño punto */
+.admin-toggle { width:28px; height:28px; border-radius:50%; background:rgba(0,26,82,.4); border:1px solid rgba(255,255,255,.1); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.admin-toggle:hover { background:rgba(0,26,82,.7); border-color:rgba(255,255,255,.25); }
+.admin-toggle-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.35); transition:background .2s; }
+.admin-toggle:hover .admin-toggle-dot { background:var(--gold); }
+
+/* ─ SISTEMA MULTIASESOR ─ */
+.asesor-banner { background: rgba(255,184,0,.06); border-bottom: 1px solid rgba(255,184,0,.15); padding: .5rem 2rem; display: none; }
+.asesor-banner.visible { display: block; }
+.asesor-banner-inner { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.asesor-banner-info { display: flex; align-items: center; gap: .6rem; font-size: .72rem; color: rgba(255,255,255,.5); }
+.asesor-banner-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+.asesor-banner-name { color: var(--gold); font-weight: 600; }
+.asesor-banner-share { font-size: .7rem; color: rgba(255,184,0,.6); background: rgba(255,184,0,.08); border: 1px solid rgba(255,184,0,.2); border-radius: 4px; padding: .2rem .6rem; cursor: pointer; transition: all .18s; }
+.asesor-banner-share:hover { background: rgba(255,184,0,.15); color: var(--gold); }
+
+/* Admin panel */
+.admin-panel { position: fixed; bottom: 5rem; right: 1.25rem; z-index: 300; }
+.admin-toggle { width: 40px; height: 40px; border-radius: 50%; background: var(--deep); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.6); font-size: .9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .18s; }
+.admin-toggle:hover { background: var(--navy); color: #fff; }
+.admin-box { position: absolute; bottom: 50px; right: 0; width: 300px; background: var(--white); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 32px rgba(0,26,82,.15); overflow: hidden; display: none; }
+.admin-box.open { display: block; }
+.admin-box-head { background: var(--navy); padding: .875rem 1.1rem; display: flex; justify-content: space-between; align-items: center; }
+.admin-box-title { font-size: .78rem; font-weight: 600; color: #fff; }
+.admin-box-close { background: none; border: none; color: rgba(255,255,255,.5); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0 .2rem; }
+.admin-box-body { padding: 1.1rem; }
+.admin-asesor-item { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .625rem .75rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: .5rem; }
+.admin-asesor-item:last-child { margin-bottom: 0; }
+.admin-asesor-name { font-size: .78rem; font-weight: 500; color: var(--navy); }
+.admin-asesor-id { font-size: .66rem; color: var(--muted); }
+.admin-asesor-status { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+.admin-asesor-status.off { background: #e5e7eb; }
+.admin-copy { font-size: .68rem; background: var(--navy); color: #fff; border: none; border-radius: 4px; padding: .25rem .55rem; cursor: pointer; transition: opacity .18s; white-space: nowrap; }
+.admin-copy:hover { opacity: .85; }
+.admin-new { width: 100%; margin-top: .75rem; padding: .65rem; background: var(--off); border: 1px dashed var(--border); border-radius: 6px; font-size: .75rem; color: var(--muted); cursor: pointer; transition: all .18s; display: flex; align-items: center; justify-content: center; gap: .4rem; }
+.admin-new:hover { border-color: var(--navy); color: var(--navy); }
+.admin-add-form { margin-top: .75rem; display: none; }
+.admin-add-form.open { display: block; }
+.admin-add-form .fi { width: 100%; background: var(--off); border: 1px solid var(--border); border-radius: 5px; padding: .5rem .75rem; color: var(--text); font-family: var(--sans); font-size: .78rem; outline: none; margin-bottom: .5rem; }
+.admin-add-form .fi:focus { border-color: var(--navy); }
+
+.admin-result { display:none; margin-top:.75rem; }
+.admin-result.open { display:block; }
+.admin-result-url { font-size:.72rem; color:var(--navy); background:var(--off); border-radius:5px; padding:.6rem .75rem; word-break:break-all; margin-bottom:.5rem; }
+.admin-result-json { font-size:.65rem; color:var(--muted); background:var(--text); color:#9ca3af; border-radius:5px; padding:.6rem .75rem; word-break:break-all; font-family:monospace; margin-bottom:.6rem; max-height:80px; overflow-y:auto; }
+.admin-result-btns { display:flex; gap:.4rem; flex-wrap:wrap; }
+.admin-result-btns .admin-copy.wsp { background:#25D366; }
+.admin-save { width: 100%; background: var(--navy); color: #fff; border: none; border-radius: 5px; padding: .6rem; font-size: .78rem; font-weight: 600; cursor: pointer; font-family: var(--sans); }
 @media(max-width:820px){
   .faq-grid { grid-template-columns:1fr; }
   .comp-table th,.comp-table td { padding:.65rem .75rem; font-size:.78rem; }
 }
+
+
+/* ─ ADMIN PIN ─ */
+.admin-pin-modal { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:400; display:none; align-items:center; justify-content:center; }
+.admin-pin-modal.open { display:flex; }
+.admin-pin-box { background:var(--white); border-radius:10px; width:280px; overflow:hidden; box-shadow:0 8px 32px rgba(0,26,82,.2); }
+.admin-pin-head { background:var(--navy); padding:.875rem 1.1rem; display:flex; justify-content:space-between; align-items:center; }
+.admin-pin-title { font-size:.78rem; font-weight:600; color:#fff; }
+.admin-pin-body { padding:1.25rem; display:flex; flex-direction:column; gap:.75rem; }
+.admin-pin-desc { font-size:.78rem; color:var(--muted); }
+.admin-pin-input { width:100%; background:var(--off); border:1px solid var(--border); border-radius:5px; padding:.65rem .875rem; font-family:var(--sans); font-size:1rem; text-align:center; letter-spacing:.3em; outline:none; transition:border-color .18s; }
+.admin-pin-input:focus { border-color:var(--navy); }
+.admin-pin-error { font-size:.72rem; color:#dc2626; min-height:1rem; text-align:center; }
+
+/* Botón discreto — solo un pequeño punto */
+.admin-toggle { width:28px; height:28px; border-radius:50%; background:rgba(0,26,82,.4); border:1px solid rgba(255,255,255,.1); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.admin-toggle:hover { background:rgba(0,26,82,.7); border-color:rgba(255,255,255,.25); }
+.admin-toggle-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.35); transition:background .2s; }
+.admin-toggle:hover .admin-toggle-dot { background:var(--gold); }
+
+/* ─ SISTEMA MULTIASESOR ─ */
+.asesor-banner { background: rgba(255,184,0,.06); border-bottom: 1px solid rgba(255,184,0,.15); padding: .5rem 2rem; display: none; }
+.asesor-banner.visible { display: block; }
+.asesor-banner-inner { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.asesor-banner-info { display: flex; align-items: center; gap: .6rem; font-size: .72rem; color: rgba(255,255,255,.5); }
+.asesor-banner-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+.asesor-banner-name { color: var(--gold); font-weight: 600; }
+.asesor-banner-share { font-size: .7rem; color: rgba(255,184,0,.6); background: rgba(255,184,0,.08); border: 1px solid rgba(255,184,0,.2); border-radius: 4px; padding: .2rem .6rem; cursor: pointer; transition: all .18s; }
+.asesor-banner-share:hover { background: rgba(255,184,0,.15); color: var(--gold); }
+
+/* Admin panel */
+.admin-panel { position: fixed; bottom: 5rem; right: 1.25rem; z-index: 300; }
+.admin-toggle { width: 40px; height: 40px; border-radius: 50%; background: var(--deep); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.6); font-size: .9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .18s; }
+.admin-toggle:hover { background: var(--navy); color: #fff; }
+.admin-box { position: absolute; bottom: 50px; right: 0; width: 300px; background: var(--white); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 32px rgba(0,26,82,.15); overflow: hidden; display: none; }
+.admin-box.open { display: block; }
+.admin-box-head { background: var(--navy); padding: .875rem 1.1rem; display: flex; justify-content: space-between; align-items: center; }
+.admin-box-title { font-size: .78rem; font-weight: 600; color: #fff; }
+.admin-box-close { background: none; border: none; color: rgba(255,255,255,.5); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0 .2rem; }
+.admin-box-body { padding: 1.1rem; }
+.admin-asesor-item { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .625rem .75rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: .5rem; }
+.admin-asesor-item:last-child { margin-bottom: 0; }
+.admin-asesor-name { font-size: .78rem; font-weight: 500; color: var(--navy); }
+.admin-asesor-id { font-size: .66rem; color: var(--muted); }
+.admin-asesor-status { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+.admin-asesor-status.off { background: #e5e7eb; }
+.admin-copy { font-size: .68rem; background: var(--navy); color: #fff; border: none; border-radius: 4px; padding: .25rem .55rem; cursor: pointer; transition: opacity .18s; white-space: nowrap; }
+.admin-copy:hover { opacity: .85; }
+.admin-new { width: 100%; margin-top: .75rem; padding: .65rem; background: var(--off); border: 1px dashed var(--border); border-radius: 6px; font-size: .75rem; color: var(--muted); cursor: pointer; transition: all .18s; display: flex; align-items: center; justify-content: center; gap: .4rem; }
+.admin-new:hover { border-color: var(--navy); color: var(--navy); }
+.admin-add-form { margin-top: .75rem; display: none; }
+.admin-add-form.open { display: block; }
+.admin-add-form .fi { width: 100%; background: var(--off); border: 1px solid var(--border); border-radius: 5px; padding: .5rem .75rem; color: var(--text); font-family: var(--sans); font-size: .78rem; outline: none; margin-bottom: .5rem; }
+.admin-add-form .fi:focus { border-color: var(--navy); }
+
+.admin-result { display:none; margin-top:.75rem; }
+.admin-result.open { display:block; }
+.admin-result-url { font-size:.72rem; color:var(--navy); background:var(--off); border-radius:5px; padding:.6rem .75rem; word-break:break-all; margin-bottom:.5rem; }
+.admin-result-json { font-size:.65rem; color:var(--muted); background:var(--text); color:#9ca3af; border-radius:5px; padding:.6rem .75rem; word-break:break-all; font-family:monospace; margin-bottom:.6rem; max-height:80px; overflow-y:auto; }
+.admin-result-btns { display:flex; gap:.4rem; flex-wrap:wrap; }
+.admin-result-btns .admin-copy.wsp { background:#25D366; }
+.admin-save { width: 100%; background: var(--navy); color: #fff; border: none; border-radius: 5px; padding: .6rem; font-size: .78rem; font-weight: 600; cursor: pointer; font-family: var(--sans); }
 @media(max-width:820px){
   .hero-inner,.contact-wrap{grid-template-columns:1fr}
   .hero-stats{display:none}
@@ -351,6 +475,17 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
     <span class="ti"><span class="ti-dot"></span>Planes de salud · Complementarios · Empresariales · Traslados EPS</span>
     <span class="ti"><span class="ti-dot"></span>Respuesta en menos de 2 horas</span>
     <span class="ti"><span class="ti-dot"></span>Red de más de <b>216 IPS</b> en Colombia</span>
+  </div>
+</div>
+
+<!-- BANNER ASESOR ACTIVO -->
+<div class="asesor-banner" id="asesor-banner">
+  <div class="asesor-banner-inner">
+    <div class="asesor-banner-info">
+      <span class="asesor-banner-dot"></span>
+      <span>Estás viendo la página de <span class="asesor-banner-name" id="banner-nombre"></span> &middot; Asesor Canal Especializado en Salud SURA</span>
+    </div>
+    <button class="asesor-banner-share" onclick="compartirUrl()">Copiar mi enlace ↗</button>
   </div>
 </div>
 
@@ -594,15 +729,15 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
         <p class="c-intro">Resuelvo tus dudas sobre coberturas, traslados y planes. Sin presión y con información clara desde el primer contacto.</p>
         <div class="citem">
           <div class="citem-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-          <div><p class="citem-lbl">Correo</p><p class="citem-val">&#102;&#114;&#97;&#110;&#46;&#118;&#105;&#108;&#111;&#114;&#105;&#97;&#64;&#97;&#115;&#101;&#115;&#111;&#114;&#115;&#117;&#114;&#97;&#46;&#99;&#111;&#109;</p></div>
+          <div><p class="citem-lbl">Correo</p><p class="citem-val" id="asesor-email">fran.viloria@asesorsura.com</p></div>
         </div>
         <div class="citem">
           <div class="citem-ico"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.88a16 16 0 0 0 8 8l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-          <div><p class="citem-lbl">WhatsApp</p><p class="citem-val">+57 300 851 4699</p></div>
+          <div><p class="citem-lbl">WhatsApp</p><p class="citem-val" id="asesor-tel">+57 300 851 4699</p></div>
         </div>
         <div class="citem">
           <div class="citem-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-          <div><p class="citem-lbl">Cobertura</p><p class="citem-val">Colombia</p></div>
+          <div><p class="citem-lbl">Cobertura</p><p class="citem-val" id="asesor-ciudad">Colombia</p></div>
         </div>
       </div>
       <div class="c-form">
@@ -951,38 +1086,258 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
   </div>
 </footer>
 
+<!-- ADMIN PANEL — protegido por PIN -->
+<div class="admin-panel" id="admin-panel" style="display:none;">
+
+  <!-- PIN MODAL -->
+  <div class="admin-pin-modal" id="admin-pin-modal">
+    <div class="admin-pin-box">
+      <div class="admin-pin-head">
+        <span class="admin-pin-title">Acceso administrador</span>
+        <button class="admin-box-close" onclick="cerrarPin()">×</button>
+      </div>
+      <div class="admin-pin-body">
+        <p class="admin-pin-desc">Ingresa tu PIN de administrador para continuar.</p>
+        <input type="password" class="admin-pin-input" id="admin-pin-input" placeholder="••••••" maxlength="8" onkeydown="if(event.key==='Enter')verificarPin()">
+        <div class="admin-pin-error" id="admin-pin-error"></div>
+        <button class="admin-save" onclick="verificarPin()">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL REAL (oculto hasta verificar PIN) -->
+  <div class="admin-box" id="admin-box">
+    <div class="admin-box-head">
+      <span class="admin-box-title">⚙️ Gestión de asesores</span>
+      <button class="admin-box-close" onclick="toggleAdmin()">×</button>
+    </div>
+    <div class="admin-box-body">
+      <div id="admin-lista-asesores"></div>
+      <button class="admin-new" onclick="toggleAddForm()">+ Agregar nuevo asesor</button>
+      <div class="admin-add-form" id="admin-add-form">
+        <input type="text" class="fi" id="add-nombre" placeholder="Nombre completo">
+        <input type="text" class="fi" id="add-wsp" placeholder="WhatsApp (ej: 573001234567)">
+        <input type="text" class="fi" id="add-correo" placeholder="Correo electrónico">
+        <input type="text" class="fi" id="add-ciudad" placeholder="Ciudad">
+        <button class="admin-save" onclick="generarUrlAsesor()">Generar URL del asesor</button>
+        <div class="admin-result" id="admin-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTÓN DISCRETO — solo un pequeño punto en la esquina -->
+  <button class="admin-toggle" id="admin-toggle-btn" onclick="abrirPin()" title="Administrador">
+    <span class="admin-toggle-dot"></span>
+  </button>
+</div>
+
 <!-- WA FLOAT -->
 <a href="#" id="wa-float" class="wa" aria-label="Contactar por WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
 </a>
 
 <script>
-function toggleNav() {
-  var t = document.getElementById('nav-toggle');
-  var m = document.getElementById('nav-mobile');
-  t.classList.toggle('open');
-  m.classList.toggle('open');
+// SISTEMA MULTIASESOR
+var ASESOR_DEFAULT = {
+  id: 'fran-viloria',
+  nombre: 'Fran Viloria',
+  nombre_corto: 'Fran',
+  whatsapp: atob('NTczMDA4NTE0Njk5'),
+  correo: 'fran.viloria@asesorsura.com',
+  ciudad: 'Colombia',
+  activo: true,
+  admin: true
+};
+var ASESOR_ACTIVO = null;
+
+function cargarAsesor() {
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('asesor');
+  if (!id) { ASESOR_ACTIVO = ASESOR_DEFAULT; aplicarAsesor(); return; }
+  fetch('asesores.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      var encontrado = null;
+      for (var i = 0; i < data.asesores.length; i++) {
+        if (data.asesores[i].id === id && data.asesores[i].activo) {
+          encontrado = data.asesores[i]; break;
+        }
+      }
+      ASESOR_ACTIVO = encontrado || ASESOR_DEFAULT;
+      aplicarAsesor();
+      if (encontrado && !encontrado.admin) mostrarBanner();
+      if (ASESOR_ACTIVO.admin) {
+        if (data.admin_pin) _ADMIN_PIN = data.admin_pin;
+        cargarListaAdmin(data.asesores);
+      }
+    })
+    .catch(function(){ ASESOR_ACTIVO = ASESOR_DEFAULT; aplicarAsesor(); });
 }
-function cerrarNav() {
-  document.getElementById('nav-toggle').classList.remove('open');
-  document.getElementById('nav-mobile').classList.remove('open');
+
+function aplicarAsesor() {
+  var a = ASESOR_ACTIVO;
+  var navName = document.querySelector('.nav-name');
+  if (navName) navName.innerHTML = 'Canal Especializado en Salud<small>' + a.nombre + ' &middot; Asesor autorizado</small>';
+  var heroSub = document.querySelector('.hero-sub');
+  if (heroSub) heroSub.innerHTML = 'Soy <strong>' + a.nombre + '</strong>, asesor del Canal Especializado en Salud de SURA. Te acompa&ntilde;o en elegir el plan ideal para ti, tu familia o tu empresa &mdash; en toda Colombia.';
+  var emailEl = document.getElementById('asesor-email');
+  if (emailEl) emailEl.textContent = a.correo;
+  var ciudadEl = document.getElementById('asesor-ciudad');
+  if (ciudadEl) ciudadEl.textContent = a.ciudad || 'Colombia';
+  var telEl = document.getElementById('asesor-tel');
+  if (telEl) telEl.textContent = '+57 ' + a.whatsapp.replace('57','');
+  var footPill = document.querySelector('.fb-pill-txt');
+  if (footPill) footPill.textContent = a.nombre + ' \u00b7 Asesor certificado SURA Colombia';
+  var footCopy = document.querySelector('.fb2-copy');
+  if (footCopy) footCopy.textContent = '\u00a9 2026 Canal Especializado en Salud \u00b7 ' + a.nombre + ' \u00b7 Asesor SURA autorizado \u00b7 serviciosseguros.co';
+  var waMsg = encodeURIComponent('Hola ' + a.nombre_corto + ', quiero informacion sobre planes de salud SURA');
+  var waEl = document.getElementById('wa-float');
+  if (waEl) { waEl.href = 'https://wa.me/' + a.whatsapp + '?text=' + waMsg; waEl.setAttribute('target','_blank'); waEl.setAttribute('rel','noopener noreferrer'); }
+  var bannerNombre = document.getElementById('banner-nombre');
+  if (bannerNombre) bannerNombre.textContent = a.nombre;
+  if (a.admin) { var ap = document.getElementById('admin-panel'); if (ap) ap.style.display = 'block'; }
+  document.title = 'Canal Especializado en Salud \u2014 ' + a.nombre + ' \u00b7 Asesor SURA';
 }
-document.addEventListener('click', function(e) {
-  var nav = document.querySelector('nav');
-  if (!nav.contains(e.target)) cerrarNav();
-});
+
+function mostrarBanner() {
+  var b = document.getElementById('asesor-banner');
+  if (b) b.classList.add('visible');
+}
+
+function compartirUrl() {
+  var url = window.location.origin + '/?asesor=' + ASESOR_ACTIVO.id;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function(){ alert('Enlace copiado: ' + url); });
+  } else { prompt('Copia este enlace:', url); }
+}
+
+// ADMIN PIN
+var _adminAuth = false;
+var _pinIntentos = 0;
+var _pinBloqueo = 0;
+var _ADMIN_PIN = atob('MTIzNDU2'); // PIN por defecto: 123456 — cambialo en asesores.json
+
+function abrirPin() {
+  if (_adminAuth) { toggleAdmin(); return; }
+  var now = Date.now();
+  if (_pinBloqueo && now < _pinBloqueo) {
+    var seg = Math.ceil((_pinBloqueo - now) / 1000);
+    alert('Demasiados intentos. Espera ' + seg + ' segundos.');
+    return;
+  }
+  var modal = document.getElementById('admin-pin-modal');
+  if (modal) { modal.classList.add('open'); setTimeout(function(){ var inp = document.getElementById('admin-pin-input'); if(inp) inp.focus(); }, 100); }
+}
+function cerrarPin() {
+  var modal = document.getElementById('admin-pin-modal');
+  if (modal) { modal.classList.remove('open'); }
+  var inp = document.getElementById('admin-pin-input');
+  if (inp) inp.value = '';
+  var err = document.getElementById('admin-pin-error');
+  if (err) err.textContent = '';
+}
+function verificarPin() {
+  var inp = document.getElementById('admin-pin-input');
+  var err = document.getElementById('admin-pin-error');
+  if (!inp) return;
+  var pin = inp.value.trim();
+  if (pin === _ADMIN_PIN) {
+    _adminAuth = true;
+    _pinIntentos = 0;
+    cerrarPin();
+    toggleAdmin();
+  } else {
+    _pinIntentos++;
+    if (_pinIntentos >= 3) {
+      _pinBloqueo = Date.now() + 60000;
+      _pinIntentos = 0;
+      if (err) err.textContent = 'Demasiados intentos. Bloqueado 60 segundos.';
+      inp.value = '';
+    } else {
+      if (err) err.textContent = 'PIN incorrecto. Intento ' + _pinIntentos + ' de 3.';
+      inp.value = '';
+      inp.focus();
+    }
+  }
+}
+function toggleAdmin() {
+  var box = document.getElementById('admin-box');
+  if (box) box.classList.toggle('open');
+}
+function toggleAddForm() {
+  var f = document.getElementById('admin-add-form');
+  if (f) f.classList.toggle('open');
+}
+function cargarListaAdmin(asesores) {
+  var lista = document.getElementById('admin-lista-asesores');
+  if (!lista) return;
+  var html = '';
+  asesores.forEach(function(a) {
+    var url = window.location.origin + '/?asesor=' + a.id;
+    html += '<div class="admin-asesor-item"><div><div class="admin-asesor-name">' + a.nombre + '</div>';
+    html += '<div class="admin-asesor-id">' + a.id + '</div></div>';
+    html += '<span class="admin-asesor-status' + (a.activo ? '' : ' off') + '"></span>';
+    html += '<button class="admin-copy" onclick="copiarUrl(\'' + url + '\')">Copiar URL</button></div>';
+  });
+  lista.innerHTML = html;
+}
+function copiarUrl(url) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function(){ alert('URL copiada:\n' + url); });
+  } else { prompt('Copia:', url); }
+}
+function generarUrlAsesor() {
+  var n = document.getElementById('add-nombre').value.trim();
+  var w = document.getElementById('add-wsp').value.trim();
+  var e = document.getElementById('add-correo').value.trim();
+  var c = document.getElementById('add-ciudad').value.trim();
+  if (!n) { alert('El nombre es obligatorio.'); return; }
+  if (!w || w.replace(/[^0-9]/g,'').length < 10) { alert('Ingresa un WhatsApp valido con indicativo de pais (ej: 573001234567).'); return; }
+  var id = n.toLowerCase().split(' ').join('-').replace(/[^a-z0-9-]/g,'');
+  var url = window.location.origin + '/?asesor=' + id;
+  var jsonBlock = '{"id":"' + id + '","nombre":"' + n + '","nombre_corto":"' + n.split(' ')[0] + '","whatsapp":"' + w.replace(/[^0-9]/g,'') + '","correo":"' + e + '","ciudad":"' + c + '","activo":true,"admin":false}';
+
+  // Mostrar resultado en pantalla (no alert)
+  var resultBox = document.getElementById('admin-result');
+  if (resultBox) {
+    resultBox.innerHTML = '<div class="admin-result-url"><strong>URL generada:</strong><br>' + url + '</div>' +
+      '<div class="admin-result-json">' + jsonBlock + '</div>' +
+      '<div class="admin-result-btns">' +
+      '<button class="admin-copy" onclick="copiarTexto(\'' + url.replace(/'/g,"\\'") + '\')">Copiar URL</button>' +
+      '<button class="admin-copy" onclick="copiarTexto(this.dataset.json)" data-json="' + jsonBlock.replace(/"/g,'&quot;') + '">Copiar JSON</button>' +
+      '<button class="admin-copy wsp" onclick="enviarRegistroWsp(\'' + n + '\', \'' + url.replace(/'/g,"\\'") + '\', \'' + jsonBlock.replace(/'/g,"\\'").replace(/"/g,'&quot;') + '\')">Enviar a mi WhatsApp</button>' +
+      '</div>';
+    resultBox.classList.add('open');
+  }
+}
+function copiarTexto(txt) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(function(){ alert('Copiado al portapapeles.'); });
+  } else { prompt('Copia:', txt); }
+}
+function enviarRegistroWsp(nombre, url, jsonBlock) {
+  var admin = ASESOR_DEFAULT;
+  var msg = 'Nuevo registro de asesor: ' + nombre + '. URL: ' + url + '. JSON para asesores.json: ' + jsonBlock;
+  window.open('https://wa.me/' + admin.whatsapp + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// NAVEGACION Y TABS
 function activarTab(id) {
   ['cotizador','empresa'].forEach(function(t) {
-    document.getElementById('tab-'+t).classList.toggle('active', t===id);
-    document.getElementById('panel-'+t).classList.toggle('active', t===id);
+    var tab = document.getElementById('tab-'+t);
+    var panel = document.getElementById('panel-'+t);
+    if (tab) tab.classList.toggle('active', t===id);
+    if (panel) panel.classList.toggle('active', t===id);
   });
-  setTimeout(function(){ document.getElementById('forms').scrollIntoView({behavior:'smooth'}); }, 80);
+  setTimeout(function(){ var f = document.getElementById('forms'); if (f) f.scrollIntoView({behavior:'smooth'}); }, 80);
 }
 function irA(id, btn) {
   document.querySelectorAll('.dopt').forEach(function(b){ b.classList.remove('on'); });
   btn.classList.add('on');
   activarTab(id);
 }
+
+// IFRAMES
 function autoHeight(f) {
   try {
     var resize = function() {
@@ -999,42 +1354,24 @@ window.addEventListener('message', function(e) {
     });
   }
 });
-(function() {
-  var w = atob('NTczMDA4NTE0Njk5');
-  var t = encodeURIComponent('Hola Fran, quiero informacion sobre planes de salud SURA');
-  var el = document.getElementById('wa-float');
-  if (el) { el.href = 'https://wa.me/' + w + '?text=' + t; el.setAttribute('target','_blank'); el.setAttribute('rel','noopener noreferrer'); }
-})();
+
+// SCROLL REVEAL
 var obs = new IntersectionObserver(function(entries) {
   entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('in'); });
 }, { threshold: 0.08 });
 document.querySelectorAll('.rv').forEach(function(el) { obs.observe(el); });
+
+// FORMULARIO
 var _rl = { count: 0, last: 0 };
 function _sanitize(str) {
-  return str.replace(/</g,'').replace(/>/g,'').replace(/&/g,'').replace(/"/g,'"').replace(/`/g,'').replace(/https?:\/\/[^\s]+/gi,'[enlace]').substring(0,300);
+  var s = String(str).substring(0, 300);
+  s = s.replace(/</g, '').replace(/>/g, '').replace(/&/g, '').replace(/`/g, '');
+  return s;
 }
-function _validTel(t) { return /^[\d\s+\-()]{7,15}$/.test(t); }
-function toggleFaq(el) {
-  var item = el.parentElement;
-  var wasOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
-  if (!wasOpen) item.classList.add('open');
+function _validTel(t) {
+  var clean = t.replace(/ /g,'').replace(/-/g,'').replace(/\(/g,'').replace(/\)/g,'').replace(/\+/g,'');
+  return clean.length >= 7 && clean.length <= 15 && !isNaN(Number(clean));
 }
-function abrirModal() {
-  document.getElementById('modal-privacidad').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function cerrarModal() {
-  document.getElementById('modal-privacidad').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function aceptarPolitica() {
-  document.getElementById('cf-pol').checked = true;
-  cerrarModal();
-}
-document.getElementById('modal-privacidad').addEventListener('click', function(e) {
-  if (e.target === this) cerrarModal();
-});
 function enviar() {
   var now = Date.now();
   if (now - _rl.last > 60000) { _rl.count = 0; _rl.last = now; }
@@ -1046,16 +1383,46 @@ function enviar() {
   var tp = document.getElementById('cf-tp').value;
   var m = document.getElementById('cf-m').value.trim();
   var pol = document.getElementById('cf-pol');
-  if (!pol || !pol.checked) { alert('Debes aceptar la Política de Tratamiento de Datos para continuar.'); return; }
+  if (!pol || !pol.checked) { alert('Debes aceptar la Politica de Tratamiento de Datos para continuar.'); return; }
   if (!n) { alert('Por favor ingresa tu nombre.'); return; }
-  if (!t || !_validTel(t)) { alert('Por favor ingresa un teléfono válido.'); return; }
-  var msg = 'Hola Fran, soy ' + _sanitize(n) + '. Tel: ' + _sanitize(t);
+  if (!t || !_validTel(t)) { alert('Por favor ingresa un telefono valido.'); return; }
+  var asesor = ASESOR_ACTIVO || ASESOR_DEFAULT;
+  var msg = 'Hola ' + asesor.nombre_corto + ', soy ' + _sanitize(n) + '. Tel: ' + _sanitize(t);
   if (c) msg += '. Ciudad: ' + _sanitize(c);
   msg += '. Necesito: ' + _sanitize(tp);
   if (m) msg += '. ' + _sanitize(m);
-  var w = atob('NTczMDA4NTE0Njk5');
-  window.open('https://wa.me/' + w + '?text=' + encodeURIComponent(msg), '_blank');
+  window.open('https://wa.me/' + asesor.whatsapp + '?text=' + encodeURIComponent(msg), '_blank');
 }
+
+// FAQ
+function toggleFaq(el) {
+  var item = el.parentElement;
+  var wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+  if (!wasOpen) item.classList.add('open');
+}
+
+// MODAL
+function abrirModal() {
+  var m = document.getElementById('modal-privacidad');
+  if (m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; }
+}
+function cerrarModal() {
+  var m = document.getElementById('modal-privacidad');
+  if (m) { m.classList.remove('open'); document.body.style.overflow = ''; }
+}
+function aceptarPolitica() {
+  var pol = document.getElementById('cf-pol');
+  if (pol) pol.checked = true;
+  cerrarModal();
+}
+var modalEl = document.getElementById('modal-privacidad');
+if (modalEl) {
+  modalEl.addEventListener('click', function(e) { if (e.target === this) cerrarModal(); });
+}
+
+// INIT
+cargarAsesor();
 </script>
 </body>
 </html>
