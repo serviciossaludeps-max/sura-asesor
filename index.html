@@ -1153,10 +1153,16 @@ var ASESOR_ACTIVO = null;
 function cargarAsesor() {
   var params = new URLSearchParams(window.location.search);
   var id = params.get('asesor');
-  if (!id) { ASESOR_ACTIVO = ASESOR_DEFAULT; aplicarAsesor(); return; }
   fetch('asesores.json')
     .then(function(r){ return r.json(); })
     .then(function(data) {
+      if (data.admin_pin) { try { _ADMIN_PIN = atob(data.admin_pin); } catch(e) { _ADMIN_PIN = data.admin_pin; } }
+      if (!id) {
+        ASESOR_ACTIVO = ASESOR_DEFAULT;
+        aplicarAsesor();
+        if (ASESOR_ACTIVO.admin) cargarListaAdmin(data.asesores);
+        return;
+      }
       var encontrado = null;
       for (var i = 0; i < data.asesores.length; i++) {
         if (data.asesores[i].id === id && data.asesores[i].activo) {
@@ -1166,10 +1172,7 @@ function cargarAsesor() {
       ASESOR_ACTIVO = encontrado || ASESOR_DEFAULT;
       aplicarAsesor();
       if (encontrado && !encontrado.admin) mostrarBanner();
-      if (ASESOR_ACTIVO.admin) {
-        if (data.admin_pin) { try { _ADMIN_PIN = atob(data.admin_pin); } catch(e) { _ADMIN_PIN = data.admin_pin; } }
-        cargarListaAdmin(data.asesores);
-      }
+      if (ASESOR_ACTIVO.admin) cargarListaAdmin(data.asesores);
     })
     .catch(function(){ ASESOR_ACTIVO = ASESOR_DEFAULT; aplicarAsesor(); });
 }
