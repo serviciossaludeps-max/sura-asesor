@@ -7,9 +7,9 @@
 <meta name="description" content="Asesor SURA autorizado en Colombia. Planes de salud, complementarios, pólizas empresariales y traslados de EPS. Cotiza gratis.">
 <!-- SECURITY HEADERS -->
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<link rel="icon" href="Seguros_SURA_Logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -492,7 +492,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="./" class="nav-brand">
+    <a href="#inicio" class="nav-brand">
       <div class="nav-sura">SURA</div>
       <div class="nav-name">Canal Especializado en Salud<small>Fran Viloria · Asesor autorizado</small></div>
     </a>
@@ -1137,19 +1137,6 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
 </a>
 
 <script>
-// Limpiar URL: eliminar "index.html" y hash "#inicio" si está en el inicio
-(function() {
-  var loc = window.location;
-  var path = loc.pathname;
-  var hash = loc.hash;
-  // Si la URL contiene index.html o el hash es #inicio (sin otros hashes de sección), limpiar
-  if (path.indexOf('index.html') !== -1 || hash === '#inicio') {
-    var cleanPath = path.replace(/index\.html$/, '') || '/';
-    var cleanHash = hash === '#inicio' ? '' : hash;
-    history.replaceState(null, '', cleanPath + loc.search + cleanHash);
-  }
-})();
-
 // SISTEMA MULTIASESOR
 var ASESOR_DEFAULT = {
   id: 'fran-viloria',
@@ -1212,9 +1199,25 @@ function cargarAsesor() {
 function aplicarAsesor() {
   var a = ASESOR_ACTIVO;
   var navName = document.querySelector('.nav-name');
-  if (navName) navName.innerHTML = 'Canal Especializado en Salud<small>' + a.nombre + ' &middot; Asesor autorizado</small>';
+  if (navName) {
+    navName.textContent = '';
+    var navSpan = document.createTextNode('Canal Especializado en Salud');
+    var navSmall = document.createElement('small');
+    navSmall.textContent = a.nombre + ' · Asesor autorizado';
+    navName.appendChild(navSpan);
+    navName.appendChild(navSmall);
+  }
   var heroSub = document.querySelector('.hero-sub');
-  if (heroSub) heroSub.innerHTML = 'Soy <strong>' + a.nombre + '</strong>, asesor del Canal Especializado en Salud de SURA. Te acompa&ntilde;o en elegir el plan ideal para ti, tu familia o tu empresa &mdash; en toda Colombia.';
+  if (heroSub) {
+    heroSub.textContent = '';
+    var t1 = document.createTextNode('Soy ');
+    var strong = document.createElement('strong');
+    strong.textContent = a.nombre;
+    var t2 = document.createTextNode(', asesor del Canal Especializado en Salud de SURA. Te acompaño en elegir el plan ideal para ti, tu familia o tu empresa — en toda Colombia.');
+    heroSub.appendChild(t1);
+    heroSub.appendChild(strong);
+    heroSub.appendChild(t2);
+  }
   var emailEl = document.getElementById('asesor-email');
   if (emailEl) emailEl.textContent = a.correo;
   var ciudadEl = document.getElementById('asesor-ciudad');
@@ -1250,7 +1253,7 @@ function compartirUrl() {
 var _adminAuth = false;
 var _pinIntentos = 0;
 var _pinBloqueo = 0;
-var _ADMIN_PIN = atob('MTIzNDU2'); // PIN por defecto: 123456 — cambialo en asesores.json
+var _ADMIN_PIN = null; // Se carga exclusivamente desde asesores.json — sin fallback inseguro
 
 function abrirPin() {
   if (_adminAuth) { toggleAdmin(); return; }
@@ -1276,6 +1279,10 @@ function verificarPin() {
   var err = document.getElementById('admin-pin-error');
   if (!inp) return;
   var pin = inp.value.trim();
+  if (!_ADMIN_PIN) {
+    if (err) err.textContent = 'PIN no configurado. Verifica asesores.json.';
+    return;
+  }
   if (pin === _ADMIN_PIN) {
     _adminAuth = true;
     _pinIntentos = 0;
