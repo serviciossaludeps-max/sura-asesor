@@ -192,6 +192,14 @@ input.err,select.err{border-color:var(--red);}
   .card{padding:16px;}
   .plan-grid{grid-template-columns:repeat(2,1fr);}
 }
+
+/* ── POLÍTICA DE DATOS ── */
+.politica-check{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);transition:border-color .2s;}
+.politica-check.err-check{border-color:var(--red);background:#FEF2F2;}
+.politica-check input[type="checkbox"]{width:17px;height:17px;accent-color:var(--blue);flex-shrink:0;margin-top:2px;cursor:pointer;}
+.politica-check label{font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer;}
+.politica-check label a{color:var(--blue);text-decoration:underline;font-weight:600;}
+#politicaErr{display:none;font-size:12px;color:var(--red);margin-top:6px;padding:0 2px;}
 </style>
 </head>
 <body>
@@ -459,6 +467,17 @@ input.err,select.err{border-color:var(--red);}
       <div id="tomadorAsegInfo" style="font-size:12px;color:var(--muted);margin-top:8px;padding:8px 12px;background:var(--blue-light);border-radius:8px;border:1px solid rgba(26,76,232,0.15);">
         ✅ El tomador se incluirá como asegurado junto con las personas del paso 1.
       </div>
+    </div>
+
+    <!-- POLÍTICA DE TRATAMIENTO DE DATOS -->
+    <div style="margin-bottom:12px;">
+      <div class="politica-check" id="politicaBox">
+        <input type="checkbox" id="chkPolitica">
+        <label for="chkPolitica">
+          He leído y acepto la <a href="https://serviciosseguros.co/#politica" target="_blank" rel="noopener">Política de Tratamiento de Datos Personales</a>. Autorizo a Seguros SURA y a su asesor a contactarme para orientarme sobre los planes de salud de mi interés.
+        </label>
+      </div>
+      <div id="politicaErr">⚠️ Debes aceptar la política de tratamiento de datos para continuar.</div>
     </div>
 
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -1052,6 +1071,20 @@ function irPaso3() {
     return;
   }
   ['dNombre','dDoc','dTel'].forEach(id => document.getElementById(id).classList.remove('err'));
+
+  // Validar aceptación de política de datos
+  const chkPol = document.getElementById('chkPolitica');
+  const polBox = document.getElementById('politicaBox');
+  const polErr = document.getElementById('politicaErr');
+  if (!chkPol.checked) {
+    polBox.classList.add('err-check');
+    polErr.style.display = 'block';
+    polBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  polBox.classList.remove('err-check');
+  polErr.style.display = 'none';
+
   document.getElementById('step2Section').style.display = 'none';
   console.log('[cotizar] irPaso3 state:', JSON.stringify(state));
   mostrarResultado();
