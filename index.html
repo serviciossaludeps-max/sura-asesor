@@ -492,7 +492,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a href="#inicio" class="nav-brand">
+    <a href="./" class="nav-brand">
       <div class="nav-sura">SURA</div>
       <div class="nav-name">Canal Especializado en Salud<small>Fran Viloria · Asesor autorizado</small></div>
     </a>
@@ -1137,6 +1137,19 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
 </a>
 
 <script>
+// Limpiar URL: eliminar "index.html" y hash "#inicio" si está en el inicio
+(function() {
+  var loc = window.location;
+  var path = loc.pathname;
+  var hash = loc.hash;
+  // Si la URL contiene index.html o el hash es #inicio (sin otros hashes de sección), limpiar
+  if (path.indexOf('index.html') !== -1 || hash === '#inicio') {
+    var cleanPath = path.replace(/index\.html$/, '') || '/';
+    var cleanHash = hash === '#inicio' ? '' : hash;
+    history.replaceState(null, '', cleanPath + loc.search + cleanHash);
+  }
+})();
+
 // SISTEMA MULTIASESOR
 var ASESOR_DEFAULT = {
   id: 'fran-viloria',
