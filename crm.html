@@ -6064,6 +6064,10 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             style="padding:8px 18px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;font-family:var(--font);">
             ⚖️ Comparar Planes
           </button>
+          <button id="tabAgenteRenovaciones" onclick="agenteSetTab('renovaciones')"
+            style="padding:8px 18px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;font-family:var(--font);position:relative;">
+            📬 Renovaciones <span id="tabRenovBadge" style="display:none;position:absolute;top:4px;right:6px;background:var(--red);color:white;font-size:9px;font-weight:700;border-radius:999px;padding:1px 5px;min-width:14px;text-align:center;line-height:14px;"></span>
+          </button>
         </div>
 
         <!-- Panel: Clausulados -->
@@ -6447,6 +6451,41 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             </div>
           </div>
         </div><!-- /panelAgenteComparar -->
+
+        <!-- ===== PANEL: AGENTE RENOVACIONES ===== -->
+        <div id="panelAgenteRenovaciones" style="display:none;">
+          <div class="alert" style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2);margin-bottom:18px;">
+            📬 <strong>Asistente de Renovaciones</strong> — Pregúntame qué mensajes tienes pendientes y te los muestro. Confírmame y los marco como enviados abriendo WhatsApp directamente.
+          </div>
+
+          <!-- Chat area -->
+          <div class="card" style="display:flex;flex-direction:column;height:560px;">
+            <div id="renovAgenteChat" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px 2px;margin-bottom:12px;">
+              <!-- Bienvenida inicial -->
+              <div id="renovAgenteBienvenida" style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--teal));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">📬</div>
+                <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px 12px 12px 12px;padding:12px 14px;max-width:80%;font-size:13px;line-height:1.6;color:var(--text);">
+                  ¡Hola! Soy tu asistente de renovaciones. Puedo mostrarte los mensajes pendientes de aprobación, permitirte editarlos y enviarlos directamente por WhatsApp.<br><br>
+                  <strong>¿Qué deseas hacer?</strong>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+                    <button onclick="renovAgenteComando('ver')" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(34,197,94,0.35);background:rgba(34,197,94,0.1);color:var(--green);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">📋 Ver pendientes</button>
+                    <button onclick="renovAgenteComando('urgentes')" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);color:var(--red);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">🔴 Solo urgentes</button>
+                    <button onclick="renovAgenteComando('resumen')" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(26,76,232,0.35);background:rgba(26,76,232,0.08);color:var(--sura-blue);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">📊 Resumen</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input -->
+            <div style="display:flex;gap:8px;align-items:flex-end;border-top:1px solid var(--border);padding-top:12px;">
+              <textarea id="renovAgentePregunta" class="form-control" rows="2"
+                placeholder="Escribe o usa los botones de arriba… Ej: 'muéstrame los de esta semana'"
+                style="flex:1;resize:none;font-size:13px;line-height:1.5;"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();renovAgenteEnviar();}"></textarea>
+              <button class="btn btn-primary" onclick="renovAgenteEnviar()" id="renovAgenteBtnEnviar" style="height:58px;min-width:64px;font-size:18px;">➤</button>
+            </div>
+          </div>
+        </div><!-- /panelAgenteRenovaciones -->
 
       </div>
 
@@ -18051,6 +18090,277 @@ function renovDescartarTodos() {
   setRenovBandeja(bandeja);
   renovRenderBandeja();
 }
+// ══ AGENTE CONVERSACIONAL DE RENOVACIONES ══════════════════════════════════
+// Flujo: el asesor pregunta al chat → el agente lee getRenovBandeja()
+// y responde mostrando cards interactivas. Al confirmar, llama renovMarcarEnviado.
+// ══════════════════════════════════════════════════════════════════════════════
+
+let _renovAgenteIniciado = false;
+
+function renovAgenteInicializar() {
+  // Actualizar badge en tab
+  _renovAgenteActualizarBadge();
+  // Solo inicializar la bandeja de datos si aún no se ha hecho
+  if (!_renovAgenteIniciado) {
+    _renovAgenteIniciado = true;
+    renovIniciarBandeja(); // carga/genera la bandeja en background
+  }
+}
+
+function _renovAgenteActualizarBadge() {
+  const pendientes = getRenovBandeja().filter(i => i.estado === 'pendiente');
+  const badge = document.getElementById('tabRenovBadge');
+  if (!badge) return;
+  if (pendientes.length) {
+    badge.textContent = pendientes.length;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ── Helpers de chat ──────────────────────────────────────────────────────────
+function _renovAgenteBurbuja(html, tipo) {
+  // tipo: 'bot' | 'user'
+  const chat = document.getElementById('renovAgenteChat');
+  if (!chat) return;
+  const esBot = tipo !== 'user';
+  const div = document.createElement('div');
+  div.style.cssText = `display:flex;gap:10px;align-items:flex-start;${esBot ? '' : 'justify-content:flex-end;'}`;
+  if (esBot) {
+    div.innerHTML = `
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--teal));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">📬</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px 12px 12px 12px;padding:12px 14px;max-width:85%;font-size:13px;line-height:1.6;color:var(--text);">${html}</div>`;
+  } else {
+    div.innerHTML = `
+      <div style="background:var(--sura-blue);color:white;padding:10px 14px;border-radius:12px 12px 2px 12px;max-width:80%;font-size:13px;line-height:1.5;">${html.replace(/</g,'&lt;')}</div>`;
+  }
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function renovAgenteEnviar() {
+  const inp = document.getElementById('renovAgentePregunta');
+  const texto = (inp?.value || '').trim();
+  if (!texto) return;
+  inp.value = '';
+  _renovAgenteBurbuja(texto, 'user');
+  _renovAgenteProcesarTexto(texto.toLowerCase());
+}
+
+function renovAgenteComando(cmd) {
+  // Botones de acceso rápido
+  const labels = { ver: '📋 Ver pendientes', urgentes: '🔴 Solo urgentes', resumen: '📊 Resumen' };
+  _renovAgenteBurbuja(labels[cmd] || cmd, 'user');
+  setTimeout(() => _renovAgenteProcesarTexto(cmd), 150);
+}
+
+// ── Procesador de intenciones ────────────────────────────────────────────────
+function _renovAgenteProcesarTexto(texto) {
+  const t = texto.toLowerCase();
+
+  // Intención: resumen / cuántos
+  if (t === 'resumen' || t.includes('cuántos') || t.includes('cuantos') || t.includes('resumen') || t.includes('estadística')) {
+    _renovAgenteResponderResumen();
+    return;
+  }
+  // Intención: urgentes / vencidos
+  if (t === 'urgentes' || t.includes('urgente') || t.includes('vencid') || t.includes('esta semana') || t.includes('7 días') || t.includes('7 dias')) {
+    _renovAgenteResponderPendientes({ filtro: 'urgentes' });
+    return;
+  }
+  // Intención: ver todos / listar
+  if (t === 'ver' || t.includes('ver') || t.includes('mostrar') || t.includes('pendiente') || t.includes('lista') || t.includes('cuál') || t.includes('cual')) {
+    _renovAgenteResponderPendientes({ filtro: 'todos' });
+    return;
+  }
+  // Intención: enviar todos
+  if (t.includes('enviar todo') || t.includes('aprobar todo') || t.includes('confirmar todo')) {
+    _renovAgenteEnviarTodos();
+    return;
+  }
+  // Intención: descartar todos
+  if (t.includes('descartar todo') || t.includes('ignorar todo')) {
+    _renovAgenteDescartarTodos();
+    return;
+  }
+  // Fallback
+  _renovAgenteBurbuja(`No entendí bien esa instrucción 🤔. Prueba con:<br>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+      <button onclick="renovAgenteComando('ver')" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(34,197,94,0.35);background:rgba(34,197,94,0.1);color:var(--green);font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--font);">📋 Ver pendientes</button>
+      <button onclick="renovAgenteComando('urgentes')" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);color:var(--red);font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--font);">🔴 Urgentes</button>
+      <button onclick="renovAgenteComando('resumen')" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(26,76,232,0.35);background:rgba(26,76,232,0.08);color:var(--sura-blue);font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--font);">📊 Resumen</button>
+    </div>`, 'bot');
+}
+
+// ── Respuestas del agente ────────────────────────────────────────────────────
+function _renovAgenteResponderResumen() {
+  const bandeja = getRenovBandeja();
+  const pendientes = bandeja.filter(i => i.estado === 'pendiente');
+  const enviados   = bandeja.filter(i => i.estado === 'enviado');
+  const urgentes   = pendientes.filter(i => i.diasParaVencer <= 7);
+  const proximos   = pendientes.filter(i => i.diasParaVencer > 7 && i.diasParaVencer <= 30);
+  const planif     = pendientes.filter(i => i.diasParaVencer > 30);
+
+  if (!pendientes.length) {
+    _renovAgenteBurbuja(`✅ <strong>No tienes mensajes pendientes.</strong> ${enviados.length ? `Ya enviaste ${enviados.length} mensaje${enviados.length > 1 ? 's' : ''} hoy.` : 'La bandeja está limpia.'}<br><br>¿Quieres que genere nuevos mensajes?
+      <div style="margin-top:8px;"><button onclick="_renovAgenteGenerarNuevos()" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(34,197,94,0.35);background:rgba(34,197,94,0.1);color:var(--green);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">🔄 Generar mensajes</button></div>`, 'bot');
+    return;
+  }
+
+  _renovAgenteBurbuja(`
+    📊 <strong>Resumen de tu bandeja</strong><br><br>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;">
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:var(--red);">${urgentes.length}</div>
+        <div style="font-size:10px;color:var(--text-muted);">🔴 Urgentes</div>
+      </div>
+      <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:var(--amber);">${proximos.length}</div>
+        <div style="font-size:10px;color:var(--text-muted);">🟡 Próximos</div>
+      </div>
+      <div style="background:rgba(26,76,232,0.1);border:1px solid rgba(26,76,232,0.25);border-radius:8px;padding:10px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:var(--sura-blue);">${planif.length}</div>
+        <div style="font-size:10px;color:var(--text-muted);">🔵 A planificar</div>
+      </div>
+    </div>
+    ${enviados.length ? `<div style="font-size:12px;color:var(--text-muted);margin-top:6px;">✅ ${enviados.length} mensaje${enviados.length>1?'s':''} ya enviado${enviados.length>1?'s':''} hoy.</div>` : ''}
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
+      <button onclick="renovAgenteComando('urgentes')" style="padding:5px 11px;border-radius:7px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);color:var(--red);font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--font);">🔴 Ver urgentes</button>
+      <button onclick="renovAgenteComando('ver')" style="padding:5px 11px;border-radius:7px;border:1px solid rgba(34,197,94,0.35);background:rgba(34,197,94,0.1);color:var(--green);font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--font);">📋 Ver todos</button>
+    </div>`, 'bot');
+}
+
+function _renovAgenteResponderPendientes({ filtro }) {
+  const bandeja = getRenovBandeja();
+  let pendientes = bandeja.filter(i => i.estado === 'pendiente');
+
+  if (filtro === 'urgentes') {
+    pendientes = pendientes.filter(i => i.diasParaVencer <= 7);
+  }
+
+  if (!pendientes.length) {
+    const msg = filtro === 'urgentes'
+      ? '✅ No tienes mensajes urgentes pendientes (≤7 días). ¡Todo bajo control!'
+      : '✅ No hay mensajes pendientes en la bandeja. La gestión está al día.';
+    _renovAgenteBurbuja(msg + `<div style="margin-top:8px;"><button onclick="_renovAgenteGenerarNuevos()" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(34,197,94,0.35);background:rgba(34,197,94,0.1);color:var(--green);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">🔄 Generar nuevos mensajes</button></div>`, 'bot');
+    return;
+  }
+
+  const titulo = filtro === 'urgentes'
+    ? `🔴 ${pendientes.length} mensaje${pendientes.length>1?'s':''} urgente${pendientes.length>1?'s':''} — requieren contacto esta semana:`
+    : `📋 ${pendientes.length} mensaje${pendientes.length>1?'s':''} pendiente${pendientes.length>1?'s':''} de aprobación:`;
+
+  // Renderizar cards dentro de la burbuja del bot
+  const cardsHTML = pendientes.map(item => {
+    const urgColor = item.diasParaVencer <= 0  ? 'var(--red)'
+      : item.diasParaVencer <= 7  ? 'var(--amber)'
+      : item.diasParaVencer <= 30 ? 'var(--teal)'
+      : 'var(--sura-blue)';
+    const waUrl = item.telefono ? `https://wa.me/57${item.telefono}` : '';
+    const msgEnc = encodeURIComponent(item.mensaje);
+    const diasLabel = item.diasParaVencer <= 0
+      ? `Vencido hace ${Math.abs(item.diasParaVencer)} día${Math.abs(item.diasParaVencer)!==1?'s':''}`
+      : `Vence en ${item.diasParaVencer} día${item.diasParaVencer!==1?'s':''}`;
+
+    return `<div id="renovAgCard_${item.id}" style="background:var(--surface3);border:1px solid var(--border);border-left:3px solid ${urgColor};border-radius:8px;padding:11px 13px;margin-top:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:12.5px;font-weight:700;">${item.nombre} <span style="font-weight:400;color:var(--text-muted);font-size:10.5px;">${item.producto}</span></div>
+          <div style="font-size:11px;color:${urgColor};font-weight:600;margin-top:1px;">${item.contexto} · ${diasLabel}</div>
+        </div>
+        <button onclick="renovAgenteDescartar('${item.id}')" title="Descartar" style="padding:3px 7px;border-radius:6px;background:transparent;color:var(--text-dim);font-size:11px;border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-family:var(--font);">✕</button>
+      </div>
+      <textarea id="renovAgMsg_${item.id}" oninput="renovActualizarMensaje('${item.id}',this.value)"
+        style="width:100%;min-height:80px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:11.5px;padding:7px 9px;resize:vertical;font-family:var(--font);line-height:1.5;box-sizing:border-box;">${item.mensaje}</textarea>
+      <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">
+        ${waUrl
+          ? `<a href="${waUrl}?text=${msgEnc}" target="_blank" onclick="renovAgenteConfirmar('${item.id}','${item.ventaId}',this)"
+              style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;background:rgba(34,197,94,0.15);color:var(--green);font-size:11.5px;font-weight:700;text-decoration:none;border:1px solid rgba(34,197,94,0.3);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.096.533 4.063 1.476 5.782L0 24l6.393-1.454A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.885 9.885 0 01-5.04-1.38l-.361-.214-3.795.863.899-3.687-.235-.378A9.866 9.866 0 012.105 12C2.105 6.527 6.527 2.105 12 2.105c5.472 0 9.895 4.422 9.895 9.895 0 5.472-4.423 9.894-9.895 9.894z"/></svg>
+              Enviar por WhatsApp</a>`
+          : `<button onclick="renovAgenteCopiar('${item.id}','${item.ventaId}')"
+              style="padding:6px 12px;border-radius:8px;background:rgba(34,197,94,0.1);color:var(--green);font-size:11.5px;font-weight:700;border:1px solid rgba(34,197,94,0.25);cursor:pointer;font-family:var(--font);">📋 Copiar mensaje</button>`}
+      </div>
+    </div>`;
+  }).join('');
+
+  const botonesGlobales = pendientes.length > 1 ? `
+    <div style="display:flex;gap:7px;margin-top:12px;flex-wrap:wrap;">
+      <button onclick="_renovAgenteEnviarTodos()" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(34,197,94,0.3);background:rgba(34,197,94,0.1);color:var(--green);font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--font);">✅ Confirmar y enviar todos</button>
+      <button onclick="_renovAgenteDescartarTodos()" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text-dim);font-size:11.5px;cursor:pointer;font-family:var(--font);">🗑 Descartar todos</button>
+    </div>` : '';
+
+  _renovAgenteBurbuja(`${titulo}${cardsHTML}${botonesGlobales}`, 'bot');
+}
+
+// ── Acciones desde el chat del agente ───────────────────────────────────────
+function renovAgenteConfirmar(id, ventaId, linkEl) {
+  // Lee el textarea por si fue editado
+  const ta = document.getElementById(`renovAgMsg_${id}`);
+  if (ta) renovActualizarMensaje(id, ta.value);
+  renovMarcarEnviado(id, ventaId, linkEl);
+  _renovAgenteActualizarBadge();
+  // Fade card
+  const card = document.getElementById(`renovAgCard_${id}`);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; card.style.transition = 'opacity 0.4s'; }
+  setTimeout(() => {
+    const nombre = getRenovBandeja().find(i => i.id === id)?.nombre || 'el cliente';
+    _renovAgenteBurbuja(`✅ Mensaje confirmado y enviado a <strong>${nombre}</strong>. WhatsApp se abrió con el texto prellenado.`, 'bot');
+  }, 300);
+}
+
+function renovAgenteCopiar(id, ventaId) {
+  const ta = document.getElementById(`renovAgMsg_${id}`);
+  const texto = ta?.value || getRenovBandeja().find(i => i.id === id)?.mensaje || '';
+  navigator.clipboard.writeText(texto).then(() => {
+    renovAgenteConfirmar(id, ventaId, null);
+  });
+}
+
+function renovAgenteDescartar(id) {
+  renovDescartarItem(id);
+  _renovAgenteActualizarBadge();
+  const card = document.getElementById(`renovAgCard_${id}`);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; card.style.transition = 'opacity 0.4s'; }
+  setTimeout(() => _renovAgenteBurbuja('🗑 Mensaje descartado.', 'bot'), 300);
+}
+
+function _renovAgenteEnviarTodos() {
+  const pendientes = getRenovBandeja().filter(i => i.estado === 'pendiente');
+  if (!pendientes.length) { _renovAgenteBurbuja('No hay mensajes pendientes para enviar.', 'bot'); return; }
+  // Marcar todos como enviados (sin abrir WA para cada uno, ya se hizo manualmente)
+  pendientes.forEach(item => {
+    const ta = document.getElementById(`renovAgMsg_${item.id}`);
+    if (ta) renovActualizarMensaje(item.id, ta.value);
+    renovMarcarEnviado(item.id, item.ventaId, null);
+  });
+  _renovAgenteActualizarBadge();
+  _renovAgenteBurbuja(`✅ <strong>${pendientes.length} mensaje${pendientes.length>1?'s':''} marcado${pendientes.length>1?'s':''} como enviado${pendientes.length>1?'s':''}</strong> y registrado${pendientes.length>1?'s':''} en actividades. Las actividades de cooldown ya están actualizadas.`, 'bot');
+}
+
+function _renovAgenteDescartarTodos() {
+  const pendientes = getRenovBandeja().filter(i => i.estado === 'pendiente');
+  if (!pendientes.length) { _renovAgenteBurbuja('No hay mensajes pendientes para descartar.', 'bot'); return; }
+  pendientes.forEach(item => renovDescartarItem(item.id));
+  _renovAgenteActualizarBadge();
+  _renovAgenteBurbuja(`🗑 ${pendientes.length} mensaje${pendientes.length>1?'s':''} descartado${pendientes.length>1?'s':''}.`, 'bot');
+}
+
+async function _renovAgenteGenerarNuevos() {
+  _renovAgenteBurbuja('⏳ Generando mensajes según tu cartera actual...', 'bot');
+  await renovGenerarBandeja();
+  _renovAgenteActualizarBadge();
+  const nuevos = getRenovBandeja().filter(i => i.estado === 'pendiente');
+  if (nuevos.length) {
+    _renovAgenteBurbuja(`✅ Se generaron <strong>${nuevos.length} mensaje${nuevos.length>1?'s':''} nuevo${nuevos.length>1?'s':''}</strong>. ¿Quieres verlos?
+      <div style="margin-top:8px;"><button onclick="renovAgenteComando('ver')" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(34,197,94,0.35);background:rgba(34,197,94,0.1);color:var(--green);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">📋 Ver pendientes</button></div>`, 'bot');
+  } else {
+    _renovAgenteBurbuja('No se encontraron nuevas pólizas que requieran gestión hoy. ✅ Cartera al día.', 'bot');
+  }
+}
+// ══ FIN AGENTE CONVERSACIONAL DE RENOVACIONES ════════════════════════════════
+
 // ══ FIN BANDEJA DE APROBACIÓN ════════════════════════════════════════════════
 
 function renderRenovaciones() {
@@ -27821,28 +28131,45 @@ function agenteSetTab(tab) {
   const panelC  = document.getElementById('panelAgenteClausulados');
   const panelA  = document.getElementById('panelAgenteAsesor');
   const panelCm = document.getElementById('panelAgenteComparar');
+  const panelR  = document.getElementById('panelAgenteRenovaciones');
   const tabC    = document.getElementById('tabAgenteClausulados');
   const tabA    = document.getElementById('tabAgenteAsesor');
   const tabCm   = document.getElementById('tabAgenteComparar');
+  const tabR    = document.getElementById('tabAgenteRenovaciones');
   if (!panelC) return;
 
-  panelC.style.display  = tab === 'clausulados' ? 'block' : 'none';
-  panelA.style.display  = tab === 'asesor'      ? 'block' : 'none';
-  if (panelCm) panelCm.style.display = tab === 'comparar' ? 'block' : 'none';
+  panelC.style.display  = tab === 'clausulados'  ? 'block' : 'none';
+  panelA.style.display  = tab === 'asesor'       ? 'block' : 'none';
+  if (panelCm) panelCm.style.display = tab === 'comparar'    ? 'block' : 'none';
+  if (panelR)  panelR.style.display  = tab === 'renovaciones'? 'block' : 'none';
 
-  const active   = 'color:var(--sura-blue);border-bottom:2px solid var(--sura-blue);';
-  const inactive = 'color:var(--text-muted);border-bottom:2px solid transparent;';
   [
     [tabC,  'clausulados'],
     [tabA,  'asesor'],
     [tabCm, 'comparar'],
+    [tabR,  'renovaciones'],
   ].forEach(([el, name]) => {
     if (el) {
-      // Reset and set only the relevant properties
-      el.style.color       = tab === name ? 'var(--sura-blue)' : 'var(--text-muted)';
-      el.style.borderBottom= tab === name ? '2px solid var(--sura-blue)' : '2px solid transparent';
+      el.style.color       = tab === name ? 'var(--green)' : 'var(--text-muted)';
+      el.style.borderBottom= tab === name ? '2px solid var(--green)' : '2px solid transparent';
     }
   });
+  // Resaltar en azul los 3 tabs originales cuando están activos
+  if (tab !== 'renovaciones') {
+    [tabC, tabA, tabCm].forEach(el => {
+      if (el && el.style.color === 'var(--green)') {
+        el.style.color = 'var(--text-muted)';
+        el.style.borderBottom = '2px solid transparent';
+      }
+    });
+    const activeEl = { clausulados: tabC, asesor: tabA, comparar: tabCm }[tab];
+    if (activeEl) {
+      activeEl.style.color = 'var(--sura-blue)';
+      activeEl.style.borderBottom = '2px solid var(--sura-blue)';
+    }
+  }
+  // Inicializar bandeja al abrir el panel de renovaciones
+  if (tab === 'renovaciones') renovAgenteInicializar();
 }
 
 function _asGetPerfil() {
@@ -37661,6 +37988,7 @@ function _agenteInyectarHTML() {
           <button class="agente-sugerencia" onclick="_agenteSugerencia(this)">✅ ¿Quién pagó en SURA sin estar registrado?</button>
           <button class="agente-sugerencia" onclick="_agenteSugerencia(this)">🔴 ¿Quién está en mora según SURA?</button>
           <button class="agente-sugerencia" onclick="_agenteSugerencia(this)">📅 Agenda una visita para mañana a las 10am</button>
+          <button class="agente-sugerencia" onclick="_agenteSugerencia(this)">📬 Muéstrame los mensajes de renovación pendientes</button>
         </div>
       </div>
     </div>
@@ -37923,6 +38251,7 @@ INSTRUCCIONES:
 - Cuando el usuario pida agendar/crear un evento/visita/llamada, usa crear_evento_agenda
 - Cuando el usuario pida ver pendientes/vencidos/lista de contactos, usa listar_prospectos_pendientes
 - Cuando el usuario pida cruzar cartera, verificar pagos, revisar mora o validar informe SURA, usa cruzar_cartera
+- Cuando el usuario pregunte por renovaciones pendientes, mensajes de renovación, contactar clientes por vencimiento o similar, usa mostrar_renovaciones. Si pide enviar todos, pasa accion:"enviar_todos". Después de mostrar el resultado, el UI ya presenta las cards — dile al asesor que puede editar y enviar desde ahí.
 - Para registrar pagos: PRIMERO llama registrar_pago_agente con confirmado:false para mostrar el detalle, LUEGO espera que el usuario diga "sí", "confirmo" o "registra" antes de llamar con confirmado:true. NUNCA registres un pago sin confirmación explícita.
 - Cuando cruzar_cartera encuentre registros PAGO_SURA_SIN_REGISTRAR, ofrece registrar cada pago mostrando el detalle y pidiendo confirmación uno a uno
 - Cuando cruzar_cartera retorne aviso de informe no cargado, dile al asesor exactamente: "Para hacer el cruce debes ir a la pestaña Gestión de Cartera e importar el archivo XLS de SURA (botón 'Importar XLS de Sura'). Una vez cargado vuelve a pedirme el cruce."
@@ -38032,6 +38361,17 @@ const _agenteTools = [
         confirmado: { type: "boolean", description: "false para mostrar preview, true solo si el asesor confirmó explícitamente" }
       },
       required: ["ventaId", "confirmado"]
+    }
+  },
+  {
+    name: "mostrar_renovaciones",
+    description: "Muestra los mensajes de renovación pendientes de aprobación de la bandeja. Filtra por urgencia si se especifica. Retorna datos para que el agente informe al asesor cuántos hay y por qué categoría. El UI mostrará las cards interactivas automáticamente.",
+    input_schema: {
+      type: "object",
+      properties: {
+        filtro: { type: "string", description: "Opcional: 'urgentes' (≤7 días), 'proximos' (8-30 días), 'todos'. Default: todos" },
+        accion: { type: "string", description: "Opcional: 'enviar_todos' para marcar todos como enviados, 'descartar_todos' para descartarlos" }
+      }
     }
   }
 ];
@@ -38291,6 +38631,102 @@ function _agenteEjecutarHerramienta(nombre, input) {
         return resumen;
       }
 
+
+      case 'mostrar_renovaciones': {
+        const { filtro = 'todos', accion } = input;
+
+        // Disparar carga de bandeja en background si no hay cache (sin await — función síncrona)
+        if (typeof renovIniciarBandeja === 'function' && !window._renovBandejaCache) {
+          try { renovIniciarBandeja(); } catch(e) {}
+        }
+
+        const bandeja = (typeof getRenovBandeja === 'function') ? getRenovBandeja() : [];
+        let pendientes = bandeja.filter(i => i.estado === 'pendiente');
+
+        // Acción masiva si se pidió
+        if (accion === 'enviar_todos') {
+          const n = pendientes.length;
+          if (!n) return { ok: true, mensaje: 'No había mensajes pendientes.', pendientes: 0 };
+          pendientes.forEach(item => {
+            if (typeof renovMarcarEnviado === 'function') renovMarcarEnviado(item.id, item.ventaId, null);
+          });
+          if (typeof _renovAgenteActualizarBadge === 'function') _renovAgenteActualizarBadge();
+          return { ok: true, mensaje: `${n} mensaje${n>1?'s':''} marcado${n>1?'s':''} como enviados y registrados en actividades.`, enviados: n };
+        }
+        if (accion === 'descartar_todos') {
+          const n = pendientes.length;
+          pendientes.forEach(item => { if (typeof renovDescartarItem === 'function') renovDescartarItem(item.id); });
+          if (typeof _renovAgenteActualizarBadge === 'function') _renovAgenteActualizarBadge();
+          return { ok: true, mensaje: `${n} mensaje${n>1?'s':''} descartado${n>1?'s':''}.`, descartados: n };
+        }
+
+        // Aplicar filtro
+        if (filtro === 'urgentes') pendientes = pendientes.filter(i => i.diasParaVencer <= 7);
+        else if (filtro === 'proximos') pendientes = pendientes.filter(i => i.diasParaVencer > 7 && i.diasParaVencer <= 30);
+
+        const urgentes = pendientes.filter(i => i.diasParaVencer <= 7).length;
+        const proximos = pendientes.filter(i => i.diasParaVencer > 7 && i.diasParaVencer <= 30).length;
+        const planif   = pendientes.filter(i => i.diasParaVencer > 30).length;
+
+        // Renderizar cards interactivas en el chat del agente
+        if (pendientes.length > 0) {
+          setTimeout(() => {
+            const msgs = document.getElementById('agente-mensajes');
+            if (!msgs) return;
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'align-self:flex-start;max-width:95%;display:flex;flex-direction:column;gap:7px;width:100%;';
+
+            pendientes.forEach(item => {
+              const urgColor = item.diasParaVencer <= 0  ? '#ef4444'
+                : item.diasParaVencer <= 7  ? '#f59e0b'
+                : item.diasParaVencer <= 30 ? '#06b6d4'
+                : '#1A4CE8';
+              const waUrl  = item.telefono ? `https://wa.me/57${item.telefono}` : '';
+              const msgEnc = encodeURIComponent(item.mensaje);
+              const diasLabel = item.diasParaVencer <= 0
+                ? `Vencido hace ${Math.abs(item.diasParaVencer)}d`
+                : `${item.diasParaVencer}d para vencer`;
+
+              const card = document.createElement('div');
+              card.id = `aFab_${item.id}`;
+              card.style.cssText = `background:var(--surface2);border:1px solid var(--border);border-left:3px solid ${urgColor};border-radius:9px;padding:10px 11px;font-size:11.5px;`;
+              card.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:6px;">
+                  <div>
+                    <div style="font-weight:700;font-size:12px;">${item.nombre} <span style="font-weight:400;color:var(--text-muted);font-size:10px;">${item.producto}</span></div>
+                    <div style="font-size:10px;color:${urgColor};font-weight:600;">${item.contexto} · ${diasLabel}</div>
+                  </div>
+                  <button onclick="_agenteRenovDescartar('${item.id}')" title="Descartar"
+                    style="background:none;border:none;color:var(--text-dim);font-size:12px;cursor:pointer;padding:1px 4px;flex-shrink:0;">✕</button>
+                </div>
+                <textarea id="aFabMsg_${item.id}" oninput="renovActualizarMensaje('${item.id}',this.value)"
+                  style="width:100%;min-height:70px;background:var(--surface3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;padding:6px 8px;resize:vertical;font-family:inherit;line-height:1.5;box-sizing:border-box;">${item.mensaje}</textarea>
+                <div style="margin-top:6px;">
+                  ${waUrl
+                    ? `<a href="${waUrl}?text=${msgEnc}" target="_blank" onclick="_agenteRenovConfirmar('${item.id}','${item.ventaId}')"
+                        style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;background:rgba(34,197,94,0.15);color:#22c55e;font-size:11px;font-weight:700;text-decoration:none;border:1px solid rgba(34,197,94,0.3);">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.096.533 4.063 1.476 5.782L0 24l6.393-1.454A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.885 9.885 0 01-5.04-1.38l-.361-.214-3.795.863.899-3.687-.235-.378A9.866 9.866 0 012.105 12C2.105 6.527 6.527 2.105 12 2.105c5.472 0 9.895 4.422 9.895 9.895 0 5.472-4.423 9.894-9.895 9.894z"/></svg>
+                        Enviar WA</a>`
+                    : `<button onclick="_agenteRenovCopiar('${item.id}','${item.ventaId}')"
+                        style="padding:5px 10px;border-radius:7px;background:rgba(34,197,94,0.1);color:#22c55e;font-size:11px;font-weight:700;border:1px solid rgba(34,197,94,0.25);cursor:pointer;font-family:inherit;">📋 Copiar</button>`}
+                </div>`;
+              wrapper.appendChild(card);
+            });
+            msgs.appendChild(wrapper);
+            msgs.scrollTop = msgs.scrollHeight;
+          }, 300);
+        }
+
+        return {
+          ok: true,
+          totalPendientes: pendientes.length,
+          urgentes, proximos, planificar: planif,
+          resumen: pendientes.length
+            ? `Hay ${pendientes.length} mensaje${pendientes.length>1?'s':''} pendiente${pendientes.length>1?'s':''}: ${urgentes} urgente${urgentes!==1?'s':''}, ${proximos} próximo${proximos!==1?'s':''}, ${planif} a planificar. Las cards aparecen abajo — edita el texto si quieres y luego haz clic en "Enviar WA" en cada una.`
+            : 'No hay mensajes pendientes en la bandeja. Todo al día ✅'
+        };
+      }
+
       case 'registrar_pago_agente': {
         const { ventaId, fechaPago, confirmado } = input;
         if (!ventaId) return { error: 'ventaId requerido' };
@@ -38363,6 +38799,33 @@ function _agenteNotificarAccion(resultado) {
   if (resultado?.exito && typeof showToast === 'function') {
     showToast('🤖 ' + (resultado.mensaje || 'Acción completada'));
   }
+  // Actualizar badge de renovaciones si la tool afectó la bandeja
+  if (resultado?.ok && typeof _renovAgenteActualizarBadge === 'function') {
+    _renovAgenteActualizarBadge();
+  }
+}
+
+// ── Helpers de renovación dentro del chat flotante ──────────────────
+function _agenteRenovConfirmar(id, ventaId) {
+  const ta = document.getElementById(`aFabMsg_${id}`);
+  if (ta && typeof renovActualizarMensaje === 'function') renovActualizarMensaje(id, ta.value);
+  if (typeof renovMarcarEnviado === 'function') renovMarcarEnviado(id, ventaId, null);
+  if (typeof _renovAgenteActualizarBadge === 'function') _renovAgenteActualizarBadge();
+  const card = document.getElementById(`aFab_${id}`);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; card.style.transition = 'opacity 0.35s'; }
+}
+
+function _agenteRenovCopiar(id, ventaId) {
+  const ta = document.getElementById(`aFabMsg_${id}`);
+  const texto = ta?.value || (typeof getRenovBandeja === 'function' ? (getRenovBandeja().find(i => i.id === id)?.mensaje || '') : '');
+  if (texto) navigator.clipboard.writeText(texto).then(() => _agenteRenovConfirmar(id, ventaId));
+}
+
+function _agenteRenovDescartar(id) {
+  if (typeof renovDescartarItem === 'function') renovDescartarItem(id);
+  if (typeof _renovAgenteActualizarBadge === 'function') _renovAgenteActualizarBadge();
+  const card = document.getElementById(`aFab_${id}`);
+  if (card) { card.style.opacity = '0.15'; card.style.pointerEvents = 'none'; card.style.transition = 'opacity 0.3s'; setTimeout(() => card.remove(), 350); }
 }
 
 async function _agenteEnviar() {
