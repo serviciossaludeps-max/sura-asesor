@@ -147,12 +147,12 @@ nav { position:sticky; top:0; z-index:100; background:rgba(0,26,82,.97); backdro
 .pcard:hover .pcard-arr { color:var(--navy); }
 
 /* ─ COTIZADOR / EMPRESA — Tabs + iframes ─ */
-.forms-sec { background:var(--navy); padding:0; }
-.forms-tabs { display:flex; background:var(--deep); border-bottom:1px solid rgba(255,255,255,.07); }
-.ftab { flex:1; padding:1.1rem 2rem; font-size:.82rem; font-weight:600; color:rgba(255,255,255,.38); cursor:pointer; transition:all .18s; border:none; background:transparent; font-family:var(--sans); display:flex; align-items:center; justify-content:center; gap:.5rem; border-bottom:2px solid transparent; }
-.ftab svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
-.ftab:hover { color:rgba(255,255,255,.65); }
-.ftab.active { color:var(--gold); border-bottom-color:var(--gold); background:rgba(255,184,0,.04); }
+.forms-sec { background:var(--white); padding:0; border-top:1px solid var(--border); }
+.forms-tabs { display:flex; background:var(--white); border-bottom:2px solid var(--border); }
+.ftab { flex:1; padding:1.1rem 2rem; font-size:.82rem; font-weight:600; color:var(--muted); cursor:pointer; transition:all .18s; border:none; background:transparent; font-family:var(--sans); display:flex; align-items:center; justify-content:center; gap:.5rem; border-bottom:2px solid transparent; }
+.ftab svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; opacity:.6; }
+.ftab:hover { color:var(--navy); }
+.ftab.active { color:var(--navy); border-bottom-color:var(--navy); background:rgba(0,48,135,.04); }
 .ftab-panels { position:relative; }
 .fpanel { display:none; }
 .fpanel.active { display:block; }
@@ -175,7 +175,7 @@ nav { position:sticky; top:0; z-index:100; background:rgba(0,26,82,.97); backdro
 .bread { font-size:.7rem; font-weight:600; color:var(--mid); text-decoration:none; }
 
 /* ─ CONTACTO ─ */
-.contact-sec { background:var(--off); }
+.contact-sec { background:var(--white); border-top:1px solid var(--border); }
 .contact-wrap { display:grid; grid-template-columns:1fr 1fr; gap:3.5rem; align-items:start; margin-top:2.75rem; }
 .c-info { display:flex; flex-direction:column; gap:.875rem; }
 .c-intro { font-size:.9rem; color:var(--muted); line-height:1.85; }
@@ -1108,7 +1108,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
   <!-- PANEL REAL (oculto hasta verificar PIN) -->
   <div class="admin-box" id="admin-box">
     <div class="admin-box-head">
-      <span class="admin-box-title">⚙️ Gestión de asesores</span>
+      <span class="admin-box-title" style="display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Gestión de asesores</span>
       <button class="admin-box-close" onclick="toggleAdmin()">×</button>
     </div>
     <div class="admin-box-body">
