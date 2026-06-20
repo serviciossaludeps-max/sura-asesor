@@ -10,18 +10,6 @@
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 <link rel="icon" href="Seguros_SURA_Logo.svg" type="image/svg+xml">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://serviciosseguros.co/">
-<meta property="og:title" content="Planes de Salud SURA — Fran Viloria, Asesor Autorizado Colombia">
-<meta property="og:description" content="Cotiza gratis tu plan de salud SURA: SPTI, SPD Plus, Plan Modular y Plan 60+. Asesoría personalizada sin costo. Toda Colombia.">
-<meta property="og:image" content="https://serviciosseguros.co/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="es_CO">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Planes de Salud SURA — Fran Viloria">
-<meta name="twitter:description" content="Asesor autorizado SURA. Cotiza gratis en toda Colombia.">
-<meta name="twitter:image" content="https://serviciosseguros.co/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -155,6 +143,82 @@ nav { position:sticky; top:0; z-index:100; background:rgba(0,26,82,.97); backdro
 .pcard-list { list-style:none; display:flex; flex-direction:column; gap:.35rem; }
 .pcard-list li { font-size:.8rem; display:flex; align-items:flex-start; gap:.4rem; line-height:1.5; }
 .pcard-list li::before { content:''; width:4px; height:4px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:6px; }
+
+/* ── PRICE TOOLTIP EN PCARD ── */
+.pcard { overflow:visible; }
+.pcard-tooltip {
+  position:absolute;
+  bottom:calc(100% + 10px);
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  background:var(--deep);
+  border:1px solid rgba(255,184,0,.2);
+  border-radius:12px;
+  padding:14px 18px;
+  min-width:220px;
+  max-width:260px;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .22s ease, transform .22s ease;
+  z-index:99;
+  box-shadow:0 12px 40px rgba(0,10,40,.28);
+  text-align:left;
+}
+.pcard-tooltip::after {
+  content:'';
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  border:7px solid transparent;
+  border-top-color:var(--deep);
+}
+.pcard:hover .pcard-tooltip,
+.pcard.tt-open .pcard-tooltip {
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+.tt-label {
+  font-size:.62rem;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:rgba(255,184,0,.6);
+  margin-bottom:6px;
+}
+.tt-price {
+  font-family:var(--serif);
+  font-size:1.5rem;
+  color:#fff;
+  line-height:1;
+  margin-bottom:3px;
+}
+.tt-meta {
+  font-size:.72rem;
+  color:rgba(255,255,255,.45);
+  line-height:1.5;
+}
+.tt-divider {
+  height:1px;
+  background:rgba(255,255,255,.07);
+  margin:10px 0;
+}
+.tt-note {
+  font-size:.68rem;
+  color:rgba(255,184,0,.5);
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.tt-note svg {
+  width:10px;
+  height:10px;
+  stroke:rgba(255,184,0,.5);
+  fill:none;
+  stroke-width:2;
+  flex-shrink:0;
+}
+
 .pcard-arr { position:absolute; bottom:1.5rem; right:1.5rem; font-size:.8rem; color:var(--border); transition:color .18s; }
 .pcard:hover .pcard-arr { color:var(--navy); }
 
@@ -468,17 +532,6 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
   .forms-tabs{overflow-x:auto}
   nav { position:sticky; }
 }
-/* ── CHIP DE PRECIO EN PCARD ── */
-.pcard-price{display:flex;align-items:baseline;gap:5px;margin:10px 0 2px;padding:7px 10px;background:rgba(0,48,135,.06);border:1px solid rgba(0,48,135,.1);border-radius:7px;}
-.pcard-price.gold{background:rgba(255,184,0,.1);border-color:rgba(255,184,0,.25);}
-.pcard-price.free{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.2);}
-.pcard-price.rq{background:rgba(99,153,34,.07);border-color:rgba(99,153,34,.2);}
-.pcard-price-val{font-family:var(--serif);font-size:1.15rem;font-weight:400;color:var(--navy);line-height:1;}
-.pcard-price.gold .pcard-price-val{color:#7A5800;}
-.pcard-price.free .pcard-price-val{color:#0F6E56;font-family:var(--sans);font-size:.88rem;font-weight:600;}
-.pcard-price.rq .pcard-price-val{color:#3B6D11;font-family:var(--sans);font-size:.88rem;font-weight:600;}
-.pcard-price-meta{font-size:.68rem;color:var(--muted);line-height:1.35;}
-.pcard-price-iva{font-size:.6rem;color:var(--muted);margin-top:2px;opacity:.75;}
 </style>
 </head>
 <body>
@@ -639,12 +692,12 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <li>Hospitalización y cirugías</li>
           <li>Urgencias sin copago</li>
         </ul>
-        <div class="pcard-price">
-          <div>
-            <div class="pcard-price-val">Desde $96.674</div>
-            <div class="pcard-price-meta">/mes · según plan y edad</div>
-            <div class="pcard-price-iva">IVA 5% incluido · vigencia anual</div>
-          </div>
+        <div class="pcard-tooltip">
+          <div class="tt-label">Tarifa desde</div>
+          <div class="tt-price">$96.674<span style="font-size:.9rem;font-family:var(--sans);font-weight:400;color:rgba(255,255,255,.5)">/mes</span></div>
+          <div class="tt-meta">SPD Plus · tarifa única<br>hasta $241.339 Plan Modular</div>
+          <div class="tt-divider"></div>
+          <div class="tt-note"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IVA 5% incluido · vigencia anual</div>
         </div>
         <span class="pcard-arr">→</span>
       </a>
@@ -658,12 +711,12 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <li>Ciclo anual de valoración en bienestar (5 asesorías)</li>
           <li>Atención médica y odontológica a domicilio</li>
         </ul>
-        <div class="pcard-price gold">
-          <div>
-            <div class="pcard-price-val">Desde $358.398</div>
-            <div class="pcard-price-meta">/mes · edad 60–69 años</div>
-            <div class="pcard-price-iva">IVA 5% incluido · hasta $738.905 (70–79)</div>
-          </div>
+        <div class="pcard-tooltip">
+          <div class="tt-label">Tarifa mensual</div>
+          <div class="tt-price">$358.398<span style="font-size:.9rem;font-family:var(--sans);font-weight:400;color:rgba(255,255,255,.5)">/mes</span></div>
+          <div class="tt-meta">Edad 60–69 años · individual<br>hasta $738.905 (70–79 años)</div>
+          <div class="tt-divider"></div>
+          <div class="tt-note"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IVA 5% incluido · según edad</div>
         </div>
         <span class="pcard-arr">→</span>
       </a>
@@ -677,12 +730,12 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <li>Reporte mensual de siniestros</li>
           <li>Asesor dedicado</li>
         </ul>
-        <div class="pcard-price rq">
-          <div>
-            <div class="pcard-price-val">Cotización sin costo</div>
-            <div class="pcard-price-meta">Tarifa según número de empleados</div>
-            <div class="pcard-price-iva">IVA 5% incluido en prima final</div>
-          </div>
+        <div class="pcard-tooltip">
+          <div class="tt-label">Costo</div>
+          <div class="tt-price" style="font-size:1.15rem;font-family:var(--sans);font-weight:600;">Cotización sin costo</div>
+          <div class="tt-meta">Prima según número de empleados<br>y edades del grupo</div>
+          <div class="tt-divider"></div>
+          <div class="tt-note"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IVA 5% incluido en prima final</div>
         </div>
         <span class="pcard-arr">→</span>
       </a>
@@ -696,12 +749,12 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <li>Sin periodos de carencia</li>
           <li>Acompañamiento total</li>
         </ul>
-        <div class="pcard-price free">
-          <div>
-            <div class="pcard-price-val">Sin costo</div>
-            <div class="pcard-price-meta">Servicio 100% gratuito</div>
-            <div class="pcard-price-iva">Gestión pagada por SURA · no por el cliente</div>
-          </div>
+        <div class="pcard-tooltip">
+          <div class="tt-label">Costo del servicio</div>
+          <div class="tt-price" style="font-size:1.15rem;font-family:var(--sans);font-weight:600;color:#4ADE80;">Sin costo</div>
+          <div class="tt-meta">Asesoría 100% gratuita<br>Gestión pagada por SURA</div>
+          <div class="tt-divider"></div>
+          <div class="tt-note"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Proceso digital · sin carencia</div>
         </div>
         <span class="pcard-arr">→</span>
       </a>
@@ -723,10 +776,12 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
   </div>
   <div class="ftab-panels">
     <div class="fpanel active" id="panel-cotizador">
-      <iframe id="iframe-cotizador" src="cotizar.html" title="Cotizador SURA" style="height:900px;"></iframe>
+      <iframe id="iframe-cotizador" src="cotizar.html" title="Cotizador SURA" style="height:900px;"
+        onload="autoHeight(this)"></iframe>
     </div>
     <div class="fpanel" id="panel-empresa">
-      <iframe id="iframe-empresa" data-src="empresa.html" title="Pólizas empresariales SURA" style="height:900px;"></iframe>
+      <iframe id="iframe-empresa" src="empresa.html" title="Pólizas empresariales SURA" style="height:900px;"
+        onload="autoHeight(this)"></iframe>
     </div>
   </div>
 </section>
@@ -1414,14 +1469,6 @@ function enviarRegistroWsp(nombre, url, jsonBlock) {
 
 // NAVEGACION Y TABS
 function activarTab(id) {
-  // Lazy load: cargar src del iframe solo la primera vez que se activa su tab
-  var iframeId = 'iframe-' + id;
-  var iframe = document.getElementById(iframeId);
-  if (iframe && !iframe.dataset.loaded && iframe.dataset.src) {
-    iframe.onload = function() { autoHeight(this); };
-    iframe.src = iframe.dataset.src;
-    iframe.dataset.loaded = '1';
-  }
   ['cotizador','empresa'].forEach(function(t) {
     var tab = document.getElementById('tab-'+t);
     var panel = document.getElementById('panel-'+t);
@@ -1436,6 +1483,26 @@ function irA(id, btn) {
   activarTab(id);
 }
 
+
+// TOOLTIP TOUCH EN MÓVIL
+document.querySelectorAll('.pcard').forEach(function(card) {
+  card.addEventListener('touchstart', function(e) {
+    var isOpen = card.classList.contains('tt-open');
+    // Cerrar todos
+    document.querySelectorAll('.pcard').forEach(function(c) { c.classList.remove('tt-open'); });
+    if (!isOpen) {
+      e.preventDefault();
+      card.classList.add('tt-open');
+    }
+  }, { passive: false });
+});
+// Cerrar tooltip al tocar fuera
+document.addEventListener('touchstart', function(e) {
+  if (!e.target.closest('.pcard')) {
+    document.querySelectorAll('.pcard').forEach(function(c) { c.classList.remove('tt-open'); });
+  }
+});
+
 // IFRAMES
 function autoHeight(f) {
   try {
@@ -1446,12 +1513,6 @@ function autoHeight(f) {
     resize(); setTimeout(resize, 800); setTimeout(resize, 2000);
   } catch(e) { f.style.height = '1100px'; }
 }
-// Adjuntar onload a iframes desde JS (evita ReferenceError por orden de ejecución)
-(function() {
-  var fc = document.getElementById('iframe-cotizador');
-  if (fc) fc.onload = function() { autoHeight(this); };
-  // iframe-empresa se carga lazy; su onload se asigna al activar el tab
-})();
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'resize' && e.data.height) {
     document.querySelectorAll('iframe').forEach(function(f) {
