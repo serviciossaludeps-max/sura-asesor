@@ -10,6 +10,18 @@
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 <link rel="icon" href="Seguros_SURA_Logo.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://serviciosseguros.co/">
+<meta property="og:title" content="Planes de Salud SURA — Fran Viloria, Asesor Autorizado Colombia">
+<meta property="og:description" content="Cotiza gratis tu plan de salud SURA: SPTI, SPD Plus, Plan Modular y Plan 60+. Asesoría personalizada sin costo. Toda Colombia.">
+<meta property="og:image" content="https://serviciosseguros.co/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CO">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Planes de Salud SURA — Fran Viloria">
+<meta name="twitter:description" content="Asesor autorizado SURA. Cotiza gratis en toda Colombia.">
+<meta name="twitter:image" content="https://serviciosseguros.co/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -456,6 +468,17 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
   .forms-tabs{overflow-x:auto}
   nav { position:sticky; }
 }
+/* ── CHIP DE PRECIO EN PCARD ── */
+.pcard-price{display:flex;align-items:baseline;gap:5px;margin:10px 0 2px;padding:7px 10px;background:rgba(0,48,135,.06);border:1px solid rgba(0,48,135,.1);border-radius:7px;}
+.pcard-price.gold{background:rgba(255,184,0,.1);border-color:rgba(255,184,0,.25);}
+.pcard-price.free{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.2);}
+.pcard-price.rq{background:rgba(99,153,34,.07);border-color:rgba(99,153,34,.2);}
+.pcard-price-val{font-family:var(--serif);font-size:1.15rem;font-weight:400;color:var(--navy);line-height:1;}
+.pcard-price.gold .pcard-price-val{color:#7A5800;}
+.pcard-price.free .pcard-price-val{color:#0F6E56;font-family:var(--sans);font-size:.88rem;font-weight:600;}
+.pcard-price.rq .pcard-price-val{color:#3B6D11;font-family:var(--sans);font-size:.88rem;font-weight:600;}
+.pcard-price-meta{font-size:.68rem;color:var(--muted);line-height:1.35;}
+.pcard-price-iva{font-size:.6rem;color:var(--muted);margin-top:2px;opacity:.75;}
 </style>
 </head>
 <body>
@@ -555,7 +578,7 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
             <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>
             Es para mi empresa
           </button>
-          <button class="dopt" onclick="irA('empresa',this)">
+          <button class="dopt" onclick="irA('cotizador',this)">
             <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
             Quiero cambiarme de EPS
           </button>
@@ -616,6 +639,13 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <li>Hospitalización y cirugías</li>
           <li>Urgencias sin copago</li>
         </ul>
+        <div class="pcard-price">
+          <div>
+            <div class="pcard-price-val">Desde $96.674</div>
+            <div class="pcard-price-meta">/mes · según plan y edad</div>
+            <div class="pcard-price-iva">IVA 5% incluido · vigencia anual</div>
+          </div>
+        </div>
         <span class="pcard-arr">→</span>
       </a>
       <a href="#forms" class="pcard rv" onclick="activarTab('cotizador')">
@@ -628,6 +658,13 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <li>Ciclo anual de valoración en bienestar (5 asesorías)</li>
           <li>Atención médica y odontológica a domicilio</li>
         </ul>
+        <div class="pcard-price gold">
+          <div>
+            <div class="pcard-price-val">Desde $358.398</div>
+            <div class="pcard-price-meta">/mes · edad 60–69 años</div>
+            <div class="pcard-price-iva">IVA 5% incluido · hasta $738.905 (70–79)</div>
+          </div>
+        </div>
         <span class="pcard-arr">→</span>
       </a>
       <a href="#forms" class="pcard rv" onclick="activarTab('empresa')">
@@ -640,9 +677,16 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <li>Reporte mensual de siniestros</li>
           <li>Asesor dedicado</li>
         </ul>
+        <div class="pcard-price rq">
+          <div>
+            <div class="pcard-price-val">Cotización sin costo</div>
+            <div class="pcard-price-meta">Tarifa según número de empleados</div>
+            <div class="pcard-price-iva">IVA 5% incluido en prima final</div>
+          </div>
+        </div>
         <span class="pcard-arr">→</span>
       </a>
-      <a href="#forms" class="pcard rv" onclick="activarTab('empresa')">
+      <a href="#forms" class="pcard rv" onclick="activarTab('cotizador')">
         <div class="pcard-top"><div class="pcard-ico"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div></div>
         <div class="pcard-name">Traslado de EPS</div>
         <div class="pcard-desc">¿Tu EPS no responde? Te guío en el traslado paso a paso sin complicaciones.</div>
@@ -652,6 +696,13 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
           <li>Sin periodos de carencia</li>
           <li>Acompañamiento total</li>
         </ul>
+        <div class="pcard-price free">
+          <div>
+            <div class="pcard-price-val">Sin costo</div>
+            <div class="pcard-price-meta">Servicio 100% gratuito</div>
+            <div class="pcard-price-iva">Gestión pagada por SURA · no por el cliente</div>
+          </div>
+        </div>
         <span class="pcard-arr">→</span>
       </a>
     </div>
@@ -667,17 +718,15 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
     </button>
     <button class="ftab" id="tab-empresa" onclick="activarTab('empresa')">
       <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>
-      Planes empresa y traslado
+      Planes para empresas
     </button>
   </div>
   <div class="ftab-panels">
     <div class="fpanel active" id="panel-cotizador">
-      <iframe id="iframe-cotizador" src="cotizar.html" title="Cotizador SURA" style="height:900px;"
-        onload="autoHeight(this)"></iframe>
+      <iframe id="iframe-cotizador" src="cotizar.html" title="Cotizador SURA" style="height:900px;"></iframe>
     </div>
     <div class="fpanel" id="panel-empresa">
-      <iframe id="iframe-empresa" src="empresa.html" title="Pólizas empresariales SURA" style="height:900px;"
-        onload="autoHeight(this)"></iframe>
+      <iframe id="iframe-empresa" data-src="empresa.html" title="Pólizas empresariales SURA" style="height:900px;"></iframe>
     </div>
   </div>
 </section>
@@ -1365,6 +1414,14 @@ function enviarRegistroWsp(nombre, url, jsonBlock) {
 
 // NAVEGACION Y TABS
 function activarTab(id) {
+  // Lazy load: cargar src del iframe solo la primera vez que se activa su tab
+  var iframeId = 'iframe-' + id;
+  var iframe = document.getElementById(iframeId);
+  if (iframe && !iframe.dataset.loaded && iframe.dataset.src) {
+    iframe.onload = function() { autoHeight(this); };
+    iframe.src = iframe.dataset.src;
+    iframe.dataset.loaded = '1';
+  }
   ['cotizador','empresa'].forEach(function(t) {
     var tab = document.getElementById('tab-'+t);
     var panel = document.getElementById('panel-'+t);
@@ -1389,6 +1446,12 @@ function autoHeight(f) {
     resize(); setTimeout(resize, 800); setTimeout(resize, 2000);
   } catch(e) { f.style.height = '1100px'; }
 }
+// Adjuntar onload a iframes desde JS (evita ReferenceError por orden de ejecución)
+(function() {
+  var fc = document.getElementById('iframe-cotizador');
+  if (fc) fc.onload = function() { autoHeight(this); };
+  // iframe-empresa se carga lazy; su onload se asigna al activar el tab
+})();
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'resize' && e.data.height) {
     document.querySelectorAll('iframe').forEach(function(f) {
