@@ -726,7 +726,7 @@
     align-items: center;
     gap: 8px;
     box-shadow: 0 4px 20px rgba(26,76,232,0.45);
-    transition: box-shadow 0.15s, opacity 0.15s;
+    transition: box-shadow 0.15s, opacity 0.22s cubic-bezier(.25,.8,.25,1), transform 0.22s cubic-bezier(.25,.8,.25,1);
     font-family: var(--font);
     letter-spacing: 0.02em;
     user-select: none;
@@ -734,6 +734,7 @@
   }
   .fab-btn:hover { box-shadow: 0 6px 28px rgba(26,76,232,0.55); }
   .fab-btn.dragging { cursor: grabbing; opacity: 0.9; box-shadow: 0 8px 32px rgba(26,76,232,0.6); transition: none; }
+  .fab-btn.fab-hidden, .fab-wa.fab-hidden { opacity: 0 !important; pointer-events: none !important; transform: translateY(12px) scale(.92) !important; }
   @media (max-width:900px) { .fab-btn { bottom: 16px; right: 16px; padding: 11px 20px; font-size: 13px; } }
   .fab-wa {
     position: fixed;
@@ -752,7 +753,7 @@
     align-items: center;
     gap: 7px;
     box-shadow: 0 4px 16px rgba(37,211,102,0.45);
-    transition: box-shadow 0.15s, opacity 0.15s;
+    transition: box-shadow 0.15s, opacity 0.22s cubic-bezier(.25,.8,.25,1), transform 0.22s cubic-bezier(.25,.8,.25,1);
     font-family: var(--font);
     letter-spacing: 0.02em;
     user-select: none;
@@ -10469,6 +10470,12 @@ function navigate(page) {
   document.getElementById('pageTitle').textContent = title;
   document.getElementById('pageSubtitle').textContent = sub;
   closeSidebar();
+  // FABs solo visibles en Dashboard (inicio)
+  const _fw = document.getElementById('fabWA');
+  const _fb = document.getElementById('fabBtn');
+  const _h  = page !== 'dashboard';
+  if (_fw) _fw.classList.toggle('fab-hidden', _h);
+  if (_fb) _fb.classList.toggle('fab-hidden', _h);
   refreshPage(page);
 }
 
