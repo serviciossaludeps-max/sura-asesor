@@ -40,22 +40,24 @@ nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filt
 }
 
 /* ─ HERO PLANES ─ */
-.hero-planes{background:var(--navy);padding:4rem 2rem 3rem;position:relative;overflow:hidden}
-.hero-planes::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,rgba(255,184,0,.07),transparent 60%);pointer-events:none}
+.hero-planes{background:linear-gradient(160deg,var(--deep) 0%,var(--navy) 60%,#003fa8 100%);padding:4.5rem 2rem 3.5rem;position:relative;overflow:hidden;}
+.hero-planes::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 40%,rgba(255,184,0,.09),transparent 55%),radial-gradient(circle at 15% 90%,rgba(0,71,187,.3),transparent 40%);pointer-events:none}
+.hero-planes::before{content:'';position:absolute;top:-60px;right:-80px;width:420px;height:420px;border-radius:50%;border:1px solid rgba(255,255,255,.04);box-shadow:0 0 0 60px rgba(255,255,255,.02),0 0 0 120px rgba(255,255,255,.015);pointer-events:none;}
 .hero-planes-inner{max-width:1180px;margin:0 auto;position:relative;z-index:1}
 .hp-kicker{display:flex;align-items:center;gap:.55rem;margin-bottom:1rem}
 .hp-dash{width:20px;height:1.5px;background:var(--gold)}
 .hp-txt{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35)}
-.hp-h1{font-family:var(--serif);font-size:clamp(2rem,3.5vw,3rem);color:#fff;line-height:1.1;margin-bottom:.75rem}
+.hp-h1{font-family:var(--serif);font-size:clamp(2.2rem,4vw,3.2rem);color:#fff;line-height:1.05;letter-spacing:-.015em;margin-bottom:.75rem}
 .hp-h1 em{font-style:italic;color:var(--gold)}
 .hp-sub{font-size:.9rem;color:rgba(255,255,255,.5);max-width:520px;line-height:1.8}
 
 /* ─ FILTRO DE PLANES ─ */
-.plan-filter{background:var(--deep);padding:1rem 2rem;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:60px;z-index:90}
+.plan-filter{background:rgba(0,18,55,.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:.85rem 2rem;border-bottom:1px solid rgba(255,255,255,.07);position:sticky;top:60px;z-index:90;}
 .plan-filter-inner{max-width:1180px;margin:0 auto;display:flex;gap:.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
 .pf-btn{flex-shrink:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:.45rem 1.1rem;font-size:.78rem;font-weight:500;color:rgba(255,255,255,.5);cursor:pointer;font-family:var(--sans);transition:all .18s;white-space:nowrap}
 .pf-btn:hover{color:#fff;border-color:rgba(255,255,255,.3)}
-.pf-btn.active{background:var(--gold);color:var(--deep);border-color:var(--gold);font-weight:700}
+.pf-btn{transition:all .2s cubic-bezier(.25,.8,.25,1);}
+.pf-btn.active{background:rgba(255,184,0,.12);color:var(--gold);border-color:rgba(255,184,0,.35);font-weight:700;box-shadow:0 0 0 1px rgba(255,184,0,.15);}
 
 /* ─ CONTENEDOR PLANES ─ */
 .planes-wrap{max-width:1180px;margin:0 auto;padding:3rem 2rem 5rem}
@@ -63,15 +65,19 @@ nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filt
 /* ─ PLAN CARD GRANDE ─ */
 .plan-block{display:none;animation:fadeUp .4s var(--ease) forwards}
 .plan-block.show{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(18px) scale(.99)}60%{transform:translateY(-2px) scale(1.002)}100%{opacity:1;transform:none scale(1)}}
 
 .plan-header{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:start;margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
 @media(max-width:640px){.plan-header{grid-template-columns:1fr}}
 
 .ph-badge{display:inline-flex;align-items:center;gap:.4rem;background:var(--navy);color:var(--gold);font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .7rem;border-radius:4px;margin-bottom:.75rem}
-.ph-title{font-family:var(--serif);font-size:clamp(1.7rem,3vw,2.4rem);color:var(--navy);line-height:1.1;margin-bottom:.5rem}
+.ph-title{font-family:var(--serif);font-size:clamp(1.8rem,3.2vw,2.55rem);color:var(--navy);line-height:1.05;letter-spacing:-.01em;margin-bottom:.5rem}
 .ph-sub{font-size:.88rem;color:var(--muted);line-height:1.8;max-width:560px}
-.ph-price{background:var(--navy);border-radius:10px;padding:1.5rem 2rem;text-align:center;flex-shrink:0;min-width:200px}
+.ph-price{background:linear-gradient(135deg,rgba(0,48,135,.95),rgba(0,26,82,.98));border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 24px rgba(0,26,82,.18);border-radius:10px;padding:1.5rem 2rem;text-align:center;flex-shrink:0;min-width:200px;position:relative;cursor:pointer;transition:border-color .24s cubic-bezier(.25,.8,.25,1),box-shadow .24s;}
+.ph-price:hover{border-color:rgba(255,184,0,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 6px 28px rgba(0,26,82,.22),0 0 0 1px rgba(255,184,0,.1);}
+.ph-price-hint{display:flex;align-items:center;justify-content:center;gap:.3rem;font-size:.58rem;color:rgba(255,184,0,.55);margin-top:.6rem;letter-spacing:.04em;transition:color .2s;}
+.ph-price:hover .ph-price-hint{color:rgba(255,184,0,.85);}
+.ph-price-hint svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.2;}
 .ph-price-lbl{font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
 .ph-price-val{font-family:var(--serif);font-size:1.8rem;color:#fff;line-height:1}
 .ph-price-period{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.2rem}
@@ -82,7 +88,9 @@ nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filt
 .cob-title{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
 .cob-title::after{content:'';flex:1;height:1px;background:var(--border)}
 .cob-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
-.cob-item{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:1rem 1.1rem;display:flex;gap:.75rem;align-items:flex-start}
+.cob-item{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:1rem 1.1rem;display:flex;gap:.75rem;align-items:flex-start;transition:border-color .22s cubic-bezier(.25,.8,.25,1),box-shadow .22s,transform .22s;animation:cob-in .35s cubic-bezier(.25,.8,.25,1) both;animation-delay:calc(var(--i,0) * 55ms);}
+@keyframes cob-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.cob-item:hover{border-color:rgba(0,71,187,.22);box-shadow:0 3px 12px rgba(0,26,82,.06);transform:translateY(-1px);}
 .cob-item.gold{background:var(--gold2);border-color:rgba(255,184,0,.25)}
 .cob-ico{width:32px;height:32px;border-radius:6px;background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;} .cob-ico svg{stroke:var(--navy);width:17px;height:17px;} .cob-item.gold .cob-ico svg{stroke:#7A5800;}
 .cob-item.gold .cob-ico{background:rgba(255,184,0,.15)}
@@ -113,7 +121,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filt
 .carencias{background:var(--navy);border-radius:10px;padding:1.5rem 2rem;margin-bottom:2.5rem}
 .car-title{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:1rem}
 .car-grid{display:flex;flex-wrap:wrap;gap:.75rem}
-.car-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:.6rem 1rem;display:flex;align-items:center;gap:.55rem}
+.car-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:.6rem 1rem;display:flex;align-items:center;gap:.55rem;transition:background .22s,border-color .22s;}
+.car-item:hover{background:rgba(255,255,255,.11);border-color:rgba(255,184,0,.2);}
 .car-days{font-family:var(--serif);font-size:1.1rem;color:var(--gold);white-space:nowrap}
 .car-concept{font-size:.76rem;color:rgba(255,255,255,.6);line-height:1.4}
 .car-sin{background:rgba(0,200,100,.08);border-color:rgba(0,200,100,.2)}
@@ -123,7 +132,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filt
 .cond-box{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.5rem 2rem;margin-bottom:2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
 .cond-info h4{font-family:var(--serif);font-size:1.05rem;color:var(--navy);margin-bottom:.3rem}
 .cond-info p{font-size:.82rem;color:var(--muted);line-height:1.6}
-.cond-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--navy);color:#fff;padding:.7rem 1.4rem;border-radius:6px;font-size:.82rem;font-weight:600;text-decoration:none;transition:background .18s;white-space:nowrap;flex-shrink:0}
+.cond-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--navy);color:#fff;padding:.7rem 1.4rem;border-radius:6px;font-size:.82rem;font-weight:600;text-decoration:none;transition:background .18s,transform .14s cubic-bezier(.25,.8,.25,1);white-space:nowrap;flex-shrink:0;}
+.cond-btn:active{transform:translateY(1px) scale(.98);}
 .cond-btn:hover{background:var(--deep)}
 .cond-btn svg{width:14px;height:14px;fill:currentColor}
 
@@ -147,7 +157,9 @@ nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filt
 .politica-lf a{color:rgba(255,184,0,.8);text-decoration:underline;cursor:pointer}
 .lf-btns{display:flex;gap:.75rem;flex-wrap:wrap}
 .btn-wa{display:inline-flex;align-items:center;gap:.55rem;background:#25D366;color:#fff;padding:.8rem 1.6rem;border-radius:6px;font-size:.88rem;font-weight:700;border:none;cursor:pointer;font-family:var(--sans);transition:background .18s;flex:1;min-width:180px;justify-content:center}
-.btn-wa:hover{background:#1EAF54}
+.btn-wa{transition:background .18s,transform .16s cubic-bezier(.25,.8,.25,1);}
+.btn-wa:hover{background:#1EAF54;transform:translateY(-1px);}
+.btn-wa:active{transform:translateY(1px) scale(.98);}
 .btn-wa svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
 .btn-crm{display:inline-flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:.8rem 1.4rem;border-radius:6px;font-size:.82rem;font-weight:600;border:none;cursor:pointer;font-family:var(--sans);transition:all .18s;flex:1;min-width:180px;justify-content:center}
 .btn-crm:hover{background:rgba(255,255,255,.14);color:#fff}
@@ -415,6 +427,7 @@ footer a:hover{color:#fff}
       <div class="ph-price-val">$147.480</div>
       <div class="ph-price-period">/mes · vigencia anual</div>
       <div class="ph-price-req">Requiere PBS SURA</div>
+      <div class="ph-price-hint"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>Ver tarifas por edad</div>
       <div class="ph-price-tt">
         <div class="tt-arrow"></div>
         <div class="tt-head">
@@ -431,7 +444,7 @@ footer a:hover{color:#fff}
   <div class="cob-section">
     <div class="cob-title">Coberturas incluidas</div>
     <div class="cob-grid">
-      <div class="cob-item gold">
+      <div class="cob-item gold" style="--i:0">
         <div class="cob-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="1"/><path d="M16 22V12H8v10"/><path d="M12 7V3"/><path d="M9 10h6"/><path d="M12 7h.01"/></svg></div>
         <div><div class="cob-name">Habitación individual</div><div class="cob-desc">Hospitalización médica o quirúrgica en habitación privada. Carencia 150 días para programada; urgencias sin carencia desde el día 1.</div></div>
       </div>
@@ -582,6 +595,7 @@ footer a:hover{color:#fff}
       <div class="ph-price-val">$167.076</div>
       <div class="ph-price-period">/mes · vigencia anual</div>
       <div class="ph-price-req">Requiere PBS SURA</div>
+      <div class="ph-price-hint"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>Ver tarifas por edad</div>
       <div class="ph-price-tt">
         <div class="tt-arrow"></div>
         <div class="tt-head">
@@ -597,7 +611,7 @@ footer a:hover{color:#fff}
   <div class="cob-section">
     <div class="cob-title">Coberturas incluidas</div>
     <div class="cob-grid">
-      <div class="cob-item gold">
+      <div class="cob-item gold" style="--i:0">
         <div class="cob-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="1"/><path d="M16 22V12H8v10"/><path d="M12 7V3"/><path d="M9 10h6"/><path d="M12 7h.01"/></svg></div>
         <div><div class="cob-name">Habitación individual</div><div class="cob-desc">Hospitalización médica o quirúrgica en habitación privada. Carencia 150 días para programada; urgencias sin carencia desde el día 1.</div></div>
       </div>
@@ -732,6 +746,7 @@ footer a:hover{color:#fff}
       <div class="ph-price-val">$96.674</div>
       <div class="ph-price-period">/mes · tarifa única por edad</div>
       <div class="ph-price-req">Funciona con cualquier EPS</div>
+      <div class="ph-price-hint"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>Ver tarifas por edad</div>
       <div class="ph-price-tt">
         <div class="tt-arrow"></div>
         <div class="tt-head">
@@ -747,7 +762,7 @@ footer a:hover{color:#fff}
   <div class="cob-section">
     <div class="cob-title">Coberturas incluidas</div>
     <div class="cob-grid">
-      <div class="cob-item gold">
+      <div class="cob-item gold" style="--i:0">
         <div class="cob-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
         <div><div class="cob-name">Atención virtual ilimitada</div><div class="cob-desc">Médico general y pediatra virtuales, todos los días de 7 a. m. a 7 p. m. Ilimitada. Se puede compartir con el asegurado registrado.</div></div>
       </div>
@@ -893,6 +908,7 @@ footer a:hover{color:#fff}
       <div class="ph-price-val">$241.339</div>
       <div class="ph-price-period">/mes · módulo básico</div>
       <div class="ph-price-req">Funciona con cualquier EPS</div>
+      <div class="ph-price-hint"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>Ver tarifas por edad</div>
       <div class="ph-price-tt">
         <div class="tt-arrow"></div>
         <div class="tt-head">
@@ -908,7 +924,7 @@ footer a:hover{color:#fff}
   <div class="cob-section">
     <div class="cob-title">Coberturas módulo básico</div>
     <div class="cob-grid">
-      <div class="cob-item gold">
+      <div class="cob-item gold" style="--i:0">
         <div class="cob-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <div><div class="cob-name">Urgencias ILIMITADAS</div><div class="cob-desc">Atención médica de urgencias en la red hospitalaria SURA, sin límite de eventos por vigencia.</div></div>
       </div>
@@ -955,7 +971,7 @@ footer a:hover{color:#fff}
   <div class="cob-section">
     <div class="cob-title">Módulos opcionales (prima adicional)</div>
     <div class="cob-grid">
-      <div class="cob-item">
+      <div class="cob-item" style="--i:0">
         <div class="cob-ico">⭐</div>
         <div><div class="cob-name">Alto costo</div><div class="cob-desc">Cáncer, VIH/SIDA, diálisis renal y trasplantes de órganos.</div></div>
       </div>
