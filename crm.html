@@ -14374,7 +14374,7 @@ Responde ÚNICAMENTE con el JSON, sin texto adicional ni bloques de código.`;
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
         messages: [{
           role: 'user',
@@ -28417,7 +28417,7 @@ async function asGenerarRecomendacion() {
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: `Eres un asesor experto en seguros voluntarios de salud de SURA Colombia. Tu rol es ayudar al asesor humano a recomendar el mejor producto para su cliente.
 
@@ -39042,7 +39042,7 @@ async function _agenteEnviar() {
           'anthropic-dangerous-direct-browser-access': 'true'
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 1024,
           system: sistema,
           tools: _agenteTools,
