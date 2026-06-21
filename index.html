@@ -301,6 +301,193 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
 .fb2-legal a { font-size:.68rem; color:rgba(255,255,255,.18); text-decoration:none; transition:color .16s; }
 .fb2-legal a:hover { color:rgba(255,255,255,.45); }
 
+
+/* ─ SPLASH ACCESO ASESOR ─ */
+.asesor-splash {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:var(--deep);
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  overflow:hidden;
+}
+.asesor-splash.active { display:flex; }
+
+/* Fondo decorativo */
+.as-bg {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(0,71,187,.35) 0%, transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(255,184,0,.07) 0%, transparent 40%);
+}
+.as-ring {
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.04);
+  animation:as-pulse 3s ease-in-out infinite;
+}
+.as-ring:nth-child(1){ width:380px;height:380px;animation-delay:0s; }
+.as-ring:nth-child(2){ width:560px;height:560px;animation-delay:.4s; }
+.as-ring:nth-child(3){ width:740px;height:740px;animation-delay:.8s; }
+@keyframes as-pulse {
+  0%,100%{ opacity:.5; transform:scale(1); }
+  50%{ opacity:1; transform:scale(1.015); }
+}
+
+/* Contenido central */
+.as-body {
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  animation:as-fadein .5s cubic-bezier(.25,.8,.25,1) forwards;
+}
+@keyframes as-fadein {
+  from{ opacity:0; transform:translateY(14px); }
+  to  { opacity:1; transform:none; }
+}
+
+/* Logo pill */
+.as-pill {
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:8px;
+  padding:.45rem 1rem .45rem .7rem;
+  margin-bottom:2rem;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+}
+.as-pill-badge {
+  background:var(--gold);
+  color:var(--deep);
+  font-size:.55rem;
+  font-weight:900;
+  letter-spacing:.07em;
+  padding:.2rem .5rem;
+  border-radius:3px;
+}
+.as-pill-txt {
+  font-size:.68rem;
+  color:rgba(255,255,255,.45);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+/* Icono central animado */
+.as-icon-wrap {
+  width:72px;
+  height:72px;
+  border-radius:18px;
+  background:rgba(255,184,0,.1);
+  border:1px solid rgba(255,184,0,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 0 40px rgba(255,184,0,.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:1.5rem;
+  animation:as-icon-in .6s .15s cubic-bezier(.25,.8,.25,1) both;
+}
+@keyframes as-icon-in {
+  from{ opacity:0; transform:scale(.8); }
+  to  { opacity:1; transform:scale(1); }
+}
+.as-icon-wrap svg {
+  width:32px;
+  height:32px;
+  stroke:var(--gold);
+  fill:none;
+  stroke-width:1.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+/* Draw SVG stroke animation */
+.as-icon-wrap svg path,
+.as-icon-wrap svg circle,
+.as-icon-wrap svg polyline {
+  stroke-dasharray:120;
+  stroke-dashoffset:120;
+  animation:as-draw .9s .3s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes as-draw {
+  to { stroke-dashoffset:0; }
+}
+
+/* Título */
+.as-title {
+  font-family:var(--serif);
+  font-size:1.6rem;
+  color:#fff;
+  letter-spacing:-.015em;
+  line-height:1.1;
+  text-align:center;
+  margin-bottom:.5rem;
+  animation:as-fadein .5s .2s cubic-bezier(.25,.8,.25,1) both;
+}
+.as-title em { font-style:italic; color:var(--gold); }
+
+.as-sub {
+  font-size:.75rem;
+  color:rgba(255,255,255,.3);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-align:center;
+  margin-bottom:2.5rem;
+  animation:as-fadein .5s .3s cubic-bezier(.25,.8,.25,1) both;
+}
+
+/* Barra de progreso */
+.as-progress-wrap {
+  width:180px;
+  height:2px;
+  background:rgba(255,255,255,.08);
+  border-radius:2px;
+  overflow:hidden;
+  animation:as-fadein .4s .35s both;
+}
+.as-progress-bar {
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg, var(--gold), #fff9c4);
+  border-radius:2px;
+  animation:as-load 1.6s .4s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes as-load {
+  0%  { width:0%;   opacity:1; }
+  80% { width:100%; opacity:1; }
+  100%{ width:100%; opacity:0; }
+}
+
+/* Dots de acceso */
+.as-dots {
+  display:flex;
+  gap:.4rem;
+  margin-top:1.25rem;
+  animation:as-fadein .4s .5s both;
+}
+.as-dot {
+  width:5px; height:5px;
+  border-radius:50%;
+  background:rgba(255,255,255,.15);
+  animation:as-dot-pulse 1.4s infinite;
+}
+.as-dot:nth-child(1){ animation-delay:.0s; }
+.as-dot:nth-child(2){ animation-delay:.18s; }
+.as-dot:nth-child(3){ animation-delay:.36s; }
+@keyframes as-dot-pulse {
+  0%,80%,100%{ transform:scale(1);   background:rgba(255,255,255,.15); }
+  40%         { transform:scale(1.5); background:rgba(255,184,0,.7); }
+}
+
 /* ─ WA FLOAT ─ */
 .wa { position:fixed; bottom:1.25rem; right:1.25rem; z-index:200; background:#25D366; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 3px 14px rgba(37,211,102,.36); transition:transform .18s; }
 .wa:hover { transform:scale(1.1); }
@@ -1247,6 +1434,37 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
   </button>
 </div>
 
+
+<!-- SPLASH ACCESO ASESOR -->
+<div class="asesor-splash" id="asesor-splash" role="dialog" aria-label="Accediendo al portal asesor">
+  <div class="as-bg"></div>
+  <div class="as-ring"></div>
+  <div class="as-ring"></div>
+  <div class="as-ring"></div>
+  <div class="as-body">
+    <div class="as-pill">
+      <div class="as-pill-badge">SURA</div>
+      <span class="as-pill-txt">Canal Especializado en Salud</span>
+    </div>
+    <div class="as-icon-wrap">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <polyline points="9 12 11 14 15 10"/>
+      </svg>
+    </div>
+    <h2 class="as-title">Portal <em>Asesor</em></h2>
+    <p class="as-sub">Verificando acceso · Canal Salud SURA</p>
+    <div class="as-progress-wrap">
+      <div class="as-progress-bar" id="as-progress-bar"></div>
+    </div>
+    <div class="as-dots">
+      <div class="as-dot"></div>
+      <div class="as-dot"></div>
+      <div class="as-dot"></div>
+    </div>
+  </div>
+</div>
+
 <!-- WA FLOAT -->
 <a href="#" id="wa-float" class="wa" aria-label="Contactar por WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
@@ -1612,6 +1830,25 @@ if (modalEl) {
 
 // INIT
 cargarAsesor();
+
+// SPLASH ACCESO ASESOR — intercepta clic en crm-link
+(function(){
+  function lanzarSplash(e, href) {
+    e.preventDefault();
+    var splash = document.getElementById('asesor-splash');
+    if (!splash) { window.location.href = href; return; }
+    // Reiniciar animación de barra
+    var bar = document.getElementById('as-progress-bar');
+    if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
+    splash.classList.add('active');
+    // Redirigir después de que la barra complete (~2s total)
+    setTimeout(function(){ window.location.href = href; }, 2000);
+  }
+  document.querySelectorAll('a.crm-link, a[href="/crm"]').forEach(function(a){
+    a.addEventListener('click', function(e){ lanzarSplash(e, this.href); });
+  });
+})();
+
 
 // Spotlight hover para .pcard y .hstat
 (function(){
