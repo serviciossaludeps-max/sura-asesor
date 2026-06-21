@@ -256,7 +256,8 @@ footer a:hover{color:#fff}
 }
 
 /* ── TOOLTIP TARIFA ── */
-.ph-price { cursor:pointer; }
+.ph-price { cursor:default; }
+.ph-price-hint { cursor:pointer; }
 .ph-price-tt {
   position:fixed;
   min-width:320px;
@@ -271,7 +272,7 @@ footer a:hover{color:#fff}
   transition:opacity .2s ease, transform .2s ease;
   z-index:99999;
   box-shadow:0 20px 60px rgba(0,10,40,.22), 0 4px 16px rgba(0,10,40,.12);
-  overflow:hidden;
+  overflow:visible;
   text-align:left;
   display:none;
 }
@@ -281,6 +282,8 @@ footer a:hover{color:#fff}
   transform:translateY(0);
   pointer-events:auto;
 }
+/* inner wrapper mantiene border-radius sin cortar la flecha */
+.ph-price-tt .tt-inner { overflow:hidden; border-radius:14px; background:#FFFFFF; }
 .ph-price-tt .tt-arrow {
   position:absolute;
   width:14px;
@@ -430,12 +433,14 @@ footer a:hover{color:#fff}
       <div class="ph-price-hint"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>Ver tarifas por edad</div>
       <div class="ph-price-tt">
         <div class="tt-arrow"></div>
-        <div class="tt-head">
-          <span class="tt-head-lbl">Tarifas SPTI Clásico</span>
-          <span class="tt-head-note">IVA 5% incluido</span>
+        <div class="tt-inner">
+          <div class="tt-head">
+            <span class="tt-head-lbl">Tarifas SPTI Clásico</span>
+            <span class="tt-head-note">IVA 5% incluido</span>
+          </div>
+          <table class="tt-tbl"><tr><th>Rango de edad</th><th>Valor/mes</th></tr><tr><td>0 – 40 años</td><td class="tt-val-gold">$147.480</td></tr><tr><td>41 – 50 años</td><td class="tt-val-gold">$161.309</td></tr><tr><td>51 – 59 años</td><td class="tt-val">$202.171</td></tr></table>
+          <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Requiere PBS SURA · Vigencia anual</div>
         </div>
-        <table class="tt-tbl"><tr><th>Rango de edad</th><th>Valor/mes</th></tr><tr><td>0 – 40 años</td><td class="tt-val-gold">$147.480</td></tr><tr><td>41 – 50 años</td><td class="tt-val-gold">$161.309</td></tr><tr><td>51 – 59 años</td><td class="tt-val">$202.171</td></tr></table>
-        <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Requiere PBS SURA · Vigencia anual</div>
       </div>
     </div>
   </div>
@@ -598,12 +603,14 @@ footer a:hover{color:#fff}
       <div class="ph-price-hint"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>Ver tarifas por edad</div>
       <div class="ph-price-tt">
         <div class="tt-arrow"></div>
-        <div class="tt-head">
-          <span class="tt-head-lbl">Tarifas SPTI Preferencial</span>
-          <span class="tt-head-note">IVA 5% incluido</span>
+        <div class="tt-inner">
+          <div class="tt-head">
+            <span class="tt-head-lbl">Tarifas SPTI Preferencial</span>
+            <span class="tt-head-note">IVA 5% incluido</span>
+          </div>
+          <table class="tt-tbl"><tr><th>Rango de edad</th><th>Valor/mes</th></tr><tr><td>0 – 40 años</td><td class="tt-val-gold">$167.076</td></tr><tr><td>41 – 50 años</td><td class="tt-val-gold">$179.725</td></tr><tr><td>51 – 59 años</td><td class="tt-val">$222.700</td></tr></table>
+          <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Requiere PBS SURA · Vigencia anual</div>
         </div>
-        <table class="tt-tbl"><tr><th>Rango de edad</th><th>Valor/mes</th></tr><tr><td>0 – 40 años</td><td class="tt-val-gold">$167.076</td></tr><tr><td>41 – 50 años</td><td class="tt-val-gold">$179.725</td></tr><tr><td>51 – 59 años</td><td class="tt-val">$222.700</td></tr></table>
-        <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Requiere PBS SURA · Vigencia anual</div>
       </div>
     </div>
   </div>
@@ -749,12 +756,14 @@ footer a:hover{color:#fff}
       <div class="ph-price-hint"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>Ver tarifas por edad</div>
       <div class="ph-price-tt">
         <div class="tt-arrow"></div>
-        <div class="tt-head">
-          <span class="tt-head-lbl">Tarifas SPD Plus</span>
-          <span class="tt-head-note">IVA 5% incluido</span>
+        <div class="tt-inner">
+          <div class="tt-head">
+            <span class="tt-head-lbl">Tarifas SPD Plus</span>
+            <span class="tt-head-note">IVA 5% incluido</span>
+          </div>
+          <table class="tt-tbl"><tr><th>Modalidad</th><th>Valor/mes</th></tr><tr><td>Tarifa única · todas las edades</td><td class="tt-val">$96.674</td></tr></table>
+          <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compatible con cualquier EPS · Sin carencia</div>
         </div>
-        <table class="tt-tbl"><tr><th>Modalidad</th><th>Valor/mes</th></tr><tr><td>Tarifa única · todas las edades</td><td class="tt-val">$96.674</td></tr></table>
-        <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compatible con cualquier EPS · Sin carencia</div>
       </div>
     </div>
   </div>
@@ -911,12 +920,14 @@ footer a:hover{color:#fff}
       <div class="ph-price-hint"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>Ver tarifas por edad</div>
       <div class="ph-price-tt">
         <div class="tt-arrow"></div>
-        <div class="tt-head">
-          <span class="tt-head-lbl">Tarifas Plan Modular</span>
-          <span class="tt-head-note">IVA 5% incluido</span>
+        <div class="tt-inner">
+          <div class="tt-head">
+            <span class="tt-head-lbl">Tarifas Plan Modular</span>
+            <span class="tt-head-note">IVA 5% incluido</span>
+          </div>
+          <div style="max-height:260px;overflow-y:auto;"><table class="tt-tbl"><tr><th>Rango de edad</th><th>Sin maternidad</th><th>Con maternidad</th></tr><tr><td>0 – 14 años</td><td class="tt-val">$291.774</td><td class="tt-val">$291.774</td></tr><tr><td>15 – 25 años</td><td class="tt-val">$308.882</td><td class="tt-val">$386.017</td></tr><tr><td>26 – 30 años</td><td class="tt-val">$340.096</td><td class="tt-val">$417.231</td></tr><tr><td>31 – 40 años</td><td class="tt-val">$374.614</td><td class="tt-val">$451.749</td></tr><tr><td>41 – 45 años</td><td class="tt-val">$465.115</td><td class="tt-val">$542.250</td></tr><tr><td>46 – 50 años</td><td class="tt-val">$546.381</td><td class="tt-val">$546.381</td></tr><tr><td>51 – 59 años</td><td class="tt-val">$729.977</td><td class="tt-val">$729.977</td></tr><tr><td>60 – 65 años</td><td class="tt-val-gold">$1.033.584</td><td class="tt-val-gold">$1.033.584</td></tr><tr><td>66 – 70 años</td><td class="tt-val-gold">$1.439.935</td><td class="tt-val-gold">$1.439.935</td></tr><tr><td>71+ años</td><td class="tt-val-gold">$1.850.058</td><td class="tt-val-gold">$1.850.058</td></tr></table></div>
+          <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compatible con cualquier EPS · Módulos: Básico + EMD + Cirugía + Alto Costo</div>
         </div>
-        <div style="max-height:260px;overflow-y:auto;"><table class="tt-tbl"><tr><th>Rango de edad</th><th>Sin maternidad</th><th>Con maternidad</th></tr><tr><td>0 – 14 años</td><td class="tt-val">$291.774</td><td class="tt-val">$291.774</td></tr><tr><td>15 – 25 años</td><td class="tt-val">$308.882</td><td class="tt-val">$386.017</td></tr><tr><td>26 – 30 años</td><td class="tt-val">$340.096</td><td class="tt-val">$417.231</td></tr><tr><td>31 – 40 años</td><td class="tt-val">$374.614</td><td class="tt-val">$451.749</td></tr><tr><td>41 – 45 años</td><td class="tt-val">$465.115</td><td class="tt-val">$542.250</td></tr><tr><td>46 – 50 años</td><td class="tt-val">$546.381</td><td class="tt-val">$546.381</td></tr><tr><td>51 – 59 años</td><td class="tt-val">$729.977</td><td class="tt-val">$729.977</td></tr><tr><td>60 – 65 años</td><td class="tt-val-gold">$1.033.584</td><td class="tt-val-gold">$1.033.584</td></tr><tr><td>66 – 70 años</td><td class="tt-val-gold">$1.439.935</td><td class="tt-val-gold">$1.439.935</td></tr><tr><td>71+ años</td><td class="tt-val-gold">$1.850.058</td><td class="tt-val-gold">$1.850.058</td></tr></table></div>
-        <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compatible con cualquier EPS · Módulos: Básico + EMD + Cirugía + Alto Costo</div>
       </div>
     </div>
   </div>
@@ -1089,6 +1100,7 @@ footer a:hover{color:#fff}
       <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.3rem;">/mes · sin anexo · 60-69 años</div>
       <div class="ph-price-tt" style="min-width:380px;">
         <div class="tt-arrow"></div>
+        <div class="tt-inner">
         <div class="tt-head">
           <span class="tt-head-lbl">Tarifas Plan 60+</span>
           <span class="tt-head-note">IVA 5% incluido</span>
@@ -1101,9 +1113,9 @@ footer a:hover{color:#fff}
           <tr><td>90+ años</td><td class="tt-val-gold">$693.652</td><td class="tt-val-gold">$738.905</td></tr>
         </table>
         <div class="tt-foot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Requiere PBS SURA · Edad 60–79 años para ingreso · Anexo: Cardio + Dermatología</div>
+        </div>
       </div>
     </div>
-  </div>
 
   <div style="font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--mid);margin:2rem 0 1rem;">Requisitos para afiliarse</div>
   <div class="cob-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:2rem;">
@@ -1222,6 +1234,7 @@ footer a:hover{color:#fff}
     <div class="lf-msg" id="lf-msg5"></div>
   </div>
 
+</div>
 </div><!-- /plan-60-mas -->
 
 </div><!-- /planes-wrap -->
@@ -1660,38 +1673,24 @@ function _enviarFirestore(payload, msgId){
     activeEl = null;
   }
 
-  // Delegación — funciona aunque .plan-block esté display:none al cargar
-  document.addEventListener('mouseover', function(e) {
-    var el = e.target.closest('.ph-price');
-    if (el) mostrar(el);
-  });
-
-  document.addEventListener('mouseout', function(e) {
-    var el = e.target.closest('.ph-price');
-    if (!el) return;
-    var to = e.relatedTarget;
-    if (to && (el.contains(to) || to.closest('.ph-price-tt'))) return;
-    ocultar();
-  });
-
-  document.addEventListener('mouseout', function(e) {
-    if (!e.target.closest('.ph-price-tt')) return;
-    var to = e.relatedTarget;
-    if (!to || !to.closest('.ph-price')) ocultar();
-  });
-
-  // Móvil: tap delegado
-  document.addEventListener('touchstart', function(e) {
-    var el = e.target.closest('.ph-price');
-    if (!el) return;
-    e.preventDefault();
-    if (activeEl === el) { ocultar(); } else { mostrar(el); }
-  }, { passive: false });
-
+  // Clic en "Ver tarifas por edad" — delegado en document
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('.ph-price') && !e.target.closest('.ph-price-tt')) ocultar();
+    // Abrir: clic en el hint
+    var hint = e.target.closest('.ph-price-hint');
+    if (hint) {
+      var el = hint.closest('.ph-price');
+      if (el) {
+        if (activeEl === el) { ocultar(); } else { mostrar(el); }
+        return;
+      }
+    }
+    // Cerrar: clic fuera del tooltip y del ph-price
+    if (!e.target.closest('.ph-price-tt')) ocultar();
   });
-  document.addEventListener('scroll', function(){ ocultar(); }, true);
+  document.addEventListener('scroll', function(e){
+    if (e.target && e.target.closest && e.target.closest('.ph-price-tt')) return;
+    ocultar();
+  }, true);
   window.addEventListener('resize', function(){ ocultar(); });
 })();
 
