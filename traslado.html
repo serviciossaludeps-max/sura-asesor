@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Traslado a EPS SURA — Sin filas, sin trámites | Fran Viloria</title>
+<meta name="description" content="Cámbiate a EPS SURA gratis. Verificamos tu elegibilidad, radicamos el traslado y te acompañamos hasta que estés activo. Asesoría 100% gratuita en Colombia.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://serviciosseguros.co/traslado.html">
+<meta property="og:title" content="Traslado a EPS SURA gratis — Fran Viloria, Asesor Autorizado">
+<meta property="og:description" content="Sin filas, sin trámites complejos. Verificamos tu elegibilidad y gestionamos todo el proceso de traslado a EPS SURA por ti.">
+<meta property="og:image" content="https://serviciosseguros.co/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="Seguros_SURA_Logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#003087;--deep:#001A52;--mid:#0047BB;
+  --gold:#FFB800;--gold2:#FFF8E6;
+  --off:#F4F7FC;--border:#DDE5F0;
+  --text:#0A1628;--muted:#526075;--white:#FFFFFF;
+  --green:#25D366;--green-light:#F0FBF4;--green-border:#B7E8C6;
+  --red:#C0392B;--red-light:#FFF2F2;--red-border:#FFD6D6;
+  --serif:'DM Serif Display',serif;--sans:'Inter',sans-serif;
+  --ease:cubic-bezier(.25,.8,.25,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--white);overflow-x:hidden}
+
+/* ─ NAV (idéntico a planes.html) ─ */
+nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-brand{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.nav-sura{background:var(--gold);color:var(--deep);font-size:.58rem;font-weight:900;letter-spacing:.06em;padding:.18rem .5rem;border-radius:3px;flex-shrink:0}
+.nav-name{font-family:var(--serif);font-size:.9rem;color:#fff;line-height:1.15}
+.nav-name small{display:block;font-family:var(--sans);font-size:.52rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em}
+.nav-back{font-size:.78rem;color:rgba(255,255,255,.5);text-decoration:none;display:flex;align-items:center;gap:.35rem;transition:color .18s}
+.nav-back:hover{color:#fff}
+.nav-btn{background:var(--gold);color:var(--deep);padding:.42rem 1rem;border-radius:4px;font-size:.78rem;font-weight:700;text-decoration:none;flex-shrink:0}
+.nav-btn:hover{opacity:.88}
+@media(max-width:480px){
+  .nav-name{font-size:.7rem;max-width:120px}
+  .nav-name small{font-size:.45rem}
+  .nav-inner{padding:0 .9rem}
+  .nav-btn{font-size:.7rem;padding:.36rem .65rem}
+}
+
+/* ─ HERO (mismo gradiente que planes.html) ─ */
+.hero-planes{background:linear-gradient(160deg,var(--deep) 0%,var(--navy) 60%,#003fa8 100%);padding:4.5rem 2rem 3.5rem;position:relative;overflow:hidden}
+.hero-planes::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 40%,rgba(255,184,0,.09),transparent 55%),radial-gradient(circle at 15% 90%,rgba(0,71,187,.3),transparent 40%);pointer-events:none}
+.hero-planes::before{content:'';position:absolute;top:-60px;right:-80px;width:420px;height:420px;border-radius:50%;border:1px solid rgba(255,255,255,.04);box-shadow:0 0 0 60px rgba(255,255,255,.02),0 0 0 120px rgba(255,255,255,.015);pointer-events:none}
+.hero-planes-inner{max-width:1180px;margin:0 auto;position:relative;z-index:1}
+.hp-kicker{display:flex;align-items:center;gap:.55rem;margin-bottom:1rem}
+.hp-dash{width:20px;height:1.5px;background:var(--gold)}
+.hp-txt{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.hp-h1{font-family:var(--serif);font-size:clamp(2.2rem,4vw,3.2rem);color:#fff;line-height:1.05;letter-spacing:-.015em;margin-bottom:.75rem}
+.hp-h1 em{font-style:italic;color:var(--gold)}
+.hp-sub{font-size:.9rem;color:rgba(255,255,255,.5);max-width:540px;line-height:1.8;margin-bottom:2rem}
+.hp-ctas{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-wa{display:inline-flex;align-items:center;gap:.55rem;background:var(--green);color:#fff;padding:.8rem 1.6rem;border-radius:6px;font-size:.88rem;font-weight:700;border:none;cursor:pointer;font-family:var(--sans);transition:background .18s,transform .16s var(--ease);text-decoration:none}
+.btn-wa:hover{background:#1EAF54;transform:translateY(-1px)}
+.btn-wa:active{transform:translateY(1px) scale(.98)}
+.btn-wa svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
+.btn-crm{display:inline-flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:.8rem 1.4rem;border-radius:6px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all .18s;text-decoration:none}
+.btn-crm:hover{background:rgba(255,255,255,.14);color:#fff}
+.hp-badge-row{display:flex;gap:1rem;margin-top:2.5rem;flex-wrap:wrap}
+.hp-badge{display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:.6rem 1rem}
+.hp-badge-ico{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hp-badge-ico svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hp-badge-ico.green{background:rgba(37,211,102,.15)}
+.hp-badge-ico.green svg{stroke:#4AE088}
+.hp-badge-ico.gold{background:rgba(255,184,0,.12)}
+.hp-badge-ico.gold svg{stroke:var(--gold)}
+.hp-badge-txt{font-size:.76rem;color:rgba(255,255,255,.6);font-weight:500}
+.hp-badge-txt strong{color:#fff;font-weight:600}
+
+/* ─ SECCIONES ─ */
+.sec{padding:4rem 2rem}
+.sec-inner{max-width:1180px;margin:0 auto}
+.sec-eyebrow{display:flex;align-items:center;gap:.55rem;margin-bottom:.75rem}
+.sec-dash{width:20px;height:1.5px;background:var(--gold)}
+.sec-lbl{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mid)}
+.sec-h2{font-family:var(--serif);font-size:clamp(1.6rem,2.8vw,2.3rem);color:var(--navy);line-height:1.1;margin-bottom:.6rem}
+.sec-sub{font-size:.9rem;color:var(--muted);line-height:1.75;max-width:560px;margin-bottom:2.5rem}
+
+/* ─ REQUISITOS ─ */
+.req-sec{background:var(--off)}
+.req-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.85rem}
+.req-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.3rem 1.4rem;display:flex;gap:.9rem;align-items:flex-start;transition:border-color .22s var(--ease),box-shadow .22s}
+.req-card:hover{border-color:rgba(0,71,187,.22);box-shadow:0 3px 12px rgba(0,26,82,.07)}
+.req-ico{width:36px;height:36px;border-radius:8px;background:var(--off);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.req-ico svg{width:17px;height:17px;stroke:var(--navy);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.req-card.req-alerta .req-ico{background:var(--red-light)}
+.req-card.req-alerta .req-ico svg{stroke:var(--red)}
+.req-card h3{font-size:.83rem;font-weight:600;color:var(--text);margin-bottom:.25rem}
+.req-card.req-alerta h3{color:var(--red)}
+.req-card p{font-size:.78rem;color:var(--muted);line-height:1.6}
+
+/* ─ BENEFICIOS EPS ─ */
+.ben-sec{background:var(--white)}
+.ben-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.85rem}
+.ben-card{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:1.4rem;transition:border-color .22s var(--ease),box-shadow .22s,transform .22s}
+.ben-card::before{content:'';display:block;width:36px;height:3px;background:var(--navy);border-radius:2px;margin-bottom:1rem}
+.ben-card:hover{border-color:rgba(0,71,187,.22);box-shadow:0 4px 16px rgba(0,26,82,.07);transform:translateY(-2px)}
+.ben-ico{width:38px;height:38px;border-radius:8px;background:var(--white);display:flex;align-items:center;justify-content:center;margin-bottom:.9rem}
+.ben-ico svg{width:18px;height:18px;stroke:var(--navy);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ben-card h3{font-size:.85rem;font-weight:600;color:var(--navy);margin-bottom:.35rem}
+.ben-card p{font-size:.78rem;color:var(--muted);line-height:1.6}
+
+/* ─ PROCESO TIMELINE ─ */
+.proc-sec{background:var(--navy);padding:4rem 2rem;position:relative;overflow:hidden}
+.proc-sec::after{content:'';position:absolute;right:-80px;bottom:-80px;width:400px;height:400px;border-radius:50%;border:1px solid rgba(255,255,255,.03);pointer-events:none}
+.proc-sec .sec-h2{color:#fff}
+.proc-sec .sec-sub{color:rgba(255,255,255,.45)}
+.proc-sec .sec-lbl{color:rgba(255,184,0,.6)}
+.proc-sec .sec-dash{background:var(--gold);opacity:.6}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;margin-top:.5rem}
+.timeline::before{content:'';position:absolute;top:27px;left:12.5%;right:12.5%;height:1px;background:rgba(255,184,0,.18);z-index:0}
+.tl-step{position:relative;z-index:1;padding:0 1rem;text-align:center}
+.tl-dot{width:54px;height:54px;border-radius:50%;background:var(--deep);border:1.5px solid rgba(255,184,0,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;transition:border-color .22s var(--ease),background .22s}
+.tl-dot svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tl-step:hover .tl-dot{border-color:var(--gold);background:rgba(255,184,0,.07)}
+.tl-num{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,184,0,.45);margin-bottom:.35rem}
+.tl-title{font-size:.85rem;font-weight:600;color:#fff;margin-bottom:.3rem}
+.tl-desc{font-size:.74rem;color:rgba(255,255,255,.38);line-height:1.6}
+.tl-time{display:inline-block;font-size:.62rem;color:var(--gold);background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.18);border-radius:20px;padding:.15rem .65rem;margin-top:.55rem}
+@media(max-width:640px){
+  .timeline{grid-template-columns:1fr 1fr;gap:1.5rem}
+  .timeline::before{display:none}
+}
+@media(max-width:380px){.timeline{grid-template-columns:1fr}}
+
+/* ─ PROPUESTA DE VALOR ─ */
+.valor-sec{background:var(--off)}
+.valor-grid{display:grid;grid-template-columns:1fr auto;gap:2.5rem;align-items:start}
+@media(max-width:760px){.valor-grid{grid-template-columns:1fr}}
+.valor-list{display:flex;flex-direction:column;gap:.75rem}
+.valor-item{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;display:flex;gap:.9rem;align-items:flex-start;transition:border-color .22s var(--ease),box-shadow .22s}
+.valor-item:hover{border-color:rgba(0,71,187,.22);box-shadow:0 3px 12px rgba(0,26,82,.06)}
+.valor-ico{width:34px;height:34px;border-radius:7px;background:var(--off);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.valor-ico svg{width:16px;height:16px;stroke:var(--navy);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.valor-item h3{font-size:.83rem;font-weight:600;color:var(--text);margin-bottom:.2rem}
+.valor-item p{font-size:.77rem;color:var(--muted);line-height:1.6}
+/* Caja CTA igual a lead-form-wrap de planes.html */
+.cta-box{background:linear-gradient(135deg,rgba(0,48,135,.95),rgba(0,26,82,.98));border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 24px rgba(0,26,82,.18);border-radius:14px;padding:2.2rem;min-width:280px;max-width:320px;flex-shrink:0}
+@media(max-width:760px){.cta-box{max-width:100%}}
+.cta-box-title{font-family:var(--serif);font-size:1.3rem;color:#fff;margin-bottom:.5rem}
+.cta-box-sub{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.7;margin-bottom:1.5rem}
+.cta-box .btn-wa{width:100%;justify-content:center;margin-bottom:.65rem}
+.cta-box .btn-crm{width:100%;justify-content:center}
+.cta-puente{margin-top:1.1rem;padding:.8rem 1rem;background:rgba(255,184,0,.07);border:1px solid rgba(255,184,0,.16);border-radius:8px;font-size:.72rem;color:rgba(255,255,255,.45);line-height:1.6}
+.cta-puente strong{color:rgba(255,184,0,.8)}
+.cta-puente a{color:rgba(255,184,0,.8);text-decoration:underline}
+
+/* ─ CUÁNDO NO ─ */
+.no-sec{background:var(--white)}
+.no-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem}
+.no-card{background:var(--red-light);border:1px solid var(--red-border);border-radius:10px;padding:1.2rem 1.3rem;display:flex;gap:.85rem;align-items:flex-start}
+.no-ico{width:32px;height:32px;border-radius:6px;background:#FECACA;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.no-ico svg{width:14px;height:14px;stroke:var(--red);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.no-card h3{font-size:.82rem;font-weight:600;color:#991B1B;margin-bottom:.2rem}
+.no-card p{font-size:.76rem;color:#B91C1C;line-height:1.55}
+.no-nota{margin-top:1.4rem;background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;padding:1rem 1.3rem;display:flex;gap:.75rem;align-items:flex-start;font-size:.82rem;color:#065F46;line-height:1.65}
+.no-nota svg{width:15px;height:15px;stroke:#059669;fill:none;stroke-width:2;flex-shrink:0;margin-top:2px}
+
+/* ─ PUENTE A PLANES ─ */
+.puente-sec{background:var(--off);padding:3rem 2rem}
+.puente-banner{background:linear-gradient(135deg,var(--navy),var(--mid));border-radius:14px;padding:2.5rem;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;position:relative;overflow:hidden}
+.puente-banner::before{content:'';position:absolute;right:-50px;top:-50px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.04);box-shadow:0 0 0 50px rgba(255,255,255,.02)}
+.puente-banner h3{font-family:var(--serif);font-size:1.4rem;color:#fff;margin-bottom:.4rem}
+.puente-banner p{font-size:.84rem;color:rgba(255,255,255,.48);line-height:1.7;max-width:480px}
+.puente-btn{display:inline-flex;align-items:center;gap:.55rem;background:var(--gold);color:var(--deep);padding:.8rem 1.5rem;border-radius:6px;font-size:.85rem;font-weight:700;text-decoration:none;flex-shrink:0;transition:opacity .18s,transform .16s var(--ease)}
+.puente-btn:hover{opacity:.88;transform:translateY(-1px)}
+.puente-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:600px){
+  .puente-banner{grid-template-columns:1fr}
+  .puente-btn{width:100%;justify-content:center}
+}
+
+/* ─ WA FLOAT (idéntico a planes.html) ─ */
+.wa{position:fixed;bottom:1.25rem;right:1.25rem;z-index:200;background:var(--green);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 3px 14px rgba(37,211,102,.36);transition:transform .18s}
+.wa:hover{transform:scale(1.1)}
+.wa svg{width:23px;height:23px;fill:#fff}
+
+/* ─ FOOTER (idéntico a planes.html) ─ */
+footer{background:var(--deep);padding:2rem;text-align:center}
+footer p{font-size:.72rem;color:rgba(255,255,255,.22);line-height:1.8}
+footer a{color:rgba(255,255,255,.35);text-decoration:none}
+footer a:hover{color:#fff}
+
+/* ─ ANIMACIÓN ENTRADA ─ */
+.rv{opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.rv.show{opacity:1;transform:none}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(18px) scale(.99)}60%{transform:translateY(-2px)}100%{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-sura">SURA</div>
+      <div class="nav-name">Canal Especializado en Salud<small>Fran Viloria · Asesor autorizado</small></div>
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Inicio
+    </a>
+    <a href="https://wa.me/573008514699?text=Hola%20Fran%2C%20quiero%20consultar%20mi%20traslado%20a%20EPS%20SURA" target="_blank" rel="noopener" class="nav-btn">Consultar gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-planes">
+  <div class="hero-planes-inner">
+    <div class="hp-kicker"><div class="hp-dash"></div><span class="hp-txt">Traslado EPS SURA · Asesoría gratuita · Colombia</span></div>
+    <h1 class="hp-h1">¿Te quieres cambiar<br>a EPS SURA?<br><em>Nosotros lo hacemos</em><br>por ti.</h1>
+    <p class="hp-sub">Sin filas, sin trámites complejos y con asesoría 100% gratuita. Verificamos si ya cumples los requisitos y gestionamos todo el proceso ante las plataformas oficiales.</p>
+    <div class="hp-ctas">
+      <a href="https://wa.me/573008514699?text=Hola%20Fran%2C%20quiero%20consultar%20mi%20traslado%20a%20EPS%20SURA.%20Mi%20documento%20es%3A" target="_blank" rel="noopener" class="btn-wa">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L0 24l6.335-1.507A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.017-1.376l-.36-.214-3.73.888.938-3.64-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+        Consultar mi traslado por WhatsApp
+      </a>
+      <a href="cotizar.html" class="btn-crm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        Llenar formulario
+      </a>
+    </div>
+    <div class="hp-badge-row">
+      <div class="hp-badge">
+        <div class="hp-badge-ico green"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span class="hp-badge-txt"><strong>100% gratuito</strong> — pagado por SURA</span>
+      </div>
+      <div class="hp-badge">
+        <div class="hp-badge-ico gold"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <span class="hp-badge-txt"><strong>Respuesta en &lt;10 min</strong> — verificamos tu caso</span>
+      </div>
+      <div class="hp-badge">
+        <div class="hp-badge-ico green"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="23 11 17 17 14 14"/></svg></div>
+        <span class="hp-badge-txt"><strong>Sin filas</strong> — todo digital</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REQUISITOS -->
+<section class="sec req-sec">
+  <div class="sec-inner">
+    <div class="sec-eyebrow"><div class="sec-dash"></div><span class="sec-lbl">Condiciones de ley</span></div>
+    <h2 class="sec-h2">¿Puedes trasladarte ahora?</h2>
+    <p class="sec-sub">Antes de empezar, revisa estos requisitos. Si tienes dudas, escríbenos — verificamos tu caso sin costo en menos de 10 minutos.</p>
+    <div class="req-grid">
+      <div class="req-card rv">
+        <div class="req-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div>
+          <h3>Mínimo 12 meses en tu EPS actual</h3>
+          <p>Debes llevar al menos 1 año de afiliación continua desde tu fecha de inscripción. Si es grupo familiar, todos se trasladan juntos.</p>
+        </div>
+      </div>
+      <div class="req-card rv">
+        <div class="req-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div>
+          <h3>Sin deudas en mora</h3>
+          <p>El cotizante debe estar al día en sus aportes al sistema de salud. Sin pagos pendientes ni periodos en mora activos.</p>
+        </div>
+      </div>
+      <div class="req-card rv">
+        <div class="req-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div>
+          <h3>Ciudad con cobertura SURA</h3>
+          <p>Debes residir en una ciudad donde SURA tiene cobertura autorizada. Bogotá, Medellín, Cali, Barranquilla, Bucaramanga y más.</p>
+        </div>
+      </div>
+      <div class="req-card req-alerta rv">
+        <div class="req-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div>
+          <h3>Ningún miembro hospitalizado</h3>
+          <p>Si algún integrante del grupo está internado en el momento del traslado, el proceso debe esperar hasta su alta médica.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUÉ EPS SURA -->
+<section class="sec ben-sec">
+  <div class="sec-inner">
+    <div class="sec-eyebrow"><div class="sec-dash"></div><span class="sec-lbl">Por qué elegir SURA</span></div>
+    <h2 class="sec-h2">La EPS que trabaja por ti</h2>
+    <p class="sec-sub">SURA es evaluada consistentemente entre las mejores EPS del país por el Ministerio de Salud en calidad de atención y satisfacción.</p>
+    <div class="ben-grid">
+      <div class="ben-card rv">
+        <div class="ben-ico"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor"/></svg></div>
+        <h3>Liderazgo en satisfacción</h3>
+        <p>Primeros lugares a nivel nacional según el Ministerio de Salud en calidad de atención y experiencia del usuario.</p>
+      </div>
+      <div class="ben-card rv">
+        <div class="ben-ico"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+        <h3>Todo digital, sin filas</h3>
+        <p>Citas, autorizaciones y resultados por la App SURA y canales virtuales. Acceso en minutos desde tu celular.</p>
+      </div>
+      <div class="ben-card rv">
+        <div class="ben-ico"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 22V12H8v10"/><path d="M9 10h6"/></svg></div>
+        <h3>Red de más de 216 IPS</h3>
+        <p>Acceso a las mejores instituciones médicas, laboratorios y centros de especialistas en toda Colombia.</p>
+      </div>
+      <div class="ben-card rv">
+        <div class="ben-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>Grupo familiar completo</h3>
+        <p>Afilia a toda tu familia en una sola gestión. Médico general, especialistas y urgencias sin copagos excesivos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESO -->
+<section class="proc-sec">
+  <div class="sec-inner">
+    <div class="sec-eyebrow"><div class="sec-dash"></div><span class="sec-lbl">Cómo funciona</span></div>
+    <h2 class="sec-h2">Tu traslado en 4 pasos</h2>
+    <p class="sec-sub" style="margin-bottom:3rem">Tú solo nos das tus datos. Nosotros verificamos, radicamos y te acompañamos hasta que estés activo en SURA.</p>
+    <div class="timeline">
+      <div class="tl-step rv">
+        <div class="tl-dot"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="tl-num">Paso 01</div>
+        <div class="tl-title">Nos envías tus datos</div>
+        <div class="tl-desc">Tipo y número de documento. Nada más. Por WhatsApp en 2 minutos.</div>
+        <div class="tl-time">Día 1</div>
+      </div>
+      <div class="tl-step rv">
+        <div class="tl-dot"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="tl-num">Paso 02</div>
+        <div class="tl-title">Verificamos elegibilidad</div>
+        <div class="tl-desc">Consultamos en el sistema si cumples semanas y tiempo de permanencia. Respuesta en menos de 10 minutos.</div>
+        <div class="tl-time">Día 1</div>
+      </div>
+      <div class="tl-step rv">
+        <div class="tl-dot"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg></div>
+        <div class="tl-num">Paso 03</div>
+        <div class="tl-title">Radicamos el traslado</div>
+        <div class="tl-desc">Gestionamos todo ante Mi Seguridad Social. Sin que vayas a ninguna oficina.</div>
+        <div class="tl-time">Días 2–5</div>
+      </div>
+      <div class="tl-step rv">
+        <div class="tl-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="tl-num">Paso 04</div>
+        <div class="tl-title">Activo en SURA</div>
+        <div class="tl-desc">Te guiamos en tu primera cita, registro familiar y activación de servicios. El acompañamiento no termina al afiliarte.</div>
+        <div class="tl-time">Día 30</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPUESTA DE VALOR -->
+<section class="sec valor-sec">
+  <div class="sec-inner">
+    <div class="sec-eyebrow"><div class="sec-dash"></div><span class="sec-lbl">Por qué hacerlo con nosotros</span></div>
+    <h2 class="sec-h2">No es lo mismo hacerlo solo</h2>
+    <p class="sec-sub">El portal de Mi Seguridad Social rechaza solicitudes por errores mínimos. Nosotros evitamos que te pase.</p>
+    <div class="valor-grid">
+      <div class="valor-list">
+        <div class="valor-item rv">
+          <div class="valor-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div>
+            <h3>Estudio de viabilidad sin costo</h3>
+            <p>Revisamos en el sistema si cumples con las semanas y el tiempo de permanencia requerido, evitándote rechazos o rebotes del portal.</p>
+          </div>
+        </div>
+        <div class="valor-item rv">
+          <div class="valor-ico"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div>
+            <h3>Trámite llave en mano</h3>
+            <p>Tú solo nos das los datos básicos y nosotros gestionamos todo el proceso ante las plataformas oficiales. Sin que muevas un dedo.</p>
+          </div>
+        </div>
+        <div class="valor-item rv">
+          <div class="valor-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="23 11 17 17 14 14"/></svg></div>
+          <div>
+            <h3>Acompañamiento post-traslado</h3>
+            <p>Te guiamos en cómo pedir tu primera cita, registrar tu familia y activar todos tus servicios médicos iniciales en SURA.</p>
+          </div>
+        </div>
+        <div class="valor-item rv">
+          <div class="valor-ico"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div>
+            <h3>La puerta a la salud premium</h3>
+            <p>Una vez en SURA, te asesoramos sin costo adicional sobre planes complementarios para mejorar tu cobertura desde $96.674/mes.</p>
+          </div>
+        </div>
+      </div>
+      <div class="cta-box rv">
+        <div class="cta-box-title">¿Listo para empezar?</div>
+        <p class="cta-box-sub">Compártenos tu tipo y número de documento y en menos de 10 minutos te confirmamos si ya estás listo para pasarte a EPS SURA.</p>
+        <a href="https://wa.me/573008514699?text=Hola%20Fran%2C%20quiero%20consultar%20mi%20traslado%20a%20EPS%20SURA.%20Mi%20documento%20es%3A" target="_blank" rel="noopener" class="btn-wa">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L0 24l6.335-1.507A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.017-1.376l-.36-.214-3.73.888.938-3.64-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+          Consultar por WhatsApp
+        </a>
+        <a href="cotizar.html" class="btn-crm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+          Prefiero llenar el formulario
+        </a>
+        <div class="cta-puente">
+          <strong>¿Ya estás en SURA?</strong> Complementa tu cobertura con un <a href="planes.html">plan voluntario</a> desde $96.674/mes — asesoría sin costo adicional.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CUÁNDO NO PUEDES -->
+<section class="sec no-sec">
+  <div class="sec-inner">
+    <div class="sec-eyebrow"><div class="sec-dash"></div><span class="sec-lbl">Casos en que debes esperar</span></div>
+    <h2 class="sec-h2">¿Cuándo no puedes trasladarte?</h2>
+    <p class="sec-sub">Ser transparente te ahorra tiempo. Si algún caso aplica, te ayudamos a planear el momento correcto para el traslado.</p>
+    <div class="no-grid">
+      <div class="no-card rv">
+        <div class="no-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+        <div><h3>Menos de 12 meses en tu EPS</h3><p>Si llevas menos de un año, hay que esperar a completar el tiempo de permanencia obligatorio por ley.</p></div>
+      </div>
+      <div class="no-card rv">
+        <div class="no-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+        <div><h3>Pagos de salud en mora</h3><p>Si tienes aportes pendientes, el sistema rechaza la solicitud. Primero hay que ponerse al día en pagos.</p></div>
+      </div>
+      <div class="no-card rv">
+        <div class="no-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+        <div><h3>Familiar hospitalizado</h3><p>El traslado espera hasta que todos los miembros del núcleo familiar estén fuera de hospitalización.</p></div>
+      </div>
+    </div>
+    <div class="no-nota rv">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      <span><strong>¿Aún no cumples?</strong> Escríbenos igual — guardamos tu caso y te avisamos cuando sea el momento correcto. El servicio sigue siendo completamente gratuito.</span>
+    </div>
+  </div>
+</section>
+
+<!-- PUENTE A PLANES -->
+<section class="puente-sec">
+  <div class="sec-inner">
+    <div class="puente-banner rv">
+      <div>
+        <h3>¿Ya estás en EPS SURA y quieres más cobertura?</h3>
+        <p>Una vez afiliado a SURA, puedes sumar un plan complementario voluntario para cubrir lo que la EPS no cubre: medicamentos sin límite, especialistas sin espera, habitación individual y más. Desde $96.674/mes con IVA incluido.</p>
+      </div>
+      <a href="planes.html" class="puente-btn">
+        Ver planes complementarios
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Canal Especializado en Salud · Fran Viloria · Asesor SURA autorizado · <a href="index.html">serviciosseguros.co</a></p>
+  <p style="margin-top:.4rem"><a href="index.html">← Volver al inicio</a> · <a href="planes.html">Planes complementarios</a> · <a href="index.html#faq">FAQ</a> · <a href="index.html#contacto">Contacto</a></p>
+</footer>
+
+<!-- WA FLOAT -->
+<a href="https://wa.me/573008514699?text=Hola%20Fran%2C%20quiero%20consultar%20mi%20traslado%20a%20EPS%20SURA" target="_blank" rel="noopener" class="wa" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L0 24l6.335-1.507A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.017-1.376l-.36-.214-3.73.888.938-3.64-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+</a>
+
+<script>
+// Animación entrada con IntersectionObserver
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); }
+    });
+  },{threshold:.1});
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
