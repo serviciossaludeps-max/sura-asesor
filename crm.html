@@ -1120,6 +1120,29 @@
     }
   }
 
+  // ── Guarda solo el config (presupuestos, nombre, tipo asesor, etc.) en Firestore ──
+  // Usa updateDoc con dot-notation para no tocar las ventas ni los chunks.
+  // Es la solución al bug donde guardarConfig() era bloqueado por el guard de ventas de setState.
+  async function fbPatchConfig(config) {
+    try {
+      if (!UID) return false;
+      const { updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      await updateDoc(doc(db, 'estadoMeta', UID), { 'payload.config': config, 'payload.updatedAt': Date.now() });
+      console.log('[fbPatchConfig] ✅ Config guardado en Firestore');
+      return true;
+    } catch(e) {
+      // Si el documento no existe aún (primera vez), hacer setDoc completo
+      if (e.code === 'not-found') {
+        try {
+          await setDoc(doc(db, 'estadoMeta', UID), { payload: { config, totalChunks: 0, version: 2, updatedAt: Date.now() } });
+          return true;
+        } catch(e2) { console.error('[fbPatchConfig] setDoc fallback ERROR:', e2.message); }
+      }
+      console.error('[fbPatchConfig] ERROR:', e.code, e.message);
+      return false;
+    }
+  }
+
   // ── Helper: actualizar campos de un documento en una colección abierta (sin UID) ──
   async function fbPatchDoc(coleccion, docId, campos) {
     try {
@@ -1367,7 +1390,7 @@
   }
 
   // ── Exponer funciones al scope global (reemplazan localStorage) ───────────
-  window.FB = { get: fbGet, set: fbSet, setEstado: fbSetEstado, getEstado: fbGetEstado, getBdSin: fbGetBdSin, getIpsDb: fbGetIpsDb, setIpsDb: fbSetIpsDb, setBdSinShared: fbSetBdSinShared, setIpsDbShared: fbSetIpsDbShared, patchDoc: fbPatchDoc, db, UID, collection, getDocs, onSnapshot, query, where, orderBy, doc, _migrarDesdeFran: fbMigrarDesdeFran, _cargarDatos: cargarDatosFirebase, messaging: _fcmMessaging, onMessage, getToken, setDoc };
+  window.FB = { get: fbGet, set: fbSet, setEstado: fbSetEstado, getEstado: fbGetEstado, getBdSin: fbGetBdSin, getIpsDb: fbGetIpsDb, setIpsDb: fbSetIpsDb, setBdSinShared: fbSetBdSinShared, setIpsDbShared: fbSetIpsDbShared, patchDoc: fbPatchDoc, patchConfig: fbPatchConfig, db, UID, collection, getDocs, onSnapshot, query, where, orderBy, doc, _migrarDesdeFran: fbMigrarDesdeFran, _cargarDatos: cargarDatosFirebase, messaging: _fcmMessaging, onMessage, getToken, setDoc };
   // Exponer auth para espera de sesión activa antes de leer Firestore
   window.__fbAuth__ = auth;
   window.__fbOnAuthStateChanged__ = onAuthStateChanged;
@@ -13201,6 +13224,11 @@ function guardarConfig() {
     });
   });
   setState(state);
+  // Persistir config directo en Firestore (bypass del guard de ventas de setState)
+  // Esto garantiza que cambios de presupuesto se guarden aunque el guard bloquee setState
+  if (window.FB?.patchConfig) {
+    window.FB.patchConfig(state.config).catch(e => console.warn('[guardarConfig] patchConfig error:', e.message));
+  }
   // Sincronizar perfil del asesor a Firestore para Cloud Functions de notificaciones
   _sincronizarEmailAsesorFirestore();
 }
@@ -23306,6 +23334,10 @@ function syncConfigAnioActual() {
   state.config.spti = d.spti;
   state.config.spd = d.spd;
   setState(state);
+  // Persistir config directo en Firestore (bypass del guard de ventas)
+  if (window.FB?.patchConfig) {
+    window.FB.patchConfig(state.config).catch(e => console.warn('[syncConfigAnioActual] patchConfig error:', e.message));
+  }
 }
 
 function crearNuevoAnio() {
