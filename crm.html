@@ -1086,7 +1086,9 @@
 
   async function fbSetEstado(valor) {
     const ventas  = valor.ventas  || [];
-    const config  = valor.config  || {};
+    // Usar SIEMPRE el config más reciente del caché — evita race condition donde
+    // fbSetEstado (llamado desde setState) pisa el config recién guardado por fbPatchConfig
+    const config  = window.__FB_CACHE__?.estado?.config || valor.config || {};
     const totalChunks = Math.ceil(ventas.length / ESTADO_CHUNK_SIZE) || 1;
 
     try {
@@ -1124,21 +1126,31 @@
   // Usa updateDoc con dot-notation para no tocar las ventas ni los chunks.
   // Es la solución al bug donde guardarConfig() era bloqueado por el guard de ventas de setState.
   async function fbPatchConfig(config) {
+    // Usa updateDoc y setDoc del scope del closure — ya importados en línea 870
+    // NO usar import dinámico: generaría una instancia diferente del módulo
     try {
       if (!UID) return false;
-      const { updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-      await updateDoc(doc(db, 'estadoMeta', UID), { 'payload.config': config, 'payload.updatedAt': Date.now() });
-      console.log('[fbPatchConfig] ✅ Config guardado en Firestore');
+      await updateDoc(doc(db, 'estadoMeta', UID), {
+        'payload.config': config,
+        'payload.updatedAt': Date.now()
+      });
+      console.log('[fbPatchConfig] ✅ Config guardado en Firestore (updateDoc)');
       return true;
     } catch(e) {
-      // Si el documento no existe aún (primera vez), hacer setDoc completo
       if (e.code === 'not-found') {
+        // Documento no existe todavía — crear con setDoc
         try {
-          await setDoc(doc(db, 'estadoMeta', UID), { payload: { config, totalChunks: 0, version: 2, updatedAt: Date.now() } });
+          await setDoc(doc(db, 'estadoMeta', UID), {
+            payload: { config, totalChunks: 0, version: 2, updatedAt: Date.now() }
+          });
+          console.log('[fbPatchConfig] ✅ Config guardado en Firestore (setDoc inicial)');
           return true;
-        } catch(e2) { console.error('[fbPatchConfig] setDoc fallback ERROR:', e2.message); }
+        } catch(e2) {
+          console.error('[fbPatchConfig] setDoc inicial ERROR:', e2.code, e2.message);
+          return false;
+        }
       }
-      console.error('[fbPatchConfig] ERROR:', e.code, e.message);
+      console.error('[fbPatchConfig] updateDoc ERROR:', e.code, e.message);
       return false;
     }
   }
