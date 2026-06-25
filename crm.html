@@ -17781,6 +17781,10 @@ function _procesarLeadNuevo(lead) {
   // En la primera carga: importar al pipeline aunque ya esté en vistos (por si no fue importado)
   // Pero solo mostrar notificación si es genuinamente nuevo
   const esYaVisto = vistos.includes(lead.id);
+  // Verificar si fue eliminado manualmente — si es así, NUNCA reinsertar
+  let idsEliminadosPipe = [];
+  try { idsEliminadosPipe = JSON.parse(localStorage.getItem('sura_pipe_web_eliminadas') || '[]'); } catch(e) {}
+  if (idsEliminadosPipe.includes(lead.id) || idsEliminadosPipe.includes(lead._firestoreId)) return;
   // Verificar si ya está en pipeline
   const pipActual2 = getPipeline();
   const yaEnPipeline = pipActual2.some(p => p.cedula === lead.documento || p.id === lead.id);
@@ -19740,9 +19744,10 @@ function eliminarProspecto(id) {
   const prospecto = pipe.find(p => p.id === id);
   const firestoreId = prospecto?._firestoreId || id;
 
-  // ── Guardar eliminado en Firestore (persiste entre PCs) ──────────────
-  // También se guarda en localStorage como respaldo offline
+  // Guardar AMBOS IDs: el firestoreId (doc en pipeline_web) y el id del lead (doc en leads/cotizaciones_web)
+  // para que _procesarLeadNuevo no lo reinserte desde ninguna fuente
   _pipGuardarEliminado(firestoreId);
+  if (prospecto?.id && prospecto.id !== firestoreId) _pipGuardarEliminado(prospecto.id);
 
   // Eliminar documento de pipeline_web en Firestore si aplica
   if (prospecto?._firestoreId) _eliminarDocFirestore('pipeline_web', firestoreId);
@@ -25498,7 +25503,7 @@ function iniciarSyncCotizacionesWeb() {
       const nuevasArr = [];
 
       agregadas.forEach(r => {
-        if (eliminadas.includes(r.id)) return;  // fue eliminada manualmente → ignorar
+        if (eliminadas.includes(r.id) || eliminadas.includes(r._firestoreId)) return;  // fue eliminada manualmente → ignorar
         if (idsLocales.has(r.id)) return;        // ya existe localmente → ignorar
         locales.unshift(r);
         nuevasArr.push(r);
@@ -25567,7 +25572,7 @@ function iniciarSyncPipelineWeb() {
       const nuevosArr = [];
 
       agregados.forEach(r => {
-        if (eliminadasPipe.includes(r._firestoreId || r.id)) return; // eliminado manualmente
+        if (eliminadasPipe.includes(r._firestoreId) || eliminadasPipe.includes(r.id)) return; // eliminado manualmente
         if (idsLocales.has(r.id)) return;
         pipe.unshift(r);
         nuevosArr.push(r);
@@ -26823,11 +26828,8 @@ function cotizacionEliminar(id) {
   const cots = getCotizaciones();
   const cot = cots.find(c => c.id === id);
   const firestoreId = cot?._firestoreId || id;
-  // Persistir en localStorage para que el listener no lo reinserte
-  try {
-    const eliminadas = JSON.parse(localStorage.getItem(COT_WEB_ELIMINADAS_KEY) || '[]');
-    if (!eliminadas.includes(firestoreId)) { eliminadas.push(firestoreId); localStorage.setItem(COT_WEB_ELIMINADAS_KEY, JSON.stringify(eliminadas)); }
-  } catch(e) {}
+  // Persistir en Firestore + localStorage para que no reaparezca en ningún PC
+  _cotizGuardarEliminada(firestoreId);
   // Eliminar de Firestore
   _eliminarDocFirestore('cotizaciones_web', firestoreId);
   setCotizaciones(cots.filter(c => c.id !== id));
@@ -26839,6 +26841,43 @@ function cotizacionEliminar(id) {
  * Elimina un documento de Firestore de forma silenciosa.
  * Se usa para borrar cotizaciones_web y pipeline_web eliminadas por el asesor.
  */
+/**
+ * Persiste el ID de una cotización eliminada en Firestore Y localStorage.
+ * Evita que reaparezca en cualquier PC/móvil al recargar.
+ */
+async function _cotizGuardarEliminada(firestoreId) {
+  // localStorage (respaldo offline)
+  try {
+    const locales = JSON.parse(localStorage.getItem(COT_WEB_ELIMINADAS_KEY) || '[]');
+    if (!locales.includes(firestoreId)) { locales.push(firestoreId); localStorage.setItem(COT_WEB_ELIMINADAS_KEY, JSON.stringify(locales)); }
+  } catch(e) {}
+  // Firestore: documento en colección 'cot_eliminadas/{UID}'
+  try {
+    if (!window.FB?.db || !window.FB?.UID) return;
+    const { doc, setDoc, arrayUnion } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const ref = doc(window.FB.db, 'cot_eliminadas', window.FB.UID);
+    await setDoc(ref, { ids: arrayUnion(firestoreId) }, { merge: true });
+  } catch(e) { console.warn('[CotEliminadas] No se pudo guardar en Firestore:', e.message); }
+}
+
+/**
+ * Carga los IDs de cotizaciones eliminadas desde Firestore al iniciar.
+ * Fusiona con localStorage para que cualquier PC/móvil tenga la lista actualizada.
+ */
+async function _cotizCargarEliminadas() {
+  try {
+    if (!window.FB?.db || !window.FB?.UID) return;
+    const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const snap = await getDoc(doc(window.FB.db, 'cot_eliminadas', window.FB.UID));
+    if (!snap.exists()) return;
+    const idsFirestore = snap.data().ids || [];
+    const locales = JSON.parse(localStorage.getItem(COT_WEB_ELIMINADAS_KEY) || '[]');
+    const fusionados = [...new Set([...locales, ...idsFirestore])];
+    localStorage.setItem(COT_WEB_ELIMINADAS_KEY, JSON.stringify(fusionados));
+    console.log('[CotEliminadas] Sincronizados', fusionados.length, 'IDs eliminados desde Firestore');
+  } catch(e) { console.warn('[CotEliminadas] No se pudo cargar desde Firestore:', e.message); }
+}
+
 async function _eliminarDocFirestore(coleccion, docId) {
   try {
     if (!window.FB?.db || !docId) return;
@@ -30371,8 +30410,9 @@ async function _esperarFirebaseYArrancar() {
 function _iniciarAppTrasLogin() {
   if (window.__APP_INITIALIZED__) return;
   window.__APP_INITIALIZED__ = true;
-  // Sincronizar IDs eliminados del pipeline desde Firestore (fix: no reaparecen al cambiar PC)
+  // Sincronizar IDs eliminados del pipeline y cotizaciones desde Firestore (fix: no reaparecen al cambiar PC)
   _pipCargarEliminados().catch(() => {});
+  _cotizCargarEliminadas().catch(() => {});
 
   // Cargar BD siniestralidad en cache de memoria
   // getBDSin() ahora hace fallback a localStorage chunked si Firebase lo trajo vacío
