@@ -13236,8 +13236,23 @@ function guardarConfig() {
     });
   });
   setState(state);
-  // Persistir config directo en Firestore (bypass del guard de ventas de setState)
-  // Esto garantiza que cambios de presupuesto se guarden aunque el guard bloquee setState
+
+  // ── Fix definitivo: sincronizar ppto en configAnios[AÑO_ACTUAL] ──────────
+  // syncConfigAnioActual() (llamado en cada carga) lee de configAnios, NO de
+  // estado.config — por eso el ppto nuevo era pisado en cada recarga.
+  // Solución: escribir los nuevos valores en AMBAS fuentes al mismo tiempo.
+  try {
+    const all = getAllConfigAnios();
+    const anioData = all[AÑO_ACTUAL] || getDefaultConfigAnio(AÑO_ACTUAL);
+    anioData.pbs  = [...state.config.pbs];
+    anioData.spti = [...state.config.spti];
+    anioData.spd  = [...state.config.spd];
+    anioData.tipoAsesor = state.config.tipoAsesor;
+    all[AÑO_ACTUAL] = anioData;
+    setAllConfigAnios(all); // persiste en Firestore colección 'configAnios'
+  } catch(e) { console.warn('[guardarConfig] sync configAnios error:', e.message); }
+
+  // Persistir config también en estadoMeta (bypass del guard de ventas de setState)
   if (window.FB?.patchConfig) {
     window.FB.patchConfig(state.config).catch(e => console.warn('[guardarConfig] patchConfig error:', e.message));
   }
@@ -23336,20 +23351,19 @@ function guardarConfigAnio(seccion) {
 
 function syncConfigAnioActual() {
   const d = getConfigAnio(AÑO_ACTUAL);
-  // Update runtime constants
+  // Actualizar constantes runtime (tarifas, comisiones) — solo en memoria
   Object.assign(SPTI_TARIFAS, d.tarifasSptiConIVA || {});
   Object.assign(SPTI_SIN_IVA, d.tarifasSptiSinIVA || {});
-  // Update COM_TABLE
   if (d.tablaComPBS) Object.assign(COM_TABLE, d.tablaComPBS);
+  // Actualizar presupuesto en memoria (sin escribir a Firestore)
+  // guardarConfig() ya mantiene configAnios y estadoMeta sincronizados entre sí
   state = getState();
-  state.config.pbs = d.pbs;
+  state.config.pbs  = d.pbs;
   state.config.spti = d.spti;
-  state.config.spd = d.spd;
-  setState(state);
-  // Persistir config directo en Firestore (bypass del guard de ventas)
-  if (window.FB?.patchConfig) {
-    window.FB.patchConfig(state.config).catch(e => console.warn('[syncConfigAnioActual] patchConfig error:', e.message));
-  }
+  state.config.spd  = d.spd;
+  // Actualizar caché en memoria solamente — no llamar setState ni patchConfig aquí
+  // para evitar el loop: syncConfigAnioActual sobreescribía el config nuevo al cargar
+  if (window.__FB_CACHE__) window.__FB_CACHE__.estado = state;
 }
 
 function crearNuevoAnio() {
