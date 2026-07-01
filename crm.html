@@ -3703,6 +3703,9 @@
           </div>
         </div>
 
+        <!-- RESUMEN INICIAL: realidad del cruce vs. Pagadas -->
+        <div id="concilResumenInicial" style="display:none;margin-bottom:16px;"></div>
+
         <!-- ALERTAS INTELIGENTES: inconsistencias y reclamaciones -->
         <div id="concilAlertasWrap" style="display:none;margin-bottom:16px;"></div>
 
@@ -34484,6 +34487,8 @@ function renderConciliacion() {
   document.getElementById('concilBtnExportar').style.display = 'none';
   const aw = document.getElementById('concilAlertasWrap');
   if (aw) { aw.innerHTML = ''; aw.style.display = 'none'; }
+  const ri = document.getElementById('concilResumenInicial');
+  if (ri) { ri.innerHTML = ''; ri.style.display = 'none'; }
   window._concilResultados = [];
   concilActualizarBoton();
 }
@@ -34704,6 +34709,44 @@ function concilRenderResultados(resultados) {
   const totalSura  = resultados.reduce((s,r)=>s+r.suraPago,0);
   const totalEsp   = resultados.reduce((s,r)=>s+r.comEsp,0);
   const totalDif   = dif.reduce((s,r)=>s+Math.abs(r.dif),0);
+
+  // ─── Resumen inicial: realidad del cruce vs. Pagadas ──────────────────────
+  const resumenWrap = document.getElementById('concilResumenInicial');
+  if (resumenWrap) {
+    const totalPeriodo   = resultados.length;
+    const seEstanPagando = ok.length + dif.length;
+    const noSeEstanPag   = np.length + sinC.length;
+    const totalPagandoVal   = ok.reduce((s,r)=>s+r.suraPago,0) + dif.reduce((s,r)=>s+r.suraPago,0);
+    const totalNoPagandoVal = np.reduce((s,r)=>s+r.comEsp,0) + sinC.reduce((s,r)=>s+r.comEsp,0);
+
+    const lineaStyle = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:12px;transition:background .15s;';
+
+    resumenWrap.innerHTML = `
+      <div style="padding:16px 18px;border-radius:12px;border:1px solid var(--border);background:var(--surface);">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">📋 Realidad del cruce vs. Pagadas — ${totalPeriodo} venta${totalPeriodo!==1?'s':''} del período</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--green);margin-bottom:6px;">✅ SE ESTÁN PAGANDO: ${seEstanPagando} · ${fmt(totalPagandoVal)}</div>
+            <div class="concil-resumen-line" onclick="concilFiltrarDesdeResumen('OK')" style="${lineaStyle}background:rgba(34,197,94,0.06);" onmouseover="this.style.background='rgba(34,197,94,0.14)'" onmouseout="this.style.background='rgba(34,197,94,0.06)'">
+              <span>${ok.length} con tarifa exacta (OK)</span><span style="color:var(--text-dim);">→</span>
+            </div>
+            <div class="concil-resumen-line" onclick="concilFiltrarDesdeResumen('DIFERENCIA')" style="${lineaStyle}background:rgba(245,158,11,0.06);margin-top:4px;" onmouseover="this.style.background='rgba(245,158,11,0.14)'" onmouseout="this.style.background='rgba(245,158,11,0.06)'">
+              <span>${dif.length} con tarifa diferente a la esperada</span><span style="color:var(--text-dim);">→</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--red);margin-bottom:6px;">❌ NO SE ESTÁN PAGANDO: ${noSeEstanPag} · ${fmt(totalNoPagandoVal)} esperado</div>
+            <div class="concil-resumen-line" onclick="concilFiltrarDesdeResumen('NO_PAGADA')" style="${lineaStyle}background:rgba(239,68,68,0.06);" onmouseover="this.style.background='rgba(239,68,68,0.14)'" onmouseout="this.style.background='rgba(239,68,68,0.06)'">
+              <span>${np.length} aparecen en "No pagadas" (con causa)</span><span style="color:var(--text-dim);">→</span>
+            </div>
+            <div class="concil-resumen-line" onclick="concilFiltrarDesdeResumen('SIN_CRUZAR')" style="${lineaStyle}background:rgba(255,255,255,0.03);margin-top:4px;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+              <span>${sinC.length} no aparecen en ningún informe (sin cruzar)</span><span style="color:var(--text-dim);">→</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    resumenWrap.style.display = '';
+  }
 
   document.getElementById('kConcilOk').textContent        = ok.length;
   document.getElementById('kConcilOkVal').textContent     = fmt(ok.reduce((s,r)=>s+r.suraPago,0));
@@ -35064,6 +35107,14 @@ function concilRenderTabla(resultados) {
 
   tbody.innerHTML = htmlRows;
   document.getElementById('concilFiltroCount').textContent = `${sorted.length} registros`;
+}
+
+function concilFiltrarDesdeResumen(estado) {
+  const sel = document.getElementById('concilFiltroEstado');
+  if (sel) sel.value = estado;
+  concilFiltrarTabla();
+  const tabla = document.getElementById('concilResultadoWrap');
+  if (tabla) tabla.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function concilFiltrarTabla() {
