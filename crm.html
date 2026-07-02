@@ -29702,10 +29702,11 @@ async function pinVerificar() {
     if (_pinBuffer !== _pinNuevo) {
       pinError('Los PINs no coinciden'); _pinModo = 'crear'; _pinNuevo = ''; return;
     }
-    // Guardar pinHash en Firestore
+    // Calcular el nuevo hash del PIN
     const hash = pinGetHash(_pinBuffer);
-    await window.fbSetUsuario(_ccIngresada, { pinHash: hash });
-    // Crear/actualizar cuenta en Firebase Auth con el nuevo PIN
+    // Crear/actualizar cuenta en Firebase Auth con el nuevo PIN — PRIMERO,
+    // porque las reglas de Firestore ahora exigen estar autenticado para
+    // poder escribir el pinHash en el documento del usuario.
     if (window.fbAuthCrear) {
       await window.fbAuthCrear(_ccIngresada, hash).catch(() => {});
     }
@@ -29713,6 +29714,8 @@ async function pinVerificar() {
     if (window.fbAuthSignIn) {
       await window.fbAuthSignIn(_ccIngresada, hash).catch(() => {});
     }
+    // Ahora sí: guardar pinHash en Firestore (ya autenticado como el propio usuario)
+    await window.fbSetUsuario(_ccIngresada, { pinHash: hash });
     // Actualizar adminEmail en meta si es admin
     if (_usuarioActual && _usuarioActual.rol === 'admin' && _usuarioActual.email) {
       await window.fbSetAppMeta({ primerUsuarioCreado: true, adminEmail: _usuarioActual.email });
