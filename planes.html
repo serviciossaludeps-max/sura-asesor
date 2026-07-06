@@ -1641,6 +1641,7 @@ async function _enviarFirestore(payload, msgId){
   }
   var docId = 'pip_planes_web_' + Date.now().toString(36).toLowerCase() + '_' + Math.random().toString(36).substr(2,5).toLowerCase();
   var data = {
+    id:         docId,
     producto:   payload.plan||'',
     nombre:     payload.nombre||'',
     telefono:   payload.telefono||'',
@@ -1649,7 +1650,7 @@ async function _enviarFirestore(payload, msgId){
     mensaje:    payload.mensaje||'',
     origen:     'PLANES_WEB',
     uidAsesor:  _getAsesorUID(),
-    estado:     'nuevo',
+    estado:     '0',
     fecha:      payload.fecha||new Date().toISOString()
   };
   try{
