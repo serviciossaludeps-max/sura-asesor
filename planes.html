@@ -1565,10 +1565,15 @@ function enviarWA(plan){
   var c=_san(document.getElementById('lf-c').value.trim());
   var p=_san(document.getElementById('lf-p').value);
   var m=_san(document.getElementById('lf-m').value.trim());
-  var msg='Hola Fran, soy '+n+'. Tel: '+t;
-  if(c) msg+='. Ciudad: '+c;
-  msg+='. Interesado en: '+plan+'. Grupo: '+p;
-  if(m) msg+='. '+m;
+  var msg='📧 Lead desde la Web | Sección: Planes\n';
+  msg+='👋 Hola Fran,\n';
+  msg+='Un visitante desea recibir asesoría.\n';
+  msg+='👤 Nombre: '+n+'\n';
+  msg+='📱 Teléfono: '+t+'\n';
+  if(c) msg+='🏙️ Ciudad: '+c+'\n';
+  msg+='📋 Plan de interés:\n'+plan+'\n';
+  if(p) msg+='👥 Cobertura:\n'+p+'\n';
+  if(m) msg+='💬 Comentario:\n"'+m+'"';
   window.open('https://wa.me/'+W+'?text='+encodeURIComponent(msg),'_blank');
 }
 function enviarCRM(plan){
@@ -1594,11 +1599,15 @@ function enviarWA2(plan,nId,tId,cId,pId,mId,polId,msgId){
   var c=_san(document.getElementById(cId).value.trim());
   var p=_san(document.getElementById(pId).value.trim()||document.getElementById(pId).value);
   var m=_san(document.getElementById(mId).value.trim());
-  var msg='Hola Fran, soy '+n+'. Tel: '+t;
-  if(c) msg+='. Ciudad: '+c;
-  msg+='. Interesado en: '+plan;
-  if(p) msg+='. '+p;
-  if(m) msg+='. '+m;
+  var msg='📧 Lead desde la Web | Sección: Planes\n';
+  msg+='👋 Hola Fran,\n';
+  msg+='Un visitante desea recibir asesoría.\n';
+  msg+='👤 Nombre: '+n+'\n';
+  msg+='📱 Teléfono: '+t+'\n';
+  if(c) msg+='🏙️ Ciudad: '+c+'\n';
+  msg+='📋 Plan de interés:\n'+plan+'\n';
+  if(p) msg+='👥 Cobertura:\n'+p+'\n';
+  if(m) msg+='💬 Comentario:\n"'+m+'"';
   window.open('https://wa.me/'+W+'?text='+encodeURIComponent(msg),'_blank');
 }
 function enviarCRM2(plan,nId,tId,cId,pId,mId,polId,msgId){
