@@ -1626,6 +1626,9 @@ function enviarCRM2(plan,nId,tId,cId,pId,mId,polId,msgId){
 }
 
 /* ─ FIRESTORE PIPELINE ─ */
+function _getAsesorUID(){
+  return new URLSearchParams(location.search).get('asesor') || '1129501981';
+}
 async function _enviarFirestore(payload, msgId){
   var intentos = 0;
   while(!window._fbReady && intentos < 20){
@@ -1636,15 +1639,16 @@ async function _enviarFirestore(payload, msgId){
     _showMsg(msgId,false,'Sin conexión. Intenta por WhatsApp.');
     return;
   }
-  var docId = 'pipe_planes_' + Date.now().toString(36).toLowerCase() + '_' + Math.random().toString(36).substr(2,5).toLowerCase();
+  var docId = 'pip_planes_web_' + Date.now().toString(36).toLowerCase() + '_' + Math.random().toString(36).substr(2,5).toLowerCase();
   var data = {
-    plan:       payload.plan||'',
+    producto:   payload.plan||'',
     nombre:     payload.nombre||'',
     telefono:   payload.telefono||'',
     ciudad:     payload.ciudad||'',
     extra:      payload.extra||payload.personas||'',
     mensaje:    payload.mensaje||'',
-    origen:     payload.origen||'planes.html',
+    origen:     'PLANES_WEB',
+    uidAsesor:  _getAsesorUID(),
     estado:     'nuevo',
     fecha:      payload.fecha||new Date().toISOString()
   };
