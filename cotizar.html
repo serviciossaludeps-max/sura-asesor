@@ -579,6 +579,61 @@ window.__serverTimestamp__ = serverTimestamp;
 </script>
 
 <script>
+/* ── CAPTURA DE ATRIBUCIÓN (EPIC-001 · Historia: Captura de Atribución Inicial) ── */
+function _capturarAtribucion(){
+  try{
+    var params = new URLSearchParams(location.search);
+    var utmKeys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+    var tieneUTM = utmKeys.some(function(k){ return !!params.get(k); });
+
+    var existente = null;
+    try{ existente = JSON.parse(localStorage.getItem('ss_atribucion') || 'null'); }catch(e){}
+
+    var esPrimeraVisita = !existente;
+
+    var atribucion = existente || {
+      source:null, medium:null, campaign:null, content:null, term:null,
+      ga_client_id:null, gclid:null, fbclid:null, referrer:null,
+      landing:null, primera_visita:null, fecha_captura:null, version:2
+    };
+
+    if(!atribucion.landing) atribucion.landing = location.pathname;
+    if(!atribucion.primera_visita) atribucion.primera_visita = new Date().toISOString();
+
+    if(esPrimeraVisita || tieneUTM){
+      atribucion.referrer = document.referrer || null;
+    }
+    if(tieneUTM){
+      atribucion.source       = params.get('utm_source')   || null;
+      atribucion.medium       = params.get('utm_medium')   || null;
+      atribucion.campaign     = params.get('utm_campaign') || null;
+      atribucion.content      = params.get('utm_content')  || null;
+      atribucion.term         = params.get('utm_term')     || null;
+      atribucion.gclid        = params.get('gclid')        || null;
+      atribucion.fbclid       = params.get('fbclid')       || null;
+      atribucion.fecha_captura = new Date().toISOString();
+    }
+    atribucion.version = 2;
+
+    try{ localStorage.setItem('ss_atribucion', JSON.stringify(atribucion)); }catch(e){}
+    try{ sessionStorage.setItem('ss_atribucion', JSON.stringify(atribucion)); }catch(e){}
+  }catch(e){ /* silencioso: nunca debe interrumpir la carga de la página */ }
+}
+function _leerAtribucionGuardada(){
+  var base = {
+    source:null, medium:null, campaign:null, content:null, term:null,
+    ga_client_id:null, gclid:null, fbclid:null, referrer:null,
+    landing:null, primera_visita:null, fecha_captura:null, version:2
+  };
+  try{
+    var raw = localStorage.getItem('ss_atribucion') || sessionStorage.getItem('ss_atribucion');
+    if(raw){ var g = JSON.parse(raw); for(var k in base){ if(k in g) base[k] = g[k]; } }
+  }catch(e){}
+  return base;
+}
+_capturarAtribucion();
+/* ── FIN CAPTURA DE ATRIBUCIÓN ── */
+
 // ═══════════════════════════════════════════════
 // TARIFAS (exactas del sistema SURA Asesor 2026)
 // ═══════════════════════════════════════════════
@@ -1570,6 +1625,7 @@ async function solicitarContacto() {
                        : '',
     multiPersona:    totalPersonas > 1,
     tomadorEsAsegurado,
+    atribucion: _leerAtribucionGuardada(),
   };
 
   // ── Objeto pipeline/prospecto ──
@@ -1591,6 +1647,7 @@ async function solicitarContacto() {
     creado:       ahora,
     uidAsesor:    asesor,
     origen_extra: 'cotizar_online',
+    atribucion: _leerAtribucionGuardada(),
   };
 
   // ── Lead (colección existente) ──
@@ -1615,6 +1672,7 @@ async function solicitarContacto() {
     estado:         'nuevo',
     cotizacionId:   uid,
     cotizacionNum:  cotNumero,
+    atribucion: _leerAtribucionGuardada(),
   };
 
   try {
