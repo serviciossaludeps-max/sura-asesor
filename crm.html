@@ -13444,6 +13444,11 @@ function openModal(id) {
      'vFechaNacPAC60','vTelPAC60','vCorreoPAC60','vCiudadPAC60','vNotasPAC60'].forEach(fid => {
       const el = document.getElementById(fid); if (el) el.value = '';
     });
+    // Tipo de documento: reiniciar a CC (quedaban con el valor del último registro)
+    const _tdocAsegPAC60 = document.getElementById('vTipoDocPAC60');
+    if (_tdocAsegPAC60) _tdocAsegPAC60.value = 'CC';
+    const _tdocTomPAC60 = document.getElementById('vTomadorTipoDocPAC60');
+    if (_tdocTomPAC60) _tdocTomPAC60.value = 'CC';
     document.getElementById('vFechaPAC60').value = today;
     document.getElementById('vEdadPAC60').value = '';
     document.getElementById('vRangoPAC60').value = '';
@@ -17183,7 +17188,7 @@ function renderCarteraTabla(filas, pagos) {
         </td>
         <td style="padding:10px 12px;"><span class="chip ${prodChipColor}" style="font-size:10px;">${v.producto}</span></td>
         <td style="padding:10px 12px;font-weight:500;font-size:13px;">${nombre}</td>
-        <td style="padding:10px 12px;font-size:12px;font-family:var(--mono);color:var(--text-muted);">${v.doc || v.tomadorDoc || '—'}</td>
+        <td style="padding:10px 12px;font-size:12px;font-family:var(--mono);color:var(--text-muted);">${v.tomadorDoc || v.doc || '—'}</td>
         <td style="padding:10px 12px;font-size:12px;color:var(--text-muted);">${v.plan||'—'}</td>
         <td style="padding:10px 12px;"><span class="chip chip-blue" style="font-size:10px;">${perLabel[v.periodicidad]||'—'}</span></td>
         <td style="padding:10px 12px;font-family:var(--mono);font-size:12px;white-space:nowrap;">${expFmt}</td>
@@ -18863,7 +18868,7 @@ function renderHistorialPagos() {
     const { v, pagos: gpagos } = g;
     const rowBg = i%2===0 ? '' : 'rgba(255,255,255,0.015)';
     const nombre = tc(v.tomadorNombre || v.nombre || '—');
-    const documento = v.doc || v.tomadorDoc || '—';
+    const documento = v.tomadorDoc || v.doc || '—';
     const ultimoFecha = gpagos[0].fechaPago.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});
     const totalPrimaG = gpagos.reduce((s,x) => s+(x.p.prima||0),0);
     const totalComG   = gpagos.reduce((s,x) => s+(x.p.comision||0),0);
@@ -22841,7 +22846,7 @@ function detectarPagosDesdeReporte() {
       const est = getCarteraEstado(v, pagos);
       if (!est || ['AL_DIA'].includes(est.estado)) return; // ya al día → ignorar
 
-      const doc    = String(v.doc || v.tomadorDoc || '').replace(/\D/g,'');
+      const doc    = String(v.tomadorDoc || v.doc || '').replace(/\D/g,'');
       const poliza = (v.poliza || '').trim();
       const nombre = v.tomadorNombre || v.nombre || '—';
 
@@ -34596,7 +34601,7 @@ function concilEjecutarCruce() {
 
   // Para cada venta de la app, cruzar
   ventasPeriodo.forEach(v => {
-    const cedula = String(v.doc || v.tomadorDoc || '').replace(/\D/g,'');
+    const cedula = String(v.tomadorDoc || v.doc || '').replace(/\D/g,'');
     const comEsp = v.comision || 0;
     const nombre = v.tomadorNombre || v.nombre || '—';
     const empresa = v.empresa || '—';
