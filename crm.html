@@ -9450,10 +9450,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 
     <div class="form-grid" style="margin-bottom:16px;">
       <div class="form-group"><label class="form-label">Producto</label>
-        <select class="form-control" id="eProducto" onchange="document.getElementById('eExtraVol').style.display=this.value!=='PBS'?'':'none'">
+        <select class="form-control" id="eProducto" disabled title="Este formulario es solo para PBS. Los voluntarios (SPTI/SPD/PSM/PAC60) se editan desde su propio formulario.">
           <option value="PBS">PBS / EPS</option>
-          <option value="SPTI">SPTI</option>
-          <option value="SPD">SPD — Salud para Dos Plus</option>
         </select>
       </div>
       <div class="form-group"><label class="form-label">Fecha de Venta</label>
@@ -12806,11 +12804,15 @@ function editarVenta(id) {
 
   // ── Voluntarios: abrir modalVenta con el tab correcto ─────────────
   const PROD_TAB = { SPTI:'spti', SPD:'spd', PSM:'psm', PAC60:'pac60' };
-  if (PROD_TAB[v.producto]) {
+  // Normaliza el producto (mayúsculas + sin espacios) para no fallar por variaciones
+  // de origen externo (scraper, importaciones, ediciones manuales en Firestore)
+  const prodNorm = String(v.producto || '').trim().toUpperCase();
+  const tabProd = PROD_TAB[prodNorm] ? prodNorm : (PROD_TAB[v.producto] ? v.producto : null);
+  if (tabProd) {
     // Primero resetear modalTab a pbs para limpiar estado anterior
     modalTab = 'pbs';
     openModal('modalVenta');
-    const tab = PROD_TAB[v.producto];
+    const tab = PROD_TAB[tabProd];
 
     // Función que llena los campos y activa el tab correcto
     function llenarTabVoluntario() {
@@ -12939,6 +12941,17 @@ function editarVenta(id) {
         // Restaurar toggle tarifa congelada
         const chkTcPAC60 = s('chkTarifaCongeladaPAC60');
         if (chkTcPAC60) { chkTcPAC60.checked = !!v.tarifaCongelada; toggleTarifaCongelada('PAC60'); }
+        // Restaurar estado real de "Mismo que el tomador" y bloquear campos si aplica
+        // (antes siempre arrancaba desmarcado al editar, sin importar los datos guardados,
+        // lo que podía inducir a re-marcarlo y sobrescribir por error el nombre del asegurado)
+        const chkMismoPAC60 = document.getElementById('vPac60AsegMismoTomador0');
+        if (chkMismoPAC60) {
+          const esMismoAseg = !!((v.nombre || v.doc) &&
+            (v.nombre || '') === (v.tomadorNombre || '') &&
+            (v.doc || '') === (v.tomadorDoc || ''));
+          chkMismoPAC60.checked = esMismoAseg;
+          pac60LockAsegurado(0, esMismoAseg);
+        }
       }
       showToast(`✏️ Editando ${v.producto} — ${tc(v.nombre || v.tomadorNombre || '')}`);
     }
@@ -12946,6 +12959,15 @@ function editarVenta(id) {
     // Usar requestAnimationFrame para garantizar que el DOM del modal esté listo
     requestAnimationFrame(() => requestAnimationFrame(llenarTabVoluntario));
     return; // No abrir modalEditar
+  }
+
+  // ── Producto no reconocido: no es PBS ni un voluntario válido ────
+  // Evita que un registro con v.producto corrupto/vacío/externo caiga
+  // silenciosamente en el formulario PBS (que solo tiene campos genéricos
+  // y puede guardar datos incompletos sobre un registro voluntario real).
+  if (v.producto && v.producto !== 'PBS') {
+    alert(`⚠️ Este registro tiene un producto no reconocido ("${v.producto}").\n\nNo se puede editar aquí de forma segura porque no corresponde ni a PBS ni a un voluntario válido (SPTI/SPD/PSM/PAC60). Revisa el campo "producto" de este registro antes de continuar.`);
+    return;
   }
 
   // ── PBS: usar modalEditar (formulario genérico) ───────────────────
@@ -13427,6 +13449,10 @@ function openModal(id) {
     document.getElementById('vRangoPAC60').value = '';
     const chkAnexo = document.getElementById('chkAnexoPAC60');
     if (chkAnexo) chkAnexo.checked = false;
+    // Desmarcar y desbloquear "Mismo que el tomador" al abrir venta nueva
+    // (si quedaba bloqueado de una edición anterior, los campos de asegurado no se podían escribir)
+    const chkMismoPAC60Reset = document.getElementById('vPac60AsegMismoTomador0');
+    if (chkMismoPAC60Reset) { chkMismoPAC60Reset.checked = false; pac60LockAsegurado(0, false); }
     document.getElementById('pac60Resumen').style.display = 'none';
     // Reset SPD auto-tariff
     calcTotalSPD();
@@ -13622,6 +13648,20 @@ function psmActualizarModoRegistro() {
   }
 }
 
+// ── PAC60: bloquea/desbloquea campos de asegurado cuando "Mismo que el tomador" está activo ──
+// Evita que el nombre y el documento del asegurado se desincronicen (bug: se editaba
+// solo el documento a mano dejando el nombre del tomador, o viceversa, con el checkbox
+// mostrando "marcado" como si todo siguiera igual).
+function pac60LockAsegurado(idx, locked) {
+  const suf = idx === 0 ? '' : ('_' + (idx + 1));
+  const nombreEl = document.getElementById('vNombrePAC60' + suf);
+  const docEl    = document.getElementById('vDocPAC60' + suf);
+  const tdocEl   = document.getElementById('vTipoDocPAC60' + suf);
+  if (nombreEl) { nombreEl.readOnly = locked; nombreEl.style.opacity = locked ? '0.65' : ''; }
+  if (docEl)    { docEl.readOnly    = locked; docEl.style.opacity    = locked ? '0.65' : ''; }
+  if (tdocEl)   { tdocEl.disabled   = locked; }
+}
+
 // ── PAC60: copiar tomador al asegurado N ────────────────────────
 function pac60CopiarTomador(idx) {
   const chk = document.getElementById('vPac60AsegMismoTomador' + idx);
@@ -13638,6 +13678,7 @@ function pac60CopiarTomador(idx) {
         const el = document.getElementById(id); if (el) el.value = '';
       });
     }
+    pac60LockAsegurado(0, chk.checked);
   } else {
     const n = idx + 1;
     if (chk.checked) {
@@ -13647,6 +13688,7 @@ function pac60CopiarTomador(idx) {
       s('vTipoDocPAC60_' + n, v('vTomadorTipoDocPAC60'));
       s('vDocPAC60_' + n, v('vTomadorDocPAC60'));
     }
+    pac60LockAsegurado(idx, chk.checked);
   }
   pac60ActualizarModoRegistro();
 }
@@ -15416,6 +15458,26 @@ function guardarVenta() {
     const tomNomPAC  = document.getElementById('vTomadorNombrePAC60')?.value || '';
     const tomDocPAC  = document.getElementById('vTomadorDocPAC60')?.value || '';
     const tomTDocPAC = document.getElementById('vTomadorTipoDocPAC60')?.value || 'CC';
+    // ── Validación de integridad Tomador/Asegurado ──────────────────────
+    // Detecta el caso reportado: el asegurado queda con el NOMBRE del tomador
+    // pero un DOCUMENTO distinto (o viceversa) — normalmente indica que se
+    // marcó "Mismo que el tomador" y luego se corrigió solo uno de los dos
+    // campos a mano, dejando el registro inconsistente para validar pagos en SURA.
+    const nomAsegPAC = (document.getElementById('vNombrePAC60').value || '').trim();
+    const docAsegPAC = (document.getElementById('vDocPAC60').value || '').trim();
+    const nomTomPACTrim = tomNomPAC.trim();
+    const docTomPACTrim = tomDocPAC.trim();
+    if (nomAsegPAC && docAsegPAC && nomTomPACTrim && docTomPACTrim) {
+      const mismoNombre = nomAsegPAC.toUpperCase() === nomTomPACTrim.toUpperCase();
+      const mismoDoc     = docAsegPAC.replace(/\D/g,'') === docTomPACTrim.replace(/\D/g,'');
+      if (mismoNombre !== mismoDoc) {
+        const detalle = mismoNombre
+          ? `el nombre coincide con el tomador (${nomAsegPAC}) pero el documento es distinto (asegurado: ${docAsegPAC} · tomador: ${docTomPACTrim})`
+          : `el documento coincide con el tomador (${docAsegPAC}) pero el nombre es distinto (asegurado: ${nomAsegPAC} · tomador: ${nomTomPACTrim})`;
+        const continuar = confirm(`⚠️ Posible inconsistencia Tomador/Asegurado:\n${detalle}.\n\nEsto puede generar que la póliza no se encuentre al validar pagos en SURA por documento.\n\n¿Son realmente personas distintas y deseas guardar así? Cancelar para corregir.`);
+        if (!continuar) return;
+      }
+    }
     const ciudadPAC  = document.getElementById('vCiudadPAC60').value;
     const modoRegistroPAC = document.querySelector('input[name="pac60ModoRegistro"]:checked')?.value || 'individual';
     const tcFlagPAC = !!(document.getElementById('chkTarifaCongeladaPAC60')?.checked);
