@@ -282,6 +282,126 @@ _capturarAtribucion();
 ════════════════════════════════════════════════ */
 const ARTICULOS = {
 
+  /* ─────────────── ARTÍCULO NUEVO (Julio 2026) ─────────────── */
+  'eps-cobertura-limites': {
+    slug: 'eps-cobertura-limites',
+    tag: 'EPS · Cobertura',
+    titulo: '¿Qué cubre realmente una EPS en Colombia y cuáles son sus límites?',
+    fecha: 'Julio 2026',
+    lectura: '7 min',
+    imagen: 'blog-eps-cobertura-limites.png',
+    imgAlt: 'Familia recibiendo asesoría sobre cobertura en salud y EPS.',
+    render() {
+      return `
+      <p class="art-intro">Conocer el alcance de tu EPS es el primer paso para tomar decisiones informadas sobre tu salud. En este artículo te explicamos qué cubre el Plan de Beneficios en Salud (PBS), cuáles son sus limitaciones y cuándo un Plan Voluntario de Salud puede complementar tu protección.</p>
+
+      <div class="art-section">
+        <p class="art-p">Cuando hablamos de salud, una de las preguntas más frecuentes es: ¿la EPS cubre todo lo que necesito? La respuesta es sencilla: no siempre.</p>
+        <p class="art-p">En Colombia, todas las EPS deben garantizar la atención incluida en el Plan de Beneficios en Salud (PBS). Sin embargo, existen servicios, tiempos de espera y condiciones que pueden hacer que la experiencia del usuario no sea la que espera.</p>
+        <p class="art-p">Conocer qué cubre una EPS y cuáles son sus límites permite tomar mejores decisiones para proteger tu bienestar y el de tu familia.</p>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Qué es el Plan de Beneficios en Salud (PBS)?</h2>
+        <p class="art-p">El Plan de Beneficios en Salud (PBS) es el conjunto de servicios médicos que todas las EPS están obligadas a garantizar a sus afiliados.</p>
+        <p class="art-p">Su objetivo es brindar acceso a la atención médica necesaria para preservar la salud de la población colombiana, incluyendo actividades de promoción, prevención, diagnóstico, tratamiento y rehabilitación.</p>
+        <p class="art-p">Gracias a este plan, millones de colombianos pueden acceder al sistema de salud sin asumir directamente el costo total de los servicios cubiertos.</p>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Qué cubre una EPS?</h2>
+        <p class="art-p">Aunque la cobertura puede variar dependiendo de cada caso clínico y de las disposiciones vigentes, en términos generales una EPS ofrece acceso a:</p>
+        <ul class="art-ul checks">
+          <li>Consultas de medicina general</li>
+          <li>Atención por medicina especializada cuando existe remisión</li>
+          <li>Servicios de urgencias</li>
+          <li>Hospitalización</li>
+          <li>Cirugías incluidas en el PBS</li>
+          <li>Exámenes diagnósticos</li>
+          <li>Laboratorios clínicos</li>
+          <li>Medicamentos contemplados dentro del Plan de Beneficios</li>
+          <li>Programas de promoción y prevención</li>
+          <li>Atención materno infantil</li>
+          <li>Vacunación según el esquema nacional</li>
+        </ul>
+        <p class="art-p">Estos servicios buscan garantizar la atención integral de los afiliados cuando existe una necesidad médica debidamente soportada.</p>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Qué no cubre una EPS?</h2>
+        <p class="art-p">Aquí es donde aparecen la mayoría de las dudas. Existen procedimientos y servicios que no siempre hacen parte de la cobertura habitual o que requieren procesos adicionales de autorización. Entre ellos pueden encontrarse:</p>
+        <ul class="art-ul">
+          <li>Procedimientos con fines estéticos</li>
+          <li>Medicamentos que no hacen parte del PBS, salvo las excepciones contempladas por la normatividad</li>
+          <li>Algunos tratamientos de medicina alternativa</li>
+          <li>Servicios particulares solicitados por decisión del paciente</li>
+          <li>Habitaciones individuales como elección personal</li>
+          <li>Beneficios orientados al confort o la comodidad</li>
+        </ul>
+        <div class="art-callout">
+          <p>Además de las exclusiones, muchas personas experimentan <strong>demoras para acceder a especialistas, tiempos prolongados para algunos procedimientos, limitaciones en la red de atención según la ciudad</strong> y procesos administrativos que pueden extender los tiempos de respuesta.</p>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Por qué algunas personas deciden complementar su EPS?</h2>
+        <p class="art-p">La EPS continúa siendo la base del sistema de salud colombiano. Sin embargo, muchas personas buscan una experiencia diferente cuando necesitan atención médica frecuente o desean acceder con mayor rapidez a determinados servicios.</p>
+        <p class="art-p">Por esa razón existen los Planes Voluntarios de Salud, cuyo propósito es complementar la protección que ya ofrece la EPS. Dependiendo del plan contratado, es posible acceder a beneficios como:</p>
+        <ul class="art-ul checks">
+          <li>Menores tiempos de espera</li>
+          <li>Mayor facilidad para acceder a especialistas</li>
+          <li>Redes médicas más amplias</li>
+          <li>Programas preventivos adicionales</li>
+          <li>Servicios diferenciales orientados a brindar una experiencia más ágil y personalizada</li>
+        </ul>
+        <div class="art-callout gold">
+          <p>Es importante recordar que un <strong>Plan Voluntario de Salud no reemplaza la EPS</strong>, sino que trabaja como un complemento.</p>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">¿Cómo saber si un Plan Voluntario puede ser una buena opción?</h2>
+        <p class="art-p">Cada persona tiene necesidades diferentes. Un Plan Voluntario puede ser una alternativa interesante cuando:</p>
+        <ul class="art-ul">
+          <li>Requieres atención médica con frecuencia</li>
+          <li>Deseas reducir los tiempos de espera para algunas consultas</li>
+          <li>Buscas mayor tranquilidad para tu familia</li>
+          <li>Valoras el acceso oportuno a especialistas</li>
+          <li>Quieres contar con servicios adicionales que complementen la cobertura de la EPS</li>
+        </ul>
+        <p class="art-p">La decisión siempre debe tomarse después de analizar las necesidades particulares de cada persona y conocer las alternativas disponibles.</p>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Conclusión</h2>
+        <p class="art-p">La EPS cumple un papel fundamental dentro del sistema de salud colombiano y garantiza una amplia cobertura mediante el Plan de Beneficios en Salud. No obstante, comprender sus alcances y limitaciones permite tomar decisiones más informadas sobre el cuidado de la salud.</p>
+        <p class="art-p">Si tu objetivo es contar con una atención más personalizada o complementar la cobertura existente, conocer las opciones disponibles puede ayudarte a elegir la alternativa que mejor se adapte a tus necesidades. Lo más importante es tomar decisiones preventivas antes de que aparezca una situación que requiera atención médica.</p>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Preguntas frecuentes</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿La EPS cubre todas las enfermedades? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">La EPS cubre los servicios incluidos dentro del Plan de Beneficios en Salud (PBS), de acuerdo con la evaluación médica y la normatividad vigente.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Un Plan Voluntario reemplaza la EPS? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">No. Los Planes Voluntarios de Salud complementan la atención brindada por la EPS, pero no la sustituyen.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Puedo tener EPS y un Plan Voluntario al mismo tiempo? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">Sí. De hecho, ese es el propósito de los Planes Voluntarios de Salud: ofrecer beneficios adicionales sobre la cobertura básica de la EPS.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Todos los afiliados reciben la misma cobertura? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">Las EPS deben garantizar el acceso a los servicios contemplados en el PBS. Sin embargo, la atención depende de la condición clínica del paciente y de los procedimientos establecidos por el sistema de salud.</div>
+          </div>
+        </div>
+      </div>`;
+    }
+  },
+
   /* ─────────────── ARTÍCULO 1 ─────────────── */
   'traslado-eps': {
     slug: 'traslado-eps',
