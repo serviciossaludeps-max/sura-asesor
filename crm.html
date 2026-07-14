@@ -10001,6 +10001,25 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 <!-- TOAST -->
 <div class="toast" id="toast">✅ <span id="toastMsg">Guardado</span></div>
 
+<!-- Business Configuration Module (ADR-003 / EPIC-002 Sprint 0.2 — BR-009) -->
+<script src="business-config/index.js"></script>
+<script src="business-config/constants.js"></script>
+<script src="business-config/commissions.js"></script>
+<script src="business-config/pricing.js"></script>
+<script>
+  // Salvaguarda: si business-config/*.js no cargó (ruta rota, red, caché,
+  // o el archivo se abrió aislado sin su carpeta hermana), se usan los
+  // mismos valores que existían antes de la migración de BR-009. El CRM
+  // nunca debe dejar de funcionar por un fallo de carga del módulo —
+  // eso violaría la equivalencia funcional absoluta exigida por Política-000.
+  window.BusinessConfig = window.BusinessConfig || {};
+  if (!window.BusinessConfig.commissions || !window.BusinessConfig.commissions.COM_PCT) {
+    console.warn('[BusinessConfig] commissions.js no cargó — usando valores de respaldo (BR-009)');
+    window.BusinessConfig.commissions = window.BusinessConfig.commissions || {};
+    window.BusinessConfig.commissions.COM_PCT = { SPTI: 0.07, SPD: 0.08, PSM: 0.12, PAC60: 0.05 };
+  }
+</script>
+
 <script>
 // =============================================
 // DATA LAYER
@@ -14237,7 +14256,7 @@ const PAC60_TARIFAS = {
   '80-89': { sinAnexo: 541876, conAnexo: 581983 },
   '90+':   { sinAnexo: 693652, conAnexo: 738905 },
 };
-const PAC60_COM_PCT = 0.05; // 5% fijo
+const PAC60_COM_PCT = window.BusinessConfig.commissions.COM_PCT.PAC60; // BR-009 consolidada (Sprint 0.2) — antes 0.05 fijo
 
 function getRangoPAC60(edad) {
   if (edad >= 60 && edad <= 69) return '60-69';
@@ -16721,7 +16740,7 @@ function migrarComisionPagosSinIVA() {
   try {
     const state  = getState();
     const pagos  = getPagos();
-    const COM_PCT = { PSM: 0.12, PAC60: 0.05 };
+    const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
     let corregidos = 0;
     state.ventas
       .filter(v => v.producto === 'PSM' || v.producto === 'PAC60')
@@ -16791,7 +16810,7 @@ function migrarPagosV1() {
       const fechaPago = old[key];
       const proxVenc = calcProxVencimiento(venta.fechaExp, venta.periodicidad);
       const prevVenc = proxVenc ? calcPrevVencimiento(proxVenc, venta.periodicidad) : null;
-      const COM_PCT = { SPTI:0.07, SPD:0.08, PSM:0.12, PAC60:0.05 };
+      const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
       nuevo[id] = [{
         fecha: fechaPago,
         periodoDesde: prevVenc ? prevVenc.toISOString().slice(0,10) : venta.fechaExp,
@@ -16888,7 +16907,7 @@ function registrarPago(ventaId, fechaPago) {
   let periodoDesde = desde.toISOString().slice(0,10);
   let periodoHasta = hasta.toISOString().slice(0,10);
 
-  const COM_PCT = { SPTI:0.07, SPD:0.08, PSM:0.12, PAC60:0.05 };
+  const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
   // Para modo sumado usar primaTotal (suma de todos los planes)
   const prima    = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
   const comision = Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07));
@@ -18820,7 +18839,7 @@ function renderHistorialPagos() {
   const pagos = getPagos();
   const filtroProd = document.getElementById('ctPagosFiltroProducto')?.value || '';
   const filtroMes  = document.getElementById('ctPagosFiltroMes')?.value;
-  const COM_PCT = { SPTI:0.07, SPD:0.08, PSM:0.12, PAC60:0.05 };
+  const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
 
   // Construir lista plana de todos los pagos
   let filas = [];
@@ -26274,7 +26293,7 @@ function cotizadorComparar() {
   };
 
   // Calcular comisión estimada por producto
-  const COM_PCT = { SPTI: 0.07, SPD: 0.08, PSM: 0.12, PAC60: 0.05 };
+  const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
 
   // Construir columnas
   const cols = personas.map((p, i) => {
@@ -26393,7 +26412,7 @@ function cotizadorCompartirWA() {
   const fecha = new Date().toLocaleDateString('es-CO', { day:'numeric', month:'long', year:'numeric' });
   const asesorNombre = (getState().config?.nombreAsesor || 'Tu asesor SURA').trim();
 
-  const COM_PCT = { SPTI: 0.07, SPD: 0.08, PSM: 0.12, PAC60: 0.05 };
+  const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
   const PROD_EMOJI = { SPTI: '💊', SPD: '💑', PSM: '🧩', PAC60: '👴' };
 
   let lineas = [];
@@ -32487,7 +32506,7 @@ function sincronizarFechaExpDesdeCarteraSura() {
   }
   const s      = getState();
   const pagos  = getPagos();
-  const COM_PCT = { SPTI:0.07, SPD:0.08, PSM:0.12, PAC60:0.05 };
+  const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
   let actuFechas = 0;
   let actuPagos  = 0;
 
@@ -38901,7 +38920,7 @@ function _agenteEjecutarHerramienta(nombre, input) {
         const pagos    = getPagos ? getPagos() : {};
         const filtro   = input.filtro || 'todos';
         const buscar   = (input.buscar || '').toLowerCase().trim();
-        const COM_PCT  = { SPTI:0.07, SPD:0.08, PSM:0.12, PAC60:0.05 };
+        const COM_PCT  = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
         const mesesMap = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
         const hoy      = new Date(); hoy.setHours(12,0,0,0);
         const resultados = [];
@@ -39121,7 +39140,7 @@ function _agenteEjecutarHerramienta(nombre, input) {
 
         if (!confirmado) {
           // Mostrar preview del pago sin registrar nada
-          const COM_PCT   = { SPTI:0.07, SPD:0.08, PSM:0.12, PAC60:0.05 };
+          const COM_PCT   = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
           const mesesM    = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
           const pagosEx   = getPagosVenta ? getPagosVenta(ventaId) : [];
           const intervalo = mesesM[venta.periodicidad] || 1;
