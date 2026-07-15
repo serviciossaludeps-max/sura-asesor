@@ -557,6 +557,65 @@ input.err,select.err{border-color:var(--red);}
   <p style="margin-top:4px;">Esta cotización es informativa. Los valores pueden variar según condiciones de aseguramiento.</p>
 </footer>
 
+<!-- Business Configuration Module (ADR-003 / EPIC-002 Sprint 0.3 — BR-014) -->
+<script src="business-config/index.js"></script>
+<script src="business-config/constants.js"></script>
+<script src="business-config/pricing.js"></script>
+<script>
+  // Salvaguarda: mismo criterio de resiliencia aplicado en crm.html
+  // (ver ADR-003/ADR-006). Si el módulo no carga, se usan los valores
+  // que este cotizador ya tenía antes de la migración de BR-014.
+  window.BusinessConfig = window.BusinessConfig || {};
+  if (!window.BusinessConfig.constants || !window.BusinessConfig.constants.IVA_FACTOR) {
+    console.warn('[BusinessConfig] constants.js no cargó — usando valores de respaldo (BR-014)');
+    window.BusinessConfig.constants = window.BusinessConfig.constants || {};
+    window.BusinessConfig.constants.IVA_FACTOR = 167076 / 159120;
+  }
+  if (!window.BusinessConfig.pricing || !window.BusinessConfig.pricing.SPTI_SIN_IVA) {
+    console.warn('[BusinessConfig] pricing.js no cargó — usando valores de respaldo (BR-014)');
+    window.BusinessConfig.pricing = window.BusinessConfig.pricing || {};
+    window.BusinessConfig.pricing.SPTI_SIN_IVA = {
+      PREFERENCIAL: {
+        '0-40':  { mensual:159120, trimestre:465441, dctoTrim:11919, semestre:908871,  dctoSem:45849,  anual:1737305, dctoAnual:172135 },
+        '41-50': { mensual:171167, trimestre:500681, dctoTrim:12820, semestre:977684,  dctoSem:49318,  anual:1868842, dctoAnual:185162 },
+        '51-59': { mensual:212095, trimestre:620398, dctoTrim:15887, semestre:1211456, dctoSem:61114,  anual:2315696, dctoAnual:229444 }
+      },
+      CLASICO: {
+        '0-40':  { mensual:140457, trimestre:410852, dctoTrim:10519, semestre:802274,  dctoSem:40468,  anual:1533544, dctoAnual:151940 },
+        '41-50': { mensual:153628, trimestre:449379, dctoTrim:11505, semestre:877506,  dctoSem:44262,  anual:1677351, dctoAnual:166185 },
+        '51-59': { mensual:192544, trimestre:553310, dctoTrim:24322, semestre:1099785, dctoSem:55479,  anual:2102237, dctoAnual:208291 }
+      }
+    };
+    window.BusinessConfig.pricing.computeSPTIConIVA = window.BusinessConfig.pricing.computeSPTIConIVA || function(sinIva, ivaFactor) {
+      const out = {};
+      for (const plan in sinIva) {
+        out[plan] = {};
+        for (const rango in sinIva[plan]) {
+          const t = sinIva[plan][rango];
+          out[plan][rango] = { mensual: Math.round(t.mensual*ivaFactor), trimestre: Math.round(t.trimestre*ivaFactor), dctoTrim: t.dctoTrim, semestre: Math.round(t.semestre*ivaFactor), dctoSem: t.dctoSem, anual: Math.round(t.anual*ivaFactor), dctoAnual: t.dctoAnual };
+        }
+      }
+      return out;
+    };
+    window.BusinessConfig.pricing.PSM_TARIFAS = {
+      basico:      { '0-14':229847,'15-20':229847,'21-25':229847,'26-30':246326,'31-40':256144,'41-45':301955,'46-50':317840,'51-55':404786,'56-59':404786,'60-65':525726,'66-70':672240,'71+':1038175 },
+      emd:         { '0-14':21771,'15-20':21771,'21-25':21771,'26-30':21771,'31-40':21771,'41-45':21771,'46-50':21771,'51-55':21771,'56-59':21771,'60-65':21771,'66-70':21771,'71+':21771 },
+      cirugia:     { '0-14':8785,'15-20':25078,'21-25':25078,'26-30':25078,'31-40':31514,'41-45':42708,'46-50':54378,'51-55':66663,'56-59':66663,'60-65':86719,'66-70':99809,'71+':99809 },
+      maternidad:  { '0-14':0,'15-20':73462,'21-25':73462,'26-30':73462,'31-40':73462,'41-45':73462,'46-50':0,'51-55':0,'56-59':0,'60-65':0,'66-70':0,'71+':0 },
+      altoCosto:   { '0-14':17477,'15-20':17477,'21-25':17477,'26-30':30726,'31-40':47346,'41-45':76533,'46-50':126374,'51-55':201996,'56-59':201996,'60-65':350150,'66-70':577547,'71+':602205 }
+    };
+    window.BusinessConfig.pricing.PSM_IVA = 1.05;
+    window.BusinessConfig.pricing.PSM_DCTOS = { MENSUAL: 0, TRIMESTRAL: 0.0197, SEMESTRAL: 0.0452, ANUAL: 0.0901 };
+    window.BusinessConfig.pricing.PAC60_TARIFAS = {
+      '60-69': { sinAnexo: 358398, conAnexo: 387195 },
+      '70-79': { sinAnexo: 416077, conAnexo: 446830 },
+      '80-89': { sinAnexo: 541876, conAnexo: 581983 },
+      '90+':   { sinAnexo: 693652, conAnexo: 738905 }
+    };
+    window.BusinessConfig.pricing.PAC60_DCTOS = { MENSUAL: 0, TRIMESTRAL: 0.025, SEMESTRAL: 0.048, ANUAL: 0.0901 };
+  }
+</script>
+
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -636,40 +695,31 @@ _capturarAtribucion();
 
 // ═══════════════════════════════════════════════
 // TARIFAS (exactas del sistema SURA Asesor 2026)
+// BR-014 consolidada (Sprint 0.3): SPTI/PSM/PAC60 y sus descuentos ahora
+// vienen de business-config/pricing.js — fuente única compartida con
+// crm.html y planes.html. SPD_TARIFAS queda fuera de alcance (única
+// copia existente, no duplicada).
 // ═══════════════════════════════════════════════
-const SPTI_TARIFAS = {
-  PREFERENCIAL: {
-    '0-40':  { mensual:167076, trimestre:488713, dctoTrim:11919, semestre:954315,  dctoSem:45849,  anual:1824170, dctoAnual:172135 },
-    '41-50': { mensual:179725, trimestre:525715, dctoTrim:12820, semestre:1026568, dctoSem:49318,  anual:1962284, dctoAnual:185162 },
-    '51-59': { mensual:222700, trimestre:651418, dctoTrim:15887, semestre:1272029, dctoSem:61114,  anual:2431481, dctoAnual:229444 },
-  },
-  CLASICO: {
-    '0-40':  { mensual:147480, trimestre:431395, dctoTrim:10519, semestre:842388,  dctoSem:40468,  anual:1610221, dctoAnual:151940 },
-    '41-50': { mensual:161309, trimestre:471848, dctoTrim:11505, semestre:921381,  dctoSem:44262,  anual:1761219, dctoAnual:166185 },
-    '51-59': { mensual:202171, trimestre:580976, dctoTrim:24322, semestre:1154774, dctoSem:55479,  anual:2207349, dctoAnual:208291 },
-  }
-};
+const SPTI_TARIFAS = window.BusinessConfig.pricing.computeSPTIConIVA(
+  window.BusinessConfig.pricing.SPTI_SIN_IVA,
+  window.BusinessConfig.constants.IVA_FACTOR
+);
 const SPD_TARIFAS = { MENSUAL:96674, TRIMESTRAL:284312, SEMESTRAL:553814, ANUAL:1055507 };
-const PSM_TARIFAS = {
-  basico:     {'0-14':229847,'15-20':229847,'21-25':229847,'26-30':246326,'31-40':256144,'41-45':301955,'46-50':317840,'51-55':404786,'56-59':404786,'60-65':525726,'66-70':672240,'71+':1038175},
-  emd:        {'0-14':21771,'15-20':21771,'21-25':21771,'26-30':21771,'31-40':21771,'41-45':21771,'46-50':21771,'51-55':21771,'56-59':21771,'60-65':21771,'66-70':21771,'71+':21771},
-  cirugia:    {'0-14':8785,'15-20':25078,'21-25':25078,'26-30':25078,'31-40':31514,'41-45':42708,'46-50':54378,'51-55':66663,'56-59':66663,'60-65':86719,'66-70':99809,'71+':99809},
-  maternidad: {'0-14':0,'15-20':73462,'21-25':73462,'26-30':73462,'31-40':73462,'41-45':73462,'46-50':0,'51-55':0,'56-59':0,'60-65':0,'66-70':0,'71+':0},
-  altoCosto:  {'0-14':17477,'15-20':17477,'21-25':17477,'26-30':30726,'31-40':47346,'41-45':76533,'46-50':126374,'51-55':201996,'56-59':201996,'60-65':350150,'66-70':577547,'71+':602205},
-};
-const PSM_IVA = 1.05;
-const PSM_DCTOS = { MENSUAL:0, TRIMESTRAL:0.0197, SEMESTRAL:0.0452, ANUAL:0.0901 };
+const PSM_TARIFAS = window.BusinessConfig.pricing.PSM_TARIFAS;
+const PSM_IVA = window.BusinessConfig.pricing.PSM_IVA;
+const PSM_DCTOS = window.BusinessConfig.pricing.PSM_DCTOS;
 const PSM_RANGOS = [
   {key:'0-14',min:0,max:14},{key:'15-20',min:15,max:20},{key:'21-25',min:21,max:25},
   {key:'26-30',min:26,max:30},{key:'31-40',min:31,max:40},{key:'41-45',min:41,max:45},
   {key:'46-50',min:46,max:50},{key:'51-55',min:51,max:55},{key:'56-59',min:56,max:59},
   {key:'60-65',min:60,max:65},{key:'66-70',min:66,max:70},{key:'71+',min:71,max:999}
 ];
-const PAC60_TARIFAS = {
-  '60-69':{ sinAnexo:358398, conAnexo:387195 },
-  '70-79':{ sinAnexo:416077, conAnexo:446830 },
-};
-const PAC60_DCTOS = { MENSUAL:0, TRIMESTRAL:0.025, SEMESTRAL:0.048, ANUAL:0.0901 };
+// BR-015: solo 60-69 y 70-79 son comercialmente vendibles (venta nueva).
+// El módulo expone también 80-89/90+ (uso administrativo/informativo en
+// crm.html y planes.html) — este cotizador solo lee las 2 claves que
+// siempre usó, el resto de la tabla queda simplemente sin usar aquí.
+const PAC60_TARIFAS = window.BusinessConfig.pricing.PAC60_TARIFAS;
+const PAC60_DCTOS = window.BusinessConfig.pricing.PAC60_DCTOS;
 
 // Estado
 let state = { plan:null, sub:null, edad:0, peri:'MENSUAL', modulos:{EMD:false,AltoCosto:false,Cirugia:false,Maternidad:false} };
