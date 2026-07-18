@@ -10210,13 +10210,21 @@ function setState(s) {
   const ventasActuales = (window.__FB_CACHE__?.estado?.ventas || []).length;
   if (ventasActuales > 0 && ventasNuevas < ventasActuales) {
     console.warn(`[setState] Bloqueado: ${ventasNuevas} ventas < ${ventasActuales} en caché`);
+    // HALLAZGO-OP-006 (fix parcial): este bloqueo protege contra sobrescribir
+    // Firestore con menos ventas de las que ya existen — pero antes fallaba
+    // en silencio (solo console.warn), dando la falsa impresión de que el
+    // guardado sí funcionó (el toast de éxito se mostraba igual). Ahora se
+    // avisa explícitamente para que el asesor sepa que debe recargar y
+    // reintentar, en vez de perder el cambio sin darse cuenta.
+    alert('⚠️ No se pudo guardar: se detectaron cambios más recientes en el sistema (por ejemplo, otra venta registrada mientras editabas). Por seguridad, tu edición NO se guardó para evitar perder información. Por favor recarga la página e inténtalo de nuevo.');
     if (window.__FB_CACHE__) window.__FB_CACHE__.estado = s;
     if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
-    return;
+    return false;
   }
   if (window.__FB_CACHE__) window.__FB_CACHE__.estado = s;
   if (window.FB) window.FB.setEstado(s);
   if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
+  return true;
 }
 
 // ── Sincronización automática BD Contactos desde ventas de VOLUNTARIOS ─────────
@@ -16932,7 +16940,11 @@ function registrarPago(ventaId, fechaPago) {
 
   const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
   // Para modo sumado usar primaTotal (suma de todos los planes)
-  const prima    = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
+  // HALLAZGO-OP-005 (fix): para periodicidad no mensual (SPTI/PSM/PAC60) se
+  // registra el valor correcto por periodo, recalculado desde el módulo.
+  const _primaBase = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
+  const _montoRecalculado = calcMontoPeriodoVenta(venta);
+  const prima    = (_montoRecalculado !== null) ? _montoRecalculado : _primaBase;
   const comision = Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07));
 
   const nuevoPago = {
@@ -17276,6 +17288,103 @@ function renderCarteraTabla(filas, pagos) {
 
 let _pagoVentaId = null;
 
+// HALLAZGO-OP-005 (fix): venta.prima para SPTI siempre guarda la prima
+// MENSUAL base (ver campo "Prima Mensual ($)" del formulario), sin importar
+// la periodicidad de la póliza. Para periodicidades no mensuales, el monto
+// a pagar correcto NO es prima × N — SPTI_TARIFAS tiene valores propios por
+// periodo (con descuento ya aplicado, verificado contra _actualizarTotalYDcto,
+// la misma fórmula usada al crear la venta). Esta función replica esa
+// consulta al momento de cobrar, para que el monto mostrado y el
+// efectivamente registrado sean siempre el correcto — para pólizas nuevas
+// y para las ya existentes.
+function calcMontoSPTIPeriodo(venta) {
+  if (venta.producto !== 'SPTI' || !venta.plan || !venta.periodicidad) return null;
+  if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
+  if (venta.tarifaCongelada) return null; // tarifa histórica fija — no se puede reconstruir desde la tabla actual
+  const rango = getRangoEdadSPTI(parseInt(venta.edad));
+  const tarifa = rango && SPTI_TARIFAS[venta.plan] && SPTI_TARIFAS[venta.plan][rango];
+  if (!tarifa) return null;
+  const campo = { TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' }[venta.periodicidad];
+  return (campo && tarifa[campo]) || null;
+}
+
+// HALLAZGO-OP-005 (fix): al guardar una venta PSM/PAC60 con periodicidad no
+// mensual, el sistema multiplica la prima mensual por el número de meses
+// pero NUNCA resta el descuento por periodicidad (PSM_DCTOS/PAC60_DCTOS) —
+// a diferencia del cálculo que sí se muestra correctamente al cotizar
+// (calcDatosPSM/calcDatosPAC60). Estas funciones reconstruyen el monto
+// correcto por periodo directamente desde las tarifas del módulo en el
+// momento de cobrar, en vez de confiar en primaTotal/prima ya guardados —
+// así corrige tanto pólizas nuevas como las que ya existían con el error.
+const _PSM_LABEL_A_CLAVE = { 'Básico': 'basico', 'Atención Domiciliaria': 'emd', 'Alto Costo': 'altoCosto', 'Cirugía Ambulatoria': 'cirugia', 'Maternidad': 'maternidad' };
+
+function calcMontoPSMPeriodo(venta) {
+  if (venta.producto !== 'PSM' || !venta.periodicidad) return null;
+  if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
+  if (venta.tarifaCongelada) return null; // tarifa histórica fija — no se puede reconstruir desde la tabla actual
+  const PSM_TARIFAS_M = window.BusinessConfig.pricing.PSM_TARIFAS;
+  const PSM_IVA_M = window.BusinessConfig.pricing.PSM_IVA;
+  const PSM_DCTOS_M = window.BusinessConfig.pricing.PSM_DCTOS;
+  if (!PSM_TARIFAS_M || !venta.rangoEdad) return null;
+
+  const modulos = venta.modulos && venta.modulos.length ? venta.modulos : ['Básico'];
+  let totalMensual = 0;
+  for (const label of modulos) {
+    const clave = _PSM_LABEL_A_CLAVE[label];
+    const tabla = clave && PSM_TARIFAS_M[clave];
+    if (!tabla || tabla[venta.rangoEdad] === undefined) return null; // dato insuficiente: no adivinar
+    totalMensual += tabla[venta.rangoEdad] * PSM_IVA_M;
+  }
+  if (Array.isArray(venta.asegurados)) {
+    for (const a of venta.asegurados) {
+      const tablaBasico = PSM_TARIFAS_M.basico;
+      if (!a.rangoEdad || tablaBasico[a.rangoEdad] === undefined) return null;
+      totalMensual += tablaBasico[a.rangoEdad] * PSM_IVA_M;
+    }
+  }
+
+  const meses = { MENSUAL: 1, TRIMESTRAL: 3, SEMESTRAL: 6, ANUAL: 12 };
+  const mult = meses[venta.periodicidad] || 1;
+  const totalBruto = Math.round(totalMensual * mult);
+  const dctoPct = PSM_DCTOS_M[venta.periodicidad] || 0;
+  return totalBruto - Math.round(totalBruto * dctoPct);
+}
+
+function calcMontoPAC60Periodo(venta) {
+  if (venta.producto !== 'PAC60' || !venta.periodicidad) return null;
+  if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
+  if (venta.tarifaCongelada) return null; // tarifa histórica fija (oferta de diciembre) — no se reconstruye desde la tabla actual
+  const PAC60_TARIFAS_M = window.BusinessConfig.pricing.PAC60_TARIFAS;
+  const PAC60_DCTOS_M = window.BusinessConfig.pricing.PAC60_DCTOS;
+  if (!PAC60_TARIFAS_M || !venta.rangoEdad) return null;
+  const campoAnexo = venta.conAnexo ? 'conAnexo' : 'sinAnexo';
+
+  const tarifaPrimaria = PAC60_TARIFAS_M[venta.rangoEdad];
+  if (!tarifaPrimaria || tarifaPrimaria[campoAnexo] === undefined) return null;
+  let totalMensual = tarifaPrimaria[campoAnexo];
+
+  if (Array.isArray(venta.asegurados)) {
+    for (const a of venta.asegurados) {
+      const t = a.rangoEdad && PAC60_TARIFAS_M[a.rangoEdad];
+      if (!t || t[campoAnexo] === undefined) return null;
+      totalMensual += t[campoAnexo];
+    }
+  }
+
+  const meses = { MENSUAL: 1, TRIMESTRAL: 3, SEMESTRAL: 6, ANUAL: 12 };
+  const mult = meses[venta.periodicidad] || 1;
+  const totalBruto = Math.round(totalMensual * mult);
+  const dctoPct = PAC60_DCTOS_M[venta.periodicidad] || 0;
+  return totalBruto - Math.round(totalBruto * dctoPct);
+}
+
+// Punto único: dado cualquier producto, retorna el monto correcto para el
+// período de pago actual, o null si el producto/datos no permiten
+// recalcularlo (en ese caso el llamador debe usar el valor guardado).
+function calcMontoPeriodoVenta(venta) {
+  return calcMontoSPTIPeriodo(venta) ?? calcMontoPSMPeriodo(venta) ?? calcMontoPAC60Periodo(venta);
+}
+
 function abrirModalPago(ventaId) {
   const state = getState();
   const venta = state.ventas.find(v => v.id === ventaId);
@@ -17288,8 +17397,13 @@ function abrirModalPago(ventaId) {
 
   // Fecha por defecto: hoy
   document.getElementById('pagoFecha').value = new Date().toISOString().slice(0,10);
-  // Para modo sumado usar primaTotal (suma de todos los planes), si no la prima individual
-  const _primaPago = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
+  // Para modo sumado usar primaTotal (suma de todos los planes), si no la prima individual.
+  // HALLAZGO-OP-005 (fix): para periodicidad no mensual (SPTI/PSM/PAC60) se
+  // usa el valor correcto por periodo recalculado desde el módulo, en vez
+  // del valor guardado (mensual para SPTI; sin descuento para PSM/PAC60).
+  const _primaPagoBase = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
+  const _montoRecalculado = calcMontoPeriodoVenta(venta);
+  const _primaPago = (_montoRecalculado !== null) ? _montoRecalculado : _primaPagoBase;
   document.getElementById('pagoPrima').value = '$' + Math.round(_primaPago).toLocaleString('es-CO');
 
   actualizarPreviewPago();
