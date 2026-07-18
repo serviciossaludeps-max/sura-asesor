@@ -14906,6 +14906,14 @@ function calcPreviewCom() {
 }
 
 function guardarVenta() {
+  // HALLAZGO-OP-007 (fix): refrescar 'state' aquí, al inicio, en vez de
+  // confiar en la variable global (que puede llevar rato sin actualizarse
+  // si el formulario estuvo abierto mientras llegaban cambios de otra
+  // fuente). Cierra la ventana de datos obsoletos que hacía que setState()
+  // bloqueara guardados legítimos (ver HALLAZGO-OP-006) al construir el
+  // nuevo registro sobre una base más vieja que el caché real.
+  state = getState();
+
   // ── Tab: Producto Extra ──────────────────────────────────────────
   if (modalTab === 'extra') {
     const sel = document.getElementById('vExtraProductoSelect');
