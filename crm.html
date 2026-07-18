@@ -10204,7 +10204,7 @@ function getState() {
   // Una vez que Firebase cargue, __FB_CACHE__ estara disponible y se usara correctamente
   return {};
 }
-function setState(s) {
+async function setState(s) {
   // GUARD: nunca sobrescribir Firestore con menos ventas de las que hay en caché
   const ventasNuevas   = (s?.ventas || []).length;
   const ventasActuales = (window.__FB_CACHE__?.estado?.ventas || []).length;
@@ -10222,7 +10222,28 @@ function setState(s) {
     return false;
   }
   if (window.__FB_CACHE__) window.__FB_CACHE__.estado = s;
-  if (window.FB) window.FB.setEstado(s);
+  // HALLAZGO-OP-008 (fix): window.FB.setEstado() es asíncrona y escribe a
+  // Firestore de verdad. Antes no se esperaba su resultado — si la
+  // escritura fallaba (red, error de Firebase, etc.), el error solo
+  // quedaba en la consola del navegador, nunca visible para el asesor. El
+  // registro parecía guardado (vivía en el caché local) pero nunca llegaba
+  // a Firestore, y se perdía al recargar. Ahora se espera la escritura real
+  // y se avisa explícitamente si falla.
+  if (window.FB) {
+    try {
+      const ok = await window.FB.setEstado(s);
+      if (ok === false) {
+        alert('⚠️ El guardado no se completó en el servidor (error de Firestore). Tu cambio quedó solo en esta pestaña — si recargas la página SIN antes verificar tu conexión, se puede perder. Revisa tu conexión a internet e inténtalo de nuevo.');
+        if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
+        return false;
+      }
+    } catch (e) {
+      console.error('[setState] Error al escribir en Firestore:', e.message);
+      alert('⚠️ El guardado no se completó en el servidor (' + e.message + '). Tu cambio quedó solo en esta pestaña — si recargas la página ahora, se puede perder. Revisa tu conexión a internet e inténtalo de nuevo.');
+      if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
+      return false;
+    }
+  }
   if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
   return true;
 }
