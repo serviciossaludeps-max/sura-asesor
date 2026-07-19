@@ -1117,7 +1117,12 @@
         return true;
       } catch(e2) {
         console.error('fbSetEstado classic fallback ERROR', e2.code, e2.message);
-        return false;
+        // HALLAZGO-OP-008 (mejora): antes se perdía el detalle real del
+        // error (código/mensaje de Firestore) — se devolvía solo `false`,
+        // sin forma de diagnosticar la causa (permisos, cuota, tamaño de
+        // documento, etc.). Ahora se devuelve el detalle como texto.
+        return `${e2.code || 'error'}: ${e2.message || 'desconocido'}`
+             + (e.code ? ` (guardado por partes también falló: ${e.code})` : '');
       }
     }
   }
@@ -10232,14 +10237,18 @@ async function setState(s) {
   if (window.FB) {
     try {
       const ok = await window.FB.setEstado(s);
-      if (ok === false) {
-        alert('⚠️ El guardado no se completó en el servidor (error de Firestore). Tu cambio quedó solo en esta pestaña — si recargas la página SIN antes verificar tu conexión, se puede perder. Revisa tu conexión a internet e inténtalo de nuevo.');
+      if (ok !== true) {
+        // HALLAZGO-OP-008 (mejora): mostrar el código/mensaje real de
+        // Firestore en vez de un mensaje genérico, para poder diagnosticar
+        // la causa (permisos, cuota, tamaño de documento, red, etc.)
+        const detalle = (typeof ok === 'string' && ok) ? ok : 'sin detalle disponible';
+        alert('⚠️ El guardado no se completó en el servidor.\n\nDetalle técnico: ' + detalle + '\n\nTu cambio quedó solo en esta pestaña — si recargas la página ahora, se puede perder. Revisa tu conexión e inténtalo de nuevo. Si el problema persiste, comparte este detalle técnico con soporte.');
         if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
         return false;
       }
     } catch (e) {
       console.error('[setState] Error al escribir en Firestore:', e.message);
-      alert('⚠️ El guardado no se completó en el servidor (' + e.message + '). Tu cambio quedó solo en esta pestaña — si recargas la página ahora, se puede perder. Revisa tu conexión a internet e inténtalo de nuevo.');
+      alert('⚠️ El guardado no se completó en el servidor.\n\nDetalle técnico: ' + (e.code || '') + ' ' + e.message + '\n\nTu cambio quedó solo en esta pestaña — si recargas la página ahora, se puede perder. Revisa tu conexión e inténtalo de nuevo. Si el problema persiste, comparte este detalle técnico con soporte.');
       if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
       return false;
     }
@@ -15600,7 +15609,13 @@ function guardarVenta() {
         nombre: nomAseg, tipoDoc: tdocAseg, doc: docAseg,
         fechaNac: fnacAseg, edad: edadAseg, rangoEdad: rangoAseg,
         plan: planLabel, conAnexo,
-        asegurados: numAseg > 1 ? aseguradosPAC : undefined,
+        // HALLAZGO-OP-009 (fix): Firestore rechaza cualquier campo con valor
+        // undefined — setDoc() lanza un error y la venta completa nunca se
+        // guarda. Con 1 solo asegurado (el caso más común) este campo caía
+        // en 'undefined'. Se usa null en su lugar (Firestore sí lo acepta;
+        // el resto del código ya trata null/undefined/ausente por igual
+        // con Array.isArray(venta.asegurados)).
+        asegurados: numAseg > 1 ? aseguradosPAC : null,
         numAsegurados: numAseg, modoRegistro: modoReg,
         telefono: document.getElementById('vTelPAC60').value,
         correo: document.getElementById('vCorreoPAC60').value,
