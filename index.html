@@ -258,7 +258,8 @@ nav { position:sticky; top:0; z-index:100; background:rgba(0,26,82,.97); backdro
 .bcard { border:1px solid var(--border); border-radius:9px; overflow:hidden; transition:transform .2s,border-color .2s; }
 .bcard { transition:transform .26s cubic-bezier(.25,.8,.25,1), border-color .26s, box-shadow .26s; }
 .bcard:hover { transform:translateY(-4px); border-color:var(--navy); box-shadow:0 10px 28px rgba(0,26,82,.08); }
-.bthumb { height:185px; overflow:hidden; }
+.bthumb { height:185px; overflow:hidden; position:relative; }
+.bnew-badge { position:absolute; top:.7rem; left:.7rem; background:var(--gold); color:var(--navy); font-size:.62rem; font-weight:700; letter-spacing:.04em; padding:.28rem .6rem; border-radius:20px; display:inline-flex; align-items:center; gap:.3rem; box-shadow:0 2px 8px rgba(0,0,0,.18); z-index:2; }
 .bthumb img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; transition:transform .35s var(--ease); }
 .bcard:hover .bthumb img { transform:scale(1.04); }
 .bbody { padding:1.25rem; }
@@ -1004,6 +1005,18 @@ footer { background:var(--deep); padding:3rem 2rem 2rem; }
     <div class="ey"><div class="ey-dash"></div><span class="ey-txt">Blog de salud</span></div>
     <h2 class="h2">Lo que deberías saber<br>sobre tu salud.</h2>
     <div class="blog-grid">
+      <article class="bcard rv">
+        <div class="bthumb bth4">
+          <span class="bnew-badge">✨ Nuevo</span>
+          <img src="blog-como-elegir-plan-salud-sura.png" alt="Familia colombiana conversando con un asesor de Servicios Seguros sobre opciones de planes de salud SURA.">
+        </div>
+        <div class="bbody">
+          <p class="btag">Salud</p>
+          <h3 class="btitle">¿Cómo elegir la solución de salud SURA ideal para ti?</h3>
+          <p class="bexc">Conoce las soluciones de salud comercializadas por el Canal Especializado en Salud SURA y descubre cuál se adapta mejor a tus necesidades con la asesoría de Servicios Seguros.</p>
+        </div>
+        <div class="bfoot"><span class="bdate">20 jul 2026 · 6 min</span><a href="blog.html?a=como-elegir-plan-salud-sura" class="bread">Leer más →</a></div>
+      </article>
       <article class="bcard rv">
         <div class="bthumb bth4"><img src="blog-eps-cobertura-limites.png" alt="Familia recibiendo asesoría sobre cobertura en salud y EPS."></div>
         <div class="bbody">

@@ -13,6 +13,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="meta-title">Blog — Canal Especializado en Salud · Fran Viloria</title>
 <meta name="description" id="meta-desc" content="Artículos sobre salud, EPS, planes complementarios y beneficios empresariales. Canal Especializado en Salud SURA.">
+<meta name="keywords" id="meta-keywords" content="">
+<meta property="og:type" content="article">
+<meta property="og:title" id="og-title" content="Blog — Canal Especializado en Salud">
+<meta property="og:description" id="og-desc" content="Artículos sobre salud, EPS, planes complementarios y beneficios empresariales. Canal Especializado en Salud SURA.">
+<meta property="og:image" id="og-image" content="blog-traslado-eps.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" id="tw-title" content="Blog — Canal Especializado en Salud">
+<meta name="twitter:description" id="tw-desc" content="Artículos sobre salud, EPS, planes complementarios y beneficios empresariales. Canal Especializado en Salud SURA.">
+<meta name="twitter:image" id="tw-image" content="blog-traslado-eps.png">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,6 +54,13 @@ nav{position:sticky;top:0;z-index:100;background:rgba(0,26,82,.97);backdrop-filt
 .nav-back-btn:hover{color:var(--gold)}
 .nav-back-btn svg{width:14px;height:14px}
 @media(max-width:600px){.nav-links{display:none}.nav-name{font-size:.75rem}.nav-name small{font-size:.48rem}}
+
+/* ─ BRAND HEADER (solo artículo BLOG-2026-07-003 — Servicios Seguros) ─ */
+.art-brand-header{display:flex;flex-direction:column;align-items:center;gap:.65rem;text-align:center;padding:2.4rem 1.5rem 1.7rem;background:var(--white)}
+.art-brand-header img{height:72px;width:auto;display:block}
+.art-brand-crumb{font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+@media(max-width:900px){.art-brand-header img{height:64px}}
+@media(max-width:600px){.art-brand-header{padding:1.8rem 1.25rem 1.3rem}.art-brand-header img{height:56px}}
 
 /* ─ HERO DEL ARTÍCULO ─ */
 .art-hero{position:relative;height:420px;overflow:hidden;background:var(--deep)}
@@ -281,6 +297,106 @@ _capturarAtribucion();
    BASE DE DATOS DE ARTÍCULOS
 ════════════════════════════════════════════════ */
 const ARTICULOS = {
+
+  /* ─────────────── ARTÍCULO NUEVO (Campaña CAMP-2026-07-003 · BLOG-2026-07-003) ─────────────── */
+  /* Primer uso público oficial de la identidad visual de Servicios Seguros. Brand Header solo aquí. */
+  'como-elegir-plan-salud-sura': {
+    slug: 'como-elegir-plan-salud-sura',
+    tag: 'Planes de salud SURA',
+    titulo: '¿Cómo elegir la solución de salud SURA ideal para ti?',
+    metaTitle: '¿Cómo elegir el plan de salud SURA ideal? | Servicios Seguros',
+    metaDescription: 'Conoce las soluciones de salud que ofrece el Canal Especializado en Salud SURA y descubre cuál se adapta mejor a tus necesidades con la asesoría de Servicios Seguros.',
+    keywords: ['Plan Preferencial','Plan Clásico','Salud para Dos','Plan Salud Modular','Plan 60 Más','Servicios Seguros','Asesor autorizado SURA','Planes de Salud SURA'],
+    fecha: '20 de julio de 2026',
+    lectura: '6 min',
+    imagen: 'blog-como-elegir-plan-salud-sura.png',
+    imgAlt: 'Familia colombiana conversando con un asesor de Servicios Seguros sobre opciones de planes de salud SURA.',
+    ogImage: 'og-image-blog-2026-07-003.jpg',
+    brandHeader: true,
+    render() {
+      return `
+      <p class="art-intro">Conoce las soluciones que ofrece el Canal Especializado en Salud SURA y descubre cuál responde mejor a tu momento de vida, tus necesidades y las de tu familia.</p>
+
+      <div class="art-section">
+        <p class="art-p">Cada persona tiene una historia diferente. Hay quienes buscan proteger a su familia, quienes desean complementar la atención que reciben a través de su EPS y quienes necesitan una solución flexible que se adapte a su presupuesto.</p>
+        <p class="art-p">Por eso, elegir un plan de salud no consiste en encontrar "el mejor plan", sino en identificar cuál responde mejor a las necesidades de cada persona.</p>
+        <p class="art-p">En Servicios Seguros, como Asesor autorizado SURA, nuestro compromiso es acompañarte para tomar una decisión informada, basada en tu perfil, tu etapa de vida y tus expectativas.</p>
+        <p class="art-p">A continuación, te presentamos las soluciones que hacen parte del portafolio del Canal Especializado en Salud SURA.</p>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Salud para Todos</h2>
+        <p class="art-p">La línea Salud para Todos reúne soluciones orientadas a complementar la atención de salud de los afiliados a EPS SURA del régimen contributivo, ofreciendo diferentes niveles de cobertura y beneficios según el plan elegido.</p>
+
+        <h3 class="art-h3"><span class="art-h3-num">1</span> Plan Preferencial</h3>
+        <p class="art-p">Pensado para quienes buscan una experiencia de atención más amplia, con beneficios diferenciales y acceso a una red de servicios diseñada para brindar mayor comodidad y respaldo.</p>
+        <p class="art-p" style="font-weight:600;color:var(--navy);margin-bottom:.5rem">Ideal para:</p>
+        <ul class="art-ul checks">
+          <li>Personas que desean una cobertura más completa</li>
+          <li>Familias que buscan mayor tranquilidad</li>
+          <li>Usuarios que valoran una atención diferencial</li>
+        </ul>
+
+        <h3 class="art-h3"><span class="art-h3-num">2</span> Plan Clásico</h3>
+        <p class="art-p">Una alternativa equilibrada para quienes desean fortalecer su protección en salud manteniendo una excelente relación entre cobertura y costo.</p>
+        <p class="art-p" style="font-weight:600;color:var(--navy);margin-bottom:.5rem">Ideal para:</p>
+        <ul class="art-ul checks">
+          <li>Trabajadores independientes</li>
+          <li>Familias</li>
+          <li>Personas que desean complementar su atención habitual</li>
+        </ul>
+
+        <h3 class="art-h3"><span class="art-h3-num">3</span> Salud para Dos</h3>
+        <p class="art-p">Una solución diseñada para proteger al titular y a un beneficiario dentro de un mismo plan, facilitando el acceso conjunto a los beneficios establecidos por SURA.</p>
+        <p class="art-p" style="font-weight:600;color:var(--navy);margin-bottom:.5rem">Ideal para:</p>
+        <ul class="art-ul checks">
+          <li>Parejas</li>
+          <li>Padres e hijos</li>
+          <li>Familias pequeñas</li>
+        </ul>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Plan 60 Más</h2>
+        <p class="art-p">El bienestar continúa siendo una prioridad en todas las etapas de la vida.</p>
+        <p class="art-p">El Plan 60 Más está orientado a personas que buscan una solución complementaria adaptada a sus necesidades, con beneficios y acompañamiento acordes a esta etapa.</p>
+        <div class="art-callout">
+          <p>La recomendación siempre debe realizarse de forma personalizada, considerando las <strong>condiciones de ingreso y el perfil de cada cliente</strong>.</p>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Plan Salud Modular</h2>
+        <p class="art-p">El Plan Salud Modular ofrece una propuesta flexible que permite combinar coberturas de acuerdo con las necesidades y el presupuesto de cada persona.</p>
+        <p class="art-p">Su diseño modular facilita construir una solución personalizada, permitiendo elegir la configuración más adecuada según el momento de vida del cliente. Ideal para quienes buscan flexibilidad y personalización.</p>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">No existe un plan mejor. Existe un plan adecuado para ti.</h2>
+        <div class="art-callout gold">
+          <p>La elección correcta depende de factores como <strong>tu edad, tu grupo familiar, la ciudad donde resides, tu presupuesto, tus necesidades de protección y tus expectativas frente al servicio de salud</strong>. Por eso una asesoría profesional hace la diferencia.</p>
+        </div>
+      </div>
+
+      <div class="art-section">
+        <h2 class="art-h2">Preguntas frecuentes</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Todos los planes son iguales? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">No. Cada solución está diseñada para diferentes perfiles y necesidades.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Cuál es el mejor plan? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">El mejor plan es aquel que se adapta a tus necesidades particulares.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">¿Puedo recibir asesoría antes de contratar? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="faq-a">Sí. Nuestro proceso comienza con una asesoría personalizada para ayudarte a tomar una decisión informada.</div>
+          </div>
+        </div>
+      </div>`;
+    }
+  },
 
   /* ─────────────── ARTÍCULO NUEVO (Julio 2026) ─────────────── */
   'eps-cobertura-limites': {
@@ -739,8 +855,18 @@ function renderArticulo(slug) {
   }
 
   // Meta
-  document.getElementById('meta-title').textContent = art.titulo + ' — Canal Especializado en Salud';
-  document.getElementById('meta-desc').setAttribute('content', art.titulo);
+  const metaTitleTxt = art.metaTitle || (art.titulo + ' — Canal Especializado en Salud');
+  const metaDescTxt = art.metaDescription || art.titulo;
+  const ogImageSrc = art.ogImage || art.imagen;
+  document.getElementById('meta-title').textContent = metaTitleTxt;
+  document.getElementById('meta-desc').setAttribute('content', metaDescTxt);
+  document.getElementById('meta-keywords').setAttribute('content', (art.keywords || []).join(', '));
+  document.getElementById('og-title').setAttribute('content', metaTitleTxt);
+  document.getElementById('og-desc').setAttribute('content', metaDescTxt);
+  document.getElementById('og-image').setAttribute('content', ogImageSrc);
+  document.getElementById('tw-title').setAttribute('content', metaTitleTxt);
+  document.getElementById('tw-desc').setAttribute('content', metaDescTxt);
+  document.getElementById('tw-image').setAttribute('content', ogImageSrc);
 
   // Relacionados
   const rel = getRelacionados(slug);
@@ -755,7 +881,14 @@ function renderArticulo(slug) {
 
   const WA = atob('NTczMDA4NTE0Njk5');
 
+  const brandHeaderHTML = art.brandHeader ? `
+    <div class="art-brand-header">
+      <img src="src/branding/logo/servicios-seguros.png" alt="Servicios Seguros - Asesor autorizado SURA">
+      <div class="art-brand-crumb">Blog • Soluciones de salud</div>
+    </div>` : '';
+
   root.innerHTML = `
+    ${brandHeaderHTML}
     <!-- HERO -->
     <div class="art-hero">
       <img src="${art.imagen}" alt="${art.imgAlt}" class="art-hero-img">
