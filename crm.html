@@ -10011,6 +10011,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 <script src="business-config/constants.js"></script>
 <script src="business-config/commissions.js"></script>
 <script src="business-config/pricing.js"></script>
+<!-- MotorPago — Business Core Fase 1 (ADR-007/ADR-011) -->
+<script src="src/business-core/motors/pago/index.js"></script>
 <script>
   // Salvaguarda: si business-config/*.js no cargó (ruta rota, red, caché,
   // o el archivo se abrió aislado sin su carpeta hermana), se usan los
@@ -14286,8 +14288,8 @@ function calcDatosPSM() {
   const psmValorDcto = Math.round(totalBruto * psmDctoPct);
   const total = totalBruto - psmValorDcto;
 
-  // 5. Calc commission: 12% if ≤50, 6% if >50 — base sin IVA
-  const comPct = edadNum <= 50 ? 0.12 : 0.06;
+  // 5. Calc commission — BR-016 centralizada en MotorPago (ADR-007/011)
+  const comPct = (window.MotorPago ? window.MotorPago.calcularPorcentajeComision('PSM', edadNum) : null) ?? (edadNum <= 50 ? 0.12 : 0.06);
   const totalSinIVA = Math.round(total / PSM_IVA);
   const comision = Math.round(totalSinIVA * comPct);
 
@@ -16822,7 +16824,7 @@ function migrarComisionPagosSinIVA() {
       .forEach(v => {
         const arr = pagos[v.id];
         if (!arr || !arr.length) return;
-        const pct  = COM_PCT[v.producto];
+        const pct  = (window.MotorPago ? window.MotorPago.calcularPorcentajeComision(v.producto, v.edad) : null) ?? COM_PCT[v.producto];
         const base = _baseComVol(v); // prima sin IVA
         arr.forEach(p => {
           const correcto = Math.round(base * pct);
@@ -16891,7 +16893,7 @@ function migrarPagosV1() {
         periodoDesde: prevVenc ? prevVenc.toISOString().slice(0,10) : venta.fechaExp,
         periodoHasta: proxVenc ? proxVenc.toISOString().slice(0,10) : '',
         prima: venta.prima || 0,
-        comision: Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07)),
+        comision: (window.MotorPago ? window.MotorPago.calcularComision(venta) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07)),
       }];
     });
     setPagos(nuevo);
@@ -16989,7 +16991,8 @@ function registrarPago(ventaId, fechaPago) {
   const _primaBase = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
   const _montoRecalculado = calcMontoPeriodoVenta(venta);
   const prima    = (_montoRecalculado !== null) ? _montoRecalculado : _primaBase;
-  const comision = Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07));
+  // BR-009/BR-016 centralizadas en MotorPago (ADR-007/011) — HALLAZGO-OP-002 cerrado
+  const comision = (window.MotorPago ? window.MotorPago.calcularComision(venta) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07));
 
   const nuevoPago = {
     id: Date.now().toString(36) + Math.random().toString(36).substr(2,4),
@@ -26481,7 +26484,8 @@ function cotizadorComparar() {
     const prima = cotizadorCalcPrima(p);
     const color = COT_COLORS[p.producto] || 'var(--sura-blue)';
     const nombre = p.nombre || `Persona ${i + 1}`;
-    const comPct = p.producto === 'PSM' ? (parseInt(p.edad) <= 50 ? 0.12 : 0.06) : (COM_PCT[p.producto] || 0.07);
+    const comPct = (window.MotorPago ? window.MotorPago.calcularPorcentajeComision(p.producto, p.edad) : null)
+                 ?? (p.producto === 'PSM' ? (parseInt(p.edad) <= 50 ? 0.12 : 0.06) : (COM_PCT[p.producto] || 0.07));
     const comision = Math.round((prima / (cotConIVA ? 1 : 1)) * comPct); // prima ya calculada
     const coberturas = COBERTURAS[p.producto] || [];
 
@@ -32726,7 +32730,7 @@ function sincronizarFechaExpDesdeCarteraSura() {
         const proxVenc = calcProxVencimiento(v.fechaExp, v.periodicidad, v.id);
         const prevVenc = proxVenc ? calcPrevVencimiento(proxVenc, v.periodicidad) : null;
         const prima    = v.prima || v.primaTotal || 0;
-        const comision = Math.round(_baseComVol(v) * (COM_PCT[v.producto] || 0.07));
+        const comision = (window.MotorPago ? window.MotorPago.calcularComision(v) : null) ?? Math.round(_baseComVol(v) * (COM_PCT[v.producto] || 0.07));
         if (!pagos[item.ventaId]) pagos[item.ventaId] = [];
         pagos[item.ventaId].push({
           id: 'sync_' + Date.now().toString(36) + '_' + item.ventaId.slice(-4),
@@ -39185,7 +39189,7 @@ function _agenteEjecutarHerramienta(nombre, input) {
             diasCarteraSura: datosSura?.diasCart || null,
             saldoSura: datosSura?.saldo || null,
             diasCancelacion: datosSura?.diasCanc || null,
-            comisionEstimada: Math.round((v.prima||0) * (COM_PCT[v.producto]||0.07))
+            comisionEstimada: (window.MotorPago ? window.MotorPago.calcularComision(v) : null) ?? Math.round((v.prima||0) * (COM_PCT[v.producto]||0.07))
           });
         });
 
@@ -39328,7 +39332,7 @@ function _agenteEjecutarHerramienta(nombre, input) {
           const diaExp    = new Date(venta.fechaExp + 'T12:00:00');
           const desde     = new Date(diaExp); desde.setMonth(desde.getMonth() + pagosEx.length * intervalo);
           const hasta     = new Date(diaExp); hasta.setMonth(hasta.getMonth() + (pagosEx.length+1) * intervalo);
-          const comision  = Math.round(_baseComVol(venta) * (COM_PCT[venta.producto]||0.07));
+          const comision  = (window.MotorPago ? window.MotorPago.calcularComision(venta) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto]||0.07));
           return {
             requiereConfirmacion: true,
             mensaje: `¿Confirmas registrar el siguiente pago para ${nombre}?`,
