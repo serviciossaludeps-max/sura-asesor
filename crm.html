@@ -10013,6 +10013,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 <script src="business-config/pricing.js"></script>
 <!-- MotorPago — Business Core Fase 1 (ADR-007/ADR-011) -->
 <script src="src/business-core/motors/pago/index.js"></script>
+<!-- MotorValidación — Business Core Fase 1 (ADR-007/ADR-011) -->
+<script src="src/business-core/motors/validacion/index.js"></script>
 <script>
   // Salvaguarda: si business-config/*.js no cargó (ruta rota, red, caché,
   // o el archivo se abrió aislado sin su carpeta hermana), se usan los
@@ -14352,15 +14354,20 @@ function calcDatosPAC60() {
     edadNum = parseInt(document.getElementById('vEdadPAC60').value) || 0;
   }
 
-  // Validate age range for new sales: 60-79
+  // Validate age range for new sales: 60-79 — BR-015 centralizada en MotorValidación
   const edadEl = document.getElementById('vRangoPAC60');
-  if (edadNum < 60) {
+  const _tipoMovPAC60 = document.getElementById('vTipoMovPAC60').value;
+  const _valPreviewPAC60 = window.MotorValidacion ? window.MotorValidacion.validarEdadPAC60(edadNum, _tipoMovPAC60) : null;
+  const _bloqueaMin = _valPreviewPAC60 ? (_valPreviewPAC60.valido === false && _valPreviewPAC60.motivo === 'MIN') : (edadNum < 60);
+  const _bloqueaMax = _valPreviewPAC60 ? (_valPreviewPAC60.valido === false && _valPreviewPAC60.motivo === 'MAX_NUEVA') : (edadNum > 79 && _tipoMovPAC60 === 'NUEVO');
+  const _sinDato = _valPreviewPAC60 && _valPreviewPAC60.valido === null;
+  if (_bloqueaMin || (_sinDato && edadNum < 60)) {
     edadEl.value = '⚠️ Mínimo 60 años';
     edadEl.style.color = 'var(--red)';
     document.getElementById('pac60Resumen').style.display = 'none';
     return;
   }
-  if (edadNum > 79 && document.getElementById('vTipoMovPAC60').value === 'NUEVO') {
+  if (_bloqueaMax || (_sinDato && edadNum > 79 && _tipoMovPAC60 === 'NUEVO')) {
     edadEl.value = '⚠️ Máx. 79 años para venta nueva';
     edadEl.style.color = 'var(--red)';
     document.getElementById('pac60Resumen').style.display = 'none';
@@ -15547,9 +15554,18 @@ function guardarVenta() {
     const fecha = document.getElementById('vFechaPAC60').value;
     if (!fecha) return alert('Ingresa la fecha');
     const edadNum = parseInt(document.getElementById('vEdadPAC60').value) || 0;
-    if (edadNum < 60) return alert('La edad mínima para el Plan 60+ es 60 años');
     const tipoMov = document.getElementById('vTipoMovPAC60').value;
-    if (edadNum > 79 && tipoMov === 'NUEVO') return alert('La edad máxima de venta nueva es 79 años cumplidos');
+    // BR-015 centralizada en MotorValidación (ADR-007/011)
+    const _valPAC60 = window.MotorValidacion ? window.MotorValidacion.validarEdadPAC60(edadNum, tipoMov) : null;
+    if (_valPAC60 && _valPAC60.valido === false) {
+      if (_valPAC60.motivo === 'MIN') return alert('La edad mínima para el Plan 60+ es 60 años');
+      if (_valPAC60.motivo === 'MAX_NUEVA') return alert('La edad máxima de venta nueva es 79 años cumplidos');
+    } else if (!_valPAC60 || _valPAC60.valido === null) {
+      // Respaldo: mismo comportamiento exacto si el motor no cargó, o si
+      // no pudo decidir (ej. edadNum=0) — el legado siempre bloqueaba ese caso.
+      if (edadNum < 60) return alert('La edad mínima para el Plan 60+ es 60 años');
+      if (edadNum > 79 && tipoMov === 'NUEVO') return alert('La edad máxima de venta nueva es 79 años cumplidos');
+    }
     const rango = getRangoPAC60(edadNum);
     if (!rango) return alert('Rango de edad no válido para este plan');
     const conAnexo = document.getElementById('chkAnexoPAC60').checked;
@@ -26111,7 +26127,11 @@ function renderCotizadorPersonas() {
 
     } else if (prod === 'PAC60' && edad >= 60) {
       const rango = getRangoPAC60(edad);
-      if (rango) {
+      // BR-015 (MotorValidación): este estimador siempre representa una
+      // venta nueva potencial — cierra el gap donde antes se mostraban
+      // tarifas de 80-89/90+ como si fueran vendibles.
+      const _elegiblePAC60 = window.MotorValidacion ? window.MotorValidacion.esElegiblePAC60VentaNueva(edad) : (edad >= 60 && edad <= 79);
+      if (rango && _elegiblePAC60) {
         const t = PAC60_TARIFAS[rango];
         const sinA = cotConIVA ? t.sinAnexo : Math.round(t.sinAnexo/IVA_FACTOR);
         const conA = cotConIVA ? t.conAnexo : Math.round(t.conAnexo/IVA_FACTOR);
@@ -28206,6 +28226,11 @@ async function cmpGenerar() {
     }
     if (key === 'PAC60') {
       if (edadNum < 60) return { mensual: null, label: 'Solo para mayores de 60 anos' };
+      // BR-015 (MotorValidación): este comparador siempre representa una
+      // venta nueva potencial — cierra el gap donde antes se mostraban
+      // tarifas de 80-89/90+ como si fueran vendibles.
+      const _elegiblePAC60Comp = window.MotorValidacion ? window.MotorValidacion.esElegiblePAC60VentaNueva(edadNum) : (edadNum >= 60 && edadNum <= 79);
+      if (!_elegiblePAC60Comp) return { mensual: null, label: 'PAC60 aplica para 60 a 79 años en venta nueva' };
       const rPAC = getRangoPAC60(edadNum);
       if (!rPAC) return null;
       const t = PAC60_TARIFAS[rPAC];

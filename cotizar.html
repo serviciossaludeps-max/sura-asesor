@@ -561,6 +561,8 @@ input.err,select.err{border-color:var(--red);}
 <script src="business-config/index.js"></script>
 <script src="business-config/constants.js"></script>
 <script src="business-config/pricing.js"></script>
+<!-- MotorValidación — Business Core Fase 1 (ADR-007/ADR-011) -->
+<script src="src/business-core/motors/validacion/index.js"></script>
 <script>
   // Salvaguarda: mismo criterio de resiliencia aplicado en crm.html
   // (ver ADR-003/ADR-006). Si el módulo no carga, se usan los valores
@@ -809,8 +811,12 @@ function onFechaNac() {
   let msg = '', tipo = '';
   if (state.plan === 'SPTI' && edad > 59) {
     msg = '⚠️ SPTI aplica para personas de 0 a 59 años.'; tipo = 'warn';
-  } else if (state.plan === 'PAC60' && (edad < 60 || edad > 79)) {
-    msg = '⚠️ Plan 60+ aplica para personas de 60 a 79 años para venta nueva.'; tipo = 'warn';
+  } else if (state.plan === 'PAC60') {
+    // BR-015 centralizada en MotorValidación (ADR-007/011)
+    const _elegiblePAC60 = window.MotorValidacion ? window.MotorValidacion.esElegiblePAC60VentaNueva(edad) : !(edad < 60 || edad > 79);
+    if (!_elegiblePAC60) {
+      msg = '⚠️ Plan 60+ aplica para personas de 60 a 79 años para venta nueva.'; tipo = 'warn';
+    }
   }
   if (msg) {
     alertEl.innerHTML = `<div class="alert alert-${tipo}">${msg}</div>`;
