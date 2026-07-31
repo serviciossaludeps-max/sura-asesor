@@ -563,6 +563,8 @@ input.err,select.err{border-color:var(--red);}
 <script src="business-config/pricing.js"></script>
 <!-- MotorValidación — Business Core Fase 1 (ADR-007/ADR-011) -->
 <script src="src/business-core/motors/validacion/index.js"></script>
+<!-- MotorProducto — Business Core Fase 1 (ADR-007/ADR-011) — SPTI integrado (v1.0.0) -->
+<script src="src/business-core/motors/producto/index.js"></script>
 <script>
   // Salvaguarda: mismo criterio de resiliencia aplicado en crm.html
   // (ver ADR-003/ADR-006). Si el módulo no carga, se usan los valores
@@ -921,6 +923,12 @@ function calcularPersona(p) {
   const mult = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 }[peri] || 1;
 
   if (p.plan === 'SPTI') {
+    // MotorProducto — Business Core Fase 1 (ADR-007/011). BR-014 centralizada.
+    const _mp = window.MotorProducto ? window.MotorProducto.calcularPrecioSPTI({ plan: p.sub, edad: p.edad, periodicidad: peri }) : null;
+    if (_mp) {
+      return { valor: _mp.valor, dcto: _mp.dcto, mensual: _mp.mensual, plan: 'SPTI ' + p.sub, rango: _mp.rango };
+    }
+    // Respaldo: mismo cálculo exacto si el motor no cargó
     const r = getRangoSPTI(p.edad);
     if (!r || !p.sub || !SPTI_TARIFAS[p.sub] || !SPTI_TARIFAS[p.sub][r]) return null;
     const t = SPTI_TARIFAS[p.sub][r];
