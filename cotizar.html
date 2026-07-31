@@ -945,18 +945,29 @@ function calcularPersona(p) {
     return { valor, dcto, mensual: SPD_TARIFAS.MENSUAL, plan: 'SPD — Salud para Dos Plus' };
   }
   if (p.plan === 'MODULAR') {
-    const r = getRangoPSM(p.edad !== null ? p.edad : -1);
+    const mods = p.modulos || {};
+    const edadPSM = p.edad !== null ? p.edad : -1;
+    // MotorProducto — Business Core Fase 1 (ADR-007/011). BR-014 centralizada.
+    const _mp = window.MotorProducto ? window.MotorProducto.calcularPrecioPSM({
+      edad: edadPSM, emd: !!mods.EMD, altoCosto: !!mods.AltoCosto, cirugia: !!mods.Cirugia, maternidad: !!mods.Maternidad, periodicidad: peri
+    }) : null;
+    const modsList = ['Módulo Básico'];
+    if (mods.EMD) modsList.push('EMD');
+    if (mods.AltoCosto) modsList.push('Alto Costo');
+    if (mods.Cirugia) modsList.push('Cirugía');
+    if (mods.Maternidad && p.edad >= 15 && p.edad <= 45) modsList.push('Maternidad');
+    if (_mp) {
+      return { valor: _mp.valor, dcto: _mp.dcto, mensual: _mp.mensual, plan: 'Modular (' + modsList.join(', ') + ')', rango: _mp.rango };
+    }
+    // Respaldo: mismo cálculo exacto si el motor no cargó
+    const r = getRangoPSM(edadPSM);
     if (!r) return null;
     const k = r.key;
     let totalMensual = PSM_TARIFAS.basico[k] * PSM_IVA;
-    const modsList = ['Módulo Básico'];
-    const mods = p.modulos || {};
-    if (mods.EMD)       { totalMensual += PSM_TARIFAS.emd[k] * PSM_IVA; modsList.push('EMD'); }
-    if (mods.AltoCosto) { totalMensual += PSM_TARIFAS.altoCosto[k] * PSM_IVA; modsList.push('Alto Costo'); }
-    if (mods.Cirugia)   { totalMensual += PSM_TARIFAS.cirugia[k] * PSM_IVA; modsList.push('Cirugía'); }
-    if (mods.Maternidad && p.edad >= 15 && p.edad <= 45) {
-      totalMensual += PSM_TARIFAS.maternidad[k] * PSM_IVA; modsList.push('Maternidad');
-    }
+    if (mods.EMD)       totalMensual += PSM_TARIFAS.emd[k] * PSM_IVA;
+    if (mods.AltoCosto) totalMensual += PSM_TARIFAS.altoCosto[k] * PSM_IVA;
+    if (mods.Cirugia)   totalMensual += PSM_TARIFAS.cirugia[k] * PSM_IVA;
+    if (mods.Maternidad && p.edad >= 15 && p.edad <= 45) totalMensual += PSM_TARIFAS.maternidad[k] * PSM_IVA;
     const bruto = Math.round(totalMensual * mult);
     const dcto  = Math.round(bruto * (PSM_DCTOS[peri] || 0));
     const valor = bruto - dcto;
