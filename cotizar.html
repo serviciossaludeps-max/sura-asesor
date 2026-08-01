@@ -974,13 +974,21 @@ function calcularPersona(p) {
     return { valor, dcto, mensual: Math.round(totalMensual), plan: 'Modular (' + modsList.join(', ') + ')', rango: r.key };
   }
   if (p.plan === 'PAC60') {
+    const conAnexo = p.sub === 'conAnexo';
+    // MotorProducto — Business Core Fase 1 (ADR-007/011). BR-014 centralizada.
+    // contexto='VENTA_NUEVA' fijo: cotizar.html es siempre venta nueva (BR-015).
+    const _mp = window.MotorProducto ? window.MotorProducto.calcularPrecioPAC60({ edad: p.edad, conAnexo, periodicidad: peri, contexto: 'VENTA_NUEVA' }) : null;
+    if (_mp) {
+      return { valor: _mp.valor, dcto: _mp.dcto, mensual: _mp.mensual, plan: 'Plan 60+ ' + (conAnexo ? 'con Anexo' : 'sin Anexo'), rango: _mp.rango };
+    }
+    // Respaldo: mismo cálculo exacto si el motor no cargó
     const r = getRangoPAC60(p.edad);
     if (!r || !p.sub || !PAC60_TARIFAS[r]) return null;
-    const base = PAC60_TARIFAS[r][p.sub === 'conAnexo' ? 'conAnexo' : 'sinAnexo'];
+    const base = PAC60_TARIFAS[r][conAnexo ? 'conAnexo' : 'sinAnexo'];
     const bruto = Math.round(base * mult);
     const dcto  = Math.round(bruto * (PAC60_DCTOS[peri] || 0));
     const valor = bruto - dcto;
-    return { valor, dcto, mensual: base, plan: 'Plan 60+ ' + (p.sub === 'conAnexo' ? 'con Anexo' : 'sin Anexo'), rango: r };
+    return { valor, dcto, mensual: base, plan: 'Plan 60+ ' + (conAnexo ? 'con Anexo' : 'sin Anexo'), rango: r };
   }
   return null;
 }
@@ -1127,9 +1135,15 @@ function onFechaNacExtra(idx) {
   p.edad = edad;
 
   // Validar rango según plan
+  // BR-015 centralizada en MotorValidación (ADR-007/011) — consumidor
+  // adicional encontrado durante la integración de MotorProducto/PAC60
+  // (no capturado en el Inventario de Consumidores BR-015 original).
   let msg = '', tipo = '';
   if (p.plan === 'SPTI' && edad > 59)                   { msg = '⚠️ SPTI aplica 0–59 años.'; tipo = 'warn'; }
-  else if (p.plan === 'PAC60' && (edad < 60 || edad > 79)) { msg = '⚠️ Plan 60+ aplica 60–79 años.'; tipo = 'warn'; }
+  else if (p.plan === 'PAC60') {
+    const _elegiblePAC60Extra = window.MotorValidacion ? window.MotorValidacion.esElegiblePAC60VentaNueva(edad) : !(edad < 60 || edad > 79);
+    if (!_elegiblePAC60Extra) { msg = '⚠️ Plan 60+ aplica 60–79 años.'; tipo = 'warn'; }
+  }
   else if (p.plan === 'MODULAR' && !getRangoPSM(edad))   { msg = '⚠️ Edad fuera de rango Modular (0–71+).'; tipo = 'warn'; }
 
   renderPersonasList();
