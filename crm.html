@@ -14311,15 +14311,35 @@ function calcDatosPSM() {
   }
   // (Atención Domiciliaria usa chkEMD — ver arriba)
 
-  // 4. Aplicar multiplicador de periodicidad
-  const totalBruto = Math.round(totalMensual * mult);
+  // 4. Aplicar multiplicador de periodicidad — MotorProducto (ADR-007/011),
+  // BR-014 centralizada. Solo se delega el total; el desglose visual de arriba
+  // (pBasico/pEMD/pCirugia/pAltoCosto/pMaternidad) no cambia.
+  const _rPSM = window.MotorProducto ? window.MotorProducto.calcularPrecioPSM({
+    edad: edadNum,
+    emd: !!document.getElementById('chkEMD')?.checked,
+    altoCosto: !!document.getElementById('chkAltoCosto').checked,
+    cirugia: !!document.getElementById('chkCirugia').checked,
+    maternidad: matDisponible && !!document.getElementById('chkMaternidad').checked,
+    periodicidad: periPSM
+  }) : null;
 
   // 4b. Descuentos por periodicidad no mensual (Modular)
   // BR-014 consolidada (Sprint 0.3): fuente única en business-config/pricing.js
   const PSM_DCTOS = window.BusinessConfig.pricing.PSM_DCTOS;
   const psmDctoPct = PSM_DCTOS[periPSM] || 0;
-  const psmValorDcto = Math.round(totalBruto * psmDctoPct);
-  const total = totalBruto - psmValorDcto;
+
+  let totalBruto, psmValorDcto, total;
+  if (_rPSM) {
+    total = _rPSM.valor;
+    psmValorDcto = _rPSM.dcto;
+    totalBruto = _rPSM.valor + _rPSM.dcto;
+  } else {
+    // Respaldo: mismo cálculo exacto si el motor no cargó o devolvió null
+    // (sin mezclar con ningún valor del motor)
+    totalBruto = Math.round(totalMensual * mult);
+    psmValorDcto = Math.round(totalBruto * psmDctoPct);
+    total = totalBruto - psmValorDcto;
+  }
 
   // 5. Calc commission — BR-016 centralizada en MotorPago (ADR-007/011)
   const comPct = (window.MotorPago ? window.MotorPago.calcularPorcentajeComision('PSM', edadNum) : null) ?? (edadNum <= 50 ? 0.12 : 0.06);
