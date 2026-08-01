@@ -13497,7 +13497,10 @@ function openModal(id) {
      'vAseguradoNombre','vAseguradoDoc','vAseguradoFechaNac','vAseguradoEdad',
      'vAsegurado2Nombre','vAsegurado2Doc','vAsegurado2FechaNac','vAsegurado2Edad'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
     document.getElementById('vPrimaSPD').value = '';
-    document.getElementById('vPrimaTotalSPD').value = '';
+    // vPrimaTotalSPD no existe como elemento en el HTML actual (ver diagnóstico
+    // adjunto) — se protege con el mismo patrón defensivo ya usado en
+    // calcTotalSPD() para este mismo id, sin reconstruir el elemento.
+    { const _elPTS = document.getElementById('vPrimaTotalSPD'); if (_elPTS) _elPTS.value = ''; }
     document.getElementById('vAseguradoMismoTomador').checked = false;
     document.getElementById('aseguradoFields').style.opacity = '';
     document.getElementById('aseguradoFields').style.pointerEvents = '';
