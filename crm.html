@@ -17395,6 +17395,14 @@ function calcMontoSPTIPeriodo(venta) {
   if (venta.producto !== 'SPTI' || !venta.plan || !venta.periodicidad) return null;
   if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
   if (venta.tarifaCongelada) return null; // tarifa histórica fija — no se puede reconstruir desde la tabla actual
+  // MotorProducto — Business Core Fase 1 (ADR-007/ADR-011). BR-014 centralizada.
+  // Un solo periodo por venta ya guardada: no requiere el adaptador de 4
+  // llamadas usado en calcDatosSPTI(). Los 3 guards de arriba no cambian.
+  if (window.MotorProducto) {
+    const r = window.MotorProducto.calcularPrecioSPTI({ plan: venta.plan, edad: venta.edad, periodicidad: venta.periodicidad });
+    if (r) return r.valor;
+  }
+  // Respaldo: mismo cálculo exacto si el motor no cargó o devolvió null
   const rango = getRangoEdadSPTI(parseInt(venta.edad));
   const tarifa = rango && SPTI_TARIFAS[venta.plan] && SPTI_TARIFAS[venta.plan][rango];
   if (!tarifa) return null;
