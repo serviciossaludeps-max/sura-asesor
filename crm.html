@@ -10015,6 +10015,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 <script src="src/business-core/motors/pago/index.js"></script>
 <!-- MotorValidación — Business Core Fase 1 (ADR-007/ADR-011) -->
 <script src="src/business-core/motors/validacion/index.js"></script>
+<!-- MotorProducto — Business Core Fase 1 (ADR-007/ADR-011) -->
+<script src="src/business-core/motors/producto/index.js"></script>
 <script>
   // Salvaguarda: si business-config/*.js no cargó (ruta rota, red, caché,
   // o el archivo se abrió aislado sin su carpeta hermana), se usan los
@@ -14036,7 +14038,33 @@ function calcDatosSPTI() {
     return;
   }
 
-  const tarifa = SPTI_TARIFAS[plan][rangoEdad];
+  // MotorProducto — Business Core Fase 1 (ADR-007/ADR-011). BR-014 centralizada.
+  // Adaptador de forma únicamente: el motor calcula un periodo por llamada;
+  // aquí se reconstruye la misma tabla de 4 periodos que ya esperan
+  // _actualizarTotalYDcto() y el detalle de abajo. No se recalcula ninguna
+  // fórmula, tarifa ni descuento — solo se reempaqueta la respuesta del motor.
+  let tarifa = null;
+  if (window.MotorProducto) {
+    const rMensual    = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'MENSUAL' });
+    const rTrimestral = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'TRIMESTRAL' });
+    const rSemestral  = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'SEMESTRAL' });
+    const rAnual      = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'ANUAL' });
+    if (rMensual && rTrimestral && rSemestral && rAnual) {
+      tarifa = {
+        mensual: rMensual.mensual,
+        trimestre: rTrimestral.valor,
+        dctoTrim: rTrimestral.dcto,
+        semestre: rSemestral.valor,
+        dctoSem: rSemestral.dcto,
+        anual: rAnual.valor,
+        dctoAnual: rAnual.dcto
+      };
+    }
+  }
+  // Respaldo: mismo cálculo exacto si el motor no cargó o alguna llamada devolvió null
+  if (!tarifa) {
+    tarifa = SPTI_TARIFAS[plan][rangoEdad];
+  }
 
   // Set prima base solo si no fue editada manualmente
   const primaBaseEl = document.getElementById('vPrimaBaseSPTI');
