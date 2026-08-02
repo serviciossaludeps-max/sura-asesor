@@ -14445,13 +14445,29 @@ function calcDatosPAC60() {
   const perLabelEl = document.getElementById('pac60PerLabel');
   if (perLabelEl) perLabelEl.textContent = perLabel;
 
-  const primaBruta = Math.round(primaMensual * mult);
+  // MotorProducto — Business Core Fase 1 (ADR-007/ADR-011). BR-014/BR-015.
+  // Contexto derivado de tipoMov (nunca fijo): NUEVO -> VENTA_NUEVA (2 rangos,
+  // 60-79); cualquier otro valor (RENOVACION/CANCELACION) -> ADMINISTRATIVO
+  // (4 rangos, hasta 90+). El guard de elegibilidad de arriba no cambia.
+  const _contextoPAC60 = _tipoMovPAC60 === 'NUEVO' ? 'VENTA_NUEVA' : 'ADMINISTRATIVO';
+  const _rPAC60 = window.MotorProducto ? window.MotorProducto.calcularPrecioPAC60({
+    edad: edadNum, conAnexo, periodicidad: periPAC, contexto: _contextoPAC60
+  }) : null;
 
-  // Descuentos por periodicidad no mensual (60+)
-  const PAC60_DCTOS = window.BusinessConfig.pricing.PAC60_DCTOS; // BR-014 consolidada (Sprint 0.3)
-  const pac60DctoPct = PAC60_DCTOS[periPAC] || 0;
-  const pac60ValorDcto = Math.round(primaBruta * pac60DctoPct);
-  const prima = primaBruta - pac60ValorDcto;
+  let primaBruta, pac60ValorDcto, prima;
+  if (_rPAC60) {
+    prima = _rPAC60.valor;
+    pac60ValorDcto = _rPAC60.dcto;
+    primaBruta = _rPAC60.valor + _rPAC60.dcto;
+  } else {
+    // Respaldo: mismo cálculo exacto si el motor no cargó o devolvió null
+    primaBruta = Math.round(primaMensual * mult);
+    // Descuentos por periodicidad no mensual (60+)
+    const PAC60_DCTOS = window.BusinessConfig.pricing.PAC60_DCTOS; // BR-014 consolidada (Sprint 0.3)
+    const pac60DctoPct = PAC60_DCTOS[periPAC] || 0;
+    pac60ValorDcto = Math.round(primaBruta * pac60DctoPct);
+    prima = primaBruta - pac60ValorDcto;
+  }
   const primaSinIVA_preview = Math.round(prima / 1.05);
   const comision = Math.round(primaSinIVA_preview * PAC60_COM_PCT); // base sin IVA
 
