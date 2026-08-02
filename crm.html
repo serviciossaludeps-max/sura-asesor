@@ -17516,6 +17516,23 @@ function calcMontoPAC60Periodo(venta) {
   if (venta.producto !== 'PAC60' || !venta.periodicidad) return null;
   if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
   if (venta.tarifaCongelada) return null; // tarifa histórica fija (oferta de diciembre) — no se reconstruye desde la tabla actual
+
+  // MotorProducto — Business Core Fase 1 (ADR-007/ADR-011). BR-014/BR-015.
+  // Solo se intenta si venta.edad es utilizable y venta.tipo es reconocido;
+  // el contexto nunca se inventa. Si cualquiera falta, o el motor devuelve
+  // null, se ejecuta el cálculo legado completo tal cual estaba (basado en
+  // venta.rangoEdad, que ya viene calculado desde la creación de la venta).
+  const _edadUtilizablePAC60 = venta.edad !== undefined && venta.edad !== null && !Number.isNaN(Number(venta.edad));
+  const _tipoReconocidoPAC60 = venta.tipo === 'NUEVO' || venta.tipo === 'RENOVACION' || venta.tipo === 'CANCELACION';
+  if (_edadUtilizablePAC60 && _tipoReconocidoPAC60 && window.MotorProducto) {
+    const _contextoPAC60 = venta.tipo === 'NUEVO' ? 'VENTA_NUEVA' : 'ADMINISTRATIVO';
+    const _rPAC60 = window.MotorProducto.calcularPrecioPAC60({
+      edad: venta.edad, conAnexo: venta.conAnexo, periodicidad: venta.periodicidad,
+      contexto: _contextoPAC60, asegurados: venta.asegurados
+    });
+    if (_rPAC60) return _rPAC60.valor;
+  }
+
   const PAC60_TARIFAS_M = window.BusinessConfig.pricing.PAC60_TARIFAS;
   const PAC60_DCTOS_M = window.BusinessConfig.pricing.PAC60_DCTOS;
   if (!PAC60_TARIFAS_M || !venta.rangoEdad) return null;
