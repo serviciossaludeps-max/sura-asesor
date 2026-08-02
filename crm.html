@@ -14455,6 +14455,11 @@ function calcDatosPAC60() {
   }) : null;
 
   let primaBruta, pac60ValorDcto, prima;
+  // Descuentos por periodicidad no mensual (60+) — se necesita en ambas ramas:
+  // en el fallback para calcular pac60ValorDcto, y más abajo (dctoLine60HTML)
+  // para mostrar el porcentaje sin importar cuál rama calculó el precio.
+  const PAC60_DCTOS = window.BusinessConfig.pricing.PAC60_DCTOS; // BR-014 consolidada (Sprint 0.3)
+  const pac60DctoPct = PAC60_DCTOS[periPAC] || 0;
   if (_rPAC60) {
     prima = _rPAC60.valor;
     pac60ValorDcto = _rPAC60.dcto;
@@ -14462,9 +14467,6 @@ function calcDatosPAC60() {
   } else {
     // Respaldo: mismo cálculo exacto si el motor no cargó o devolvió null
     primaBruta = Math.round(primaMensual * mult);
-    // Descuentos por periodicidad no mensual (60+)
-    const PAC60_DCTOS = window.BusinessConfig.pricing.PAC60_DCTOS; // BR-014 consolidada (Sprint 0.3)
-    const pac60DctoPct = PAC60_DCTOS[periPAC] || 0;
     pac60ValorDcto = Math.round(primaBruta * pac60DctoPct);
     prima = primaBruta - pac60ValorDcto;
   }
