@@ -17444,6 +17444,28 @@ function calcMontoPSMPeriodo(venta) {
   if (venta.producto !== 'PSM' || !venta.periodicidad) return null;
   if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
   if (venta.tarifaCongelada) return null; // tarifa histórica fija — no se puede reconstruir desde la tabla actual
+
+  // MotorProducto — Business Core Fase 1 (ADR-007/ADR-011). BR-014 centralizada.
+  // Solo se intenta si venta.edad existe y es utilizable. Nunca se reconstruye
+  // una edad a partir de rangoEdad: los registros legados que solo tienen
+  // rangoEdad (sin edad) conservan el camino legado exacto de abajo.
+  const _edadUtilizable = venta.edad !== undefined && venta.edad !== null && !Number.isNaN(Number(venta.edad));
+  if (_edadUtilizable && window.MotorProducto) {
+    const _modulosMotor = venta.modulos && venta.modulos.length ? venta.modulos : ['Básico'];
+    const _rPSM = window.MotorProducto.calcularPrecioPSM({
+      edad: venta.edad,
+      emd: _modulosMotor.includes('Atención Domiciliaria'),
+      altoCosto: _modulosMotor.includes('Alto Costo'),
+      cirugia: _modulosMotor.includes('Cirugía Ambulatoria'),
+      maternidad: _modulosMotor.includes('Maternidad'),
+      periodicidad: venta.periodicidad,
+      asegurados: venta.asegurados
+    });
+    if (_rPSM) return _rPSM.valor;
+  }
+
+  // Respaldo: cálculo legado exacto basado en rangoEdad ya guardado —
+  // usado si no hay edad utilizable, si el motor no cargó, o si devolvió null
   const PSM_TARIFAS_M = window.BusinessConfig.pricing.PSM_TARIFAS;
   const PSM_IVA_M = window.BusinessConfig.pricing.PSM_IVA;
   const PSM_DCTOS_M = window.BusinessConfig.pricing.PSM_DCTOS;
