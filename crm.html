@@ -15080,14 +15080,40 @@ function guardarVenta() {
         const perEdit  = document.getElementById('vPeriodicidadSPTI')?.value || vOld.periodicidad;
         const edadEditRaw = document.getElementById('vEdadSPTI')?.value || vOld.edad || '0';
         const rangoEdit = getRangoEdadSPTI(parseInt(edadEditRaw));
+        const tarifaCongeladaEdit = !!(document.getElementById('chkTarifaCongeladaSPTI')?.checked);
+
+        // Opción A (aprobación PO — edición SPTI): prima/dcto/primaTotal/primaTotalSinIVA
+        // se mantienen alineados con plan+edad+periodicidad vigentes, con
+        // MotorProducto.calcularPrecioSPTI() como fuente única (mismo criterio que ya
+        // usan calcMontoSPTIPeriodo() y MotorPago.calcularComision()). tarifaCongelada
+        // corta el recálculo por completo y preserva los valores históricos.
+        let primaEdit = vOld.prima || 0;
         let dctoEdit = vOld.dcto || 0;
-        if (planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
-          const te = SPTI_TARIFAS[planEdit][rangoEdit];
-          if (perEdit === 'TRIMESTRAL') dctoEdit = te.dctoTrim || 0;
-          else if (perEdit === 'SEMESTRAL') dctoEdit = te.dctoSem || 0;
-          else if (perEdit === 'ANUAL') dctoEdit = te.dctoAnual || 0;
-          else dctoEdit = 0;
+        let primaTotalEdit = vOld.primaTotal || 0;
+        let primaTotalSinIVAEdit = vOld.primaTotalSinIVA || 0;
+
+        if (!tarifaCongeladaEdit) {
+          const rEdit = window.MotorProducto
+            ? window.MotorProducto.calcularPrecioSPTI({ plan: planEdit, edad: edadEditRaw, periodicidad: perEdit })
+            : null;
+          if (rEdit) {
+            primaEdit = rEdit.mensual;
+            dctoEdit = rEdit.dcto;
+            primaTotalEdit = rEdit.valor;
+            primaTotalSinIVAEdit = Math.round(rEdit.valor / IVA_FACTOR);
+          } else if (planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
+            // Fallback legado completo (motor no disponible o no cargado)
+            const te = SPTI_TARIFAS[planEdit][rangoEdit];
+            primaEdit = te.mensual;
+            if (perEdit === 'TRIMESTRAL') { primaTotalEdit = te.trimestre; dctoEdit = te.dctoTrim || 0; }
+            else if (perEdit === 'SEMESTRAL') { primaTotalEdit = te.semestre; dctoEdit = te.dctoSem || 0; }
+            else if (perEdit === 'ANUAL') { primaTotalEdit = te.anual; dctoEdit = te.dctoAnual || 0; }
+            else { primaTotalEdit = te.mensual; dctoEdit = 0; }
+            primaTotalSinIVAEdit = Math.round(primaTotalEdit / IVA_FACTOR);
+          }
+          // Si ni el motor ni la tabla resuelven (rango inválido), se conservan los 4 valores de vOld.
         }
+
         state.ventas[idxEdit] = {
           ...vOld,
           fecha,
@@ -15099,13 +15125,15 @@ function guardarVenta() {
           tipoDoc:  document.getElementById('vTipoDocSPTI')?.value  || vOld.tipoDoc,
           doc:      document.getElementById('vDocSPTI')?.value      || vOld.doc,
           fechaNac: document.getElementById('vFechaNacSPTI')?.value || vOld.fechaNac,
+          edad: edadEditRaw,
           telefono: document.getElementById('vTelSPTI')?.value      || vOld.telefono,
           correo:   document.getElementById('vCorreoSPTI')?.value   || vOld.correo,
           ciudad:   document.getElementById('vCiudadSPTI')?.value   || vOld.ciudad,
           notas:    document.getElementById('vNotasSPTI')?.value    || vOld.notas,
-          plan: planEdit, periodicidad: perEdit, dcto: dctoEdit,
-          tarifaCongelada: !!(document.getElementById('chkTarifaCongeladaSPTI')?.checked),
-          anioTarifa: document.getElementById('chkTarifaCongeladaSPTI')?.checked ? (vOld.anioTarifa || AÑO_ACTUAL) : null,
+          plan: planEdit, periodicidad: perEdit,
+          prima: primaEdit, dcto: dctoEdit, primaTotal: primaTotalEdit, primaTotalSinIVA: primaTotalSinIVAEdit,
+          tarifaCongelada: tarifaCongeladaEdit,
+          anioTarifa: tarifaCongeladaEdit ? (vOld.anioTarifa || AÑO_ACTUAL) : null,
         };
       } else if (modalTab === 'spd') {
         const fecha = document.getElementById('vFechaSPD')?.value || vOld.fecha;
