@@ -12884,7 +12884,7 @@ function guardarEdicionSura() {
     periodicidad: g('eSuraPeriodicidad').value,
     prima,
     primaTotal:   prima,
-    primaTotalSinIVA: Math.round(prima / 1.19),
+    primaTotalSinIVA: Math.round(prima / _divisorIVAImport(productoEdit)),
     notas:        g('eSuraNotas').value.trim(),
     // Preservar flags de importación
     _importadoSura: true,
@@ -16892,6 +16892,19 @@ const IVA_FACTOR = window.BusinessConfig.constants.IVA_FACTOR;
 // Referencia para metas: Preferencial 0-40 sin IVA mensual
 const REF_PREF_040_SIN_IVA = 159120;
 const REF_PREF_040_CON_IVA = 167076;
+
+// HALLAZGO-OP-011: divisor real por producto para derivar "sin IVA" en los
+// flujos de importación (confirmarImportVol, importarClienteDesdeCarteraSura,
+// guardarEdicionSura). Antes usaban 1.19 (IVA general CO) hardcodeado, que no
+// coincide con el divisor real de ningún producto. Reutiliza las mismas
+// constantes ya vigentes en MotorProducto/MotorPago — no introduce una
+// fórmula nueva. PAC60 y SPD no tienen constante nombrada propia; se usa el
+// mismo 1.05 que ya aplican MotorPago.calcularBaseComision() y getSinIVABase().
+function _divisorIVAImport(producto) {
+  if (producto === 'SPTI') return IVA_FACTOR;
+  if (producto === 'PSM')  return PSM_IVA;
+  return 1.05; // PAC60, SPD
+}
 
 let carteraConIVA = false;
 
@@ -21287,7 +21300,7 @@ function confirmarImportVol() {
       prima: v.prima,
       primaMensual: v.prima,
       primaTotal: v.prima,
-      primaTotalSinIVA: Math.round(v.prima / 1.19),
+      primaTotalSinIVA: Math.round(v.prima / _divisorIVAImport(v.producto)),
       comision,
       telefono: v.telefono || '',
       tomadorTel: v.telefono || '',
@@ -32997,7 +33010,7 @@ function importarClienteDesdeCarteraSura(item) {
     periodicidad,
     prima: item.saldo || 0,
     primaTotal: item.saldo || 0,
-    primaTotalSinIVA: Math.round((item.saldo || 0) / 1.19),
+    primaTotalSinIVA: Math.round((item.saldo || 0) / _divisorIVAImport(producto)),
     comision: 0,
     rango: '—', criterio: '—', tramite: '—', bd: '—',
     notas: `Importado desde cartera SURA · Poliza: ${item.poliza} · Periodicidad: ${periodicidad} · Completar datos pendientes`,
