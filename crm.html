@@ -12884,7 +12884,7 @@ function guardarEdicionSura() {
     periodicidad: g('eSuraPeriodicidad').value,
     prima,
     primaTotal:   prima,
-    primaTotalSinIVA: Math.round(prima / _divisorIVAImport(productoEdit)),
+    primaTotalSinIVA: Math.round(prima / 1.19),
     notas:        g('eSuraNotas').value.trim(),
     // Preservar flags de importación
     _importadoSura: true,
@@ -15076,64 +15076,36 @@ function guardarVenta() {
       // Leer campos del tab activo y actualizar solo los campos del registro
       if (modalTab === 'spti') {
         const fecha = document.getElementById('vFechaSPTI')?.value || vOld.fecha;
-        const planEdit = document.getElementById('vPlanSPTI')?.value || vOld.plan || '';
-        const perEdit  = document.getElementById('vPeriodicidadSPTI')?.value || vOld.periodicidad || 'MENSUAL';
+        const planEdit = document.getElementById('vPlanSPTI')?.value || vOld.plan;
+        const perEdit  = document.getElementById('vPeriodicidadSPTI')?.value || vOld.periodicidad;
         const edadEditRaw = document.getElementById('vEdadSPTI')?.value || vOld.edad || '0';
         const rangoEdit = getRangoEdadSPTI(parseInt(edadEditRaw));
-        const tarifaCongeladaEdit = !!(document.getElementById('chkTarifaCongeladaSPTI')?.checked);
-
-        // Opción A (aprobación PO — edición SPTI): prima/dcto/primaTotal/primaTotalSinIVA
-        // se mantienen alineados con plan+edad+periodicidad vigentes, con
-        // MotorProducto.calcularPrecioSPTI() como fuente única (mismo criterio que ya
-        // usan calcMontoSPTIPeriodo() y MotorPago.calcularComision()). tarifaCongelada
-        // corta el recálculo por completo y preserva los valores históricos.
-        let primaEdit = vOld.prima || 0;
         let dctoEdit = vOld.dcto || 0;
-        let primaTotalEdit = vOld.primaTotal || 0;
-        let primaTotalSinIVAEdit = vOld.primaTotalSinIVA || 0;
-
-        if (!tarifaCongeladaEdit) {
-          const rEdit = window.MotorProducto
-            ? window.MotorProducto.calcularPrecioSPTI({ plan: planEdit, edad: edadEditRaw, periodicidad: perEdit })
-            : null;
-          if (rEdit) {
-            primaEdit = rEdit.mensual;
-            dctoEdit = rEdit.dcto;
-            primaTotalEdit = rEdit.valor;
-            primaTotalSinIVAEdit = Math.round(rEdit.valor / IVA_FACTOR);
-          } else if (planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
-            // Fallback legado completo (motor no disponible o no cargado)
-            const te = SPTI_TARIFAS[planEdit][rangoEdit];
-            primaEdit = te.mensual;
-            if (perEdit === 'TRIMESTRAL') { primaTotalEdit = te.trimestre; dctoEdit = te.dctoTrim || 0; }
-            else if (perEdit === 'SEMESTRAL') { primaTotalEdit = te.semestre; dctoEdit = te.dctoSem || 0; }
-            else if (perEdit === 'ANUAL') { primaTotalEdit = te.anual; dctoEdit = te.dctoAnual || 0; }
-            else { primaTotalEdit = te.mensual; dctoEdit = 0; }
-            primaTotalSinIVAEdit = Math.round(primaTotalEdit / IVA_FACTOR);
-          }
-          // Si ni el motor ni la tabla resuelven (rango inválido), se conservan los 4 valores de vOld.
+        if (planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
+          const te = SPTI_TARIFAS[planEdit][rangoEdit];
+          if (perEdit === 'TRIMESTRAL') dctoEdit = te.dctoTrim || 0;
+          else if (perEdit === 'SEMESTRAL') dctoEdit = te.dctoSem || 0;
+          else if (perEdit === 'ANUAL') dctoEdit = te.dctoAnual || 0;
+          else dctoEdit = 0;
         }
-
         state.ventas[idxEdit] = {
           ...vOld,
           fecha,
           mesComp: _calcMesCompEdit(fecha),
-          fechaExp: document.getElementById('vFechaExpSPTI')?.value || vOld.fechaExp || '',
-          poliza:   document.getElementById('vPolizaSPTI')?.value   || vOld.poliza   || '',
-          tipo:     document.getElementById('vTipoSPTI')?.value     || vOld.tipo     || '',
-          nombre:   document.getElementById('vNombreSPTI')?.value   || vOld.nombre   || '',
-          tipoDoc:  document.getElementById('vTipoDocSPTI')?.value  || vOld.tipoDoc  || 'CC',
-          doc:      document.getElementById('vDocSPTI')?.value      || vOld.doc      || '',
-          fechaNac: document.getElementById('vFechaNacSPTI')?.value || vOld.fechaNac || '',
-          edad: edadEditRaw,
-          telefono: document.getElementById('vTelSPTI')?.value      || vOld.telefono || '',
-          correo:   document.getElementById('vCorreoSPTI')?.value   || vOld.correo   || '',
-          ciudad:   document.getElementById('vCiudadSPTI')?.value   || vOld.ciudad   || '',
-          notas:    document.getElementById('vNotasSPTI')?.value    || vOld.notas    || '',
-          plan: planEdit, periodicidad: perEdit,
-          prima: primaEdit, dcto: dctoEdit, primaTotal: primaTotalEdit, primaTotalSinIVA: primaTotalSinIVAEdit,
-          tarifaCongelada: tarifaCongeladaEdit,
-          anioTarifa: tarifaCongeladaEdit ? (vOld.anioTarifa || AÑO_ACTUAL) : null,
+          fechaExp: document.getElementById('vFechaExpSPTI')?.value || vOld.fechaExp,
+          poliza:   document.getElementById('vPolizaSPTI')?.value   || vOld.poliza,
+          tipo:     document.getElementById('vTipoSPTI')?.value     || vOld.tipo,
+          nombre:   document.getElementById('vNombreSPTI')?.value   || vOld.nombre,
+          tipoDoc:  document.getElementById('vTipoDocSPTI')?.value  || vOld.tipoDoc,
+          doc:      document.getElementById('vDocSPTI')?.value      || vOld.doc,
+          fechaNac: document.getElementById('vFechaNacSPTI')?.value || vOld.fechaNac,
+          telefono: document.getElementById('vTelSPTI')?.value      || vOld.telefono,
+          correo:   document.getElementById('vCorreoSPTI')?.value   || vOld.correo,
+          ciudad:   document.getElementById('vCiudadSPTI')?.value   || vOld.ciudad,
+          notas:    document.getElementById('vNotasSPTI')?.value    || vOld.notas,
+          plan: planEdit, periodicidad: perEdit, dcto: dctoEdit,
+          tarifaCongelada: !!(document.getElementById('chkTarifaCongeladaSPTI')?.checked),
+          anioTarifa: document.getElementById('chkTarifaCongeladaSPTI')?.checked ? (vOld.anioTarifa || AÑO_ACTUAL) : null,
         };
       } else if (modalTab === 'spd') {
         const fecha = document.getElementById('vFechaSPD')?.value || vOld.fecha;
@@ -15141,29 +15113,29 @@ function guardarVenta() {
           ...vOld,
           fecha,
           mesComp: _calcMesCompEdit(fecha),
-          fechaExp:     document.getElementById('vFechaExpSPD')?.value    || vOld.fechaExp     || '',
-          poliza:       document.getElementById('vPolizaSPD')?.value      || vOld.poliza       || '',
-          periodicidad: document.getElementById('vPeriodicidadSPD')?.value|| vOld.periodicidad || 'MENSUAL',
-          tomadorNombre:document.getElementById('vTomadorNombre')?.value  || vOld.tomadorNombre|| '',
-          tomadorDoc:   document.getElementById('vTomadorDoc')?.value     || vOld.tomadorDoc   || '',
-          tomadorTel:   document.getElementById('vTomadorTel')?.value     || vOld.tomadorTel   || '',
-          tomadorCorreo:document.getElementById('vTomadorCorreo')?.value  || vOld.tomadorCorreo|| '',
-          aseguradoNombre:   document.getElementById('vAseguradoNombre')?.value    || vOld.aseguradoNombre   || '',
-          aseguradoTipoDoc:  document.getElementById('vAseguradoTipoDoc')?.value   || vOld.aseguradoTipoDoc  || 'CC',
-          aseguradoDoc:      document.getElementById('vAseguradoDoc')?.value        || vOld.aseguradoDoc      || '',
-          aseguradoFechaNac: document.getElementById('vAseguradoFechaNac')?.value  || vOld.aseguradoFechaNac || '',
-          edadAsegurado:     document.getElementById('vAseguradoEdad')?.value      || vOld.edadAsegurado     || '',
+          fechaExp:     document.getElementById('vFechaExpSPD')?.value    || vOld.fechaExp,
+          poliza:       document.getElementById('vPolizaSPD')?.value      || vOld.poliza,
+          periodicidad: document.getElementById('vPeriodicidadSPD')?.value|| vOld.periodicidad,
+          tomadorNombre:document.getElementById('vTomadorNombre')?.value  || vOld.tomadorNombre,
+          tomadorDoc:   document.getElementById('vTomadorDoc')?.value     || vOld.tomadorDoc,
+          tomadorTel:   document.getElementById('vTomadorTel')?.value     || vOld.tomadorTel,
+          tomadorCorreo:document.getElementById('vTomadorCorreo')?.value  || vOld.tomadorCorreo,
+          aseguradoNombre:   document.getElementById('vAseguradoNombre')?.value    || vOld.aseguradoNombre,
+          aseguradoTipoDoc:  document.getElementById('vAseguradoTipoDoc')?.value   || vOld.aseguradoTipoDoc,
+          aseguradoDoc:      document.getElementById('vAseguradoDoc')?.value        || vOld.aseguradoDoc,
+          aseguradoFechaNac: document.getElementById('vAseguradoFechaNac')?.value  || vOld.aseguradoFechaNac,
+          edadAsegurado:     document.getElementById('vAseguradoEdad')?.value      || vOld.edadAsegurado,
           asegurado2Nombre:   document.getElementById('vAsegurado2SoloUno')?.checked ? '' : (document.getElementById('vAsegurado2Nombre')?.value  || vOld.asegurado2Nombre  || ''),
           asegurado2TipoDoc:  document.getElementById('vAsegurado2SoloUno')?.checked ? 'CC': (document.getElementById('vAsegurado2TipoDoc')?.value || vOld.asegurado2TipoDoc || 'CC'),
           asegurado2Doc:      document.getElementById('vAsegurado2SoloUno')?.checked ? '' : (document.getElementById('vAsegurado2Doc')?.value      || vOld.asegurado2Doc      || ''),
           asegurado2FechaNac: document.getElementById('vAsegurado2SoloUno')?.checked ? '' : (document.getElementById('vAsegurado2FechaNac')?.value || vOld.asegurado2FechaNac || ''),
           asegurado2Edad:     document.getElementById('vAsegurado2SoloUno')?.checked ? '' : (document.getElementById('vAsegurado2Edad')?.value     || vOld.asegurado2Edad     || ''),
-          nombre:  document.getElementById('vTomadorNombre')?.value || vOld.nombre   || '',
-          doc:     document.getElementById('vTomadorDoc')?.value    || vOld.doc      || '',
-          telefono:document.getElementById('vTomadorTel')?.value    || vOld.telefono || '',
-          correo:  document.getElementById('vTomadorCorreo')?.value || vOld.correo   || '',
-          ciudad:  document.getElementById('vCiudadSPD')?.value     || vOld.ciudad   || '',
-          notas:   document.getElementById('vNotasSPD')?.value      || vOld.notas    || '',
+          nombre:  document.getElementById('vTomadorNombre')?.value || vOld.nombre,
+          doc:     document.getElementById('vTomadorDoc')?.value    || vOld.doc,
+          telefono:document.getElementById('vTomadorTel')?.value    || vOld.telefono,
+          correo:  document.getElementById('vTomadorCorreo')?.value || vOld.correo,
+          ciudad:  document.getElementById('vCiudadSPD')?.value     || vOld.ciudad,
+          notas:   document.getElementById('vNotasSPD')?.value      || vOld.notas,
           tarifaCongelada: !!(document.getElementById('chkTarifaCongeladaSPD')?.checked),
           anioTarifa: document.getElementById('chkTarifaCongeladaSPD')?.checked ? (vOld.anioTarifa || AÑO_ACTUAL) : null,
         };
@@ -15177,22 +15149,22 @@ function guardarVenta() {
           ...vOld,
           fecha,
           mesComp: _calcMesCompEdit(fecha),
-          fechaExp: document.getElementById('vFechaExpPSM')?.value  || vOld.fechaExp || '',
-          poliza:   document.getElementById('vPolizaPSM')?.value    || vOld.poliza   || '',
-          tipo:     document.getElementById('vTipoMovPSM')?.value   || vOld.tipo     || '',
+          fechaExp: document.getElementById('vFechaExpPSM')?.value  || vOld.fechaExp,
+          poliza:   document.getElementById('vPolizaPSM')?.value    || vOld.poliza,
+          tipo:     document.getElementById('vTipoMovPSM')?.value   || vOld.tipo,
           tomadorNombre:  document.getElementById('vTomadorNombrePSM')?.value  || vOld.tomadorNombre  || vOld.nombre || '',
           tomadorTipoDoc: document.getElementById('vTomadorTipoDocPSM')?.value || vOld.tomadorTipoDoc || vOld.tipoDoc || 'CC',
           tomadorDoc:     document.getElementById('vTomadorDocPSM')?.value     || vOld.tomadorDoc     || vOld.doc    || '',
-          nombre:   document.getElementById('vNombrePSM')?.value    || vOld.nombre   || '',
-          tipoDoc:  document.getElementById('vTipoDocPSM')?.value   || vOld.tipoDoc  || 'CC',
-          doc:      document.getElementById('vDocPSM')?.value       || vOld.doc      || '',
-          fechaNac: document.getElementById('vFechaNacPSM')?.value  || vOld.fechaNac || '',
-          edad:     document.getElementById('vEdadPSM')?.value      || vOld.edad     || '0',
-          telefono: document.getElementById('vTelPSM')?.value       || vOld.telefono || '',
-          correo:   document.getElementById('vCorreoPSM')?.value    || vOld.correo   || '',
-          ciudad:   document.getElementById('vCiudadPSM')?.value    || vOld.ciudad   || '',
-          empresa:  document.getElementById('vEmpresaPSM')?.value   || vOld.empresa  || '',
-          notas:    document.getElementById('vNotasPSM')?.value     || vOld.notas    || '',
+          nombre:   document.getElementById('vNombrePSM')?.value    || vOld.nombre,
+          tipoDoc:  document.getElementById('vTipoDocPSM')?.value   || vOld.tipoDoc,
+          doc:      document.getElementById('vDocPSM')?.value       || vOld.doc,
+          fechaNac: document.getElementById('vFechaNacPSM')?.value  || vOld.fechaNac,
+          edad:     document.getElementById('vEdadPSM')?.value      || vOld.edad,
+          telefono: document.getElementById('vTelPSM')?.value       || vOld.telefono,
+          correo:   document.getElementById('vCorreoPSM')?.value    || vOld.correo,
+          ciudad:   document.getElementById('vCiudadPSM')?.value    || vOld.ciudad,
+          empresa:  document.getElementById('vEmpresaPSM')?.value   || vOld.empresa,
+          notas:    document.getElementById('vNotasPSM')?.value     || vOld.notas,
           primaTotalSinIVA: primaSinIVAEditPSM,
           comision: Math.round(primaSinIVAEditPSM * comPctEditPSM),
           comPct: edadEditPSM <= 50 ? 12 : 6,
@@ -15207,22 +15179,22 @@ function guardarVenta() {
           ...vOld,
           fecha,
           mesComp: _calcMesCompEdit(fecha),
-          fechaExp: document.getElementById('vFechaExpPAC60')?.value || vOld.fechaExp || '',
-          poliza:   document.getElementById('vPolizaPAC60')?.value   || vOld.poliza   || '',
-          tipo:     document.getElementById('vTipoMovPAC60')?.value  || vOld.tipo     || '',
+          fechaExp: document.getElementById('vFechaExpPAC60')?.value || vOld.fechaExp,
+          poliza:   document.getElementById('vPolizaPAC60')?.value   || vOld.poliza,
+          tipo:     document.getElementById('vTipoMovPAC60')?.value  || vOld.tipo,
           tomadorNombre:  document.getElementById('vTomadorNombrePAC60')?.value  || vOld.tomadorNombre  || vOld.nombre || '',
           tomadorTipoDoc: document.getElementById('vTomadorTipoDocPAC60')?.value || vOld.tomadorTipoDoc || vOld.tipoDoc || 'CC',
           tomadorDoc:     document.getElementById('vTomadorDocPAC60')?.value     || vOld.tomadorDoc     || vOld.doc    || '',
-          nombre:   document.getElementById('vNombrePAC60')?.value   || vOld.nombre   || '',
-          tipoDoc:  document.getElementById('vTipoDocPAC60')?.value  || vOld.tipoDoc  || 'CC',
-          doc:      document.getElementById('vDocPAC60')?.value      || vOld.doc      || '',
-          fechaNac: document.getElementById('vFechaNacPAC60')?.value || vOld.fechaNac || '',
-          edad:     document.getElementById('vEdadPAC60')?.value     || vOld.edad     || '0',
-          telefono: document.getElementById('vTelPAC60')?.value      || vOld.telefono || '',
-          correo:   document.getElementById('vCorreoPAC60')?.value   || vOld.correo   || '',
-          ciudad:   document.getElementById('vCiudadPAC60')?.value   || vOld.ciudad   || '',
-          notas:    document.getElementById('vNotasPAC60')?.value    || vOld.notas    || '',
-          conAnexo: document.getElementById('chkAnexoPAC60')?.checked ?? (vOld.conAnexo ?? false),
+          nombre:   document.getElementById('vNombrePAC60')?.value   || vOld.nombre,
+          tipoDoc:  document.getElementById('vTipoDocPAC60')?.value  || vOld.tipoDoc,
+          doc:      document.getElementById('vDocPAC60')?.value      || vOld.doc,
+          fechaNac: document.getElementById('vFechaNacPAC60')?.value || vOld.fechaNac,
+          edad:     document.getElementById('vEdadPAC60')?.value     || vOld.edad,
+          telefono: document.getElementById('vTelPAC60')?.value      || vOld.telefono,
+          correo:   document.getElementById('vCorreoPAC60')?.value   || vOld.correo,
+          ciudad:   document.getElementById('vCiudadPAC60')?.value   || vOld.ciudad,
+          notas:    document.getElementById('vNotasPAC60')?.value    || vOld.notas,
+          conAnexo: document.getElementById('chkAnexoPAC60')?.checked ?? vOld.conAnexo,
           primaTotalSinIVA: primaSinIVAEditPAC,
           comision: Math.round(primaSinIVAEditPAC * PAC60_COM_PCT), // corregido: base sin IVA
           tarifaCongelada: !!(document.getElementById('chkTarifaCongeladaPAC60')?.checked),
@@ -15530,6 +15502,8 @@ function guardarVenta() {
     const periPSM = document.getElementById('vPeriodicidadPSM')?.value || 'MENSUAL';
     const periMultPSM = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
     const multPSM = periMultPSM[periPSM] || 1;
+    const PSM_DCTOS = window.BusinessConfig.pricing.PSM_DCTOS;
+    const _dctoPctPSM = PSM_DCTOS[periPSM] || 0;
     // Calc prima Asegurado 1
     let primaMensualBase = PSM_TARIFAS.basico[k] * PSM_IVA;
     const modulosArr = ['Básico'];
@@ -15538,7 +15512,7 @@ function guardarVenta() {
     if (document.getElementById('chkCirugia').checked) { primaMensualBase += PSM_TARIFAS.cirugia[k] * PSM_IVA; modulosArr.push('Cirugía Ambulatoria'); }
     if (document.getElementById('chkMaternidad').checked && edadNum >= 15 && edadNum <= 45) { primaMensualBase += PSM_TARIFAS.maternidad[k] * PSM_IVA; modulosArr.push('Maternidad'); }
     const primaMensual = Math.round(primaMensualBase);
-    const primaTotal1  = Math.round(primaMensualBase * multPSM);
+    const primaTotal1  = Math.round(primaMensualBase * multPSM * (1 - _dctoPctPSM));
     // Tomador
     const tomNomPSM  = document.getElementById('vTomadorNombrePSM')?.value || '';
     const tomDocPSM  = document.getElementById('vTomadorDocPSM')?.value || '';
@@ -15560,7 +15534,7 @@ function guardarVenta() {
         fechaNac: document.getElementById('vFechaNacPSM_' + ai)?.value || '',
         edad: edadAi,
         rangoEdad: rangoAi?.key || '—',
-        primaTotal: rangoAi ? Math.round(PSM_TARIFAS.basico[rangoAi.key] * PSM_IVA * multPSM) : 0,
+        primaTotal: rangoAi ? Math.round(PSM_TARIFAS.basico[rangoAi.key] * PSM_IVA * multPSM * (1 - _dctoPctPSM)) : 0,
       });
     }
     if (modoRegistroPSM === 'sumado' && aseguradosPSM.length > 0) {
@@ -15669,8 +15643,10 @@ function guardarVenta() {
     const periPAC = document.getElementById('vPeriodicidadPAC60')?.value || 'MENSUAL';
     const periMultPAC = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
     const multPAC = periMultPAC[periPAC] || 1;
+    const PAC60_DCTOS = window.BusinessConfig.pricing.PAC60_DCTOS;
+    const _dctoPctPAC = PAC60_DCTOS[periPAC] || 0;
     const primaMensualPAC = conAnexo ? PAC60_TARIFAS[rango].conAnexo : PAC60_TARIFAS[rango].sinAnexo;
-    const prima1 = Math.round(primaMensualPAC * multPAC);
+    const prima1 = Math.round(primaMensualPAC * multPAC * (1 - _dctoPctPAC));
     const planLabel = conAnexo ? '60+ Con Anexo' : '60+ Sin Anexo';
     const tomNomPAC  = document.getElementById('vTomadorNombrePAC60')?.value || '';
     const tomDocPAC  = document.getElementById('vTomadorDocPAC60')?.value || '';
@@ -15704,7 +15680,7 @@ function guardarVenta() {
     for (let ai = 2; ai <= _pac60AsegCount; ai++) {
       const edadAi = parseInt(document.getElementById('vEdadPAC60_' + ai)?.value) || 0;
       const rangoAi = getRangoPAC60(edadAi);
-      const primaAi = rangoAi ? Math.round((conAnexo ? PAC60_TARIFAS[rangoAi].conAnexo : PAC60_TARIFAS[rangoAi].sinAnexo) * multPAC) : 0;
+      const primaAi = rangoAi ? Math.round((conAnexo ? PAC60_TARIFAS[rangoAi].conAnexo : PAC60_TARIFAS[rangoAi].sinAnexo) * multPAC * (1 - _dctoPctPAC)) : 0;
       aseguradosPAC.push({
         nombre: document.getElementById('vNombrePAC60_' + ai)?.value || '',
         tipoDoc: document.getElementById('vTipoDocPAC60_' + ai)?.value || 'CC',
@@ -16892,19 +16868,6 @@ const IVA_FACTOR = window.BusinessConfig.constants.IVA_FACTOR;
 // Referencia para metas: Preferencial 0-40 sin IVA mensual
 const REF_PREF_040_SIN_IVA = 159120;
 const REF_PREF_040_CON_IVA = 167076;
-
-// HALLAZGO-OP-011: divisor real por producto para derivar "sin IVA" en los
-// flujos de importación (confirmarImportVol, importarClienteDesdeCarteraSura,
-// guardarEdicionSura). Antes usaban 1.19 (IVA general CO) hardcodeado, que no
-// coincide con el divisor real de ningún producto. Reutiliza las mismas
-// constantes ya vigentes en MotorProducto/MotorPago — no introduce una
-// fórmula nueva. PAC60 y SPD no tienen constante nombrada propia; se usa el
-// mismo 1.05 que ya aplican MotorPago.calcularBaseComision() y getSinIVABase().
-function _divisorIVAImport(producto) {
-  if (producto === 'SPTI') return IVA_FACTOR;
-  if (producto === 'PSM')  return PSM_IVA;
-  return 1.05; // PAC60, SPD
-}
 
 let carteraConIVA = false;
 
@@ -21300,7 +21263,7 @@ function confirmarImportVol() {
       prima: v.prima,
       primaMensual: v.prima,
       primaTotal: v.prima,
-      primaTotalSinIVA: Math.round(v.prima / _divisorIVAImport(v.producto)),
+      primaTotalSinIVA: Math.round(v.prima / 1.19),
       comision,
       telefono: v.telefono || '',
       tomadorTel: v.telefono || '',
@@ -33010,7 +32973,7 @@ function importarClienteDesdeCarteraSura(item) {
     periodicidad,
     prima: item.saldo || 0,
     primaTotal: item.saldo || 0,
-    primaTotalSinIVA: Math.round((item.saldo || 0) / _divisorIVAImport(producto)),
+    primaTotalSinIVA: Math.round((item.saldo || 0) / 1.19),
     comision: 0,
     rango: '—', criterio: '—', tramite: '—', bd: '—',
     notas: `Importado desde cartera SURA · Poliza: ${item.poliza} · Periodicidad: ${periodicidad} · Completar datos pendientes`,
