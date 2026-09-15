@@ -12884,7 +12884,7 @@ function guardarEdicionSura() {
     periodicidad: g('eSuraPeriodicidad').value,
     prima,
     primaTotal:   prima,
-    primaTotalSinIVA: Math.round(prima / _divisorIVA(productoEdit)),
+    primaTotalSinIVA: Math.round(prima / 1.19),
     notas:        g('eSuraNotas').value.trim(),
     // Preservar flags de importación
     _importadoSura: true,
@@ -14217,7 +14217,8 @@ const PSM_TARIFAS = window.BusinessConfig.pricing.PSM_TARIFAS;
 const PSM_IVA = window.BusinessConfig.pricing.PSM_IVA;
 
 function getRangoPSM(edad) {
-  return PSM_RANGOS.find(r => edad >= r.min && edad <= r.max) || null;
+  if (window.MotorProducto) return window.MotorProducto.getRangoPSM(edad);
+  return PSM_RANGOS.find(r => edad >= r.min && edad <= r.max) || null; // fallback si el motor no cargó
 }
 
 function calcDatosPSM() {
@@ -16743,7 +16744,7 @@ async function exportarPlantillaExcelDirecto(producto, ventas, anioFilter, mesFi
         nombre, doc, v.fechaNac||v.tomadorFechaNac||'', v.edad||v.tomadorEdad||'',
         v.plan||'', v.periodicidad||'',
         v.prima||0, v.primaTotal||v.prima||0,
-        v.primaTotalSinIVA||Math.round((v.primaTotal||v.prima||0)/_divisorIVA(v.producto))||0,
+        v.primaTotalSinIVA||Math.round((v.primaTotal||v.prima||0)/1.19)||0,
         v.comision||0,
         v.ciudad||'', v.empresa||'', correo, tel,
         v.fechaExp||'', pagado, v.notas||''
@@ -16802,7 +16803,7 @@ function exportarVoluntariosExcel() {
     const correo = v.tomadorCorreo || v.correo   || '';
     const primaMensual = v.primaMensual || v.prima || 0;
     const primaTotal   = v.primaTotal   || v.prima || 0;
-    const primaSinIVA  = v.primaTotalSinIVA || Math.round(primaTotal / _divisorIVA(v.producto)) || 0;
+    const primaSinIVA  = v.primaTotalSinIVA || Math.round(primaTotal / 1.19) || 0;
     const comision     = v.comision || 0;
     const pagado = (pagos[v.id] && pagos[v.id].length > 0) ? 'Pagado ✅' : 'Pendiente';
     return [
@@ -16865,19 +16866,6 @@ const SPTI_SIN_IVA = window.BusinessConfig.pricing.SPTI_SIN_IVA;
 // IVA factor = 167076 / 159120 ≈ 1.05
 // BR-014 consolidada (Sprint 0.3): fuente única en business-config/constants.js
 const IVA_FACTOR = window.BusinessConfig.constants.IVA_FACTOR;
-
-function _divisorIVA(producto) {
-  switch (producto) {
-    case 'SPTI':
-    case 'SPD':
-    case 'PAC60':
-      return IVA_FACTOR;
-    case 'PSM':
-      return PSM_IVA;
-    default:
-      throw new Error(`_divisorIVA: producto no reconocido "${producto}"`);
-  }
-}
 // Referencia para metas: Preferencial 0-40 sin IVA mensual
 const REF_PREF_040_SIN_IVA = 159120;
 const REF_PREF_040_CON_IVA = 167076;
@@ -19101,7 +19089,8 @@ function renderRenovaciones() {
         const msg = getMsgRenovacion(v, proxVenc, diasParaVencer, pagos);
         const msgEnc = encodeURIComponent(msg);
         const primaConIVA = v.prima || 0;
-        const primaSinIVA = Math.round(primaConIVA / _divisorIVA(v.producto));
+        const ivaFactor = ['PSM','PAC60'].includes(v.producto) ? 1.05 : 1.19;
+        const primaSinIVA = Math.round(primaConIVA / ivaFactor);
         const nPagos = (pagos[v.id]||[]).length;
         const fechaExpAnios = v.fechaExp
           ? Math.floor((new Date() - new Date(v.fechaExp+'T12:00:00')) / (365.25*86400000))
@@ -21275,7 +21264,7 @@ function confirmarImportVol() {
       prima: v.prima,
       primaMensual: v.prima,
       primaTotal: v.prima,
-      primaTotalSinIVA: Math.round(v.prima / _divisorIVA(v.producto)),
+      primaTotalSinIVA: Math.round(v.prima / 1.19),
       comision,
       telefono: v.telefono || '',
       tomadorTel: v.telefono || '',
@@ -32985,7 +32974,7 @@ function importarClienteDesdeCarteraSura(item) {
     periodicidad,
     prima: item.saldo || 0,
     primaTotal: item.saldo || 0,
-    primaTotalSinIVA: Math.round((item.saldo || 0) / _divisorIVA(producto)),
+    primaTotalSinIVA: Math.round((item.saldo || 0) / 1.19),
     comision: 0,
     rango: '—', criterio: '—', tramite: '—', bd: '—',
     notas: `Importado desde cartera SURA · Poliza: ${item.poliza} · Periodicidad: ${periodicidad} · Completar datos pendientes`,

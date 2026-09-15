@@ -839,7 +839,8 @@ function getRangoSPTI(edad) {
   return null;
 }
 function getRangoPSM(edad) {
-  return PSM_RANGOS.find(r => edad >= r.min && edad <= r.max) || null;
+  if (window.MotorProducto) return window.MotorProducto.getRangoPSM(edad);
+  return PSM_RANGOS.find(r => edad >= r.min && edad <= r.max) || null; // fallback si el motor no cargó
 }
 function getRangoPAC60(edad) {
   if (edad >= 60 && edad <= 69) return '60-69';
