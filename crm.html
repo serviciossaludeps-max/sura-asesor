@@ -16407,6 +16407,157 @@ function imprimirPlantillaPBS() {
 // =============================================
 // PLANTILLA VOLUNTARIOS (página independiente)
 // =============================================
+
+// =============================================
+// ASEGURADOS ADICIONALES — FILA DESPLEGABLE
+// Plantilla Voluntarios (SPTI · PSM/Modular · 60+)
+// Cada asegurado desde el 2.º en adelante se muestra con TODOS sus datos,
+// heredando No. Póliza · Fecha Venta · Fecha Expedición · Tipo Mov.,
+// con su propio nombre, documento, edad, plan/módulos, prima y comisión.
+// SOLO LECTURA: no toca el guardado, el cálculo ni la exportación.
+// =============================================
+(function ptVolDetalleCSSInit() {
+  if (document.getElementById('ptVolDetalleCSS')) return;
+  const s = document.createElement('style');
+  s.id = 'ptVolDetalleCSS';
+  s.textContent = 'tr[data-grupo="1"]{cursor:pointer;}'
+    + 'tr[data-grupo="1"]:hover{outline:1px solid rgba(56,189,248,0.35);outline-offset:-1px;}'
+    + '@media print{tr[data-detalle="1"]{display:table-row !important;}}';
+  (document.head || document.documentElement).appendChild(s);
+})();
+
+const _PTVOL_PSM_CLAVE = { 'Básico':'basico', 'Atención Domiciliaria':'emd', 'Alto Costo':'altoCosto', 'Cirugía Ambulatoria':'cirugia', 'Maternidad':'maternidad' };
+
+// Asegurados adicionales reales de la venta (2.º en adelante)
+function ptVolAsegAdic(v) {
+  if (!v || !Array.isArray(v.asegurados)) return [];
+  return v.asegurados.filter(a => a && typeof a === 'object');
+}
+
+// Prima mensual de un asegurado adicional, reconstruida desde la tabla
+// tarifaria vigente. Devuelve null si no hay datos suficientes (nunca adivina).
+function ptVolPrimaMensualAseg(v, a) {
+  try {
+    const PR = (window.BusinessConfig && window.BusinessConfig.pricing) || {};
+    if (v.producto === 'PSM') {
+      const T = PR.PSM_TARIFAS, IVAp = PR.PSM_IVA || 1.05, k = a.rangoEdad;
+      if (!T || !k) return null;
+      const mods = (Array.isArray(a.modulos) && a.modulos.length) ? a.modulos : ['Básico'];
+      let tot = 0;
+      for (const l of mods) {
+        const c = _PTVOL_PSM_CLAVE[l];
+        if (!c || !T[c] || T[c][k] === undefined) return null;
+        tot += T[c][k] * IVAp;
+      }
+      return Math.round(tot);
+    }
+    if (v.producto === 'PAC60') {
+      const T = PR.PAC60_TARIFAS, k = a.rangoEdad;
+      const campo = v.conAnexo ? 'conAnexo' : 'sinAnexo';
+      if (!T || !k || !T[k] || T[k][campo] === undefined) return null;
+      return Math.round(T[k][campo]);
+    }
+    if (v.producto === 'SPTI') {
+      const k = (typeof getRangoEdadSPTI === 'function') ? getRangoEdadSPTI(parseInt(a.edad)) : null;
+      const t = (k && typeof SPTI_TARIFAS !== 'undefined' && SPTI_TARIFAS[v.plan]) ? SPTI_TARIFAS[v.plan][k] : null;
+      if (!t || !t.mensual) return null;
+      return Math.round(t.mensual);
+    }
+  } catch (e) { return null; }
+  return null;
+}
+
+// Atributos que convierten la fila principal en desplegable (solo si hay adicionales)
+function ptVolAttrs(v) {
+  if (!ptVolAsegAdic(v).length) return '';
+  return `data-grupo="1" onclick="ptVolToggleDetalle(event,'${v.id}')"`;
+}
+
+// Flecha + contador dentro de la celda "#"
+function ptVolCaret(v) {
+  const n = ptVolAsegAdic(v).length;
+  if (!n) return '';
+  return `<span id="ptvolCaret_${v.id}" onclick="event.stopPropagation();ptVolToggleDetalle(null,'${v.id}')" title="Ver ${n} asegurado(s) adicional(es) de esta póliza" style="display:inline-block;min-width:14px;color:var(--teal,#22d3ee);font-weight:700;cursor:pointer;margin-right:2px;">▸</span>`;
+}
+
+function ptVolToggleDetalle(ev, id) {
+  if (ev && ev.target && ev.target.closest && ev.target.closest('button, a, input, select, textarea, label, span[onclick]')) return;
+  const det = document.getElementById('ptvolDet_' + id);
+  if (!det) return;
+  const abierto = det.getAttribute('data-open') === '1';
+  det.setAttribute('data-open', abierto ? '0' : '1');
+  det.style.display = abierto ? 'none' : '';
+  const car = document.getElementById('ptvolCaret_' + id);
+  if (car) car.textContent = abierto ? '▸' : '▾';
+}
+
+// Fila de detalle con un renglón por asegurado adicional
+function ptVolDetalle(v, cols) {
+  const ad = ptVolAsegAdic(v);
+  if (!ad.length) return '';
+  const esPSM  = v.producto === 'PSM';
+  const esPAC  = v.producto === 'PAC60';
+  const esSPTI = v.producto === 'SPTI';
+  const fD  = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-CO') : '—';
+  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const perLbl = { MENSUAL:'Mensual', TRIMESTRAL:'Trimestral', SEMESTRAL:'Semestral', ANUAL:'Anual' }[v.periodicidad] || (v.periodicidad || '—');
+  const comPct = esPAC ? 0.05 : 0.12;
+
+  const th = t => `<th style="text-align:left;padding:6px 9px;font-size:10px;letter-spacing:.4px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid rgba(255,255,255,0.12);white-space:nowrap;">${t}</th>`;
+  const cabecera = esSPTI
+    ? [th('#'),th('Nombre completo'),th('Tipo doc.'),th('No. documento'),th('Fecha nac.'),th('Edad'),th('Rango'),th('Plan'),th('Prima mensual'),th('Prima ' + perLbl.toLowerCase())].join('')
+    : [th('#'),th('Nombre completo'),th('Tipo doc.'),th('No. documento'),th('Fecha nac.'),th('Edad'),th('Rango'),th(esPSM ? 'Módulos' : 'Plan'),th('Prima mensual'),th('Prima ' + perLbl.toLowerCase()),th('Comisión')].join('');
+
+  const filas = ad.map((a, ix) => {
+    const mensualCalc = ptVolPrimaMensualAseg(v, a);
+    const periodo = Number(a.primaTotal) || 0;
+    const mensual = (mensualCalc != null) ? mensualCalc : (v.periodicidad === 'MENSUAL' || !v.periodicidad ? periodo : null);
+    const com = (mensual != null) ? Math.round(mensual * comPct) : null;
+    const rango = esSPTI
+      ? ((typeof getRangoEdadSPTI === 'function' ? getRangoEdadSPTI(parseInt(a.edad)) : null) || '—')
+      : (a.rangoEdad || '—');
+    const detPlan = esPSM
+      ? (Array.isArray(a.modulos) && a.modulos.length ? a.modulos.join(', ') : 'Básico')
+      : (esPAC ? (v.plan || (v.conAnexo ? '60+ Con Anexo' : '60+ Sin Anexo')) : (v.plan || '—'));
+    const nom = (typeof tc === 'function' ? tc(a.nombre || '') : (a.nombre || '')) || '— (sin nombre)';
+    const td = (c, extra) => `<td style="padding:6px 9px;font-size:11.5px;${extra || ''}">${c}</td>`;
+    const celdas = [
+      td(`<span style="color:var(--text-dim);font-family:var(--mono);">${ix + 2}</span>`),
+      td(`<strong>${esc(nom)}</strong>`),
+      td(`<span class="chip chip-purple" style="font-size:10px;">${esc(a.tipoDoc || 'CC')}</span>`),
+      td(esc(a.doc || '—'), 'font-family:var(--mono);'),
+      td(fD(a.fechaNac), 'font-family:var(--mono);white-space:nowrap;'),
+      td(a.edad != null && a.edad !== '' ? a.edad : '—', 'font-family:var(--mono);'),
+      td(esc(rango)),
+      td(esc(detPlan), 'max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'),
+      td(mensual != null ? fmt(mensual) : '—', 'font-family:var(--mono);color:var(--sura-lime);'),
+      td(periodo ? fmt(periodo) : '—', 'font-family:var(--mono);color:var(--sura-lime);'),
+    ];
+    if (!esSPTI) celdas.push(td(com != null ? fmt(com) : '—', 'font-family:var(--mono);color:var(--green);font-weight:700;'));
+    return `<tr>${celdas.join('')}</tr>`;
+  }).join('');
+
+  const heredado = `<span style="color:var(--text-dim);">No. Póliza</span> <strong>${esc(v.poliza || '—')}</strong>`
+    + ` &nbsp;·&nbsp; <span style="color:var(--text-dim);">Fecha Venta</span> <strong>${fD(v.fecha)}</strong>`
+    + ` &nbsp;·&nbsp; <span style="color:var(--text-dim);">Fecha Expedición</span> <strong>${fD(v.fechaExp)}</strong>`
+    + ` &nbsp;·&nbsp; <span style="color:var(--text-dim);">Tipo Mov.</span> <strong>${esc(v.tipo || v.tipoMov || 'NUEVO')}</strong>`;
+
+  return `<tr id="ptvolDet_${v.id}" data-detalle="1" data-open="0" style="display:none;">
+    <td colspan="${cols}" style="padding:0 10px 12px 10px;background:rgba(56,189,248,0.05);border-left:2px solid var(--teal,#22d3ee);">
+      <div style="font-size:11px;color:var(--text-muted);padding:8px 2px 6px 2px;">
+        👥 <strong style="color:var(--text);">${ad.length + 1} asegurados</strong> en esta póliza — datos heredados:
+        ${heredado}
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;background:rgba(0,0,0,0.12);border-radius:6px;">
+          <thead><tr>${cabecera}</tr></thead>
+          <tbody>${filas}</tbody>
+        </table>
+      </div>
+    </td>
+  </tr>`;
+}
+
 function renderPlantillaVol() {
   ptLimpiarBuscadorVol();
   ptRefreshScrollBars();
@@ -16485,8 +16636,8 @@ function renderPlantillaVol() {
           else if (v.periodicidad==='ANUAL' && t.dctoAnual)   dcto = fmt(t.dctoAnual);
         }
       }
-      return `<tr ${rBg}>
-        <td style="color:var(--text-dim);font-family:var(--mono);padding:8px 10px;">${i+1}</td>
+      return `<tr ${rBg} ${ptVolAttrs(v)}>
+        <td style="color:var(--text-dim);font-family:var(--mono);padding:8px 10px;">${ptVolCaret(v)}${i+1}</td>
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fecha)}</td>
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fechaExp)}</td>
         <td style="font-family:var(--mono);font-size:11px;padding:8px 10px;">${v.poliza||'—'}</td>
@@ -16503,7 +16654,7 @@ function renderPlantillaVol() {
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.tomadorTel||v.telefono||'—'}</td>
         <td style="font-size:12px;padding:8px 10px;">${v.tomadorCorreo||v.correo||'—'}</td>
         ${acciones(v)}
-      </tr>`;
+      </tr>` + ptVolDetalle(v, 17);
     }).join('');
   }
 
@@ -16557,8 +16708,8 @@ function renderPlantillaVol() {
       const rBg = i%2===0?'':'style="background:rgba(255,255,255,0.02)"';
       const com = Math.round((v.prima||0) * 0.12);
       const modulos = Array.isArray(v.modulos) ? v.modulos.join(', ') : (v.modulos||'—');
-      return `<tr ${rBg}>
-        <td style="color:var(--text-dim);font-family:var(--mono);padding:8px 10px;">${i+1}</td>
+      return `<tr ${rBg} ${ptVolAttrs(v)}>
+        <td style="color:var(--text-dim);font-family:var(--mono);padding:8px 10px;">${ptVolCaret(v)}${i+1}</td>
         <td style="font-family:var(--mono);font-size:11px;padding:8px 10px;">${v.poliza||'—'}</td>
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fecha)}</td>
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fechaExp)}</td>
@@ -16576,7 +16727,7 @@ function renderPlantillaVol() {
         <td style="font-size:12px;padding:8px 10px;">${v.ciudad||'—'}</td>
         <td style="font-size:12px;padding:8px 10px;">${tc(v.empresa)||'—'}</td>
         ${acciones(v)}
-      </tr>`;
+      </tr>` + ptVolDetalle(v, 18);
     }).join('');
   }
 
@@ -16586,8 +16737,8 @@ function renderPlantillaVol() {
     tbody.innerHTML = ventas.map((v,i) => {
       const rBg = i%2===0?'':'style="background:rgba(255,255,255,0.02)"';
       const com = Math.round((v.prima||0) * 0.05);
-      return `<tr ${rBg}>
-        <td style="color:var(--text-dim);font-family:var(--mono);padding:8px 10px;">${i+1}</td>
+      return `<tr ${rBg} ${ptVolAttrs(v)}>
+        <td style="color:var(--text-dim);font-family:var(--mono);padding:8px 10px;">${ptVolCaret(v)}${i+1}</td>
         <td style="font-family:var(--mono);font-size:11px;padding:8px 10px;">${v.poliza||'—'}</td>
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fecha)}</td>
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fechaExp)}</td>
@@ -16604,7 +16755,7 @@ function renderPlantillaVol() {
         <td style="font-size:12px;padding:8px 10px;">${v.tomadorCorreo||v.correo||'—'}</td>
         <td style="font-size:12px;padding:8px 10px;">${v.ciudad||'—'}</td>
         ${acciones(v)}
-      </tr>`;
+      </tr>` + ptVolDetalle(v, 17);
     }).join('');
   }
 }
@@ -34872,10 +35023,18 @@ function ptFiltrarVol() {
   const tbody = document.getElementById(bodyIds[prod]);
   let visible = 0;
   if (tbody) {
+    let _ultimaVisible = true;
     tbody.querySelectorAll('tr').forEach(tr => {
+      // Las filas de detalle (asegurados adicionales) siguen a su fila padre:
+      // no se cuentan como resultado ni se abren solas al buscar.
+      if (tr.dataset && tr.dataset.detalle) {
+        tr.style.display = (_ultimaVisible && tr.getAttribute('data-open') === '1') ? '' : 'none';
+        return;
+      }
       const txt = tr.textContent.toLowerCase();
       const match = !q || txt.includes(q);
       tr.style.display = match ? '' : 'none';
+      _ultimaVisible = match;
       if (match) visible++;
     });
   }
