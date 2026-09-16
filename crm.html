@@ -16502,16 +16502,30 @@ function ptVolDetalle(v, cols) {
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const perLbl = { MENSUAL:'Mensual', TRIMESTRAL:'Trimestral', SEMESTRAL:'Semestral', ANUAL:'Anual' }[v.periodicidad] || (v.periodicidad || '—');
   const comPct = esPAC ? 0.05 : 0.12;
+  // Con periodicidad mensual la prima del periodo es la misma mensual: no se duplica la columna.
+  const mostrarPeriodo = !!(v.periodicidad && v.periodicidad !== 'MENSUAL');
+
+  // Asegurado 1 (el titular del riesgo, que en la fila principal queda oculto
+  // detrás del nombre del TOMADOR) + todos los adicionales, en un solo listado.
+  const aseg1 = {
+    nombre: v.nombre || '', tipoDoc: v.tipoDoc || 'CC', doc: v.doc || '',
+    fechaNac: v.fechaNac || '', edad: v.edad, rangoEdad: v.rangoEdad,
+    modulos: v.modulos, _es1: true,
+  };
+  const todos = [aseg1].concat(ad);
 
   const th = t => `<th style="text-align:left;padding:6px 9px;font-size:10px;letter-spacing:.4px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid rgba(255,255,255,0.12);white-space:nowrap;">${t}</th>`;
-  const cabecera = esSPTI
-    ? [th('#'),th('Nombre completo'),th('Tipo doc.'),th('No. documento'),th('Fecha nac.'),th('Edad'),th('Rango'),th('Plan'),th('Prima mensual'),th('Prima ' + perLbl.toLowerCase())].join('')
-    : [th('#'),th('Nombre completo'),th('Tipo doc.'),th('No. documento'),th('Fecha nac.'),th('Edad'),th('Rango'),th(esPSM ? 'Módulos' : 'Plan'),th('Prima mensual'),th('Prima ' + perLbl.toLowerCase()),th('Comisión')].join('');
+  const cols1 = [th('#'),th('Nombre completo'),th('Tipo doc.'),th('No. documento'),th('Fecha nac.'),th('Edad'),th('Rango'),th(esPSM ? 'Módulos' : 'Plan'),th('Prima mensual')];
+  if (mostrarPeriodo) cols1.push(th('Prima ' + perLbl.toLowerCase()));
+  if (!esSPTI) cols1.push(th('Comisión'));
+  const cabecera = cols1.join('');
 
-  const filas = ad.map((a, ix) => {
+  const filas = todos.map((a, ix) => {
     const mensualCalc = ptVolPrimaMensualAseg(v, a);
-    const periodo = Number(a.primaTotal) || 0;
-    const mensual = (mensualCalc != null) ? mensualCalc : (v.periodicidad === 'MENSUAL' || !v.periodicidad ? periodo : null);
+    let mensual = mensualCalc;
+    if (mensual == null && a._es1) mensual = Number(v.prima) || null;
+    const periodo = a._es1 ? ptVolPeriodoAseg1(v, mensual) : (Number(a.primaTotal) || 0);
+    if (mensual == null && !mostrarPeriodo) mensual = periodo || null;
     const com = (mensual != null) ? Math.round(mensual * comPct) : null;
     const rango = esSPTI
       ? ((typeof getRangoEdadSPTI === 'function' ? getRangoEdadSPTI(parseInt(a.edad)) : null) || '—')
@@ -16520,10 +16534,11 @@ function ptVolDetalle(v, cols) {
       ? (Array.isArray(a.modulos) && a.modulos.length ? a.modulos.join(', ') : 'Básico')
       : (esPAC ? (v.plan || (v.conAnexo ? '60+ Con Anexo' : '60+ Sin Anexo')) : (v.plan || '—'));
     const nom = (typeof tc === 'function' ? tc(a.nombre || '') : (a.nombre || '')) || '— (sin nombre)';
+    const marca = a._es1 ? ` <span style="font-size:9.5px;color:var(--teal,#22d3ee);border:1px solid rgba(34,211,238,0.35);border-radius:4px;padding:1px 4px;vertical-align:middle;">ASEG. PRINCIPAL</span>` : '';
     const td = (c, extra) => `<td style="padding:6px 9px;font-size:11.5px;${extra || ''}">${c}</td>`;
     const celdas = [
-      td(`<span style="color:var(--text-dim);font-family:var(--mono);">${ix + 2}</span>`),
-      td(`<strong>${esc(nom)}</strong>`),
+      td(`<span style="color:var(--text-dim);font-family:var(--mono);">${ix + 1}</span>`),
+      td(`<strong>${esc(nom)}</strong>${marca}`),
       td(`<span class="chip chip-purple" style="font-size:10px;">${esc(a.tipoDoc || 'CC')}</span>`),
       td(esc(a.doc || '—'), 'font-family:var(--mono);'),
       td(fD(a.fechaNac), 'font-family:var(--mono);white-space:nowrap;'),
@@ -16531,21 +16546,22 @@ function ptVolDetalle(v, cols) {
       td(esc(rango)),
       td(esc(detPlan), 'max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'),
       td(mensual != null ? fmt(mensual) : '—', 'font-family:var(--mono);color:var(--sura-lime);'),
-      td(periodo ? fmt(periodo) : '—', 'font-family:var(--mono);color:var(--sura-lime);'),
     ];
+    if (mostrarPeriodo) celdas.push(td(periodo ? fmt(periodo) : '—', 'font-family:var(--mono);color:var(--sura-lime);'));
     if (!esSPTI) celdas.push(td(com != null ? fmt(com) : '—', 'font-family:var(--mono);color:var(--green);font-weight:700;'));
-    return `<tr>${celdas.join('')}</tr>`;
+    return `<tr${a._es1 ? ' style="background:rgba(255,255,255,0.03);"' : ''}>${celdas.join('')}</tr>`;
   }).join('');
 
   const heredado = `<span style="color:var(--text-dim);">No. Póliza</span> <strong>${esc(v.poliza || '—')}</strong>`
     + ` &nbsp;·&nbsp; <span style="color:var(--text-dim);">Fecha Venta</span> <strong>${fD(v.fecha)}</strong>`
     + ` &nbsp;·&nbsp; <span style="color:var(--text-dim);">Fecha Expedición</span> <strong>${fD(v.fechaExp)}</strong>`
-    + ` &nbsp;·&nbsp; <span style="color:var(--text-dim);">Tipo Mov.</span> <strong>${esc(v.tipo || v.tipoMov || 'NUEVO')}</strong>`;
+    + ` &nbsp;·&nbsp; <span style="color:var(--text-dim);">Tipo Mov.</span> <strong>${esc(v.tipo || v.tipoMov || 'NUEVO')}</strong>`
+    + ` &nbsp;·&nbsp; <span style="color:var(--text-dim);">Tomador</span> <strong>${esc((typeof tc === 'function' ? tc(v.tomadorNombre || '') : (v.tomadorNombre || '')) || '—')}</strong>`;
 
   return `<tr id="ptvolDet_${v.id}" data-detalle="1" data-open="0" style="display:none;">
     <td colspan="${cols}" style="padding:0 10px 12px 10px;background:rgba(56,189,248,0.05);border-left:2px solid var(--teal,#22d3ee);">
       <div style="font-size:11px;color:var(--text-muted);padding:8px 2px 6px 2px;">
-        👥 <strong style="color:var(--text);">${ad.length + 1} asegurados</strong> en esta póliza — datos heredados:
+        👥 <strong style="color:var(--text);">${todos.length} asegurados</strong> en esta póliza — datos heredados:
         ${heredado}
       </div>
       <div style="overflow-x:auto;">
@@ -16556,6 +16572,28 @@ function ptVolDetalle(v, cols) {
       </div>
     </td>
   </tr>`;
+}
+
+// Prima del periodo del Asegurado 1. En pólizas guardadas en modo "sumado"
+// primaTotal contiene la suma del grupo, por eso se reconstruye desde la
+// tabla tarifaria; si no hay datos suficientes devuelve 0 (muestra "—").
+function ptVolPeriodoAseg1(v, mensual) {
+  if (v.modoRegistro !== 'sumado' && v.primaTotal) return Number(v.primaTotal) || 0;
+  const mult = ({ MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 })[v.periodicidad || 'MENSUAL'] || 1;
+  try {
+    if (v.producto === 'SPTI') {
+      const k = (typeof getRangoEdadSPTI === 'function') ? getRangoEdadSPTI(parseInt(v.edad)) : null;
+      const t = (k && typeof SPTI_TARIFAS !== 'undefined' && SPTI_TARIFAS[v.plan]) ? SPTI_TARIFAS[v.plan][k] : null;
+      const campo = ({ MENSUAL:'mensual', TRIMESTRAL:'trimestre', SEMESTRAL:'semestre', ANUAL:'anual' })[v.periodicidad || 'MENSUAL'];
+      if (t && campo && t[campo]) return Math.round(t[campo]);
+      return mensual != null ? Math.round(mensual * mult) : 0;
+    }
+    const PR = (window.BusinessConfig && window.BusinessConfig.pricing) || {};
+    const D = (v.producto === 'PSM') ? (PR.PSM_DCTOS || {}) : (PR.PAC60_DCTOS || {});
+    const pct = D[v.periodicidad] || 0;
+    if (mensual == null) return 0;
+    return Math.round(mensual * mult * (1 - pct));
+  } catch (e) { return 0; }
 }
 
 function renderPlantillaVol() {
