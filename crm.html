@@ -8375,6 +8375,23 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         <div id="sptiResumenModo" style="display:none;margin-top:10px;padding:8px 10px;background:rgba(245,158,11,0.08);border-radius:6px;font-size:12px;color:var(--amber);"></div>
       </div>
 
+      <!-- Resumen consolidado del grupo SPTI (Asegurado 1 + adicionales) — solo visible con 2+ asegurados -->
+      <div id="sptiResumenGrupo" style="display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:14px;border:1px solid rgba(245,158,11,0.35);margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">👥 RESUMEN GRUPO — TODOS LOS ASEGURADOS</div>
+        <div id="sptiDesgloseGrupo" style="margin-bottom:10px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+          <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">Total a Cancelar (<span id="sptiPerLabelGrupo">Mensual</span>)</div>
+            <div style="font-size:16px;font-weight:700;color:var(--sura-lime);" id="sptiPrimaTotalGrupo">—</div>
+          </div>
+          <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">Comisión Total Estimada (7%)</div>
+            <div style="font-size:16px;font-weight:700;color:var(--green);" id="sptiComisionGrupo">—</div>
+          </div>
+        </div>
+        <div id="sptiNotaModoGrupo" style="margin-top:10px;font-size:11.5px;color:var(--amber);"></div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">Notas / Observaciones</label>
         <input type="text" class="form-control" id="vNotasSPTI" placeholder="Observaciones adicionales">
@@ -13953,15 +13970,97 @@ function sptiCopiarTomadorExtra(idx) {
   sptiActualizarModoRegistro();
 }
 
+// ── SPTI: datos tarifarios de un asegurado del grupo ─────────────
+// n = 1 → asegurado principal (campos sin sufijo); n >= 2 → adicionales.
+// Usa exactamente las mismas tablas y campos que guardarVenta(), por lo que
+// el resumen coincide con lo que finalmente se guarda. Devuelve null si aún
+// falta la edad o está fuera de rango asegurable.
+function sptiDatosAsegurado(n) {
+  const suf = (n === 1) ? '' : ('_' + n);
+  const edad = parseInt(document.getElementById('vEdadSPTI' + suf)?.value);
+  if (!Number.isFinite(edad) || edad < 0) return null;
+  const rango = (typeof getRangoEdadSPTI === 'function') ? getRangoEdadSPTI(edad) : null;
+  if (!rango) return null;
+  const plan = document.getElementById('vPlanSPTI')?.value;
+  const peri = document.getElementById('vPeriodicidadSPTI')?.value || 'MENSUAL';
+  if (!plan) return null;
+  const campo = ({ MENSUAL:'mensual', TRIMESTRAL:'trimestre', SEMESTRAL:'semestre', ANUAL:'anual' })[peri] || 'mensual';
+  const tCon = (typeof SPTI_TARIFAS !== 'undefined' && SPTI_TARIFAS[plan]) ? SPTI_TARIFAS[plan][rango] : null;
+  const tSin = (typeof SPTI_SIN_IVA !== 'undefined' && SPTI_SIN_IVA[plan]) ? SPTI_SIN_IVA[plan][rango] : null;
+  if (!tCon || !tCon[campo]) return null;
+  const conIVA = Math.round(tCon[campo]);
+  const sinIVA = (tSin && tSin[campo]) ? Math.round(tSin[campo]) : Math.round(conIVA / IVA_FACTOR);
+  const nombre = (document.getElementById('vAseguradoNombreSPTI' + suf)?.value || '').trim();
+  return { n, edad, rango, conIVA, sinIVA, nombre, plan, peri };
+}
+
+// ── SPTI: resumen consolidado del grupo (Asegurado 1 + adicionales) ──
+// Solo lectura, al estilo del resumen de PSM: muestra el desglose por
+// asegurado y el total a cancelar + comisión estimada antes de guardar.
+// No modifica ningún campo del formulario ni el proceso de guardado.
+function sptiActualizarResumenTotal() {
+  const grupo = document.getElementById('sptiResumenGrupo');
+  if (!grupo) return;
+  if (_sptiAsegCount <= 1) { grupo.style.display = 'none'; return; }
+  grupo.style.display = '';
+
+  const peri = document.getElementById('vPeriodicidadSPTI')?.value || 'MENSUAL';
+  const periLabels = { MENSUAL:'Mensual', TRIMESTRAL:'Trimestral', SEMESTRAL:'Semestral', ANUAL:'Anual' };
+  const perLabelEl = document.getElementById('sptiPerLabelGrupo');
+  if (perLabelEl) perLabelEl.textContent = periLabels[peri] || 'Mensual';
+
+  const datos = [];
+  for (let i = 1; i <= _sptiAsegCount; i++) datos.push(sptiDatosAsegurado(i));
+
+  const desgEl = document.getElementById('sptiDesgloseGrupo');
+  const totEl  = document.getElementById('sptiPrimaTotalGrupo');
+  const comEl  = document.getElementById('sptiComisionGrupo');
+  const notaEl = document.getElementById('sptiNotaModoGrupo');
+
+  if (datos.some(d => !d)) {
+    if (desgEl) desgEl.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">⏳ Selecciona el plan y completa la fecha de nacimiento de todos los asegurados para ver el total del grupo.</div>';
+    if (totEl) totEl.textContent = '—';
+    if (comEl) comEl.textContent = '—';
+    if (notaEl) notaEl.textContent = '';
+    return;
+  }
+
+  const totalConIVA = datos.reduce((s, d) => s + d.conIVA, 0);
+  const totalSinIVA = datos.reduce((s, d) => s + d.sinIVA, 0);
+  const comisionTotal = Math.round(totalSinIVA * COM_SPTI_PCT);
+
+  if (totEl) totEl.textContent = fmt(totalConIVA);
+  if (comEl) comEl.textContent = fmt(comisionTotal);
+
+  if (desgEl) {
+    desgEl.innerHTML = datos.map(d => {
+      const nom = d.nombre ? ` — <span style="color:var(--text);">${String(d.nombre).replace(/</g,'&lt;')}</span>` : '';
+      return `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;gap:10px;">
+      <span style="color:var(--text-muted);">🏥 Asegurado ${d.n}${nom} <span style="color:var(--text-dim);">(${d.edad} años · rango ${d.rango} · ${d.plan})</span></span>
+      <span style="font-family:var(--mono);color:var(--text);font-weight:600;white-space:nowrap;">${fmt(d.conIVA)}</span>
+    </div>`;
+    }).join('');
+  }
+
+  if (notaEl) {
+    const modo = document.querySelector('input[name="sptiModoRegistro"]:checked')?.value || 'individual';
+    notaEl.textContent = modo === 'sumado'
+      ? `📌 Modo "Registro único sumado": se guardará 1 registro por ${fmt(totalConIVA)} (${fmt(totalSinIVA)} sin IVA), con comisión estimada de ${fmt(comisionTotal)}.`
+      : `📌 Modo "Registros individuales": se guardarán ${datos.length} registros; la suma de sus primas es ${fmt(totalConIVA)} y la suma de sus comisiones estimadas es ${fmt(comisionTotal)}.`;
+  }
+}
+
 function sptiActualizarModoRegistro() {
   const modo = document.querySelector('input[name="sptiModoRegistro"]:checked')?.value || 'individual';
   const res = document.getElementById('sptiResumenModo');
   if (!res) return;
-  if (_sptiAsegCount <= 1) { res.style.display = 'none'; return; }
+  if (_sptiAsegCount <= 1) { res.style.display = 'none'; sptiActualizarResumenTotal(); return; }
   res.style.display = '';
   res.textContent = modo === 'sumado'
     ? `📌 Se creará 1 registro con la prima sumada de ${_sptiAsegCount} asegurados bajo la misma póliza.`
     : `📌 Se crearán ${_sptiAsegCount} registros individuales, uno por cada asegurado.`;
+  sptiActualizarResumenTotal();
 }
 
 // ── SPD: modo registro ───────────────────────────────────────────
@@ -14011,6 +14110,7 @@ function calcEdadDinamica(prod, fechaId, edadId, rangoId, tipo) {
   }
   if (tipo === 'psm') psmActualizarModoRegistro();
   if (tipo === 'pac60') pac60ActualizarModoRegistro();
+  if (tipo === 'spti') sptiActualizarModoRegistro();
 }
 
 // ── Reset contadores al abrir/cerrar modal ───────────────────────
@@ -14038,6 +14138,9 @@ function _resetMultiAsegurados() {
   // Ocultar resumen consolidado de grupo PSM
   const _grupoResEl = document.getElementById('psmResumenGrupo');
   if (_grupoResEl) _grupoResEl.style.display = 'none';
+  // Ocultar resumen consolidado de grupo SPTI
+  const _grupoResSpti = document.getElementById('sptiResumenGrupo');
+  if (_grupoResSpti) _grupoResSpti.style.display = 'none';
 }
 
 function sptiCopiarTomadorAsegurado() {
@@ -14192,6 +14295,7 @@ function calcTotalSPTI() {
     document.getElementById('vPrimaTotalSPTI').value = fmt(total);
     document.getElementById('vDctoSPTI').value = periodicidad === 'MENSUAL' ? 'Sin descuento' : '(selecciona plan y edad)';
   }
+  if (typeof sptiActualizarResumenTotal === 'function') sptiActualizarResumenTotal();
 }
 
 // Listener prima base SPTI — distingue edición manual vs set programático
