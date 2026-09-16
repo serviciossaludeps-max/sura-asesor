@@ -15528,6 +15528,17 @@ function guardarVenta() {
     for (let ai = 2; ai <= _psmAsegCount; ai++) {
       const edadAi = parseInt(document.getElementById('vEdadPSM_' + ai)?.value) || 0;
       const rangoAi = getRangoPSM(edadAi);
+      // Los módulos (EMD/Alto Costo/Cirugía/Maternidad) son checkboxes únicos
+      // a nivel de póliza — no hay selección por asegurado en la UI — así que
+      // cada asegurado adicional debe llevar los mismos módulos marcados que
+      // el Asegurado 1. Antes solo se cobraba el módulo Básico.
+      let primaMensualAi = rangoAi ? PSM_TARIFAS.basico[rangoAi.key] * PSM_IVA : 0;
+      if (rangoAi) {
+        if (document.getElementById('chkEMD')?.checked) primaMensualAi += PSM_TARIFAS.emd[rangoAi.key] * PSM_IVA;
+        if (document.getElementById('chkAltoCosto').checked) primaMensualAi += PSM_TARIFAS.altoCosto[rangoAi.key] * PSM_IVA;
+        if (document.getElementById('chkCirugia').checked) primaMensualAi += PSM_TARIFAS.cirugia[rangoAi.key] * PSM_IVA;
+        if (document.getElementById('chkMaternidad').checked && edadAi >= 15 && edadAi <= 45) primaMensualAi += PSM_TARIFAS.maternidad[rangoAi.key] * PSM_IVA;
+      }
       aseguradosPSM.push({
         nombre: document.getElementById('vNombrePSM_' + ai)?.value || '',
         tipoDoc: document.getElementById('vTipoDocPSM_' + ai)?.value || 'CC',
@@ -15535,7 +15546,7 @@ function guardarVenta() {
         fechaNac: document.getElementById('vFechaNacPSM_' + ai)?.value || '',
         edad: edadAi,
         rangoEdad: rangoAi?.key || '—',
-        primaTotal: rangoAi ? Math.round(PSM_TARIFAS.basico[rangoAi.key] * PSM_IVA * multPSM * (1 - _dctoPctPSM)) : 0,
+        primaTotal: rangoAi ? Math.round(primaMensualAi * multPSM * (1 - _dctoPctPSM)) : 0,
       });
     }
     if (modoRegistroPSM === 'sumado' && aseguradosPSM.length > 0) {
