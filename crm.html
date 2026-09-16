@@ -8759,8 +8759,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 
       <!-- Módulos -->
       <div style="border:1px solid rgba(6,182,212,0.3);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;">
-        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px;">🧩 MÓDULOS CONTRATADOS</div>
-        <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:12px;">El Módulo Básico es obligatorio. Los demás son opcionales según necesidad del asegurado.</div>
+        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px;">🧩 MÓDULOS — ASEGURADO 1</div>
+        <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:12px;">El Módulo Básico es obligatorio. Los demás son opcionales según necesidad del asegurado. Si agregas más asegurados, cada uno tendrá sus propios módulos más abajo.</div>
 
         <!-- Módulo Básico (siempre activo) -->
         <div style="background:rgba(6,182,212,0.1);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
@@ -8860,6 +8860,23 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             <div style="font-size:15px;font-weight:700;color:var(--teal);">$30.000</div>
           </div>
         </div>
+      </div>
+
+      <!-- Resumen consolidado del grupo (Asegurado 1 + adicionales) — solo visible con 2+ asegurados -->
+      <div id="psmResumenGrupo" style="display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:14px;border:1px solid rgba(245,158,11,0.35);margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">👥 RESUMEN GRUPO — TODOS LOS ASEGURADOS</div>
+        <div id="psmDesgloseGrupo" style="margin-bottom:10px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+          <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">Total a Cancelar (<span id="psmPerLabelGrupo">Mensual</span>)</div>
+            <div style="font-size:16px;font-weight:700;color:var(--sura-lime);" id="psmPrimaTotalGrupo">—</div>
+          </div>
+          <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">Comisión Total Estimada</div>
+            <div style="font-size:16px;font-weight:700;color:var(--green);" id="psmComisionGrupo">—</div>
+          </div>
+        </div>
+        <div id="psmNotaModoGrupo" style="margin-top:10px;font-size:11.5px;color:var(--amber);"></div>
       </div>
 
       <div class="form-group">
@@ -13733,6 +13750,23 @@ function psmAgregarAsegurado() {
       <div class="form-group"><label class="form-label">Fecha de Nacimiento</label><input type="date" class="form-control" id="vFechaNacPSM_${n}" onchange="calcEdadDinamica('PSM','vFechaNacPSM_${n}','vEdadPSM_${n}','vRangoPSM_${n}','psm')"></div>
       <div class="form-group"><label class="form-label">Edad</label><input type="text" class="form-control" id="vEdadPSM_${n}" readonly placeholder="Auto" style="background:var(--surface3);color:var(--sura-lime);font-weight:600;"></div>
       <div class="form-group"><label class="form-label">Rango Tarifario</label><input type="text" class="form-control" id="vRangoPSM_${n}" readonly placeholder="Auto" style="background:var(--surface3);color:var(--teal);font-weight:600;"></div>
+    </div>
+    <div style="margin-top:10px;padding:10px;border:1px dashed rgba(6,182,212,0.35);border-radius:8px;background:rgba(6,182,212,0.03);">
+      <div style="font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">🧩 Módulos — Asegurado ${n} <span style="font-weight:400;color:var(--text-muted);text-transform:none;">(Básico incluido siempre)</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">
+          <input type="checkbox" id="chkEMD_${n}" onchange="psmActualizarResumenTotal()" style="width:15px;height:15px;accent-color:var(--teal);cursor:pointer;"> 🚑 EMD
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">
+          <input type="checkbox" id="chkAltoCosto_${n}" onchange="psmActualizarResumenTotal()" style="width:15px;height:15px;accent-color:var(--teal);cursor:pointer;"> 🧬 Alto Costo
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">
+          <input type="checkbox" id="chkCirugia_${n}" onchange="psmActualizarResumenTotal()" style="width:15px;height:15px;accent-color:var(--teal);cursor:pointer;"> 👨‍⚕️ Cirugía Ambulatoria
+        </label>
+        <label id="rowMaternidad_${n}" style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">
+          <input type="checkbox" id="chkMaternidad_${n}" onchange="psmActualizarResumenTotal()" style="width:15px;height:15px;accent-color:var(--teal);cursor:pointer;"> 👶 Maternidad
+        </label>
+      </div>
     </div>`;
   container.appendChild(div);
   _psmAsegCount++;
@@ -13749,14 +13783,19 @@ function psmEliminarAsegurado(idx) {
 function psmActualizarModoRegistro() {
   const modo = document.querySelector('input[name="psmModoRegistro"]:checked')?.value || 'individual';
   const res = document.getElementById('psmResumenModo');
-  if (!res) return;
-  if (_psmAsegCount <= 1) { res.style.display = 'none'; return; }
-  res.style.display = '';
-  if (modo === 'sumado') {
-    res.textContent = `📌 Se creará 1 registro con la prima sumada de ${_psmAsegCount} asegurados bajo la misma póliza.`;
-  } else {
-    res.textContent = `📌 Se crearán ${_psmAsegCount} registros individuales, uno por cada asegurado.`;
+  if (res) {
+    if (_psmAsegCount <= 1) {
+      res.style.display = 'none';
+    } else {
+      res.style.display = '';
+      if (modo === 'sumado') {
+        res.textContent = `📌 Se creará 1 registro con la prima sumada de ${_psmAsegCount} asegurados bajo la misma póliza.`;
+      } else {
+        res.textContent = `📌 Se crearán ${_psmAsegCount} registros individuales, uno por cada asegurado.`;
+      }
+    }
   }
+  psmActualizarResumenTotal();
 }
 
 // ── PAC60: bloquea/desbloquea campos de asegurado cuando "Mismo que el tomador" está activo ──
@@ -13956,6 +13995,15 @@ function calcEdadDinamica(prod, fechaId, edadId, rangoId, tipo) {
     if (tipo === 'psm') {
       const r = getRangoPSM(edad);
       rangoEl.value = r ? r.key : (edad > 64 ? 'Fuera de rango' : '—');
+      // Maternidad solo disponible 15–45 años — aplica a los módulos propios de cada asegurado adicional
+      const _mSuf = fechaId.replace('vFechaNacPSM', ''); // '' = asegurado 1 (no aplica aquí), '_2','_3','_4' = adicionales
+      if (_mSuf) {
+        const _matOk = edad >= 15 && edad <= 45;
+        const _rowMat = document.getElementById('rowMaternidad' + _mSuf);
+        const _chkMat = document.getElementById('chkMaternidad' + _mSuf);
+        if (_rowMat) { _rowMat.style.opacity = _matOk ? '' : '0.4'; _rowMat.style.pointerEvents = _matOk ? '' : 'none'; }
+        if (_chkMat && !_matOk) _chkMat.checked = false;
+      }
     } else if (tipo === 'pac60') {
       const r = getRangoPAC60(edad);
       rangoEl.value = r || (edad < 60 ? 'Menor de 60' : 'Mayor de 79');
@@ -13987,6 +14035,9 @@ function _resetMultiAsegurados() {
   ['vPsmAsegMismoTomador0','vPac60AsegMismoTomador0','vSptiAseguradoMismoTomador'].forEach(id => {
     const el = document.getElementById(id); if (el) el.checked = false;
   });
+  // Ocultar resumen consolidado de grupo PSM
+  const _grupoResEl = document.getElementById('psmResumenGrupo');
+  if (_grupoResEl) _grupoResEl.style.display = 'none';
 }
 
 function sptiCopiarTomadorAsegurado() {
@@ -14221,6 +14272,110 @@ function getRangoPSM(edad) {
   return PSM_RANGOS.find(r => edad >= r.min && edad <= r.max) || null; // fallback si el motor no cargó
 }
 
+// ── PSM: datos y prima mensual de UN asegurado, leyendo sus propios módulos ──
+// suf: '' = Asegurado 1 (ids vFechaNacPSM/vEdadPSM/chkEMD...), '_2'/'_3'/'_4' = adicionales
+// Devuelve null si falta la fecha de nacimiento o la edad está fuera de rango (0–64).
+function psmDatosAsegurado(suf) {
+  const edadEl = document.getElementById('vEdadPSM' + suf);
+  const fechaEl = document.getElementById('vFechaNacPSM' + suf);
+  let edad = null;
+  if (fechaEl && fechaEl.value) {
+    const nac = new Date(fechaEl.value + 'T12:00:00');
+    const hoy = new Date();
+    edad = hoy.getFullYear() - nac.getFullYear();
+    const m = hoy.getMonth() - nac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+  } else if (edadEl && edadEl.value) {
+    edad = parseInt(edadEl.value);
+    if (Number.isNaN(edad)) edad = null;
+  }
+  if (edad === null || edad < 0 || edad > 64) return null;
+  const rango = getRangoPSM(edad);
+  if (!rango) return null;
+  const k = rango.key;
+  const emd        = !!document.getElementById('chkEMD' + suf)?.checked;
+  const altoCosto  = !!document.getElementById('chkAltoCosto' + suf)?.checked;
+  const cirugia    = !!document.getElementById('chkCirugia' + suf)?.checked;
+  const matOk      = edad >= 15 && edad <= 45;
+  const maternidad = matOk && !!document.getElementById('chkMaternidad' + suf)?.checked;
+  let primaMensual = PSM_TARIFAS.basico[k] * PSM_IVA;
+  const modulos = ['Básico'];
+  if (emd)        { primaMensual += PSM_TARIFAS.emd[k] * PSM_IVA;        modulos.push('Atención Domiciliaria'); }
+  if (altoCosto)  { primaMensual += PSM_TARIFAS.altoCosto[k] * PSM_IVA;  modulos.push('Alto Costo'); }
+  if (cirugia)    { primaMensual += PSM_TARIFAS.cirugia[k] * PSM_IVA;    modulos.push('Cirugía Ambulatoria'); }
+  if (maternidad) { primaMensual += PSM_TARIFAS.maternidad[k] * PSM_IVA; modulos.push('Maternidad'); }
+  return { edad, rango: k, primaMensual, modulos, comPct: edad <= 50 ? 0.12 : 0.06 };
+}
+
+// ── PSM: resumen consolidado del grupo (Asegurado 1 + adicionales) ──
+// Refleja en vivo el total a pagar y la comisión estimada según el modo de
+// registro elegido (individual/sumado). No reemplaza a calcDatosPSM() (que
+// sigue mostrando el desglose del Asegurado 1); solo se muestra cuando hay
+// 2 o más asegurados.
+function psmActualizarResumenTotal() {
+  const grupo = document.getElementById('psmResumenGrupo');
+  if (!grupo) return;
+  if (_psmAsegCount <= 1) { grupo.style.display = 'none'; return; }
+
+  const sufijos = [''];
+  for (let ai = 2; ai <= _psmAsegCount; ai++) sufijos.push('_' + ai);
+  const datos = sufijos.map((suf, i) => ({ n: i + 1, d: psmDatosAsegurado(suf) }));
+
+  grupo.style.display = '';
+  if (datos.some(x => !x.d)) {
+    document.getElementById('psmDesgloseGrupo').innerHTML =
+      '<div style="font-size:12px;color:var(--text-muted);">⏳ Completa la fecha de nacimiento (0–64 años) de todos los asegurados para ver el total del grupo.</div>';
+    document.getElementById('psmPrimaTotalGrupo').textContent = '—';
+    document.getElementById('psmComisionGrupo').textContent = '—';
+    document.getElementById('psmNotaModoGrupo').textContent = '';
+    return;
+  }
+
+  const periPSM = document.getElementById('vPeriodicidadPSM')?.value || 'MENSUAL';
+  const periMult = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
+  const mult = periMult[periPSM] || 1;
+  const periLabels = { MENSUAL:'Mensual', TRIMESTRAL:'Trimestral', SEMESTRAL:'Semestral', ANUAL:'Anual' };
+  const perLabelElG = document.getElementById('psmPerLabelGrupo');
+  if (perLabelElG) perLabelElG.textContent = periLabels[periPSM] || 'Mensual';
+  const PSM_DCTOS = window.BusinessConfig.pricing.PSM_DCTOS;
+  const dctoPct = PSM_DCTOS[periPSM] || 0;
+
+  const modo = document.querySelector('input[name="psmModoRegistro"]:checked')?.value || 'individual';
+
+  // Prima total por asegurado — misma fórmula de redondeo que al guardar (guardarVenta)
+  const primasIndividuales = datos.map(x => Math.round(x.d.primaMensual * mult * (1 - dctoPct)));
+  const primaGrupoTotal = primasIndividuales.reduce((s, v) => s + v, 0);
+
+  let comisionGrupoTotal;
+  if (modo === 'sumado') {
+    // Igual que al guardar en modo sumado: % de comisión del Asegurado 1 sobre el total sin IVA
+    const comPct1 = datos[0].d.comPct;
+    const totalSinIVA = Math.round(primaGrupoTotal / PSM_IVA);
+    comisionGrupoTotal = Math.round(totalSinIVA * comPct1);
+  } else {
+    // Igual que al guardar en modo individual: comisión propia de cada asegurado, sumadas
+    comisionGrupoTotal = datos.reduce((s, x, i) => {
+      const sinIVA = Math.round(primasIndividuales[i] / PSM_IVA);
+      return s + Math.round(sinIVA * x.d.comPct);
+    }, 0);
+  }
+
+  document.getElementById('psmPrimaTotalGrupo').textContent = fmt(primaGrupoTotal);
+  document.getElementById('psmComisionGrupo').textContent = fmt(comisionGrupoTotal);
+
+  const desgloseHTML = datos.map((x, i) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;">
+      <span style="color:var(--text-muted);">🏥 Asegurado ${x.n} <span style="color:var(--text-dim);">(${x.d.edad} años · ${x.d.modulos.join(' + ')})</span></span>
+      <span style="font-family:var(--mono);color:var(--text);font-weight:600;">${fmt(primasIndividuales[i])}</span>
+    </div>`).join('');
+  document.getElementById('psmDesgloseGrupo').innerHTML = desgloseHTML;
+
+  const nota = modo === 'sumado'
+    ? `📌 Modo "Registro único sumado": se guardará 1 registro por ${fmt(primaGrupoTotal)}, con comisión estimada de ${fmt(comisionGrupoTotal)}.`
+    : `📌 Modo "Registros individuales": se guardarán ${datos.length} registros; la suma de sus primas es ${fmt(primaGrupoTotal)} y la suma de sus comisiones estimadas es ${fmt(comisionGrupoTotal)}.`;
+  document.getElementById('psmNotaModoGrupo').textContent = nota;
+}
+
 function calcDatosPSM() {
   // 1. Calc age
   const fn = document.getElementById('vFechaNacPSM').value;
@@ -14373,6 +14528,9 @@ function calcDatosPSM() {
     </div>` : '';
 
   document.getElementById('psmDesglose').innerHTML = desgloseHTML + multLineHTML + dctoLineHTML;
+
+  // Recalcular también el resumen consolidado del grupo (si hay 2+ asegurados)
+  psmActualizarResumenTotal();
 }
 
 // =============================================
@@ -15528,16 +15686,16 @@ function guardarVenta() {
     for (let ai = 2; ai <= _psmAsegCount; ai++) {
       const edadAi = parseInt(document.getElementById('vEdadPSM_' + ai)?.value) || 0;
       const rangoAi = getRangoPSM(edadAi);
-      // Los módulos (EMD/Alto Costo/Cirugía/Maternidad) son checkboxes únicos
-      // a nivel de póliza — no hay selección por asegurado en la UI — así que
-      // cada asegurado adicional debe llevar los mismos módulos marcados que
-      // el Asegurado 1. Antes solo se cobraba el módulo Básico.
+      // Cada asegurado adicional tiene sus propios checkboxes de módulos
+      // (chkEMD_N, chkAltoCosto_N, chkCirugia_N, chkMaternidad_N), independientes
+      // de los del Asegurado 1.
       let primaMensualAi = rangoAi ? PSM_TARIFAS.basico[rangoAi.key] * PSM_IVA : 0;
+      const modulosAi = ['Básico'];
       if (rangoAi) {
-        if (document.getElementById('chkEMD')?.checked) primaMensualAi += PSM_TARIFAS.emd[rangoAi.key] * PSM_IVA;
-        if (document.getElementById('chkAltoCosto').checked) primaMensualAi += PSM_TARIFAS.altoCosto[rangoAi.key] * PSM_IVA;
-        if (document.getElementById('chkCirugia').checked) primaMensualAi += PSM_TARIFAS.cirugia[rangoAi.key] * PSM_IVA;
-        if (document.getElementById('chkMaternidad').checked && edadAi >= 15 && edadAi <= 45) primaMensualAi += PSM_TARIFAS.maternidad[rangoAi.key] * PSM_IVA;
+        if (document.getElementById('chkEMD_' + ai)?.checked) { primaMensualAi += PSM_TARIFAS.emd[rangoAi.key] * PSM_IVA; modulosAi.push('Atención Domiciliaria'); }
+        if (document.getElementById('chkAltoCosto_' + ai)?.checked) { primaMensualAi += PSM_TARIFAS.altoCosto[rangoAi.key] * PSM_IVA; modulosAi.push('Alto Costo'); }
+        if (document.getElementById('chkCirugia_' + ai)?.checked) { primaMensualAi += PSM_TARIFAS.cirugia[rangoAi.key] * PSM_IVA; modulosAi.push('Cirugía Ambulatoria'); }
+        if (document.getElementById('chkMaternidad_' + ai)?.checked && edadAi >= 15 && edadAi <= 45) { primaMensualAi += PSM_TARIFAS.maternidad[rangoAi.key] * PSM_IVA; modulosAi.push('Maternidad'); }
       }
       aseguradosPSM.push({
         nombre: document.getElementById('vNombrePSM_' + ai)?.value || '',
@@ -15546,6 +15704,7 @@ function guardarVenta() {
         fechaNac: document.getElementById('vFechaNacPSM_' + ai)?.value || '',
         edad: edadAi,
         rangoEdad: rangoAi?.key || '—',
+        modulos: modulosAi,
         primaTotal: rangoAi ? Math.round(primaMensualAi * multPSM * (1 - _dctoPctPSM)) : 0,
       });
     }
@@ -15618,7 +15777,7 @@ function guardarVenta() {
           tomadorNombre: tomNomPSM, tomadorDoc: tomDocPSM, tomadorTipoDoc: tomTDocPSM,
           nombre: a.nombre, tipoDoc: a.tipoDoc, doc: a.doc,
           fechaNac: a.fechaNac, edad: a.edad, rangoEdad: a.rangoEdad, modoRegistro: 'individual',
-          modulos: modulosArr,
+          modulos: a.modulos && a.modulos.length ? a.modulos : modulosArr,
           telefono: document.getElementById('vTelPSM').value,
           correo: document.getElementById('vCorreoPSM').value,
           ciudad: ciudadPSM, empresa: empNombrePSM, periodicidad: periPSM,
@@ -17515,9 +17674,17 @@ function calcMontoPSMPeriodo(venta) {
   }
   if (Array.isArray(venta.asegurados)) {
     for (const a of venta.asegurados) {
-      const tablaBasico = PSM_TARIFAS_M.basico;
-      if (!a.rangoEdad || tablaBasico[a.rangoEdad] === undefined) return null;
-      totalMensual += tablaBasico[a.rangoEdad] * PSM_IVA_M;
+      if (!a.rangoEdad) return null;
+      // Asegurados adicionales guardados con sus propios módulos (a.modulos) los
+      // respeta; pólizas antiguas sin ese dato conservan el comportamiento previo
+      // (solo Básico) — sin adivinar nada nuevo sobre datos legados.
+      const modulosAi = Array.isArray(a.modulos) && a.modulos.length ? a.modulos : ['Básico'];
+      for (const label of modulosAi) {
+        const clave = _PSM_LABEL_A_CLAVE[label];
+        const tabla = clave && PSM_TARIFAS_M[clave];
+        if (!tabla || tabla[a.rangoEdad] === undefined) return null;
+        totalMensual += tabla[a.rangoEdad] * PSM_IVA_M;
+      }
     }
   }
 
