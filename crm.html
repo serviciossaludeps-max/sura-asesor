@@ -9117,6 +9117,23 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
       </div>
 
+      <!-- Resumen consolidado del grupo (Asegurado 1 + adicionales) — solo visible con 2+ asegurados -->
+      <div id="pac60ResumenGrupo" style="display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:14px;border:1px solid rgba(245,158,11,0.35);margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">👥 RESUMEN GRUPO — TODOS LOS ASEGURADOS</div>
+        <div id="pac60DesgloseGrupo" style="margin-bottom:10px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+          <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">Total a Cancelar (<span id="pac60PerLabelGrupo">Mensual</span>)</div>
+            <div style="font-size:16px;font-weight:700;color:var(--sura-lime);" id="pac60PrimaTotalGrupo">—</div>
+          </div>
+          <div style="background:var(--surface3);border-radius:6px;padding:10px;text-align:center;">
+            <div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">Comisión Total Estimada</div>
+            <div style="font-size:16px;font-weight:700;color:var(--green);" id="pac60ComisionGrupo">—</div>
+          </div>
+        </div>
+        <div id="pac60NotaModoGrupo" style="margin-top:10px;font-size:11.5px;color:var(--amber);"></div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">Notas / Observaciones</label>
         <input type="text" class="form-control" id="vNotasPAC60" placeholder="Observaciones adicionales">
@@ -13906,12 +13923,105 @@ function pac60EliminarAsegurado(idx) {
 function pac60ActualizarModoRegistro() {
   const modo = document.querySelector('input[name="pac60ModoRegistro"]:checked')?.value || 'individual';
   const res = document.getElementById('pac60ResumenModo');
-  if (!res) return;
-  if (_pac60AsegCount <= 1) { res.style.display = 'none'; return; }
+  if (!res) { pac60ActualizarResumenTotal(); return; }
+  if (_pac60AsegCount <= 1) { res.style.display = 'none'; pac60ActualizarResumenTotal(); return; }
   res.style.display = '';
   res.textContent = modo === 'sumado'
     ? `📌 Se creará 1 registro con la prima sumada de ${_pac60AsegCount} asegurados bajo la misma póliza.`
     : `📌 Se crearán ${_pac60AsegCount} registros individuales, uno por cada asegurado.`;
+  pac60ActualizarResumenTotal();
+}
+
+// ── PAC60 (60+): datos de un asegurado por índice, para el resumen de grupo ──
+// suf='' es el Asegurado 1 (campos sin sufijo); suf='_n' son los adicionales.
+// Usa la MISMA fórmula que _pushPAC() al guardar (no la de calcDatosPAC60(),
+// que prioriza MotorProducto solo para la vista previa del Asegurado 1), para
+// que el total mostrado aquí siempre coincida con lo que realmente se guarda.
+function pac60DatosAsegurado(n) {
+  const suf = (n === 1) ? '' : ('_' + n);
+  const edad = parseInt(document.getElementById('vEdadPAC60' + suf)?.value) || 0;
+  if (!edad) return null;
+  const tipoMov = document.getElementById('vTipoMovPAC60')?.value || 'NUEVO';
+  const val = window.MotorValidacion ? window.MotorValidacion.validarEdadPAC60(edad, tipoMov) : null;
+  const bloqueaMin = val ? (val.valido === false && val.motivo === 'MIN') : (edad < 60);
+  const bloqueaMax = val ? (val.valido === false && val.motivo === 'MAX_NUEVA') : (edad > 79 && tipoMov === 'NUEVO');
+  if (bloqueaMin || bloqueaMax) return null;
+  const rango = getRangoPAC60(edad);
+  if (!rango || !PAC60_TARIFAS[rango]) return null;
+  const conAnexo = !!document.getElementById('chkAnexoPAC60')?.checked;
+  const tarifas = PAC60_TARIFAS[rango];
+  const primaMensual = conAnexo ? tarifas.conAnexo : tarifas.sinAnexo;
+  const periPAC = document.getElementById('vPeriodicidadPAC60')?.value || 'MENSUAL';
+  const periMult = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
+  const mult = periMult[periPAC] || 1;
+  const PAC60_DCTOS = window.BusinessConfig.pricing.PAC60_DCTOS;
+  const dctoPct = PAC60_DCTOS[periPAC] || 0;
+  const prima = Math.round(primaMensual * mult * (1 - dctoPct));
+  const nombre = (document.getElementById('vNombrePAC60' + suf)?.value || '').trim();
+  return { n, edad, rango, conAnexo, prima, nombre };
+}
+
+function pac60ActualizarResumenTotal() {
+  const grupo = document.getElementById('pac60ResumenGrupo');
+  if (!grupo) return;
+  if (_pac60AsegCount <= 1) { grupo.style.display = 'none'; return; }
+
+  const datos = [];
+  for (let i = 1; i <= _pac60AsegCount; i++) datos.push(pac60DatosAsegurado(i));
+
+  const desgEl = document.getElementById('pac60DesgloseGrupo');
+  const totEl  = document.getElementById('pac60PrimaTotalGrupo');
+  const comEl  = document.getElementById('pac60ComisionGrupo');
+  const notaEl = document.getElementById('pac60NotaModoGrupo');
+  const perLabelEl = document.getElementById('pac60PerLabelGrupo');
+  const periLabels = { MENSUAL:'Mensual', TRIMESTRAL:'Trimestral', SEMESTRAL:'Semestral', ANUAL:'Anual' };
+  const periPAC = document.getElementById('vPeriodicidadPAC60')?.value || 'MENSUAL';
+  if (perLabelEl) perLabelEl.textContent = periLabels[periPAC] || 'Mensual';
+
+  grupo.style.display = '';
+
+  if (datos.some(d => !d)) {
+    if (desgEl) desgEl.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">⏳ Completa la fecha de nacimiento (60–79 años para venta nueva) de todos los asegurados para ver el total del grupo.</div>';
+    if (totEl) totEl.textContent = '—';
+    if (comEl) comEl.textContent = '—';
+    if (notaEl) notaEl.textContent = '';
+    return;
+  }
+
+  const modo = document.querySelector('input[name="pac60ModoRegistro"]:checked')?.value || 'individual';
+  const PAC60_COM_PCT = window.BusinessConfig.commissions.COM_PCT.PAC60;
+  const primaGrupoTotal = datos.reduce((s, d) => s + d.prima, 0);
+
+  let comisionGrupoTotal;
+  if (modo === 'sumado') {
+    const sinIVA = Math.round(primaGrupoTotal / 1.05);
+    comisionGrupoTotal = Math.round(sinIVA * PAC60_COM_PCT);
+  } else {
+    comisionGrupoTotal = datos.reduce((s, d) => {
+      const sinIVA = Math.round(d.prima / 1.05);
+      return s + Math.round(sinIVA * PAC60_COM_PCT);
+    }, 0);
+  }
+
+  if (totEl) totEl.textContent = fmt(primaGrupoTotal);
+  if (comEl) comEl.textContent = fmt(comisionGrupoTotal);
+
+  if (desgEl) {
+    desgEl.innerHTML = datos.map(d => {
+      const nom = d.nombre ? ` — <span style="color:var(--text);">${String(d.nombre).replace(/</g,'&lt;')}</span>` : '';
+      return `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;gap:10px;">
+      <span style="color:var(--text-muted);">🏥 Asegurado ${d.n}${nom} <span style="color:var(--text-dim);">(${d.edad} años · ${d.rango}${d.conAnexo ? ' · con anexo' : ''})</span></span>
+      <span style="font-family:var(--mono);color:var(--text);font-weight:600;white-space:nowrap;">${fmt(d.prima)}</span>
+    </div>`;
+    }).join('');
+  }
+
+  if (notaEl) {
+    notaEl.textContent = modo === 'sumado'
+      ? `📌 Modo "Registro único sumado": se guardará 1 registro por ${fmt(primaGrupoTotal)}, con comisión estimada de ${fmt(comisionGrupoTotal)}.`
+      : `📌 Modo "Registros individuales": se guardarán ${datos.length} registros; la suma de sus primas es ${fmt(primaGrupoTotal)} y la suma de sus comisiones estimadas es ${fmt(comisionGrupoTotal)}.`;
+  }
 }
 
 // ── SPTI: agregar asegurado dinámico ────────────────────────────
@@ -14679,19 +14789,21 @@ function calcDatosPAC60() {
     edadEl.value = '⚠️ Mínimo 60 años';
     edadEl.style.color = 'var(--red)';
     document.getElementById('pac60Resumen').style.display = 'none';
+    pac60ActualizarResumenTotal();
     return;
   }
   if (_bloqueaMax || (_sinDato && edadNum > 79 && _tipoMovPAC60 === 'NUEVO')) {
     edadEl.value = '⚠️ Máx. 79 años para venta nueva';
     edadEl.style.color = 'var(--red)';
     document.getElementById('pac60Resumen').style.display = 'none';
+    pac60ActualizarResumenTotal();
     return;
   }
 
   const rango = getRangoPAC60(edadNum);
   edadEl.value = rango ? rango + ' años' : '—';
   edadEl.style.color = 'var(--green)';
-  if (!rango) return;
+  if (!rango) { pac60ActualizarResumenTotal(); return; }
 
   const tarifas = PAC60_TARIFAS[rango];
   const conAnexo = document.getElementById('chkAnexoPAC60').checked;
@@ -14776,6 +14888,7 @@ function calcDatosPAC60() {
     </div>` : '';
 
   document.getElementById('pac60Desglose').innerHTML = desgloseHTML60 + multLine60HTML + dctoLine60HTML;
+  pac60ActualizarResumenTotal();
 }
 
 // ── Tarifa Congelada — Oferta Diciembre ──────────────────────────────────────
