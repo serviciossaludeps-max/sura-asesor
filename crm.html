@@ -8440,7 +8440,10 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
         <div class="form-group">
           <label class="form-label">Plan / Tipo de Cobertura</label>
-          <input type="text" class="form-control" id="vPlanSPD" value="Salud Para Dos Plus" readonly style="background:var(--surface3);color:var(--teal);font-weight:600;">
+          <select class="form-control" id="vPlanSPD" onchange="calcTotalSPD()" style="color:var(--teal);font-weight:600;">
+            <option value="Salud Para Dos Plus" selected>Plus</option>
+            <option value="Salud Para Dos Estándar">Estándar</option>
+          </select>
         </div>
         <div class="form-group">
           <label class="form-label">Periodicidad de Pago</label>
@@ -8600,20 +8603,10 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
       </div>
 
-      <!-- Modo de registro SPD -->
-      <div style="border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;background:rgba(245,158,11,0.04);">
-        <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:10px;">📋 MODO DE REGISTRO EN PLANTILLA</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12.5px;">
-            <input type="radio" name="spdModoRegistro" id="spdModoIndividual" value="individual" checked onchange="spdActualizarModoRegistro()" style="margin-top:2px;accent-color:var(--purple);">
-            <span><strong style="color:var(--text);">Registros individuales</strong> — Un registro por asegurado con su prima individual</span>
-          </label>
-          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12.5px;">
-            <input type="radio" name="spdModoRegistro" id="spdModoSumado" value="sumado" onchange="spdActualizarModoRegistro()" style="margin-top:2px;accent-color:var(--amber);">
-            <span><strong style="color:var(--text);">Registro único sumado</strong> — Un solo registro con la suma de primas de los 2 asegurados (estructura SURA póliza conjunta)</span>
-          </label>
-        </div>
-        <div id="spdResumenModo" style="display:none;margin-top:10px;padding:8px 10px;background:rgba(245,158,11,0.08);border-radius:6px;font-size:12px;color:var(--amber);"></div>
+      <!-- SPD: tarifa única para la pareja -->
+      <div style="border:1px solid rgba(168,85,247,0.3);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;background:rgba(168,85,247,0.04);">
+        <div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:4px;">ℹ️ Tarifa única SPD</div>
+        <div style="font-size:12px;color:var(--text-muted);">SPD tiene una sola tarifa por la pareja (tomador + asegurado, o los 2 asegurados). Se guarda siempre un único registro con esa prima — nunca se duplica ni se divide en dos.</div>
       </div>
 
       <div class="form-group">
@@ -14444,17 +14437,27 @@ const SPD_TARIFAS = {
 
 function calcTotalSPD() {
   const per = document.getElementById('vPeriodicidadSPD').value;
-  const val = SPD_TARIFAS[per] || SPD_TARIFAS.MENSUAL;
-  document.getElementById('vPrimaSPD').value = fmt(val);
-  // Mostrar descuento si aplica
+  const plan = document.getElementById('vPlanSPD')?.value || 'Salud Para Dos Plus';
+  const primaEl = document.getElementById('vPrimaSPD');
   const dctoEl = document.getElementById('vDctoSPD');
+  const elTotal = document.getElementById('vPrimaTotalSPD');
+  // El plan Estándar todavía no tiene tarifas cargadas (BR pendiente) — no se
+  // muestra ni se guarda el valor de Plus bajo ese nombre.
+  if (plan !== 'Salud Para Dos Plus') {
+    if (primaEl) primaEl.value = '⚠️ Sin tarifa cargada';
+    if (dctoEl) dctoEl.value = '—';
+    if (elTotal) elTotal.value = '';
+    return;
+  }
+  const val = SPD_TARIFAS[per] || SPD_TARIFAS.MENSUAL;
+  if (primaEl) primaEl.value = fmt(val);
+  // Mostrar descuento si aplica
   if (dctoEl) {
     const dcto = per !== 'MENSUAL' ? Math.round(SPD_TARIFAS.MENSUAL * { TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 }[per] - val) : 0;
     dctoEl.value = dcto > 0 ? `Dcto: ${fmt(dcto)}` : 'Sin descuento';
   }
   // Keep vPrimaTotalSPD in sync for guardarVenta compatibility
-  const el = document.getElementById('vPrimaTotalSPD');
-  if (el) el.value = fmt(val);
+  if (elTotal) elTotal.value = fmt(val);
 }
 
 // =============================================
@@ -16124,24 +16127,24 @@ function guardarVenta() {
   } else if (modalTab === 'spd') {
     const fecha = document.getElementById('vFechaSPD').value;
     if (!fecha) return alert('Ingresa la fecha');
-    const parsePrimaCOP = (str) => {
-      if (!str) return 0;
-      const clean = String(str).replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.');
-      return parseFloat(clean) || 0;
-    };
+    const planSPD = document.getElementById('vPlanSPD').value;
+    if (planSPD !== 'Salud Para Dos Plus') {
+      return alert('El plan Estándar de SPD todavía no tiene tarifa cargada. Selecciona Plus, o espera a que se habilite Estándar.');
+    }
     const per = document.getElementById('vPeriodicidadSPD').value;
     const primaMen = SPD_TARIFAS[per] || SPD_TARIFAS.MENSUAL;
+    // SPD es una tarifa ÚNICA para la pareja (tomador+asegurado, o los 2
+    // asegurados) — nunca se multiplica por 2 ni se reparte en 2 registros.
     const primaTotal = primaMen;
     const primaTotalSinIVA = Math.round(primaTotal / IVA_FACTOR);
     const soloUnoSPD = document.getElementById('vAsegurado2SoloUno')?.checked;
-    const modoRegistroSPD = document.querySelector('input[name="spdModoRegistro"]:checked')?.value || 'individual';
     const mesCompSPD = getMesKey(parseFechaLocal(fecha).getFullYear(), parseFechaLocal(fecha).getMonth());
     const tcFlagSPD = !!(document.getElementById('chkTarifaCongeladaSPD')?.checked);
     const _spdBase = {
       fechaExp: document.getElementById('vFechaExpSPD').value,
       poliza: document.getElementById('vPolizaSPD').value,
       tipo: document.getElementById('vTipoSPD').value,
-      plan: document.getElementById('vPlanSPD').value,
+      plan: planSPD,
       periodicidad: per,
       tomadorNombre: document.getElementById('vTomadorNombre').value,
       tomadorTipoDoc: document.getElementById('vTomadorTipoDoc').value,
@@ -16167,55 +16170,22 @@ function guardarVenta() {
       aseguradoFechaNac: document.getElementById('vAseguradoFechaNac').value,
       aseguradoEdad: document.getElementById('vAseguradoEdad').value,
     };
-    const aseg2SPD = soloUnoSPD ? {} : {
+    const aseg2SPD = soloUnoSPD ? {
+      asegurado2Nombre: '', asegurado2TipoDoc: 'CC', asegurado2Doc: '',
+      asegurado2FechaNac: '', asegurado2Edad: '',
+    } : {
       asegurado2Nombre: document.getElementById('vAsegurado2Nombre')?.value || '',
       asegurado2TipoDoc: document.getElementById('vAsegurado2TipoDoc')?.value || 'CC',
       asegurado2Doc: document.getElementById('vAsegurado2Doc')?.value || '',
       asegurado2FechaNac: document.getElementById('vAsegurado2FechaNac')?.value || '',
       asegurado2Edad: document.getElementById('vAsegurado2Edad')?.value || '',
     };
-    if (!soloUnoSPD && modoRegistroSPD === 'sumado') {
-      // Registro único: prima * 2 (2 asegurados en misma póliza)
-      const primaSum = primaMen * 2;
-      const primaSumSinIVA = Math.round(primaSum / IVA_FACTOR);
-      state.ventas.push({
-        id, producto: 'SPD', fecha, mesComp: mesCompSPD, ..._spdBase,
-        ...aseg1SPD, ...aseg2SPD,
-        prima: primaMen, primaTotal: primaSum, primaTotalSinIVA: primaSumSinIVA,
-        modoRegistro: 'sumado', numAsegurados: 2,
-      });
-    } else if (!soloUnoSPD && modoRegistroSPD === 'individual') {
-      // Registro individual asegurado 1
-      state.ventas.push({
-        id, producto: 'SPD', fecha, mesComp: mesCompSPD, ..._spdBase,
-        ...aseg1SPD, asegurado2Nombre: '', asegurado2Doc: '',
-        prima: primaMen, primaTotal, primaTotalSinIVA,
-        modoRegistro: 'individual',
-      });
-      // Registro individual asegurado 2
-      const idA2 = Date.now().toString(36) + Math.random().toString(36).substr(2);
-      state.ventas.push({
-        id: idA2, producto: 'SPD', fecha, mesComp: mesCompSPD, ..._spdBase,
-        aseguradoNombre: aseg2SPD.asegurado2Nombre,
-        aseguradoTipoDoc: aseg2SPD.asegurado2TipoDoc,
-        aseguradoDoc: aseg2SPD.asegurado2Doc,
-        aseguradoFechaNac: aseg2SPD.asegurado2FechaNac,
-        aseguradoEdad: aseg2SPD.asegurado2Edad,
-        asegurado2Nombre: '', asegurado2Doc: '',
-        prima: primaMen, primaTotal, primaTotalSinIVA,
-        modoRegistro: 'individual',
-      });
-    } else {
-      // Solo un asegurado (checkbox marcado) — comportamiento legacy
-      state.ventas.push({
-        id, producto: 'SPD', fecha, mesComp: mesCompSPD, ..._spdBase,
-        ...aseg1SPD,
-        asegurado2Nombre: '', asegurado2TipoDoc: 'CC', asegurado2Doc: '',
-        asegurado2FechaNac: '', asegurado2Edad: '',
-        prima: primaMen, primaTotal, primaTotalSinIVA,
-        modoRegistro: 'individual',
-      });
-    }
+    state.ventas.push({
+      id, producto: 'SPD', fecha, mesComp: mesCompSPD, ..._spdBase,
+      ...aseg1SPD, ...aseg2SPD,
+      prima: primaMen, primaTotal, primaTotalSinIVA,
+      modoRegistro: 'sumado', numAsegurados: soloUnoSPD ? 1 : 2,
+    });
   } else {
     // Tab desconocido — no guardar nada, evita registro silencioso con datos incorrectos
     console.warn('[guardarVenta] modalTab desconocido:', modalTab);
