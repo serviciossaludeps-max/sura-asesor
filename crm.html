@@ -10771,8 +10771,14 @@ function getVentasByProduct(month, product) {
 
 // Cuenta pólizas reales: si modoRegistro === 'sumado' suma numAsegurados (mínimo 1),
 // de lo contrario cuenta el registro como 1 póliza. Acepta un array de ventas.
+// Excepción SPD: aunque se guarda con modoRegistro:'sumado' (reutilizado por
+// compatibilidad con SPTI/PSM/PAC60), SPD es una tarifa ÚNICA por pareja —
+// 1 registro = 1 póliza, sin importar cuántos asegurados cubra.
 function contarPolizas(ventas) {
-  return ventas.reduce((s, v) => s + (v.modoRegistro === 'sumado' ? (v.numAsegurados || 1) : 1), 0);
+  return ventas.reduce((s, v) => {
+    if (v.producto === 'SPD') return s + 1;
+    return s + (v.modoRegistro === 'sumado' ? (v.numAsegurados || 1) : 1);
+  }, 0);
 }
 
 function getPbsCotizantes(month) {
