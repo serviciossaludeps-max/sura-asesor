@@ -13010,6 +13010,7 @@ function editarVenta(id) {
         if (s('vPolizaSPD'))        s('vPolizaSPD').value        = v.poliza            || '';
         if (s('vFechaSPD'))         s('vFechaSPD').value         = v.fecha             || '';
         if (s('vFechaExpSPD'))      s('vFechaExpSPD').value      = v.fechaExp          || '';
+        if (s('vPlanSPD'))          s('vPlanSPD').value          = v.plan || 'Salud Para Dos Plus';
         if (s('vPeriodicidadSPD') && v.periodicidad) s('vPeriodicidadSPD').value = v.periodicidad;
         if (s('vTomadorNombre'))    s('vTomadorNombre').value    = v.tomadorNombre      || v.nombre || '';
         if (s('vTomadorDoc'))       s('vTomadorDoc').value       = v.tomadorDoc         || v.doc    || '';
@@ -15488,10 +15489,16 @@ function guardarVenta() {
         };
       } else if (modalTab === 'spd') {
         const fecha = document.getElementById('vFechaSPD')?.value || vOld.fecha;
+        const planEditSPD = document.getElementById('vPlanSPD')?.value || vOld.plan || 'Salud Para Dos Plus';
+        if (planEditSPD !== 'Salud Para Dos Plus') {
+          alert('El plan Estándar de SPD todavía no tiene tarifa cargada. Selecciona Plus, o espera a que se habilite Estándar.');
+          return;
+        }
         state.ventas[idxEdit] = {
           ...vOld,
           fecha,
           mesComp: _calcMesCompEdit(fecha),
+          plan: planEditSPD,
           fechaExp:     document.getElementById('vFechaExpSPD')?.value    || vOld.fechaExp,
           poliza:       document.getElementById('vPolizaSPD')?.value      || vOld.poliza,
           periodicidad: document.getElementById('vPeriodicidadSPD')?.value|| vOld.periodicidad,
