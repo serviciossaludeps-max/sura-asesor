@@ -15800,10 +15800,10 @@ function guardarVenta() {
     let primaTotalSinIVA = 0, dctoNum = 0;
     if (plan && rangoEdad && SPTI_TARIFAS[plan] && SPTI_TARIFAS[plan][rangoEdad]) {
       const t = SPTI_TARIFAS[plan][rangoEdad];
-      if (periodicidad === 'TRIMESTRAL') { primaTotalSinIVA = t.trimestre; dctoNum = t.dctoTrim || 0; }
-      else if (periodicidad === 'SEMESTRAL') { primaTotalSinIVA = t.semestre; dctoNum = t.dctoSem || 0; }
-      else if (periodicidad === 'ANUAL') { primaTotalSinIVA = t.anual; dctoNum = t.dctoAnual || 0; }
-      else primaTotalSinIVA = t.mensual;
+      if (periodicidad === 'TRIMESTRAL') { primaTotalSinIVA = Math.round(t.trimestre / IVA_FACTOR); dctoNum = t.dctoTrim || 0; }
+      else if (periodicidad === 'SEMESTRAL') { primaTotalSinIVA = Math.round(t.semestre / IVA_FACTOR); dctoNum = t.dctoSem || 0; }
+      else if (periodicidad === 'ANUAL') { primaTotalSinIVA = Math.round(t.anual / IVA_FACTOR); dctoNum = t.dctoAnual || 0; }
+      else primaTotalSinIVA = Math.round(t.mensual / IVA_FACTOR);
     } else {
       primaTotalSinIVA = Math.round(primaTotal / IVA_FACTOR);
     }
