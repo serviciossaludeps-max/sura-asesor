@@ -13907,6 +13907,12 @@ function pac60AgregarAsegurado() {
       <div class="form-group"><label class="form-label">Fecha de Nacimiento</label><input type="date" class="form-control" id="vFechaNacPAC60_${n}" onchange="calcEdadDinamica('PAC60','vFechaNacPAC60_${n}','vEdadPAC60_${n}','vRangoPAC60_${n}','pac60')"></div>
       <div class="form-group"><label class="form-label">Edad</label><input type="text" class="form-control" id="vEdadPAC60_${n}" readonly placeholder="Auto" style="background:var(--surface3);color:var(--sura-lime);font-weight:600;"></div>
       <div class="form-group"><label class="form-label">Rango Tarifario</label><input type="text" class="form-control" id="vRangoPAC60_${n}" readonly placeholder="Auto" style="background:var(--surface3);color:var(--green);font-weight:600;"></div>
+    </div>
+    <div style="margin-top:10px;padding:10px;border:1px dashed rgba(34,197,94,0.35);border-radius:8px;background:rgba(34,197,94,0.03);">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">
+        <input type="checkbox" id="chkAnexoPAC60_${n}" onchange="pac60ActualizarResumenTotal()" style="width:15px;height:15px;accent-color:var(--green);cursor:pointer;">
+        🩺 Anexo — Cardiólogo y Dermatólogo (Asegurado ${n})
+      </label>
     </div>`;
   container.appendChild(div);
   _pac60AsegCount++;
@@ -13948,7 +13954,7 @@ function pac60DatosAsegurado(n) {
   if (bloqueaMin || bloqueaMax) return null;
   const rango = getRangoPAC60(edad);
   if (!rango || !PAC60_TARIFAS[rango]) return null;
-  const conAnexo = !!document.getElementById('chkAnexoPAC60')?.checked;
+  const conAnexo = !!document.getElementById('chkAnexoPAC60' + suf)?.checked;
   const tarifas = PAC60_TARIFAS[rango];
   const primaMensual = conAnexo ? tarifas.conAnexo : tarifas.sinAnexo;
   const periPAC = document.getElementById('vPeriodicidadPAC60')?.value || 'MENSUAL';
@@ -16084,17 +16090,19 @@ function guardarVenta() {
     for (let ai = 2; ai <= _pac60AsegCount; ai++) {
       const edadAi = parseInt(document.getElementById('vEdadPAC60_' + ai)?.value) || 0;
       const rangoAi = getRangoPAC60(edadAi);
-      const primaAi = rangoAi ? Math.round((conAnexo ? PAC60_TARIFAS[rangoAi].conAnexo : PAC60_TARIFAS[rangoAi].sinAnexo) * multPAC * (1 - _dctoPctPAC)) : 0;
+      const conAnexoAi = !!document.getElementById('chkAnexoPAC60_' + ai)?.checked;
+      const primaAi = rangoAi ? Math.round((conAnexoAi ? PAC60_TARIFAS[rangoAi].conAnexo : PAC60_TARIFAS[rangoAi].sinAnexo) * multPAC * (1 - _dctoPctPAC)) : 0;
       aseguradosPAC.push({
         nombre: document.getElementById('vNombrePAC60_' + ai)?.value || '',
         tipoDoc: document.getElementById('vTipoDocPAC60_' + ai)?.value || 'CC',
         doc: document.getElementById('vDocPAC60_' + ai)?.value || '',
         fechaNac: document.getElementById('vFechaNacPAC60_' + ai)?.value || '',
-        edad: edadAi, rangoEdad: rangoAi || '—', primaTotal: primaAi,
+        edad: edadAi, rangoEdad: rangoAi || '—', primaTotal: primaAi, conAnexo: conAnexoAi,
       });
     }
-    const _pushPAC = (idP, nomAseg, tdocAseg, docAseg, fnacAseg, edadAseg, rangoAseg, primaTot, numAseg, modoReg) => {
+    const _pushPAC = (idP, nomAseg, tdocAseg, docAseg, fnacAseg, edadAseg, rangoAseg, primaTot, numAseg, modoReg, conAnexoP) => {
       const pSinIVA = Math.round(primaTot / 1.05);
+      const planLabelP = conAnexoP ? '60+ Con Anexo' : '60+ Sin Anexo';
       state.ventas.push({
         id: idP, producto: 'PAC60', fecha, mesComp: mesCompPAC,
         fechaExp: document.getElementById('vFechaExpPAC60').value,
@@ -16103,7 +16111,7 @@ function guardarVenta() {
         tomadorNombre: tomNomPAC, tomadorDoc: tomDocPAC, tomadorTipoDoc: tomTDocPAC,
         nombre: nomAseg, tipoDoc: tdocAseg, doc: docAseg,
         fechaNac: fnacAseg, edad: edadAseg, rangoEdad: rangoAseg,
-        plan: planLabel, conAnexo,
+        plan: planLabelP, conAnexo: conAnexoP,
         // HALLAZGO-OP-009 (fix): Firestore rechaza cualquier campo con valor
         // undefined — setDoc() lanza un error y la venta completa nunca se
         // guarda. Con 1 solo asegurado (el caso más común) este campo caía
@@ -16126,14 +16134,14 @@ function guardarVenta() {
       const primaSum = prima1 + aseguradosPAC.reduce((s, a) => s + a.primaTotal, 0);
       _pushPAC(id, document.getElementById('vNombrePAC60').value,
         document.getElementById('vTipoDocPAC60').value, document.getElementById('vDocPAC60').value,
-        document.getElementById('vFechaNacPAC60').value, edadNum, rango, primaSum, _pac60AsegCount, 'sumado');
+        document.getElementById('vFechaNacPAC60').value, edadNum, rango, primaSum, _pac60AsegCount, 'sumado', conAnexo);
     } else {
       _pushPAC(id, document.getElementById('vNombrePAC60').value,
         document.getElementById('vTipoDocPAC60').value, document.getElementById('vDocPAC60').value,
-        document.getElementById('vFechaNacPAC60').value, edadNum, rango, prima1, 1, 'individual');
+        document.getElementById('vFechaNacPAC60').value, edadNum, rango, prima1, 1, 'individual', conAnexo);
       aseguradosPAC.forEach(a => {
         const idAi = Date.now().toString(36) + Math.random().toString(36).substr(2);
-        _pushPAC(idAi, a.nombre, a.tipoDoc, a.doc, a.fechaNac, a.edad, a.rangoEdad, a.primaTotal, 1, 'individual');
+        _pushPAC(idAi, a.nombre, a.tipoDoc, a.doc, a.fechaNac, a.edad, a.rangoEdad, a.primaTotal, 1, 'individual', a.conAnexo);
       });
     }
 
