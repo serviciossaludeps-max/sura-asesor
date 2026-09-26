@@ -151,9 +151,14 @@
     let totalMensual = tarifaBase[campoAnexo];
     if (Array.isArray(p.asegurados)) {
       for (const a of p.asegurados) {
+        // HALLAZGO PAC60-ANEXO-PERIODICO (fix): cada asegurado adicional debe
+        // usar SU PROPIO conAnexo, no el del titular. Antes esta línea
+        // reutilizaba `campoAnexo` (calculado arriba, solo de `p.conAnexo`)
+        // para todos los asegurados del arreglo.
+        const campoAnexoAi = a.conAnexo ? 'conAnexo' : 'sinAnexo';
         const t = a.rangoEdad && pricing.PAC60_TARIFAS[a.rangoEdad];
-        if (!t || t[campoAnexo] === undefined) return null;
-        totalMensual += t[campoAnexo];
+        if (!t || t[campoAnexoAi] === undefined) return null;
+        totalMensual += t[campoAnexoAi];
       }
     }
 
