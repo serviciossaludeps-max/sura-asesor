@@ -19878,8 +19878,12 @@ function calcPrimaMensualSinIVA(v) {
     const rango = edad <= 40 ? '0-40' : edad <= 50 ? '41-50' : edad <= 59 ? '51-59' : null;
     if (!rango) return v.primaSinIVA || Math.round((v.prima||0)/1.05);
     const plan = v.plan || 'PREFERENCIAL';
-    const SPTI_SIN = { PREFERENCIAL: { '0-40':159120,'41-50':171167,'51-59':212100 }, CLASICO: { '0-40':139990,'41-50':153628,'51-59':193610 } };
-    return (SPTI_SIN[plan]?.[rango]) || v.primaSinIVA || Math.round((v.prima||0)/1.05);
+    // BR-014: fuente única BusinessConfig.pricing.SPTI_SIN_IVA — antes: literal
+    // local divergente (HALLAZGO-OP-003). Solo se lee .mensual; el resto del
+    // objeto (trimestre/semestre/anual/dctos) no se usa en esta función.
+    const SPTI_SIN = (window.BusinessConfig && window.BusinessConfig.pricing && window.BusinessConfig.pricing.SPTI_SIN_IVA) || null;
+    const tarifaSPTI = SPTI_SIN && SPTI_SIN[plan] && SPTI_SIN[plan][rango];
+    return (tarifaSPTI ? tarifaSPTI.mensual : null) || v.primaSinIVA || Math.round((v.prima||0)/1.05);
   }
   if (v.producto === 'SPD') return v.primaSinIVA || Math.round((v.prima||0)/1.05);
   if (v.producto === 'PSM' || v.producto === 'PAC60') return v.primaSinIVA || Math.round((v.prima||0)/1.05);
