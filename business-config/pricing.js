@@ -29,12 +29,18 @@ window.BusinessConfig.pricing = {
     PREFERENCIAL: {
       '0-40':  { mensual:159120, trimestre:465441, dctoTrim:11919, semestre:908871,  dctoSem:45849,  anual:1737305, dctoAnual:172135 },
       '41-50': { mensual:171167, trimestre:500681, dctoTrim:12820, semestre:977684,  dctoSem:49318,  anual:1868842, dctoAnual:185162 },
-      '51-59': { mensual:212095, trimestre:620398, dctoTrim:15887, semestre:1211456, dctoSem:61114,  anual:2315696, dctoAnual:229444 }
+      '51-59': { mensual:212095, trimestre:620398, dctoTrim:15887, semestre:1211456, dctoSem:61114,  anual:2315696, dctoAnual:229444 },
+      // Continuidad por edad (fuera de venta nueva) — matriz 2026, autorizado por el PO
+      '60-70': { mensual:283676, trimestre:829782, dctoTrim:21246, semestre:1620322, dctoSem:81734,  anual:3097241, dctoAnual:306871 },
+      '71+':   { mensual:426190, trimestre:1246650, dctoTrim:31920, semestre:2434343, dctoSem:122797, anual:4653241, dctoAnual:461039 }
     },
     CLASICO: {
       '0-40':  { mensual:140457, trimestre:410852, dctoTrim:10519, semestre:802274,  dctoSem:40468,  anual:1533544, dctoAnual:151940 },
       '41-50': { mensual:153628, trimestre:449379, dctoTrim:11505, semestre:877506,  dctoSem:44262,  anual:1677351, dctoAnual:166185 },
-      '51-59': { mensual:192544, trimestre:553310, dctoTrim:24322, semestre:1099785, dctoSem:55479,  anual:2102237, dctoAnual:208291 }
+      '51-59': { mensual:192544, trimestre:553310, dctoTrim:24322, semestre:1099785, dctoSem:55479,  anual:2102237, dctoAnual:208291 },
+      // Continuidad por edad (fuera de venta nueva) — matriz 2026, autorizado por el PO
+      '60-70': { mensual:262644, trimestre:768261, dctoTrim:19671, semestre:1500189, dctoSem:75675,  anual:2867608, dctoAnual:284120 },
+      '71+':   { mensual:411446, trimestre:1203521, dctoTrim:30817, semestre:2350126, dctoSem:118550, anual:4492260, dctoAnual:445092 }
     }
   },
 
