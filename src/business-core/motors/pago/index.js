@@ -38,7 +38,8 @@
     if (e <= 40) return '0-40';
     if (e <= 50) return '41-50';
     if (e <= 59) return '51-59';
-    return null;
+    if (e <= 70) return '60-70';
+    return '71+';
   }
 
   /**
