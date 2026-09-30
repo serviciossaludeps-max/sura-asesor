@@ -43,13 +43,16 @@
   // Clasificación de rango (BR-014/BR-015 — solo clasificación, no elegibilidad)
   // ---------------------------------------------------------------------
 
-  /** Réplica exacta de getRangoEdadSPTI() de crm.html (uso administrativo y de venta — sin divergencia de negocio en SPTI). */
+  /** Réplica exacta de getRangoEdadSPTI() de crm.html. Incluye continuidad por edad
+   *  (60-70, 71+) para pólizas existentes que superan el límite de venta nueva (59) —
+   *  71+ es el techo definitivo: cualquier edad >=71 usa esa tarifa indefinidamente. */
   function getRangoEdadSPTI(edad) {
     const e = parseInt(edad, 10) || 0;
     if (e <= 40) return '0-40';
     if (e <= 50) return '41-50';
     if (e <= 59) return '51-59';
-    return null;
+    if (e <= 70) return '60-70';
+    return '71+';
   }
 
   function getRangoPSM(edad) {
