@@ -10085,12 +10085,16 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       PREFERENCIAL: {
         '0-40':  { mensual:159120, trimestre:465441, dctoTrim:11919, semestre:908871,  dctoSem:45849,  anual:1737305, dctoAnual:172135 },
         '41-50': { mensual:171167, trimestre:500681, dctoTrim:12820, semestre:977684,  dctoSem:49318,  anual:1868842, dctoAnual:185162 },
-        '51-59': { mensual:212095, trimestre:620398, dctoTrim:15887, semestre:1211456, dctoSem:61114,  anual:2315696, dctoAnual:229444 }
+        '51-59': { mensual:212095, trimestre:620398, dctoTrim:15887, semestre:1211456, dctoSem:61114,  anual:2315696, dctoAnual:229444 },
+        '60-70': { mensual:283676, trimestre:829782, dctoTrim:21246, semestre:1620322, dctoSem:81734,  anual:3097241, dctoAnual:306871 },
+        '71+':   { mensual:426190, trimestre:1246650, dctoTrim:31920, semestre:2434343, dctoSem:122797, anual:4653241, dctoAnual:461039 }
       },
       CLASICO: {
         '0-40':  { mensual:140457, trimestre:410852, dctoTrim:10519, semestre:802274,  dctoSem:40468,  anual:1533544, dctoAnual:151940 },
         '41-50': { mensual:153628, trimestre:449379, dctoTrim:11505, semestre:877506,  dctoSem:44262,  anual:1677351, dctoAnual:166185 },
-        '51-59': { mensual:192544, trimestre:553310, dctoTrim:24322, semestre:1099785, dctoSem:55479,  anual:2102237, dctoAnual:208291 }
+        '51-59': { mensual:192544, trimestre:553310, dctoTrim:24322, semestre:1099785, dctoSem:55479,  anual:2102237, dctoAnual:208291 },
+        '60-70': { mensual:262644, trimestre:768261, dctoTrim:19671, semestre:1500189, dctoSem:75675,  anual:2867608, dctoAnual:284120 },
+        '71+':   { mensual:411446, trimestre:1203521, dctoTrim:30817, semestre:2350126, dctoSem:118550, anual:4492260, dctoAnual:445092 }
       }
     };
     window.BusinessConfig.pricing.computeSPTIConIVA = window.BusinessConfig.pricing.computeSPTIConIVA || function(sinIva, ivaFactor) {
@@ -13697,12 +13701,28 @@ const SPTI_TARIFAS = window.BusinessConfig.pricing.computeSPTIConIVA(
   window.BusinessConfig.constants.IVA_FACTOR
 );
 
+// Continuidad tarifaria por edad (Fase B/D, autorizado por el PO): edad vigente
+// calculada al vuelo desde fechaNac, NUNCA persistida ni usada para sobrescribir
+// venta.edad. Misma fórmula que ya usa cumpCalcEdad() (L38481+, sin tocar). Si no
+// hay fechaNac, el llamador debe caer a la edad histórica (venta.edad/a.edad) —
+// esta función nunca inventa una edad.
+function edadVigente(fechaNacStr) {
+  if (!fechaNacStr) return null;
+  const nac = new Date(fechaNacStr + 'T12:00:00');
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - nac.getFullYear();
+  const m = hoy.getMonth() - nac.getMonth();
+  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+  return edad;
+}
+
 function getRangoEdadSPTI(edad) {
   const e = parseInt(edad) || 0;
   if (e <= 40) return '0-40';
   if (e <= 50) return '41-50';
   if (e <= 59) return '51-59';
-  return null; // fuera de rango
+  if (e <= 70) return '60-70'; // continuidad — póliza existente, no venta nueva
+  return '71+';                // continuidad — techo definitivo (autorizado por el PO)
 }
 
 function checkPolizaExiste(polizaVal, producto, avisoId) {
@@ -18029,7 +18049,11 @@ function calcMontoSPTIPeriodo(venta) {
   if (venta.producto !== 'SPTI' || !venta.plan || !venta.periodicidad) return null;
   if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
   if (venta.tarifaCongelada) return null; // tarifa histórica fija — no se puede reconstruir desde la tabla actual
-  const primaTitular = _precioSPTIPersona(venta.plan, venta.edad, venta.periodicidad);
+  // Continuidad tarifaria por edad (autorizado por el PO): el próximo cobro usa
+  // la edad de HOY, calculada desde fechaNac — nunca sobrescribe venta.edad.
+  // Sin fechaNac (pólizas legadas), cae exactamente al comportamiento anterior.
+  const edadTitular = edadVigente(venta.fechaNac) ?? venta.edad;
+  const primaTitular = _precioSPTIPersona(venta.plan, edadTitular, venta.periodicidad);
   if (primaTitular === null) return null;
   // HALLAZGO SPTI-GRUPAL (fix): sumar cada asegurado adicional registrado
   // en venta.asegurados — antes esta función solo calculaba la parte del
@@ -18037,7 +18061,8 @@ function calcMontoSPTIPeriodo(venta) {
   if (!Array.isArray(venta.asegurados) || venta.asegurados.length === 0) return primaTitular;
   let total = primaTitular;
   for (const a of venta.asegurados) {
-    const primaAi = _precioSPTIPersona(venta.plan, a.edad, venta.periodicidad);
+    const edadAi = edadVigente(a.fechaNac) ?? a.edad;
+    const primaAi = _precioSPTIPersona(venta.plan, edadAi, venta.periodicidad);
     if (primaAi === null) return null; // un adicional sin tarifa válida invalida el recálculo del grupo — no se cobra un valor parcial; el llamador cae al respaldo (venta.primaTotal/prima guardado)
     total += primaAi;
   }
@@ -18066,14 +18091,24 @@ function calcMontoPSMPeriodo(venta) {
   const _edadUtilizable = venta.edad !== undefined && venta.edad !== null && !Number.isNaN(Number(venta.edad));
   if (_edadUtilizable && window.MotorProducto) {
     const _modulosMotor = venta.modulos && venta.modulos.length ? venta.modulos : ['Básico'];
+    // Continuidad tarifaria por edad (autorizado por el PO): titular y cada
+    // asegurado adicional (modo sumado) se evalúan con su PROPIA edad vigente
+    // (desde fechaNac). Si un adicional no tiene fechaNac, conserva su
+    // rangoEdad guardado tal cual — no se inventa nada nuevo sobre datos legados.
+    const _edadTitularVigente = edadVigente(venta.fechaNac) ?? venta.edad;
+    const _aseguradosVigentes = Array.isArray(venta.asegurados) ? venta.asegurados.map(a => {
+      const _edadAiVigente = edadVigente(a.fechaNac) ?? a.edad;
+      const _rangoAiVigente = window.MotorProducto.getRangoPSM(_edadAiVigente);
+      return _rangoAiVigente ? { ...a, rangoEdad: _rangoAiVigente.key } : a;
+    }) : venta.asegurados;
     const _rPSM = window.MotorProducto.calcularPrecioPSM({
-      edad: venta.edad,
+      edad: _edadTitularVigente,
       emd: _modulosMotor.includes('Atención Domiciliaria'),
       altoCosto: _modulosMotor.includes('Alto Costo'),
       cirugia: _modulosMotor.includes('Cirugía Ambulatoria'),
       maternidad: _modulosMotor.includes('Maternidad'),
       periodicidad: venta.periodicidad,
-      asegurados: venta.asegurados
+      asegurados: _aseguradosVigentes
     });
     if (_rPSM) return _rPSM.valor;
   }
@@ -18129,10 +18164,25 @@ function calcMontoPAC60Periodo(venta) {
   const _edadUtilizablePAC60 = venta.edad !== undefined && venta.edad !== null && !Number.isNaN(Number(venta.edad));
   const _tipoReconocidoPAC60 = venta.tipo === 'NUEVO' || venta.tipo === 'RENOVACION' || venta.tipo === 'CANCELACION';
   if (_edadUtilizablePAC60 && _tipoReconocidoPAC60 && window.MotorProducto) {
-    const _contextoPAC60 = venta.tipo === 'NUEVO' ? 'VENTA_NUEVA' : 'ADMINISTRATIVO';
+    // Continuidad tarifaria por edad (autorizado por el PO): el contexto ya NO
+    // sale de venta.tipo (que se preserva intacto como dato histórico del
+    // origen de la póliza) — sale de la edad vigente del titular. >79 usa el
+    // contexto administrativo (80-89/90+), <=79 sigue en venta nueva (60-69/70-79),
+    // igual que hoy para pólizas que todavía no cruzan el límite.
+    const _edadTitularVigentePAC60 = edadVigente(venta.fechaNac) ?? venta.edad;
+    const _contextoPAC60 = _edadTitularVigentePAC60 > 79 ? 'ADMINISTRATIVO' : 'VENTA_NUEVA';
+    // Cada asegurado adicional se evalúa con su PROPIA edad vigente — el
+    // clasificador administrativo es superconjunto exacto del de venta nueva
+    // para <=79 (mismas claves 60-69/70-79), así que sirve para ambos casos.
+    // Sin fechaNac, conserva el rangoEdad guardado tal cual (dato legado).
+    const _aseguradosVigentesPAC60 = Array.isArray(venta.asegurados) ? venta.asegurados.map(a => {
+      const _edadAiVigente = edadVigente(a.fechaNac) ?? a.edad;
+      const _rangoAiVigente = window.MotorProducto.getRangoPAC60Administrativo(_edadAiVigente);
+      return _rangoAiVigente ? { ...a, rangoEdad: _rangoAiVigente } : a;
+    }) : venta.asegurados;
     const _rPAC60 = window.MotorProducto.calcularPrecioPAC60({
-      edad: venta.edad, conAnexo: venta.conAnexo, periodicidad: venta.periodicidad,
-      contexto: _contextoPAC60, asegurados: venta.asegurados
+      edad: _edadTitularVigentePAC60, conAnexo: venta.conAnexo, periodicidad: venta.periodicidad,
+      contexto: _contextoPAC60, asegurados: _aseguradosVigentesPAC60
     });
     if (_rPAC60) return _rPAC60.valor;
   }
@@ -19873,9 +19923,14 @@ function calcPrimaMensualSinIVA(v) {
     }
     return v.primaSinIVA || v.prima || Math.round((v.primaTotal||0)/1.05);
   }
-  const edad = parseInt(v.edadTomador || v.edad || 0);
+  // Continuidad tarifaria por edad (autorizado por el PO): solo afecta la
+  // PREVISUALIZACIÓN de una cancelación aún no confirmada — el guard de arriba
+  // (tarifaCongelada) ya corta antes de llegar aquí, y calcImpactoCancelacion()
+  // sigue usando el impacto ya persistido para cancelaciones confirmadas, sin
+  // pasar nunca por esta línea. Sin fechaNac, cae exactamente al comportamiento anterior.
+  const edad = parseInt((typeof edadVigente === 'function' ? edadVigente(v.fechaNac) : null) ?? (v.edadTomador || v.edad || 0));
   if (v.producto === 'SPTI') {
-    const rango = edad <= 40 ? '0-40' : edad <= 50 ? '41-50' : edad <= 59 ? '51-59' : null;
+    const rango = edad <= 40 ? '0-40' : edad <= 50 ? '41-50' : edad <= 59 ? '51-59' : edad <= 70 ? '60-70' : '71+';
     if (!rango) return v.primaSinIVA || Math.round((v.prima||0)/1.05);
     const plan = v.plan || 'PREFERENCIAL';
     // BR-014: fuente única BusinessConfig.pricing.SPTI_SIN_IVA — antes: literal
