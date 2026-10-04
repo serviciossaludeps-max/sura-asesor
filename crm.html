@@ -24133,11 +24133,17 @@ function getDefaultConfigAnio(anio) {
         '0-40':  { mensual:167076, trimestre:488713, semestre:954315, anual:1824170 },
         '41-50': { mensual:179725, trimestre:525715, semestre:1026568, anual:1962284 },
         '51-59': { mensual:222700, trimestre:651418, semestre:1272029, anual:2431481 },
+        // Continuidad por edad (fuera de venta nueva) — matriz 2026, autorizado por el PO
+        '60-70': { mensual:297860, trimestre:871271, semestre:1701338, anual:3252103 },
+        '71+':   { mensual:447500, trimestre:1308983, semestre:2556060, anual:4885903 },
       },
       CLASICO: {
         '0-40':  { mensual:147480, trimestre:431395, semestre:842388, anual:1610221 },
         '41-50': { mensual:161309, trimestre:471848, semestre:921381, anual:1761219 },
         '51-59': { mensual:202171, trimestre:580976, semestre:1154774, anual:2207349 },
+        // Continuidad por edad (fuera de venta nueva) — matriz 2026, autorizado por el PO
+        '60-70': { mensual:275776, trimestre:806674, semestre:1575198, anual:3010988 },
+        '71+':   { mensual:432018, trimestre:1263697, semestre:2467632, anual:4716873 },
       }
     },
     tarifasSptiSinIVA: {
@@ -24145,11 +24151,17 @@ function getDefaultConfigAnio(anio) {
         '0-40':  { mensual:159120, trimestre:465441, semestre:908871, anual:1737305 },
         '41-50': { mensual:171167, trimestre:500681, semestre:977684, anual:1868842 },
         '51-59': { mensual:212095, trimestre:620398, semestre:1211456, anual:2315696 },
+        // Continuidad por edad (fuera de venta nueva) — matriz 2026, autorizado por el PO
+        '60-70': { mensual:283676, trimestre:829782, semestre:1620322, anual:3097241 },
+        '71+':   { mensual:426190, trimestre:1246650, semestre:2434343, anual:4653241 },
       },
       CLASICO: {
         '0-40':  { mensual:140457, trimestre:410852, semestre:802274, anual:1533544 },
         '41-50': { mensual:153628, trimestre:449379, semestre:877506, anual:1677351 },
         '51-59': { mensual:192544, trimestre:553310, semestre:1099785, anual:2102237 },
+        // Continuidad por edad (fuera de venta nueva) — matriz 2026, autorizado por el PO
+        '60-70': { mensual:262644, trimestre:768261, semestre:1500189, anual:2867608 },
+        '71+':   { mensual:411446, trimestre:1203521, semestre:2350126, anual:4492260 },
       }
     },
     tablaComPBS: {
@@ -24313,7 +24325,9 @@ function renderConfigAnioTab(tab) {
     const tbody = document.getElementById('caTarifasSptiBody');
     const planes = [
       { plan:'PREFERENCIAL', edad:'0-40' }, { plan:'PREFERENCIAL', edad:'41-50' }, { plan:'PREFERENCIAL', edad:'51-59' },
+      { plan:'PREFERENCIAL', edad:'60-70' }, { plan:'PREFERENCIAL', edad:'71+' }, // continuidad por edad
       { plan:'CLASICO', edad:'0-40' }, { plan:'CLASICO', edad:'41-50' }, { plan:'CLASICO', edad:'51-59' },
+      { plan:'CLASICO', edad:'60-70' }, { plan:'CLASICO', edad:'71+' }, // continuidad por edad
     ];
     tbody.innerHTML = planes.map(({plan,edad}) => {
       const tc_ = (d.tarifasSptiConIVA[plan]||{})[edad] || {};
@@ -24375,7 +24389,9 @@ function guardarConfigAnio(seccion) {
   } else if (seccion === 'tarifas') {
     const planes = [
       { plan:'PREFERENCIAL', edad:'0-40' }, { plan:'PREFERENCIAL', edad:'41-50' }, { plan:'PREFERENCIAL', edad:'51-59' },
+      { plan:'PREFERENCIAL', edad:'60-70' }, { plan:'PREFERENCIAL', edad:'71+' }, // continuidad por edad
       { plan:'CLASICO', edad:'0-40' }, { plan:'CLASICO', edad:'41-50' }, { plan:'CLASICO', edad:'51-59' },
+      { plan:'CLASICO', edad:'60-70' }, { plan:'CLASICO', edad:'71+' }, // continuidad por edad
     ];
     planes.forEach(({plan,edad}) => {
       const id = `${plan}_${edad.replace('-','_')}`;
@@ -24387,11 +24403,16 @@ function guardarConfigAnio(seccion) {
         semestre: parseInt(document.getElementById(`ta_sem_${id}`)?.value)||0,
         anual: parseInt(document.getElementById(`ta_anu_${id}`)?.value)||0,
       };
+      // Fix (hallazgo de doble IVA): antes, trimestre/semestre/anual se copiaban
+      // directamente del valor CON IVA sin convertir — al pasar de nuevo por
+      // computeSPTIConIVA() en MotorProducto, el IVA quedaba aplicado dos veces.
+      // Ahora se derivan dividiendo por IVA_FACTOR (misma fuente que ya usa el
+      // resto del archivo, BusinessConfig.constants.IVA_FACTOR).
       d.tarifasSptiSinIVA[plan][edad] = {
         mensual: parseInt(document.getElementById(`ta_siva_${id}`)?.value)||0,
-        trimestre: d.tarifasSptiConIVA[plan][edad].trimestre, // approx, user can adjust
-        semestre: d.tarifasSptiConIVA[plan][edad].semestre,
-        anual: d.tarifasSptiConIVA[plan][edad].anual,
+        trimestre: Math.round(d.tarifasSptiConIVA[plan][edad].trimestre / IVA_FACTOR),
+        semestre: Math.round(d.tarifasSptiConIVA[plan][edad].semestre / IVA_FACTOR),
+        anual: Math.round(d.tarifasSptiConIVA[plan][edad].anual / IVA_FACTOR),
       };
     });
   } else if (seccion === 'comisiones') {
