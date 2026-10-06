@@ -414,6 +414,23 @@
 
   /* ---- TABLE ---- */
   .table-wrap { overflow-x: auto; overflow-y: auto; max-height: 600px; border-radius: var(--radius); border: 1px solid var(--border); }
+  /* ---- STICKY FIRST COLUMN (scroll horizontal tipo SURA) ----
+     Clase aislada: se agrega como clase ADICIONAL sobre el contenedor de scroll
+     que cada tabla ya tenga (.table-wrap o un wrap inline propio). No define
+     overflow, max-height, ni ninguna propiedad de tamaño — eso lo sigue
+     controlando cada tabla exactamente como hoy. Solo fija la primera columna. */
+  .table-scroll-sticky th:first-child,
+  .table-scroll-sticky td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface);
+  }
+  /* La celda superior-izquierda es sticky en ambos ejes (left, heredado de
+     arriba, + top, heredado de la regla global "thead th{position:sticky;
+     top:0}"). Necesita el z-index más alto de los tres (columna=1, thead
+     normal=2-3 según la tabla) para no quedar tapada en el scroll diagonal. */
+  .table-scroll-sticky thead th:first-child { z-index: 4; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead { background: var(--surface2); }
   thead th { position: sticky; top: 0; z-index: 2; background: var(--surface2); }
@@ -2499,7 +2516,7 @@
           </div>
         </div>
 
-        <div class="table-wrap" style="max-height:65vh;">
+        <div class="table-wrap table-scroll-sticky" style="max-height:65vh;">
           <table style="min-width:1100px;">
             <thead>
               <tr>
@@ -3558,7 +3575,7 @@
           <span class="chip chip-blue" id="ptCountPBS">0 registros</span>
         </div>
 
-        <div id="plantillaPBSwrap2" style="overflow-x:auto;overflow-y:auto;max-height:65vh;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
+        <div id="plantillaPBSwrap2" class="table-scroll-sticky" style="overflow-x:auto;overflow-y:auto;max-height:65vh;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
              onscroll="ptSyncInner('ptScrollInnerPBS',this);ptFloatScrollSyncFrom(this)">
           <table id="tablaPlanPBS2" style="font-size:12.5px;min-width:900px;width:100%;border-collapse:collapse;">
             <thead style="position:sticky;top:0;z-index:3;">
@@ -4080,7 +4097,7 @@
         </div>
 
         <!-- SPTI -->
-        <div id="ptWrapSPTI" style="overflow-x:auto;overflow-y:auto;max-height:65vh;border-radius:var(--radius);border:1px solid var(--border);" onscroll="ptFloatScrollSyncFrom(this)">
+        <div id="ptWrapSPTI" class="table-scroll-sticky" style="overflow-x:auto;overflow-y:auto;max-height:65vh;border-radius:var(--radius);border:1px solid var(--border);" onscroll="ptFloatScrollSyncFrom(this)">
           <table style="font-size:12.5px;min-width:1100px;width:100%;border-collapse:collapse;">
             <thead><tr style="background:var(--teal);">
               <th style="color:white;padding:10px 12px;white-space:nowrap;">#</th>
@@ -4105,7 +4122,7 @@
           </table>
         </div>
         <!-- SPD -->
-        <div id="ptWrapSPD" style="display:none;overflow-x:auto;overflow-y:auto;max-height:65vh;border-radius:var(--radius);border:1px solid var(--border);" onscroll="ptFloatScrollSyncFrom(this)">
+        <div id="ptWrapSPD" class="table-scroll-sticky" style="display:none;overflow-x:auto;overflow-y:auto;max-height:65vh;border-radius:var(--radius);border:1px solid var(--border);" onscroll="ptFloatScrollSyncFrom(this)">
           <table style="font-size:12.5px;min-width:1750px;width:100%;border-collapse:collapse;">
             <thead><tr style="background:var(--purple);">
               <th style="color:white;padding:10px 12px;white-space:nowrap;">#</th>
@@ -4137,7 +4154,7 @@
           </table>
         </div>
         <!-- PSM -->
-        <div id="ptWrapPSM" style="display:none;overflow-x:auto;overflow-y:auto;max-height:65vh;border-radius:var(--radius);border:1px solid var(--border);" onscroll="ptFloatScrollSyncFrom(this)">
+        <div id="ptWrapPSM" class="table-scroll-sticky" style="display:none;overflow-x:auto;overflow-y:auto;max-height:65vh;border-radius:var(--radius);border:1px solid var(--border);" onscroll="ptFloatScrollSyncFrom(this)">
           <table style="font-size:12.5px;min-width:1100px;width:100%;border-collapse:collapse;">
             <thead><tr style="background:var(--teal);">
               <th style="color:white;padding:10px 12px;white-space:nowrap;">#</th>
@@ -5474,7 +5491,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
 
         <!-- Tabla cartera -->
-        <div id="ctTableWrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
+        <div id="ctTableWrap" class="table-scroll-sticky" style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
              onscroll="document.getElementById('ptScrollBarCartera').scrollLeft=this.scrollLeft;ptSyncInner('ptScrollInnerCartera',this)">
           <table id="ctTable" style="font-size:12.5px;min-width:1100px;width:100%;border-collapse:collapse;">
             <thead>
