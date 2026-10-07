@@ -453,21 +453,28 @@
     scrollbar-width: auto; scrollbar-color: rgba(26,76,232,0.8) var(--surface3);
   }
 
-  /* ---- Gestión de Cartera: primera columna 'Estado' fija ----
+  /* ---- Gestión de Cartera: viewport acotado a 10 registros + columna fija 'Cliente / Tomador' (3a) ----
      - Barra espejo: ptSyncInner le fija el ancho del scrollWidth de la tabla; sin contenerla volvería a ensanchar .content.
-     - --crm-vp-h:65vh conserva exacto lo que hacía ptToggleFullscreen en Cartera (no tiene alto máximo inicial).
-     - Fondo de fila de Cartera: zebra rgba(255,255,255,0.015) solo en filas impares; la celda fija replica ese tinte exacto
-       (las reglas genéricas de .crm-table-viewport asumen la zebra 0.02 de las plantillas y aquí aplicarían a todas las filas). */
+     - Alto: --ct-h lo calcula un observador (encabezado + 10 primeras filas visibles); 640px es solo el valor previo a medir.
+       --crm-vp-h hace que el botón de pantalla completa (ptToggleFullscreen) restaure este mismo alto al contraer.
+     - Solo la 3a columna es sticky: Estado y Producto se desplazan y Tomador queda fijo al llegar al borde izquierdo.
+     - Fondo de fila de Cartera: zebra rgba(255,255,255,0.015) solo en filas impares; la celda fija replica ese tinte exacto. */
   #ptScrollBarCartera { width: 0; min-width: 100%; }
-  #ctTableWrap.crm-table-viewport { --crm-vp-h: 65vh; }
-  #ctTableWrap > table > tbody > tr > td:first-child:not([colspan]) { background-image: none; }
-  #ctTableWrap > table > tbody > tr[style*="0.015"] > td:first-child:not([colspan]) {
+  #ctTableWrap { width: 0; min-width: 100%; --crm-vp-h: var(--ct-h, 640px); max-height: var(--crm-vp-h); }
+  #ctTableWrap > table > thead > tr > th:nth-child(3),
+  #ctTableWrap > table > tbody > tr > td:nth-child(3):not([colspan]) {
+    position: sticky; left: 0;
+    box-shadow: 1px 0 0 var(--border), 8px 0 10px -8px rgba(0,0,0,0.5);
+  }
+  #ctTableWrap > table > thead > tr > th:nth-child(3) { z-index: 4; }
+  #ctTableWrap > table > tbody > tr > td:nth-child(3):not([colspan]) { z-index: 1; background-color: var(--bg); }
+  #ctTableWrap > table > tbody > tr[style*="0.015"] > td:nth-child(3):not([colspan]) {
     background-image: linear-gradient(rgba(255,255,255,0.015), rgba(255,255,255,0.015));
   }
-  #ctTableWrap > table > tbody > tr:hover > td:first-child:not([colspan]) {
+  #ctTableWrap > table > tbody > tr:hover > td:nth-child(3):not([colspan]) {
     background-image: linear-gradient(rgba(255,255,255,0.025), rgba(255,255,255,0.025));
   }
-  #ctTableWrap > table > tbody > tr[style*="0.015"]:hover > td:first-child:not([colspan]) {
+  #ctTableWrap > table > tbody > tr[style*="0.015"]:hover > td:nth-child(3):not([colspan]) {
     background-image: linear-gradient(rgba(255,255,255,0.025), rgba(255,255,255,0.025)), linear-gradient(rgba(255,255,255,0.015), rgba(255,255,255,0.015));
   }
   .td-num { font-family: var(--mono); font-size: 12.5px; }
@@ -5515,7 +5522,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
 
         <!-- Tabla cartera -->
-        <div id="ctTableWrap" class="crm-table-viewport" style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
+        <div id="ctTableWrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
              onscroll="var b=document.getElementById('ptScrollBarCartera');if(Math.abs(b.scrollLeft-this.scrollLeft)>1)b.scrollLeft=this.scrollLeft;ptSyncInner('ptScrollInnerCartera',this)">
           <table id="ctTable" style="font-size:12.5px;min-width:1100px;width:100%;border-collapse:collapse;">
             <thead>
@@ -40427,6 +40434,30 @@ async function _agenteEnviar() {
   }
 })();
 
+</script>
+<script>
+/* Gestión de Cartera: alto del viewport = encabezado + primeras 10 filas visibles (ignora filas de detalle y vacías).
+   Solo escribe la variable CSS --ct-h en #ctTableWrap; no llama ni reemplaza ninguna función existente. */
+(function(){
+  var w=document.getElementById('ctTableWrap'), t=document.getElementById('ctTable');
+  if(!w||!t||typeof ResizeObserver==='undefined') return;
+  var N=10, busy=false;
+  function ajustar(){
+    if(busy||!t.offsetWidth||!t.tHead||!t.tBodies[0]) return;
+    busy=true;
+    try{
+      var rows=[].filter.call(t.tBodies[0].rows,function(r){return r.offsetHeight>0&&!r.querySelector('td[colspan]');}).slice(0,N);
+      if(!rows.length){w.style.removeProperty('--ct-h');return;}
+      var h=t.tHead.getBoundingClientRect().height;
+      rows.forEach(function(r){h+=r.getBoundingClientRect().height;});
+      h+=w.offsetHeight-w.clientHeight; /* bordes + barra horizontal */
+      w.style.setProperty('--ct-h',Math.ceil(h)+'px');
+    } finally { busy=false; }
+  }
+  new ResizeObserver(ajustar).observe(t);
+  window.addEventListener('resize',ajustar);
+  ajustar();
+})();
 </script>
 </body>
 </html>
