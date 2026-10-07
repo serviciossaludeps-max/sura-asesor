@@ -447,6 +447,7 @@
     background-image: linear-gradient(rgba(255,255,255,0.025), rgba(255,255,255,0.025));
   }
   /* Scrollbar horizontal visible con thumb arrastrable (sustituye al 'thin' de las plantillas, solo Voluntarios) */
+  #plantillaPBSwrap2.crm-table-viewport,
   #ptWrapSPTI.crm-table-viewport, #ptWrapSPD.crm-table-viewport,
   #ptWrapPSM.crm-table-viewport, #ptWrapPAC60.crm-table-viewport {
     scrollbar-width: auto; scrollbar-color: rgba(26,76,232,0.8) var(--surface3);
@@ -3580,7 +3581,7 @@
           <span class="chip chip-blue" id="ptCountPBS">0 registros</span>
         </div>
 
-        <div id="plantillaPBSwrap2" style="overflow-x:auto;overflow-y:auto;max-height:65vh;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
+        <div id="plantillaPBSwrap2" class="crm-table-viewport" style="overflow-x:auto;overflow-y:auto;max-height:var(--crm-vp-h,65vh);-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
              onscroll="ptSyncInner('ptScrollInnerPBS',this);ptFloatScrollSyncFrom(this)">
           <table id="tablaPlanPBS2" style="font-size:12.5px;min-width:900px;width:100%;border-collapse:collapse;">
             <thead style="position:sticky;top:0;z-index:3;">
