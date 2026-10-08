@@ -454,12 +454,11 @@
   }
 
   /* ---- Gestión de Cartera: viewport acotado a 10 registros + columna fija 'Cliente / Tomador' (3a) ----
-     - Barra espejo: ptSyncInner le fija el ancho del scrollWidth de la tabla; sin contenerla volvería a ensanchar .content.
+     - Sin barra espejo: la horizontal es la propia de la tabla (azul, definida arriba con scrollbar-color).
      - Alto: --ct-h lo calcula un observador (encabezado + 10 primeras filas visibles); 640px es solo el valor previo a medir.
        --crm-vp-h hace que el botón de pantalla completa (ptToggleFullscreen) restaure este mismo alto al contraer.
      - Solo la 3a columna es sticky: Estado y Producto se desplazan y Tomador queda fijo al llegar al borde izquierdo.
      - Fondo de fila de Cartera: zebra rgba(255,255,255,0.015) solo en filas impares; la celda fija replica ese tinte exacto. */
-  #ptScrollBarCartera { width: 0; min-width: 100%; }
   #ctTableWrap { width: 0; min-width: 100%; --crm-vp-h: var(--ct-h, 640px); max-height: var(--crm-vp-h); }
   #ctTableWrap > table > thead > tr > th:nth-child(3),
   #ctTableWrap > table > tbody > tr > td:nth-child(3):not([colspan]) {
@@ -5516,14 +5515,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
           </div>
           <span id="ctBuscadorCount" style="font-size:11px;color:var(--text-muted);white-space:nowrap;"></span>
         </div>
-        <div id="ptScrollBarCartera" style="overflow-x:auto;overflow-y:hidden;height:12px;margin-bottom:6px;"
-             onscroll="var w=document.getElementById('ctTableWrap');if(Math.abs(w.scrollLeft-this.scrollLeft)>1)w.scrollLeft=this.scrollLeft">
-          <div id="ptScrollInnerCartera" style="height:1px;min-width:100%;"></div>
-        </div>
-
         <!-- Tabla cartera -->
-        <div id="ctTableWrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;"
-             onscroll="var b=document.getElementById('ptScrollBarCartera');if(Math.abs(b.scrollLeft-this.scrollLeft)>1)b.scrollLeft=this.scrollLeft;ptSyncInner('ptScrollInnerCartera',this)">
+        <div id="ctTableWrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius);border:1px solid var(--border);transition:max-height .3s;">
           <table id="ctTable" style="font-size:12.5px;min-width:1100px;width:100%;border-collapse:collapse;">
             <thead>
               <tr style="background:var(--surface2);">
