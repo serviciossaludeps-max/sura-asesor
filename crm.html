@@ -4791,6 +4791,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             <thead>
               <tr>
                 <th>Nombre</th>
+                <th>No. Documento</th>
                 <th>Tipo</th>
                 <th>Edad</th>
                 <th>Inicio Cobertura</th>
@@ -20605,7 +20606,7 @@ function renderCobertura() {
 
   const tbody = document.getElementById('coberturaTabla');
   if (!ventas.length) {
-    tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state"><div class="icon">📅</div><div>No hay registros con fecha de inicio de cobertura</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state"><div class="icon">📅</div><div>No hay registros con fecha de inicio de cobertura</div></div></td></tr>`;
     return;
   }
 
@@ -20616,6 +20617,7 @@ function renderCobertura() {
     const tramiteLabel = { SAT:'SAT', 'FORM.DIGITAL':'F.Digital', 'FORM.FIRMA.VIRTUAL':'F.Firma', 'AFIL.TRAMITES.ADM':'T.Adm' };
     return `<tr style="${isHoy?'background:rgba(34,197,94,0.06)':''}">
       <td style="font-weight:500;">${v.nombre||'—'}${isHoy?' <span class="chip chip-green" style="font-size:9px;">HOY</span>':''}</td>
+ <td style="font-family:var(--mono);font-size:12px;white-space:nowrap;">${v.doc||'—'}</td>
       <td><span class="chip ${v.tipo==='COTIZANTE'?'chip-green':'chip-amber'}" style="font-size:10px;">${v.tipo}</span></td>
       <td style="font-family:var(--mono);font-size:12px;">${v.edad||'—'}</td>
       <td style="font-family:var(--mono);color:var(--sura-lime);font-weight:600;">${ic}</td>
