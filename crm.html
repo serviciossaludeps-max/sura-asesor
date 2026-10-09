@@ -7246,6 +7246,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <button class="btn btn-primary" onclick="document.getElementById('inputContactosXlsx').click()">📥 Importar Excel SURA</button>
             <input type="file" id="inputContactosXlsx" accept=".xlsx,.xls" style="display:none;" onchange="importarContactosSura(event)">
+            <button class="btn btn-secondary" onclick="exportarContactosExcel()" id="btnExportarContactos" style="display:none;">📤 Exportar Excel</button>
             <button class="btn btn-secondary" onclick="limpiarContactos()" id="btnLimpiarContactos" style="display:none;">🗑 Limpiar BD</button>
           </div>
         </div>
@@ -7258,7 +7259,16 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
         <!-- Buscador -->
         <div style="margin-bottom:14px;" id="contactosBuscadorWrap" style="display:none;">
-          <input type="text" class="form-control" id="contactosBuscar" placeholder="🔍 Buscar por nombre, cédula o teléfono..." oninput="renderTablaContactos()" style="max-width:380px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <input type="text" class="form-control" id="contactosBuscar" placeholder="🔍 Buscar por nombre, cédula o teléfono..." oninput="renderTablaContactos()" style="max-width:380px;">
+            <select class="form-control" id="contactosEstadoFiltro" onchange="renderTablaContactos()" style="max-width:220px;">
+              <option value="">Todos los estados</option>
+              <option value="VIGENTE">Vigente</option>
+              <option value="SUSPENDIDO">Suspendido</option>
+              <option value="CANCELADO">Cancelado</option>
+              <option value="SIN_POLIZA">Sin póliza en CRM</option>
+            </select>
+          </div>
         </div>
         <!-- Tabla -->
         <div id="contactosTablaWrap" style="display:none;overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);">
@@ -7271,6 +7281,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
                 <th style="padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Correo</th>
                 <th style="padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Ciudad</th>
                 <th style="padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Vinculación</th>
+                <th style="padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Estado</th>
+                <th style="padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Plan / Productos</th>
               </tr>
             </thead>
             <tbody id="contactosTablaBody"></tbody>
@@ -34487,7 +34499,7 @@ function renderContactos() {
   const isEmpty   = !contactos.length;
 
   // Mostrar/ocultar secciones
-  const ids = ['contactosKpis','contactosBuscadorWrap','contactosTablaWrap'];
+  const ids = ['contactosKpis','contactosBuscadorWrap','contactosTablaWrap','btnExportarContactos'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = isEmpty ? 'none' : '';
@@ -34519,7 +34531,83 @@ function renderContactos() {
   renderTablaContactos();
 }
 
-function renderTablaContactos() {
+// ─────────────────────────────────────────────────────────────────────────────
+// BD Contactos — estado de las pólizas de cada contacto (SOLO LECTURA)
+// No se usa getCarteraEstado: esa función ESCRIBE en Firestore al auto-cancelar por mora ≥60 días
+// (muta s.ventas[idx].tipo y llama setState). contactoEstadoPoliza aplica su misma regla sin efectos:
+//   CANCELADO  = venta.tipo 'CANCELACION' o mora efectiva ≥ 60 días
+//   SUSPENDIDO = mora efectiva ≥ 35 días
+//   VIGENTE    = resto (al día, próximo a vencer, vencido o en mora < 35 días)
+// ─────────────────────────────────────────────────────────────────────────────
+function contactoEstadoPoliza(v) {
+  if (v.tipo === 'CANCELACION') return 'CANCELADO';
+  if (!v.fechaExp) return 'VIGENTE';
+  const hoy = new Date(); hoy.setHours(12,0,0,0);
+  const meses = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
+  const intervalo = meses[v.periodicidad] || 1;
+  const nPagos = (typeof getPagosVenta === 'function' ? getPagosVenta(v.id) : []).length;
+  const proxVenc = new Date(v.fechaExp + 'T12:00:00');
+  proxVenc.setMonth(proxVenc.getMonth() + (nPagos + 1) * intervalo);
+  if (hoy < proxVenc) return 'VIGENTE';
+  let dias = Math.max(0, Math.floor((hoy - proxVenc) / 86400000));
+  if (intervalo > 1) {
+    const finGracia = new Date(proxVenc.getFullYear(), proxVenc.getMonth() + 1, 0, 12, 0, 0);
+    dias = Math.max(0, Math.floor((hoy - finGracia) / 86400000));
+  }
+  if (dias >= 60) return 'CANCELADO';
+  if (dias >= 35) return 'SUSPENDIDO';
+  return 'VIGENTE';
+}
+
+// Misma clave que usa syncContactosDesdeVentas: cédula (solo dígitos) o, si no hay, el nombre normalizado
+function _contactoClave(cedula, nombre) {
+  const d = String(cedula || '').replace(/\D/g, '');
+  if (d) return d;
+  const n = String(nombre || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  return n ? 'n:' + n : '';
+}
+
+// Índice clave → pólizas [{v, est}] de SPTI/SPD/PSM/PAC60 (cada venta se indexa por tomadorDoc y por doc)
+function contactosIndicePolizas() {
+  const idx = new Map();
+  const ventas = (getState().ventas || []).filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto));
+  ventas.forEach(v => {
+    const est = contactoEstadoPoliza(v);
+    const docs = new Set([v.tomadorDoc, v.doc].map(x => String(x || '').replace(/\D/g, '')).filter(Boolean));
+    const claves = docs.size ? docs : new Set([_contactoClave('', v.tomadorNombre || v.nombre)].filter(Boolean));
+    claves.forEach(k => { if (!idx.has(k)) idx.set(k, []); idx.get(k).push({ v, est }); });
+  });
+  return idx;
+}
+
+// Resumen por contacto. Prioridad del estado: Vigente > Suspendido > Cancelado > Sin póliza en CRM
+function contactoResumen(c, idx) {
+  const k = _contactoClave(c.cedula, c.nombre);
+  const items = (k && idx.get(k)) || [];
+  const vig  = items.filter(x => x.est === 'VIGENTE').length;
+  const susp = items.filter(x => x.est === 'SUSPENDIDO').length;
+  const canc = items.filter(x => x.est === 'CANCELADO').length;
+  const estado = vig ? 'VIGENTE' : susp ? 'SUSPENDIDO' : canc ? 'CANCELADO' : 'SIN_POLIZA';
+  return { estado, vig, susp, canc, items };
+}
+
+// Producto + tipo de plan, igual que lo muestra Voluntarios (SPTI/SPD/PAC60: plan; PSM: módulos)
+function contactoPlanTexto(v) {
+  const PL = { CLASICO:'Clásico', PREFERENCIAL:'Preferencial', 'Salud Para Dos':'Salud Para Dos Plus', 'Salud Para Dos Plus':'Salud Para Dos Plus' };
+  const PR = { SPTI:'SPTI', SPD:'SPD Plus', PSM:'Modular', PAC60:'PAC60' };
+  const prod = PR[v.producto] || v.producto || '';
+  const plan = v.producto === 'PSM'
+    ? (Array.isArray(v.modulos) ? v.modulos.join(', ') : (v.modulos || ''))
+    : (PL[v.plan] || v.plan || '');
+  return plan ? `${prod} · ${plan}` : prod;
+}
+
+function _contactoEsc(t) {
+  return String(t == null ? '' : t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Vista única (tabla y exportación): búsqueda de texto (sin cambios) + filtro de estado
+function _contactosVista() {
   const contactos = getContactos();
   const buscar    = (document.getElementById('contactosBuscar')?.value || '').toLowerCase();
   const filtrados = buscar
@@ -34530,22 +34618,47 @@ function renderTablaContactos() {
         (c.correo||'').toLowerCase().includes(buscar)
       )
     : contactos;
+  const idx       = contactosIndicePolizas();
+  const estadoSel = document.getElementById('contactosEstadoFiltro')?.value || '';
+  const vista = filtrados
+    .map(c => ({ c, r: contactoResumen(c, idx) }))
+    .filter(x => !estadoSel || x.r.estado === estadoSel);
+  return { vista, total: contactos.length };
+}
+
+function renderTablaContactos() {
+  const { vista, total } = _contactosVista();
 
   const tbody = document.getElementById('contactosTablaBody');
   if (!tbody) return;
 
-  if (!filtrados.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-dim);">Sin resultados</td></tr>`;
+  if (!vista.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-dim);">Sin resultados</td></tr>`;
     document.getElementById('contactosCount').textContent = '';
     return;
   }
 
-  tbody.innerHTML = filtrados.map((c, i) => {
+  tbody.innerHTML = vista.map(({ c, r }, i) => {
     const rowBg = i % 2 === 0 ? '' : 'rgba(255,255,255,0.015)';
     const celFmt = c.celular ? `<a href="tel:${c.celular}" style="color:var(--sura-blue);font-family:var(--mono);">${c.celular}</a>` : '—';
     const waLink = c.celular
       ? `<a href="https://wa.me/57${c.celular}" target="_blank" style="font-size:10px;padding:2px 6px;background:rgba(37,211,102,0.12);color:#25d366;border-radius:4px;text-decoration:none;margin-left:4px;">WA</a>`
       : '';
+    const chip = {
+      VIGENTE:    '<span class="chip chip-green" style="font-size:10px;">Vigente</span>',
+      SUSPENDIDO: '<span class="chip chip-red" style="font-size:10px;">Suspendido</span>',
+      CANCELADO:  '<span class="chip" style="font-size:10px;background:rgba(107,114,128,0.15);color:#9ca3af;">Cancelado</span>',
+      SIN_POLIZA: '<span class="chip" style="font-size:10px;background:transparent;color:var(--text-dim);border:1px solid var(--border);">Sin póliza en CRM</span>'
+    }[r.estado];
+    const partes = [];
+    if (r.vig)  partes.push(`${r.vig} vigente${r.vig > 1 ? 's' : ''}`);
+    if (r.susp) partes.push(`${r.susp} suspendida${r.susp > 1 ? 's' : ''}`);
+    if (r.canc) partes.push(`${r.canc} cancelada${r.canc > 1 ? 's' : ''}`);
+    const conteo = r.items.length > 1 ? `<div style="font-size:10px;color:var(--text-dim);margin-top:3px;">${partes.join(' · ')}</div>` : '';
+    const icono = { VIGENTE:'✅', SUSPENDIDO:'🔴', CANCELADO:'⛔' };
+    const planes = r.items.length
+      ? r.items.map(x => `<div>${icono[x.est]} ${_contactoEsc(contactoPlanTexto(x.v))}</div>`).join('')
+      : '—';
     return `<tr style="background:${rowBg};border-top:1px solid var(--border);">
       <td style="padding:9px 12px;font-weight:500;">${tc(c.nombre)}</td>
       <td style="padding:9px 12px;font-family:var(--mono);font-size:12px;">${c.cedula||'—'}</td>
@@ -34553,11 +34666,61 @@ function renderTablaContactos() {
       <td style="padding:9px 12px;font-size:12px;color:var(--text-muted);">${c.correo||'—'}</td>
       <td style="padding:9px 12px;font-size:12px;color:var(--text-muted);">${c.ciudad||'—'}</td>
       <td style="padding:9px 12px;font-size:11px;"><span class="chip chip-blue" style="font-size:10px;">${c.vinculacion||'—'}</span></td>
+      <td style="padding:9px 12px;font-size:11px;">${chip}${conteo}</td>
+      <td style="padding:9px 12px;font-size:11.5px;color:var(--text-muted);">${planes}</td>
     </tr>`;
   }).join('');
 
   document.getElementById('contactosCount').textContent =
-    `${filtrados.length} de ${contactos.length} contactos`;
+    `${vista.length} de ${total} contactos`;
+}
+
+// Exporta a Excel exactamente lo que muestra la tabla (búsqueda + filtro de estado).
+// Hoja "Contactos": 1 fila por contacto (para envío masivo). Hoja "Pólizas": detalle por póliza.
+async function exportarContactosExcel() {
+  const { vista } = _contactosVista();
+  if (!vista.length) { showToast('⚠️ No hay contactos para exportar con este filtro'); return; }
+  try {
+    if (typeof XLSX === 'undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+  } catch (e) { showToast('⚠️ No se pudo cargar la librería de exportación'); return; }
+
+  const ETQ = { VIGENTE:'Vigente', SUSPENDIDO:'Suspendido', CANCELADO:'Cancelado', SIN_POLIZA:'Sin póliza en CRM' };
+  // Celular móvil colombiano (10 dígitos que empiezan por 3) → formato WhatsApp 57XXXXXXXXXX; si no es válido, vacío
+  const wa = cel => {
+    const d = String(cel || '').replace(/\D/g, '');
+    if (d.length === 10 && d[0] === '3') return '57' + d;
+    if (d.length === 12 && d.startsWith('57') && d[2] === '3') return d;
+    return '';
+  };
+
+  const hdr1 = ['Nombre','Cédula','Celular','WhatsApp (57…)','Correo','Ciudad','Vinculación','Estado','Pólizas vigentes','Pólizas suspendidas','Pólizas canceladas','Productos y planes'];
+  const rows1 = vista.map(({ c, r }) => [
+    tc(c.nombre) || '', String(c.cedula || ''), String(c.celular || ''), wa(c.celular), c.correo || '', c.ciudad || '', c.vinculacion || '',
+    ETQ[r.estado], r.vig, r.susp, r.canc,
+    r.items.map(x => `${contactoPlanTexto(x.v)} (${ETQ[x.est]})`).join('; ')
+  ]);
+
+  const hdr2 = ['Cédula','Nombre','Producto','Plan','N° póliza','Estado','Fecha cancelación','Motivo cancelación'];
+  const rows2 = [];
+  vista.forEach(({ c, r }) => r.items.forEach(x => {
+    const v = x.v;
+    const PL = { CLASICO:'Clásico', PREFERENCIAL:'Preferencial', 'Salud Para Dos':'Salud Para Dos Plus', 'Salud Para Dos Plus':'Salud Para Dos Plus' };
+    const plan = v.producto === 'PSM' ? (Array.isArray(v.modulos) ? v.modulos.join(', ') : (v.modulos || '')) : (PL[v.plan] || v.plan || '');
+    rows2.push([ String(c.cedula || ''), tc(c.nombre) || '', v.producto || '', plan, String(v.poliza || ''), ETQ[x.est],
+      x.est === 'CANCELADO' ? (v.fechaCancelacion || '') : '', x.est === 'CANCELADO' ? (v.motivoCancelacion || '') : '' ]);
+  }));
+
+  const ancho = hs => hs.map(h => ({ wch: Math.max(12, String(h).length + 2) }));
+  const ws1 = XLSX.utils.aoa_to_sheet([hdr1, ...rows1]); ws1['!cols'] = ancho(hdr1);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws1, 'Contactos');
+  if (rows2.length) {
+    const ws2 = XLSX.utils.aoa_to_sheet([hdr2, ...rows2]); ws2['!cols'] = ancho(hdr2);
+    XLSX.utils.book_append_sheet(wb, ws2, 'Pólizas');
+  }
+  const fecha = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `Contactos_SURA_${fecha}.xlsx`);
+  showToast(`✅ ${vista.length} contactos exportados a Excel`);
 }
 
 function limpiarContactos() {
