@@ -15687,6 +15687,12 @@ function guardarVenta() {
         state.ventas[idxEdit]._importadoSura = true;
         state.ventas[idxEdit].mesComp = 'IMPORTADO_SURA';
       }
+      // Firestore NO admite valores `undefined`: si un campo del formulario está vacío y la venta original
+      // nunca tuvo esa propiedad, el `|| vOld.campo` de arriba la deja en undefined y TODO el guardado falla
+      // (setDoc → invalid-argument). Se descartan esas propiedades: quedan ausentes, igual que antes de editar.
+      Object.keys(state.ventas[idxEdit]).forEach(k => {
+        if (state.ventas[idxEdit][k] === undefined) delete state.ventas[idxEdit][k];
+      });
       setState(state);
       state = getState();
       _editId = null;
