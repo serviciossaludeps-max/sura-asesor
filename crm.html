@@ -376,6 +376,16 @@
   .stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; }
   .stat-value { font-size: 28px; font-weight: 700; margin: 6px 0 4px; font-family: var(--mono); }
   .stat-sub { font-size: 12px; color: var(--text-muted); }
+  /* ---- Dashboard (Fase 1): bandas, ceros en gris, cifras sin cero tachado, control de comisión PBS ---- */
+  #page-dashboard .stat-value { font-family: var(--font); font-variant-numeric: tabular-nums; }
+  #page-dashboard .stat-value.kpi-cero { color: var(--text-muted) !important; }
+  .dash-band { display: flex; align-items: baseline; gap: 10px; margin: 18px 0 10px; }
+  .dash-band h3 { margin: 0; font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); }
+  .dash-band span { font-size: 11.5px; color: var(--text-dim); }
+  .stat-badge.badge-gray { background: rgba(132,148,187,0.15); color: var(--text-muted); }
+  .com-seg { display: inline-flex; border: 1px solid rgba(34,197,94,0.4); border-radius: 10px; overflow: hidden; margin: 4px 0 2px; }
+  .com-seg button { font: inherit; font-size: 11px; padding: 5px 10px; border: 0; background: transparent; color: var(--text-muted); cursor: pointer; }
+  .com-seg button.on { background: rgba(34,197,94,0.2); color: var(--green); font-weight: 700; }
   .stat-badge {
     display: inline-flex;
     align-items: center;
@@ -2293,24 +2303,28 @@
         <!-- Month selector -->
         <div class="month-selector" id="monthSelectorDash"></div>
 
+        <div class="dash-band"><h3 id="bandMesTitulo">Ventas del mes</h3><span>Cumplimiento medido contra el ritmo esperado del mes</span></div>
         <!-- Fila 1: PBS + Voluntarios por producto -->
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px;">
           <div class="stat-card blue">
             <div class="stat-label">PBS Mes</div>
             <div class="stat-value" id="kpi-pbs-mes">0</div>
             <div class="stat-sub">Ppto: <span id="kpi-pbs-ppto">—</span></div>
+            <div class="stat-sub">Acum.: <span id="kpi-pbs-acc">0</span></div>
             <span class="stat-badge badge-blue" id="kpi-pbs-pct">—</span>
           </div>
           <div class="stat-card teal">
             <div class="stat-label">SPTI Mes</div>
             <div class="stat-value" id="kpi-spti-mes">0</div>
             <div class="stat-sub">Ppto: <span id="kpi-spti-ppto">—</span></div>
+            <div class="stat-sub">Acum.: <span id="kpi-spti-acc">0</span></div>
             <span class="stat-badge badge-blue" id="kpi-spti-pct">—</span>
           </div>
           <div class="stat-card purple">
             <div class="stat-label">SPD Plus Mes</div>
             <div class="stat-value" id="kpi-spd-mes">0</div>
-            <div class="stat-sub">Acum: <span id="kpi-spd-acc">0</span></div>
+            <div class="stat-sub">Ppto: <span id="kpi-spd-ppto">—</span></div>
+            <div class="stat-sub">Acum.: <span id="kpi-spd-acc">0</span></div>
             <span class="stat-badge badge-blue" id="kpi-spd-pct">—</span>
           </div>
           <div class="stat-card" style="border-top:3px solid var(--teal);">
@@ -2327,89 +2341,11 @@
           </div>
         </div>
 
-        <!-- Fila 2: Comisiones todos los productos -->
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px;">
-          <div class="stat-card green" style="position:relative;">
-            <div class="stat-label">Com. PBS Est. Mes</div>
-            <div class="stat-value" id="kpi-com-mes" style="font-size:18px;">$0</div>
-            <div class="stat-sub" id="kpi-com-mes-sub">Mes seleccionado · bruto</div>
-            <div style="position:absolute;top:10px;right:10px;">
-              <button id="toggleComPBSMes" onclick="toggleComPBSVistaFn()" style="font-size:9.5px;padding:2px 7px;border-radius:10px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.12);color:var(--green);cursor:pointer;font-weight:700;line-height:1.6;">BRUTO</button>
-            </div>
-          </div>
-          <div class="stat-card teal">
-            <div class="stat-label">Com. SPTI Proy.</div>
-            <div class="stat-value" id="dash-com-spti" style="font-size:16px;">$0</div>
-            <div class="stat-sub">7% prima · acum. 2026</div>
-          </div>
-          <div class="stat-card purple">
-            <div class="stat-label">Com. SPD Plus Proy.</div>
-            <div class="stat-value" id="dash-com-spd" style="font-size:16px;">$0</div>
-            <div class="stat-sub">8% prima · acum. 2026</div>
-          </div>
-          <div class="stat-card" style="border-top:3px solid var(--teal);">
-            <div class="stat-label">Com. Modular Proy.</div>
-            <div class="stat-value" id="dash-com-psm" style="font-size:16px;">$0</div>
-            <div class="stat-sub">12%/6% prima · 2026</div>
-          </div>
-          <div class="stat-card" style="border-top:3px solid var(--green);">
-            <div class="stat-label">Com. 60+ Proy.</div>
-            <div class="stat-value" id="dash-com-pac60" style="font-size:16px;">$0</div>
-            <div class="stat-sub">5% prima · 2026</div>
-          </div>
-        </div>
-
-        <!-- Fila 3: Totales y efectividad -->
-        <div class="grid-4" style="margin-bottom:16px;">
-          <div class="stat-card amber">
-            <div class="stat-label">Efectividad PBS</div>
-            <div class="stat-value" id="kpi-efect">0%</div>
-            <div class="stat-sub">vs presupuesto mes</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Com. Vol. Real Cobrada</div>
-            <div class="stat-value" id="dash-com-vol-real" style="font-size:18px;">$0</div>
-            <div class="stat-sub">Pagos confirmados ✅</div>
-          </div>
-          <div class="stat-card" style="border-top:3px solid var(--sura-lime);">
-            <div class="stat-label">Com. PBS Acumulada 2026</div>
-            <div class="stat-value" id="dash-com-pbs-acc" style="font-size:16px;color:var(--sura-lime);">$0</div>
-            <div class="stat-sub">Comisiones PBS reales</div>
-          </div>
-          <div class="stat-card" style="border-top:3px solid var(--sura-lime);">
-            <div class="stat-label">Com. Total PBS + Todos Vol.</div>
-            <div class="stat-value" id="dash-com-gran-total" style="font-size:16px;color:var(--sura-lime);">$0</div>
-            <div class="stat-sub">PBS + SPTI + SPD Plus + PSM + 60+</div>
-          </div>
-        </div>
-
-        <!-- Bar chart PBS vs PPTO -->
-        <div class="grid-2" style="margin-bottom:16px;">
-          <div class="card">
-            <div class="card-title">📈 PBS — Ventas vs Presupuesto 2026</div>
-            <div class="bar-chart" id="barChartPBS"></div>
-            <div style="display:flex;gap:16px;margin-top:16px;font-size:11.5px;">
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--sura-blue);border-radius:2px;display:inline-block;"></span>Ventas</span>
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--surface3);border-radius:2px;display:inline-block;border:1px dashed #4A5680"></span>Ppto</span>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-title">💊 Voluntarios — Composición de Ventas 2026</div>
-            <div class="bar-chart" id="barChartVol"></div>
-            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:11.5px;align-items:center;">
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--teal);border-radius:2px;display:inline-block;"></span>SPTI</span>
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--purple);border-radius:2px;display:inline-block;"></span>SPD Plus</span>
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:#38BDF8;border-radius:2px;display:inline-block;"></span>PSM</span>
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--green);border-radius:2px;display:inline-block;"></span>60+</span>
-              <span style="margin-left:auto;font-size:11px;color:var(--text-dim);font-style:italic;">Barras apiladas · total mensual</span>
-            </div>
-          </div>
-        </div>
-
+        <div class="dash-band"><h3 id="bandAccTitulo">Acumulado del año</h3><span>Del año hasta el mes seleccionado</span></div>
         <!-- Acumulado año + campañas progress -->
         <div class="grid-2">
           <div class="card">
-            <div class="card-title">📅 Acumulado Año 2026</div>
+            <div class="card-title" id="acc-titulo">📅 Acumulado Año 2026</div>
             <div class="progress-wrap">
               <div class="progress-label"><span>PBS</span><span id="acc-pbs">0 / 600</span></div>
               <div class="progress-track"><div class="progress-fill fill-blue" id="bar-pbs" style="width:0%"></div></div>
@@ -2431,12 +2367,96 @@
               <div class="progress-track"><div class="progress-fill fill-green" id="bar-pac60" style="width:0%"></div></div>
             </div>
             <hr class="divider">
-            <div class="section-title" style="font-size:13px;">Comisión Acumulada PBS 2026</div>
-            <div style="font-size:24px;font-weight:700;font-family:var(--mono);color:var(--green)" id="acc-com">$0</div>
+            <div class="section-title" style="font-size:13px;" id="acc-com-titulo">Comisión Acumulada PBS 2026</div>
+            <div style="font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--green)" id="acc-com">$0</div>
           </div>
           <div class="card">
             <div class="card-title">🏆 Progreso Campañas Clave</div>
             <div id="campaignProgress"></div>
+          </div>
+        </div>
+        <div class="dash-band"><h3>Comisiones</h3><span>Cada tarjeta indica su periodo</span></div>
+        <!-- Fila 2: Comisiones todos los productos -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px;">
+          <div class="stat-card green" style="position:relative;">
+            <div class="stat-label">Com. PBS Est. Mes</div>
+            <div class="com-seg" role="group" aria-label="Vista de comisión PBS"><button id="comPBSBruto" type="button" onclick="setComPBSVistaFn('bruto')">Bruto</button><button id="comPBSComp" type="button" onclick="setComPBSVistaFn('compensado')" title="Compensada: del 6.º día hábil del mes al 5.º día hábil del mes siguiente">Compensada</button></div>
+            <div class="stat-value" id="kpi-com-mes" style="font-size:18px;">$0</div>
+            <div class="stat-sub" id="kpi-com-mes-sub">Mes seleccionado · bruto</div>
+            
+          </div>
+          <div class="stat-card teal">
+            <div class="stat-label">Com. SPTI Proy.</div>
+            <div class="stat-value" id="dash-com-spti" style="font-size:16px;">$0</div>
+            <div class="stat-sub">Proyección anual · 7% prima</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-label">Com. SPD Plus Proy.</div>
+            <div class="stat-value" id="dash-com-spd" style="font-size:16px;">$0</div>
+            <div class="stat-sub">Proyección anual · 8% prima</div>
+          </div>
+          <div class="stat-card" style="border-top:3px solid var(--teal);">
+            <div class="stat-label">Com. Modular Proy.</div>
+            <div class="stat-value" id="dash-com-psm" style="font-size:16px;">$0</div>
+            <div class="stat-sub">Proyección anual · 12%/6% prima</div>
+          </div>
+          <div class="stat-card" style="border-top:3px solid var(--green);">
+            <div class="stat-label">Com. 60+ Proy.</div>
+            <div class="stat-value" id="dash-com-pac60" style="font-size:16px;">$0</div>
+            <div class="stat-sub">Proyección anual · 5% prima</div>
+          </div>
+        </div>
+
+        <!-- Fila 3: Totales y efectividad -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;">
+          <div class="stat-card amber">
+            <div class="stat-label">Efectividad PBS</div>
+            <div class="stat-value" id="kpi-efect">0%</div>
+            <div class="stat-sub">vs presupuesto mes</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Com. Vol. Real Cobrada</div>
+            <div class="stat-value" id="dash-com-vol-real" style="font-size:18px;">$0</div>
+            <div class="stat-sub">Pagos confirmados ✅</div>
+          </div>
+          <div class="stat-card" style="border-top:3px solid var(--sura-lime);">
+            <div class="stat-label" id="lbl-com-pbs-acc">Com. PBS Acumulada 2026</div>
+            <div class="stat-value" id="dash-com-pbs-acc" style="font-size:16px;color:var(--sura-lime);">$0</div>
+            <div class="stat-sub">Bruto · hasta el mes seleccionado</div>
+          </div>
+          <div class="stat-card" style="border-top:3px solid var(--sura-lime);">
+            <div class="stat-label">Com. Total Real</div>
+            <div class="stat-value" id="dash-com-total-real" style="font-size:16px;color:var(--sura-lime);">$0</div>
+            <div class="stat-sub">PBS acumulada + voluntarios cobrado</div>
+          </div>
+          <div class="stat-card" style="border-top:3px solid var(--sura-lime);">
+            <div class="stat-label">Com. Total Proyectado</div>
+            <div class="stat-value" id="dash-com-gran-total" style="font-size:16px;color:var(--sura-lime);">$0</div>
+            <div class="stat-sub">PBS acumulada + proyección anual voluntarios</div>
+          </div>
+        </div>
+
+        <div class="dash-band"><h3>Evolución 2026</h3></div>
+        <!-- Bar chart PBS vs PPTO -->
+        <div class="grid-2" style="margin-bottom:16px;">
+          <div class="card">
+            <div class="card-title">📈 PBS — Ventas vs Presupuesto 2026</div>
+            <div class="bar-chart" id="barChartPBS"></div>
+            <div style="display:flex;gap:16px;margin-top:16px;font-size:11.5px;">
+              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--sura-blue);border-radius:2px;display:inline-block;"></span>Ventas</span>
+              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--surface3);border-radius:2px;display:inline-block;border:1px dashed #4A5680"></span>Ppto</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">💊 Voluntarios — Composición de Ventas 2026</div>
+            <div class="bar-chart" id="barChartVol"></div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:11.5px;align-items:center;">
+              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--teal);border-radius:2px;display:inline-block;"></span>SPTI</span>
+              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--purple);border-radius:2px;display:inline-block;"></span>SPD Plus</span>
+              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:#38BDF8;border-radius:2px;display:inline-block;"></span>PSM</span>
+              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--green);border-radius:2px;display:inline-block;"></span>60+</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--text-dim);font-style:italic;">Barras apiladas · total mensual</span>
+            </div>
           </div>
         </div>
 
@@ -11358,12 +11378,14 @@ function renderDashboard() {
   const efect    = pct(pbsVentas, pbsPpto);
 
   // Acumulados año
-  const accPbs   = MESES.reduce((s,_,i) => s + getVentasByProduct(i,'PBS').length, 0);
-  const accSpti  = MESES.reduce((s,_,i) => s + contarPolizas(getVentasByProduct(i,'SPTI')), 0);
-  const accSpd   = MESES.reduce((s,_,i) => s + contarPolizas(getVentasByProduct(i,'SPD')), 0);
-  const accPsm   = contarPolizas(state.ventas.filter(v => !v._importadoSura && v.producto==='PSM'  && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL));
-  const accPac60 = contarPolizas(state.ventas.filter(v => !v._importadoSura && v.producto==='PAC60' && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL));
-  const accCom   = MESES.reduce((s,_,i) => s + calcMesComisionTotal(i), 0);
+  // Acumulado = del año hasta el mes seleccionado (antes sumaba los 12 meses)
+  const _mAcc    = MESES.slice(0, selectedMonth + 1);
+  const accPbs   = _mAcc.reduce((s,_,i) => s + getVentasByProduct(i,'PBS').length, 0);
+  const accSpti  = _mAcc.reduce((s,_,i) => s + contarPolizas(getVentasByProduct(i,'SPTI')), 0);
+  const accSpd   = _mAcc.reduce((s,_,i) => s + contarPolizas(getVentasByProduct(i,'SPD')), 0);
+  const accPsm   = contarPolizas(state.ventas.filter(v => !v._importadoSura && v.producto==='PSM'  && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL && parseFechaLocal(v.fecha).getMonth()<=selectedMonth));
+  const accPac60 = contarPolizas(state.ventas.filter(v => !v._importadoSura && v.producto==='PAC60' && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL && parseFechaLocal(v.fecha).getMonth()<=selectedMonth));
+  const accCom   = _mAcc.reduce((s,_,i) => s + calcMesComisionTotal(i), 0);
 
   // Fill KPI row 1 — ventas
   document.getElementById('kpi-pbs-mes').textContent  = pbsVentas;
@@ -11372,32 +11394,49 @@ function renderDashboard() {
   document.getElementById('kpi-spti-ppto').textContent = sptiPpto;
   document.getElementById('kpi-spd-mes').textContent  = spdVentas;
   document.getElementById('kpi-spd-acc').textContent  = accSpd;
+  document.getElementById('kpi-spd-ppto').textContent = spdPpto;
+  document.getElementById('kpi-pbs-acc').textContent  = accPbs;
+  document.getElementById('kpi-spti-acc').textContent = accSpti;
+  // Fase 1: cero en gris neutro (el contexto —ppto y acumulado— queda en la misma tarjeta)
+  [['kpi-pbs-mes',pbsVentas],['kpi-spti-mes',sptiVentas],['kpi-spd-mes',spdVentas],['kpi-psm-mes',psmVentasMes],['kpi-pac60-mes',pac60VentasMes]]
+    .forEach(([id,n]) => { const el = document.getElementById(id); if (el) el.classList.toggle('kpi-cero', n === 0); });
+  const _hasta = selectedMonth === 0 ? 'ene' : 'ene–' + MESES_SHORT[selectedMonth].toLowerCase();
+  const _t = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  _t('bandMesTitulo', 'Ventas de ' + MESES[selectedMonth]);
+  _t('bandAccTitulo', 'Acumulado ' + AÑO_ACTUAL + ' · ' + _hasta);
+  _t('acc-titulo', '📅 Acumulado ' + AÑO_ACTUAL + ' · ' + _hasta);
+  _t('acc-com-titulo', 'Comisión acumulada PBS · ' + _hasta);
+  _t('lbl-com-pbs-acc', 'Com. PBS acumulada ' + _hasta);
   document.getElementById('kpi-psm-mes').textContent  = psmVentasMes;
   document.getElementById('kpi-psm-acc').textContent  = accPsm;
   document.getElementById('kpi-pac60-mes').textContent  = pac60VentasMes;
   document.getElementById('kpi-pac60-acc').textContent  = accPac60;
 
   // Badges
-  const mkBadge = (id, p) => { const el=document.getElementById(id); if(!el)return; el.textContent=p+'% cumpl.'; el.className='stat-badge '+(p>=100?'badge-green':p>=70?'badge-amber':'badge-red'); };
-  mkBadge('kpi-pbs-pct',  pct(pbsVentas, pbsPpto));
-  mkBadge('kpi-spti-pct', pct(sptiVentas, sptiPpto));
-  mkBadge('kpi-spd-pct',  pct(spdVentas, spdPpto));
-  // PSM and PAC60 don't have ppto yet — show count
-  const elPsm = document.getElementById('kpi-psm-pct');
-  if (elPsm) { elPsm.textContent = accPsm + ' total'; }
-  const elPac = document.getElementById('kpi-pac60-pct');
-  if (elPac) { elPac.textContent = accPac60 + ' total'; }
+  // Semáforo con ritmo: se compara el cumplimiento con la fracción del mes transcurrida
+  const _ritmo = _dashRitmoMes();
+  const mkBadge = (id, p, valor, ppto) => { const el=document.getElementById(id); if(!el)return; el.textContent=p+'% cumpl.'; el.className='stat-badge '+_dashBadgeClase(p, valor, ppto, _ritmo); el.title='Ritmo esperado a hoy: '+Math.round(_ritmo*100)+'% del presupuesto del mes'; };
+  mkBadge('kpi-pbs-pct',  pct(pbsVentas, pbsPpto),   pbsVentas,  pbsPpto);
+  mkBadge('kpi-spti-pct', pct(sptiVentas, sptiPpto), sptiVentas, sptiPpto);
+  mkBadge('kpi-spd-pct',  pct(spdVentas, spdPpto),   spdVentas,  spdPpto);
+  // PSM y 60+ no tienen presupuesto 2026: sin semáforo
+  ['kpi-psm-pct','kpi-pac60-pct'].forEach(id => { const el = document.getElementById(id); if (el) { el.removeAttribute('style'); el.className = 'stat-badge badge-gray'; el.textContent = 'Sin ppto 2026'; } });
 
   document.getElementById('kpi-com-mes').textContent = fmt(comMes);
   const _subComMes = document.getElementById('kpi-com-mes-sub');
-  if (_subComMes) _subComMes.textContent = _comPBSMesVista === 'compensado' ? 'Ventas ventana compensada' : 'Mes seleccionado · bruto';
-  const _btnComMes = document.getElementById('toggleComPBSMes');
-  if (_btnComMes) _btnComMes.textContent = _comPBSMesVista === 'bruto' ? 'BRUTO' : 'COMP.';
+  const _vent = getVentanaCompensado(selectedMonth, AÑO_ACTUAL);
+  const _fmtD = d => d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+  if (_subComMes) _subComMes.textContent = _comPBSMesVista === 'compensado'
+    ? (_vent ? `Ventas del ${_fmtD(_vent.inicio)} al ${_fmtD(_vent.fin)} (ventana compensada)` : 'Ventas ventana compensada')
+    : `Ventas fechadas en ${MESES[selectedMonth].toLowerCase()} · bruto`;
+  const _sB = document.getElementById('comPBSBruto'), _sC = document.getElementById('comPBSComp');
+  if (_sB) _sB.classList.toggle('on', _comPBSMesVista === 'bruto');
+  if (_sC) _sC.classList.toggle('on', _comPBSMesVista === 'compensado');
   document.getElementById('kpi-efect').textContent   = efect + '%';
 
   // Comisiones todos los productos
   const { sptiProy, spdProy, psmProy, pac60Proy, totalProy, real: volReal } = getVolComisionesSummary();
-  const pbsTotalAcc = MESES.reduce((s,_,i) => s + calcMesComisionTotal(i), 0);
+  const pbsTotalAcc = accCom;
   document.getElementById('dash-com-spti').textContent  = fmt(sptiProy);
   document.getElementById('dash-com-spd').textContent   = fmt(spdProy);
   document.getElementById('dash-com-psm').textContent   = fmt(psmProy);
@@ -11405,6 +11444,7 @@ function renderDashboard() {
   document.getElementById('dash-com-vol-real').textContent = fmt(volReal);
   document.getElementById('dash-com-pbs-acc').textContent = fmt(pbsTotalAcc);
   document.getElementById('dash-com-gran-total').textContent = fmt(pbsTotalAcc + totalProy);
+  document.getElementById('dash-com-total-real').textContent = fmt(pbsTotalAcc + volReal);
 
   // Bar chart PBS
   renderBarChart('barChartPBS', MESES_SHORT, state.config.pbs, MESES.map((_,i) => getVentasByProduct(i,'PBS').length), 'var(--sura-blue)', 'var(--surface3)');
@@ -11427,8 +11467,8 @@ function renderDashboard() {
   document.getElementById('bar-pbs').style.width  = Math.min(pct(accPbs, 600), 100) + '%';
   document.getElementById('bar-spti').style.width = Math.min(pct(accSpti, 114), 100) + '%';
   document.getElementById('bar-spd').style.width  = Math.min(pct(accSpd, 36), 100) + '%';
-  document.getElementById('bar-psm').style.width  = Math.min(accPsm * 5, 100) + '%'; // visual ref
-  document.getElementById('bar-pac60').style.width = Math.min(accPac60 * 5, 100) + '%';
+  // Modular y 60+ no tienen presupuesto 2026: no hay meta contra la cual medir, se muestra solo el número
+  ['bar-psm','bar-pac60'].forEach(id => { const t = document.getElementById(id)?.parentElement; if (t) t.style.display = 'none'; });
 
   // Campaign progress
   renderCampaignProgress();
@@ -11481,6 +11521,24 @@ function renderBarChartDual(id, labels, data1, data2, color1, color2) {
 
 // Estado del toggle de vista de comisión PBS mes (bruto vs compensado)
 let _comPBSMesVista = "bruto"; // "bruto" | "compensado"
+function setComPBSVistaFn(v) {
+  _comPBSMesVista = v === 'compensado' ? 'compensado' : 'bruto';
+  renderDashboard();
+}
+// Fracción del mes seleccionado ya transcurrida: mes pasado = 1, mes futuro = 0, mes actual = día / días del mes
+function _dashRitmoMes() {
+  const hoy = new Date(), mHoy = hoy.getMonth();
+  if (selectedMonth < mHoy) return 1;
+  if (selectedMonth > mHoy) return 0;
+  return hoy.getDate() / new Date(hoy.getFullYear(), mHoy + 1, 0).getDate();
+}
+// Verde ≥90 % del ritmo · ámbar ≥60 % · rojo <60 % · gris si no hay ppto, el mes es futuro o aún no hay ventas en la 1.ª mitad del mes
+function _dashBadgeClase(p, valor, ppto, ritmo) {
+  if (!(ppto > 0) || ritmo <= 0) return 'badge-gray';
+  if (valor === 0 && ritmo < 0.5) return 'badge-gray';
+  const r = (p / 100) / ritmo;
+  return r >= 0.9 ? 'badge-green' : r >= 0.6 ? 'badge-amber' : 'badge-red';
+}
 function toggleComPBSVistaFn() {
   _comPBSMesVista = _comPBSMesVista === "bruto" ? "compensado" : "bruto";
   const btn = document.getElementById("toggleComPBSMes");
@@ -38942,12 +39000,6 @@ function cumpCheckDashboard() {
     banner.innerHTML = `<div class="alert alert-info" style="background:rgba(236,72,153,0.1);border-color:rgba(236,72,153,0.3);color:var(--pink);">
       🎂 <strong>¡${hoy0.length} cliente${hoy0.length>1?'s':''} cumplen años hoy!</strong> ${nombres}
       <button class="btn btn-sm" style="margin-left:12px;background:rgba(236,72,153,0.15);color:var(--pink);border:1px solid rgba(236,72,153,0.3);" onclick="navigate('cumpleanos')">Felicitar →</button>
-    </div>`;
-    banner.style.display = '';
-  } else if (semana.length > 0) {
-    banner.innerHTML = `<div class="alert alert-info" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.25);color:var(--amber);">
-      🎂 <strong>${semana.length} cliente${semana.length>1?'s cumplen':'cumple'} años esta semana.</strong>
-      <button class="btn btn-sm" style="margin-left:12px;background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);" onclick="navigate('cumpleanos')">Ver →</button>
     </div>`;
     banner.style.display = '';
   } else {
