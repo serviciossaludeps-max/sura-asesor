@@ -386,6 +386,23 @@
   .com-seg { display: inline-flex; border: 1px solid rgba(34,197,94,0.4); border-radius: 10px; overflow: hidden; margin: 4px 0 2px; }
   .com-seg button { font: inherit; font-size: 11px; padding: 5px 10px; border: 0; background: transparent; color: var(--text-muted); cursor: pointer; }
   .com-seg button.on { background: rgba(34,197,94,0.2); color: var(--green); font-weight: 700; }
+  /* ---- Dashboard (Fase 2): dinamismo ---- */
+  .dash-ring { position: absolute; top: 14px; right: 14px; width: 48px; height: 48px; }
+  .dash-ring .rt { fill: none; stroke: var(--surface3); stroke-width: 6; }
+  .dash-ring .rf { fill: none; stroke: var(--text-muted); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 138.2; stroke-dashoffset: 138.2; transition: stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1), stroke .3s; }
+  .dash-ring .rf.badge-green { stroke: var(--green); } .dash-ring .rf.badge-amber { stroke: var(--amber); } .dash-ring .rf.badge-red { stroke: var(--red); }
+  .dash-ring text { fill: var(--text, var(--text-muted)); font: 700 12px var(--font); text-anchor: middle; }
+  .dash-foot { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin: 2px 0 4px; min-height: 26px; }
+  .dash-delta { font-size: 11px; color: var(--text-muted); white-space: nowrap; } .dash-delta.up { color: var(--green); } .dash-delta.dn { color: var(--red); }
+  .dash-spark { width: 70px; height: 26px; flex-shrink: 0; }
+  .dash-spark polyline { fill: none; stroke: var(--text-muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .dash-spark polyline.dr { animation: dashDraw .9s ease-out; }
+  @keyframes dashDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  .dash-leg { font: inherit; display: flex; align-items: center; gap: 5px; color: var(--text-muted); background: transparent; border: 1px solid transparent; border-radius: 12px; padding: 4px 8px; cursor: pointer; }
+  .dash-leg[aria-pressed="true"] { border-color: var(--sura-blue); color: var(--text, #E8ECF8); }
+  #dashTip { position: fixed; z-index: 9999; pointer-events: none; background: #E8ECF8; color: #0F1623; padding: 7px 10px; border-radius: 8px; font-size: 12px; line-height: 1.35; opacity: 0; transition: opacity .12s; max-width: 240px; }
+  body.theme-light #dashTip { background: #0F1623; color: #E8ECF8; }
+  @media (prefers-reduced-motion: reduce) { .dash-ring .rf, .dash-spark polyline, #page-dashboard .progress-fill, #page-dashboard .bar, #dashTip { transition: none !important; animation: none !important; } }
   .stat-badge {
     display: inline-flex;
     align-items: center;
@@ -2303,26 +2320,32 @@
         <!-- Month selector -->
         <div class="month-selector" id="monthSelectorDash"></div>
 
-        <div class="dash-band"><h3 id="bandMesTitulo">Ventas del mes</h3><span>Cumplimiento medido contra el ritmo esperado del mes</span></div>
+        <div class="dash-band"><h3 id="bandMesTitulo">Ventas del mes</h3><span id="bandMesNota">Cumplimiento medido contra el ritmo esperado del mes</span></div>
         <!-- Fila 1: PBS + Voluntarios por producto -->
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px;">
           <div class="stat-card blue">
             <div class="stat-label">PBS Mes</div>
+            <svg class="dash-ring" viewBox="0 0 56 56" role="img" aria-label="Cumplimiento del mes"><circle class="rt" cx="28" cy="28" r="22"/><circle class="rf" id="dash-ring-pbs" cx="28" cy="28" r="22" transform="rotate(-90 28 28)"/><text x="28" y="32" id="dash-ring-pbs-t">0%</text></svg>
             <div class="stat-value" id="kpi-pbs-mes">0</div>
+            <div class="dash-foot"><span class="dash-delta" id="dash-delta-pbs"></span><svg class="dash-spark" viewBox="0 0 80 26" aria-hidden="true"><polyline id="dash-spark-pbs" pathLength="1" points=""/></svg></div>
             <div class="stat-sub">Ppto: <span id="kpi-pbs-ppto">—</span></div>
             <div class="stat-sub">Acum.: <span id="kpi-pbs-acc">0</span></div>
             <span class="stat-badge badge-blue" id="kpi-pbs-pct">—</span>
           </div>
           <div class="stat-card teal">
             <div class="stat-label">SPTI Mes</div>
+            <svg class="dash-ring" viewBox="0 0 56 56" role="img" aria-label="Cumplimiento del mes"><circle class="rt" cx="28" cy="28" r="22"/><circle class="rf" id="dash-ring-spti" cx="28" cy="28" r="22" transform="rotate(-90 28 28)"/><text x="28" y="32" id="dash-ring-spti-t">0%</text></svg>
             <div class="stat-value" id="kpi-spti-mes">0</div>
+            <div class="dash-foot"><span class="dash-delta" id="dash-delta-spti"></span><svg class="dash-spark" viewBox="0 0 80 26" aria-hidden="true"><polyline id="dash-spark-spti" pathLength="1" points=""/></svg></div>
             <div class="stat-sub">Ppto: <span id="kpi-spti-ppto">—</span></div>
             <div class="stat-sub">Acum.: <span id="kpi-spti-acc">0</span></div>
             <span class="stat-badge badge-blue" id="kpi-spti-pct">—</span>
           </div>
           <div class="stat-card purple">
             <div class="stat-label">SPD Plus Mes</div>
+            <svg class="dash-ring" viewBox="0 0 56 56" role="img" aria-label="Cumplimiento del mes"><circle class="rt" cx="28" cy="28" r="22"/><circle class="rf" id="dash-ring-spd" cx="28" cy="28" r="22" transform="rotate(-90 28 28)"/><text x="28" y="32" id="dash-ring-spd-t">0%</text></svg>
             <div class="stat-value" id="kpi-spd-mes">0</div>
+            <div class="dash-foot"><span class="dash-delta" id="dash-delta-spd"></span><svg class="dash-spark" viewBox="0 0 80 26" aria-hidden="true"><polyline id="dash-spark-spd" pathLength="1" points=""/></svg></div>
             <div class="stat-sub">Ppto: <span id="kpi-spd-ppto">—</span></div>
             <div class="stat-sub">Acum.: <span id="kpi-spd-acc">0</span></div>
             <span class="stat-badge badge-blue" id="kpi-spd-pct">—</span>
@@ -2330,12 +2353,14 @@
           <div class="stat-card" style="border-top:3px solid var(--teal);">
             <div class="stat-label">Modular Mes</div>
             <div class="stat-value" id="kpi-psm-mes">0</div>
+            <div class="dash-foot"><span class="dash-delta" id="dash-delta-psm"></span><svg class="dash-spark" viewBox="0 0 80 26" aria-hidden="true"><polyline id="dash-spark-psm" pathLength="1" points=""/></svg></div>
             <div class="stat-sub">Acum: <span id="kpi-psm-acc">0</span></div>
             <span class="stat-badge badge-blue" id="kpi-psm-pct" style="background:rgba(6,182,212,0.15);color:var(--teal);">—</span>
           </div>
           <div class="stat-card" style="border-top:3px solid var(--green);">
             <div class="stat-label">60+ Mes</div>
             <div class="stat-value" id="kpi-pac60-mes">0</div>
+            <div class="dash-foot"><span class="dash-delta" id="dash-delta-pac60"></span><svg class="dash-spark" viewBox="0 0 80 26" aria-hidden="true"><polyline id="dash-spark-pac60" pathLength="1" points=""/></svg></div>
             <div class="stat-sub">Acum: <span id="kpi-pac60-acc">0</span></div>
             <span class="stat-badge" id="kpi-pac60-pct" style="background:rgba(34,197,94,0.15);color:var(--green);">—</span>
           </div>
@@ -2451,10 +2476,10 @@
             <div class="card-title">💊 Voluntarios — Composición de Ventas 2026</div>
             <div class="bar-chart" id="barChartVol"></div>
             <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:11.5px;align-items:center;">
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--teal);border-radius:2px;display:inline-block;"></span>SPTI</span>
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--purple);border-radius:2px;display:inline-block;"></span>SPD Plus</span>
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:#38BDF8;border-radius:2px;display:inline-block;"></span>PSM</span>
-              <span style="display:flex;align-items:center;gap:5px;color:var(--text-muted)"><span style="width:10px;height:10px;background:var(--green);border-radius:2px;display:inline-block;"></span>60+</span>
+              <button type="button" class="dash-leg" data-serie="SPTI" aria-pressed="false"><span style="width:10px;height:10px;background:var(--teal);border-radius:2px;display:inline-block;"></span>SPTI</button>
+              <button type="button" class="dash-leg" data-serie="SPD Plus" aria-pressed="false"><span style="width:10px;height:10px;background:var(--purple);border-radius:2px;display:inline-block;"></span>SPD Plus</button>
+              <button type="button" class="dash-leg" data-serie="PSM" aria-pressed="false"><span style="width:10px;height:10px;background:#38BDF8;border-radius:2px;display:inline-block;"></span>PSM</button>
+              <button type="button" class="dash-leg" data-serie="60+" aria-pressed="false"><span style="width:10px;height:10px;background:var(--green);border-radius:2px;display:inline-block;"></span>60+</button>
               <span style="margin-left:auto;font-size:11px;color:var(--text-dim);font-style:italic;">Barras apiladas · total mensual</span>
             </div>
           </div>
@@ -11356,6 +11381,7 @@ function agendaToggleSec(id) {
 }
 
 function renderDashboard() {
+  _dashPrepararVisita();
   buildMonthSelector('monthSelectorDash', renderDashboard);
   checkCierresEnDashboard();
   checkCarteraEnDashboard();
@@ -11388,15 +11414,15 @@ function renderDashboard() {
   const accCom   = _mAcc.reduce((s,_,i) => s + calcMesComisionTotal(i), 0);
 
   // Fill KPI row 1 — ventas
-  document.getElementById('kpi-pbs-mes').textContent  = pbsVentas;
+  _dashNum('kpi-pbs-mes', pbsVentas);
   document.getElementById('kpi-pbs-ppto').textContent = pbsPpto;
-  document.getElementById('kpi-spti-mes').textContent = sptiVentas;
+  _dashNum('kpi-spti-mes', sptiVentas);
   document.getElementById('kpi-spti-ppto').textContent = sptiPpto;
-  document.getElementById('kpi-spd-mes').textContent  = spdVentas;
-  document.getElementById('kpi-spd-acc').textContent  = accSpd;
+  _dashNum('kpi-spd-mes', spdVentas);
+  _dashNum('kpi-spd-acc', accSpd);
   document.getElementById('kpi-spd-ppto').textContent = spdPpto;
-  document.getElementById('kpi-pbs-acc').textContent  = accPbs;
-  document.getElementById('kpi-spti-acc').textContent = accSpti;
+  _dashNum('kpi-pbs-acc', accPbs);
+  _dashNum('kpi-spti-acc', accSpti);
   // Fase 1: cero en gris neutro (el contexto —ppto y acumulado— queda en la misma tarjeta)
   [['kpi-pbs-mes',pbsVentas],['kpi-spti-mes',sptiVentas],['kpi-spd-mes',spdVentas],['kpi-psm-mes',psmVentasMes],['kpi-pac60-mes',pac60VentasMes]]
     .forEach(([id,n]) => { const el = document.getElementById(id); if (el) el.classList.toggle('kpi-cero', n === 0); });
@@ -11407,11 +11433,10 @@ function renderDashboard() {
   _t('acc-titulo', '📅 Acumulado ' + AÑO_ACTUAL + ' · ' + _hasta);
   _t('acc-com-titulo', 'Comisión acumulada PBS · ' + _hasta);
   _t('lbl-com-pbs-acc', 'Com. PBS acumulada ' + _hasta);
-  document.getElementById('kpi-psm-mes').textContent  = psmVentasMes;
-  document.getElementById('kpi-psm-acc').textContent  = accPsm;
-  document.getElementById('kpi-pac60-mes').textContent  = pac60VentasMes;
-  document.getElementById('kpi-pac60-acc').textContent  = accPac60;
-
+  _dashNum('kpi-psm-mes', psmVentasMes);
+  _dashNum('kpi-psm-acc', accPsm);
+  _dashNum('kpi-pac60-mes', pac60VentasMes);
+  _dashNum('kpi-pac60-acc', accPac60);
   // Badges
   // Semáforo con ritmo: se compara el cumplimiento con la fracción del mes transcurrida
   const _ritmo = _dashRitmoMes();
@@ -11421,8 +11446,23 @@ function renderDashboard() {
   mkBadge('kpi-spd-pct',  pct(spdVentas, spdPpto),   spdVentas,  spdPpto);
   // PSM y 60+ no tienen presupuesto 2026: sin semáforo
   ['kpi-psm-pct','kpi-pac60-pct'].forEach(id => { const el = document.getElementById(id); if (el) { el.removeAttribute('style'); el.className = 'stat-badge badge-gray'; el.textContent = 'Sin ppto 2026'; } });
+  // Fase 2: anillo de cumplimiento, sparkline y delta contra el mes anterior (mismo corte de día en el mes en curso)
+  const _hoyD = new Date(), _mesFuturo = selectedMonth > _hoyD.getMonth(), _mesActual = selectedMonth === _hoyD.getMonth();
+  [['pbs','PBS',pbsVentas,pbsPpto],['spti','SPTI',sptiVentas,sptiPpto],['spd','SPD',spdVentas,spdPpto],['psm','PSM',psmVentasMes,0],['pac60','PAC60',pac60VentasMes,0]].forEach(([k, prod, val, ppto]) => {
+    if (ppto > 0) _dashAnillo('dash-ring-' + k, pct(val, ppto), _dashBadgeClase(pct(val, ppto), val, ppto, _ritmo));
+    const serie = MESES.map((_, i) => _dashConteoMes(prod, i));
+    _dashSpark('dash-spark-' + k, serie.slice(Math.max(0, selectedMonth - 5), selectedMonth + 1));
+    const d = (_mesFuturo || selectedMonth === 0) ? null : _dashDelta(prod, val);
+    const el = document.getElementById('dash-delta-' + k);
+    if (el) {
+      el.textContent = d ? (d.d > 0 ? '▲ +' + d.d : d.d < 0 ? '▼ ' + d.d : '▬ 0') + ' vs. ' + MESES_SHORT[selectedMonth - 1].toLowerCase() : '';
+      el.title = d ? d.txt : '';
+      el.className = 'dash-delta' + (d && d.d > 0 ? ' up' : d && d.d < 0 ? ' dn' : '');
+    }
+  });
+  _t('bandMesNota', 'Cumplimiento contra el ritmo esperado del mes' + ((_mesFuturo || selectedMonth === 0) ? '' : ' · variación contra ' + MESES_SHORT[selectedMonth - 1].toLowerCase() + (_mesActual ? ' al día ' + _hoyD.getDate() : '')));
 
-  document.getElementById('kpi-com-mes').textContent = fmt(comMes);
+  _dashNum('kpi-com-mes', comMes, fmt);
   const _subComMes = document.getElementById('kpi-com-mes-sub');
   const _vent = getVentanaCompensado(selectedMonth, AÑO_ACTUAL);
   const _fmtD = d => d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
@@ -11437,33 +11477,35 @@ function renderDashboard() {
   // Comisiones todos los productos
   const { sptiProy, spdProy, psmProy, pac60Proy, totalProy, real: volReal } = getVolComisionesSummary();
   const pbsTotalAcc = accCom;
-  document.getElementById('dash-com-spti').textContent  = fmt(sptiProy);
-  document.getElementById('dash-com-spd').textContent   = fmt(spdProy);
-  document.getElementById('dash-com-psm').textContent   = fmt(psmProy);
-  document.getElementById('dash-com-pac60').textContent = fmt(pac60Proy);
-  document.getElementById('dash-com-vol-real').textContent = fmt(volReal);
-  document.getElementById('dash-com-pbs-acc').textContent = fmt(pbsTotalAcc);
-  document.getElementById('dash-com-gran-total').textContent = fmt(pbsTotalAcc + totalProy);
-  document.getElementById('dash-com-total-real').textContent = fmt(pbsTotalAcc + volReal);
-
+  _dashNum('dash-com-spti', sptiProy, fmt);
+  _dashNum('dash-com-spd', spdProy, fmt);
+  _dashNum('dash-com-psm', psmProy, fmt);
+  _dashNum('dash-com-pac60', pac60Proy, fmt);
+  _dashNum('dash-com-vol-real', volReal, fmt);
+  _dashNum('dash-com-pbs-acc', pbsTotalAcc, fmt);
+  _dashNum('dash-com-gran-total', pbsTotalAcc + totalProy, fmt);
+  _dashNum('dash-com-total-real', pbsTotalAcc + volReal, fmt);
   // Bar chart PBS
-  renderBarChart('barChartPBS', MESES_SHORT, state.config.pbs, MESES.map((_,i) => getVentasByProduct(i,'PBS').length), 'var(--sura-blue)', 'var(--surface3)');
+  const _pbsSerie = MESES.map((_,i) => getVentasByProduct(i,'PBS').length);
+  renderBarChart('barChartPBS', MESES_SHORT, state.config.pbs, _pbsSerie, 'var(--sura-blue)', 'var(--surface3)');
+  _dashPostGrafico('barChartPBS', _dashTipsPBS(_pbsSerie), _pbsSerie.join(',') + '|' + state.config.pbs.join(','));
 
   // Bar chart voluntarios — barras apiladas (Opción A)
-  renderBarChartStacked('barChartVol', MESES_SHORT, [
+  _dashVolSeries = [
     { data: MESES.map((_,i) => contarPolizas(getVentasByProduct(i,'SPTI'))),  color: 'var(--teal)',   label: 'SPTI'     },
     { data: MESES.map((_,i) => contarPolizas(getVentasByProduct(i,'SPD'))),   color: 'var(--purple)', label: 'SPD Plus' },
     { data: MESES.map((_,i) => contarPolizas(state.ventas.filter(v => !v._importadoSura && v.producto==='PSM'   && parseFechaLocal(v.fecha).getMonth()===i && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL))), color: '#38BDF8', label: 'PSM' },
     { data: MESES.map((_,i) => contarPolizas(state.ventas.filter(v => !v._importadoSura && v.producto==='PAC60' && parseFechaLocal(v.fecha).getMonth()===i && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL))), color: 'var(--green)', label: '60+' },
-  ]);
+  ];
+  _dashRenderVol();
 
   // Acumulado año progress bars
-  document.getElementById('acc-pbs').textContent  = `${accPbs} / 600`;
-  document.getElementById('acc-spti').textContent = `${accSpti} / 114`;
-  document.getElementById('acc-spd').textContent  = `${accSpd} / 36`;
-  document.getElementById('acc-psm').textContent  = `${accPsm}`;
-  document.getElementById('acc-pac60').textContent = `${accPac60}`;
-  document.getElementById('acc-com').textContent  = fmt(accCom);
+  _dashNum('acc-pbs', accPbs, v => v + ' / 600');
+  _dashNum('acc-spti', accSpti, v => v + ' / 114');
+  _dashNum('acc-spd', accSpd, v => v + ' / 36');
+  _dashNum('acc-psm', accPsm);
+  _dashNum('acc-pac60', accPac60);
+  _dashNum('acc-com', accCom, fmt);
   document.getElementById('bar-pbs').style.width  = Math.min(pct(accPbs, 600), 100) + '%';
   document.getElementById('bar-spti').style.width = Math.min(pct(accSpti, 114), 100) + '%';
   document.getElementById('bar-spd').style.width  = Math.min(pct(accSpd, 36), 100) + '%';
@@ -11539,6 +11581,128 @@ function _dashBadgeClase(p, valor, ppto, ritmo) {
   const r = (p / 100) / ritmo;
   return r >= 0.9 ? 'badge-green' : r >= 0.6 ? 'badge-amber' : 'badge-red';
 }
+// ═════ Dashboard — Fase 2: dinamismo (conteo animado, anillo, sparkline, delta, barras, tooltip, leyenda) ═════
+// Solo presentación: los valores finales son los mismos de la Fase 1; las animaciones solo cambian cómo se llega a ellos.
+let _dashNuevaVisita = true;   // primera carga y cada visita al dashboard: se reanima desde cero
+let _dashIso = null;           // serie aislada en el gráfico de voluntarios (null = todas)
+let _dashVolSeries = [];       // series completas del gráfico de voluntarios
+const _dashReducir = () => !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+function _dashNum(id, to, fn) {
+  const el = document.getElementById(id); if (!el) return;
+  fn = fn || String;
+  if (el._dashRaf) cancelAnimationFrame(el._dashRaf);
+  const from = el._dashCur === undefined ? 0 : el._dashCur;
+  el.dataset.dv = '1';
+  if (_dashReducir() || !isFinite(from) || !isFinite(to) || from === to) { el._dashCur = to; el.textContent = fn(to); return; }
+  const t0 = performance.now();
+  const paso = () => {
+    const k = Math.min(1, (performance.now() - t0) / 600);
+    const v = k >= 1 ? to : Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+    el._dashCur = v; el.textContent = fn(v);
+    if (k < 1) el._dashRaf = requestAnimationFrame(paso);
+  };
+  paso();
+}
+function _dashPrepararVisita() {
+  if (!_dashNuevaVisita) return;
+  _dashNuevaVisita = false;
+  const p = document.getElementById('page-dashboard'); if (!p) return;
+  p.querySelectorAll('[data-dv]').forEach(el => { el._dashCur = undefined; if (el._dashRaf) cancelAnimationFrame(el._dashRaf); });
+  p.querySelectorAll('.progress-fill').forEach(el => { el.style.width = '0%'; });
+  p.querySelectorAll('.dash-ring .rf').forEach(el => { el.style.strokeDashoffset = '138.2'; });
+  ['barChartPBS', 'barChartVol'].forEach(id => { const c = document.getElementById(id); if (c) delete c.dataset.sig; });
+  p.querySelectorAll('.dash-spark polyline').forEach(el => { delete el.dataset.pts; });
+  void p.offsetWidth; // el estado en 0 queda aplicado antes de fijar los valores finales (así la transición sí corre)
+}
+// Conteo mensual por producto, con la misma regla que los KPI del mes; maxDia limita al mismo corte de día
+function _dashConteoMes(prod, i, maxDia) {
+  const okDia = v => !maxDia || parseFechaLocal(v.fecha).getDate() <= maxDia;
+  if (prod === 'PBS') return getVentasByProduct(i, 'PBS').filter(okDia).length;
+  if (prod === 'SPTI' || prod === 'SPD') return contarPolizas(getVentasByProduct(i, prod).filter(okDia));
+  return contarPolizas(state.ventas.filter(v => !v._importadoSura && v.producto === prod && parseFechaLocal(v.fecha).getMonth() === i && parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL && okDia(v)));
+}
+function _dashDelta(prod, actual) {
+  const hoy = new Date(), esActual = selectedMonth === hoy.getMonth(), dia = esActual ? hoy.getDate() : 0;
+  const previo = _dashConteoMes(prod, selectedMonth - 1, dia);
+  const m = MESES[selectedMonth - 1].toLowerCase();
+  return { d: actual - previo, txt: 'Comparado con ' + m + (esActual ? ' al día ' + dia + ' (mismo corte del mes)' : ' completo') };
+}
+function _dashAnillo(id, p, clase) {
+  const rf = document.getElementById(id); if (!rf) return;
+  rf.style.strokeDashoffset = String(138.2 * (1 - Math.min(p, 100) / 100));
+  rf.setAttribute('class', 'rf ' + clase);
+  const t = document.getElementById(id + '-t'); if (t) t.textContent = p + '%';
+}
+function _dashSpark(id, serie) {
+  const pl = document.getElementById(id); if (!pl) return;
+  const mx = Math.max(...serie, 1), n = serie.length;
+  const pts = serie.map((v, j) => (4 + j * (72 / Math.max(n - 1, 1))).toFixed(1) + ',' + (22 - v / mx * 18).toFixed(1)).join(' ');
+  if (pl.dataset.pts === pts) return;
+  pl.dataset.pts = pts; pl.setAttribute('points', pts);
+  pl.classList.remove('dr');
+  if (!_dashReducir()) { void pl.getBoundingClientRect(); pl.classList.add('dr'); }
+}
+function _dashFiltrarSerie(series) { return _dashIso ? series.filter(s => s.label === _dashIso) : series; }
+function _dashTipsPBS(actual) {
+  return actual.map((v, i) => {
+    const ppto = state.config.pbs[i] || 0, d = i ? v - actual[i - 1] : 0;
+    return [MESES[i] + ': ' + v + ' ventas' + (ppto ? ' · ppto ' + ppto + ' (' + Math.round(v / ppto * 100) + '%)' : ''),
+            i ? (d >= 0 ? '▲ +' : '▼ ') + d + ' vs. ' + MESES_SHORT[i - 1].toLowerCase() : ''].filter(Boolean).join('\n');
+  });
+}
+function _dashTipsVol(series) {
+  return MESES.map((_, i) => MESES[i] + '\n' + series.map(sr => sr.label + ': ' + (sr.data[i] || 0)).join('\n') + '\nTotal: ' + series.reduce((t, sr) => t + (sr.data[i] || 0), 0));
+}
+// Mes resaltado + texto del tooltip + crecimiento de las barras (solo cuando los datos cambian o hay visita nueva)
+function _dashPostGrafico(id, tips, sig) {
+  const c = document.getElementById(id); if (!c) return;
+  const cambio = c.dataset.sig !== sig; c.dataset.sig = sig;
+  c.querySelectorAll('.bar-col').forEach((col, i) => {
+    col.dataset.tip = tips[i] || '';
+    col.style.opacity = i === selectedMonth ? '1' : '.55';
+    col.style.transition = 'opacity .25s';
+  });
+  c.querySelectorAll('[title]').forEach(e => e.removeAttribute('title')); // el tooltip propio reemplaza al nativo (si no, se verían dos)
+  if (!cambio || _dashReducir()) return;
+  const bs = [...c.querySelectorAll('[style*="background"][style*="height"]')].map(el => [el, el.style.height]);
+  bs.forEach(([el]) => { el.style.transition = 'none'; el.style.height = '0px'; });
+  void c.offsetHeight;
+  bs.forEach(([el, h]) => { el.style.transition = 'height .8s cubic-bezier(.2,.8,.2,1)'; el.style.height = h; });
+}
+function _dashRenderVol() {
+  const ser = _dashFiltrarSerie(_dashVolSeries);
+  renderBarChartStacked('barChartVol', MESES_SHORT, ser);
+  _dashPostGrafico('barChartVol', _dashTipsVol(ser), JSON.stringify(ser.map(s => [s.label, s.data])));
+}
+function _dashInit() {
+  if (document.getElementById('dashTip')) return;
+  const tip = document.createElement('div'); tip.id = 'dashTip'; tip.setAttribute('role', 'status'); document.body.appendChild(tip);
+  const mostrar = e => {
+    const col = e.target && e.target.closest ? e.target.closest('#page-dashboard .bar-col[data-tip]') : null;
+    if (!col || !col.dataset.tip) { tip.style.opacity = 0; return; }
+    const l = col.dataset.tip.split('\n');
+    tip.innerHTML = '<b>' + l[0] + '</b>' + l.slice(1).map(x => '<br>' + x).join('');
+    tip.style.left = Math.min(window.innerWidth - 250, e.clientX + 14) + 'px';
+    tip.style.top = (e.clientY + 14) + 'px';
+    tip.style.opacity = 1;
+  };
+  document.addEventListener('pointermove', mostrar);
+  document.addEventListener('pointerdown', mostrar);
+  document.addEventListener('scroll', () => { tip.style.opacity = 0; }, true);
+  document.addEventListener('click', e => {
+    const b = e.target && e.target.closest ? e.target.closest('.dash-leg') : null; if (!b) return;
+    _dashIso = _dashIso === b.dataset.serie ? null : b.dataset.serie;
+    document.querySelectorAll('.dash-leg').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.serie === _dashIso)));
+    _dashRenderVol();
+  });
+  // Cada visita al dashboard reanima desde cero (se envuelve navigate desde fuera; el original no se modifica)
+  if (typeof navigate === 'function' && !navigate._dashEnvuelto) {
+    const _nav = navigate;
+    navigate = function (p) { if (p === 'dashboard') _dashNuevaVisita = true; return _nav.apply(this, arguments); };
+    navigate._dashEnvuelto = true;
+  }
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _dashInit); else _dashInit();
 function toggleComPBSVistaFn() {
   _comPBSMesVista = _comPBSMesVista === "bruto" ? "compensado" : "bruto";
   const btn = document.getElementById("toggleComPBSMes");
