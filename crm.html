@@ -13300,6 +13300,27 @@ function editarVenta(id) {
         // Restaurar toggle tarifa congelada
         const chkTcSPTI = s('chkTarifaCongeladaSPTI');
         if (chkTcSPTI) { chkTcSPTI.checked = !!v.tarifaCongelada; toggleTarifaCongelada('SPTI'); }
+      // Asegurados adicionales y modo de registro: antes la edición no los restauraba
+      if (Array.isArray(v.asegurados) && v.asegurados.length) {
+        v.asegurados.forEach((a, i) => {
+          sptiAgregarAsegurado();
+          const n = i + 2;
+          if (s('vAseguradoNombreSPTI_' + n))  s('vAseguradoNombreSPTI_' + n).value  = a.nombre  || '';
+          if (s('vAseguradoTipoDocSPTI_' + n)) s('vAseguradoTipoDocSPTI_' + n).value = a.tipoDoc || 'CC';
+          if (s('vAseguradoDocSPTI_' + n))     s('vAseguradoDocSPTI_' + n).value     = a.doc     || '';
+          if (s('vFechaNacSPTI_' + n))         s('vFechaNacSPTI_' + n).value         = a.fechaNac || '';
+          if (a.fechaNac) calcEdadDinamica('SPTI', 'vFechaNacSPTI_' + n, 'vEdadSPTI_' + n, null, 'spti');
+          else if (s('vEdadSPTI_' + n)) s('vEdadSPTI_' + n).value = a.edad != null ? a.edad : '';
+        });
+        const rs = s('sptiModoSumado'); if (rs) rs.checked = (v.modoRegistro === 'sumado');
+        sptiActualizarModoRegistro();
+      }
+      // "Foto" del formulario al abrir: al guardar solo se recalculan las primas si el usuario cambió algo que afecta el precio
+      window._sptiEditSnap = {
+        id: v.id, plan: s('vPlanSPTI')?.value || '', per: s('vPeriodicidadSPTI')?.value || '', fechaNac: s('vFechaNacSPTI')?.value || '',
+        nAdic: Array.isArray(v.asegurados) ? v.asegurados.length : 0,
+        adicF: (Array.isArray(v.asegurados) ? v.asegurados : []).map((a, i) => s('vFechaNacSPTI_' + (i + 2))?.value || '')
+      };
 
       } else if (tab === 'spd') {
         if (s('vPolizaSPD'))        s('vPolizaSPD').value        = v.poliza            || '';
@@ -14478,9 +14499,14 @@ function sptiActualizarModoRegistro() {
   if (!res) return;
   if (_sptiAsegCount <= 1) { res.style.display = 'none'; sptiActualizarResumenTotal(); return; }
   res.style.display = '';
-  res.textContent = modo === 'sumado'
-    ? `📌 Se creará 1 registro con la prima sumada de ${_sptiAsegCount} asegurados bajo la misma póliza.`
-    : `📌 Se crearán ${_sptiAsegCount} registros individuales, uno por cada asegurado.`;
+  const _enEdicion = (typeof _editId !== 'undefined') && !!_editId;
+  res.textContent = _enEdicion
+    ? (modo === 'sumado'
+        ? `📌 Se actualizará esta póliza con la prima sumada de ${_sptiAsegCount} asegurados.`
+        : `⚠️ En una edición no se crean pólizas individuales nuevas: elige «Sumado» para unir a los asegurados en esta póliza, o quita los asegurados adicionales.`)
+    : (modo === 'sumado'
+        ? `📌 Se creará 1 registro con la prima sumada de ${_sptiAsegCount} asegurados bajo la misma póliza.`
+        : `📌 Se crearán ${_sptiAsegCount} registros individuales, uno por cada asegurado.`);
   sptiActualizarResumenTotal();
 }
 
@@ -15785,6 +15811,102 @@ function guardarVenta() {
           else if (perEdit === 'ANUAL') dctoEdit = te.dctoAnual || 0;
           else dctoEdit = 0;
         }
+        // ── Asegurados adicionales, modo de registro y primas (misma lógica que la creación) ──
+        const _clean = x => String(x || '').replace(/\D/g, '');
+        const _snap = (window._sptiEditSnap && window._sptiEditSnap.id === vOld.id) ? window._sptiEditSnap : null;
+        const _nAdicOld = Array.isArray(vOld.asegurados) ? vOld.asegurados.length : 0;
+        const _modoEdit = document.querySelector('input[name="sptiModoRegistro"]:checked')?.value || 'individual';
+        const _tcAntes = !!vOld.tarifaCongelada;
+        const _tcAhora = !!(document.getElementById('chkTarifaCongeladaSPTI')?.checked);
+        const _nAdicForm = Math.max(0, _sptiAsegCount - 1);
+        // La tarifa congelada corresponde a una oferta específica: no se agregan ni se quitan asegurados
+        if ((_tcAntes || _tcAhora) && _nAdicForm !== _nAdicOld) {
+          alert('Las pólizas con tarifa congelada no admiten agregar ni quitar asegurados: la tarifa congelada corresponde a una oferta específica.\n\nSi necesitas cambiar los asegurados, quita primero la tarifa congelada o registra al asegurado en una póliza aparte con «Nueva venta».');
+          return;
+        }
+        const _adicForm = [];
+        for (let ai = 2; ai <= _sptiAsegCount; ai++) {
+          _adicForm.push({
+            nombre: document.getElementById('vAseguradoNombreSPTI_' + ai)?.value || '',
+            tipoDoc: document.getElementById('vAseguradoTipoDocSPTI_' + ai)?.value || 'CC',
+            doc: document.getElementById('vAseguradoDocSPTI_' + ai)?.value || '',
+            fechaNac: document.getElementById('vFechaNacSPTI_' + ai)?.value || '',
+            edad: document.getElementById('vEdadSPTI_' + ai)?.value || '0',
+          });
+        }
+        // Una póliza sumada no se convierte en individual desde la edición
+        if (vOld.modoRegistro === 'sumado' && (_adicForm.length === 0 || _modoEdit !== 'sumado')) {
+          alert('Una póliza sumada no se puede convertir en individual desde la edición.\n\nPara separarla: cancela esta póliza y registra las individuales con «Nueva venta».');
+          return;
+        }
+        if (_adicForm.length > 0 && _modoEdit !== 'sumado') {
+          alert('Elige el modo «Sumado» para unir a los asegurados en esta póliza, o quita los asegurados adicionales.\n\nEn una edición no se crean pólizas individuales nuevas; para eso usa «Nueva venta».');
+          return;
+        }
+        if (_adicForm.some(a => !a.nombre.trim())) { alert('Completa el nombre de cada asegurado adicional.'); return; }
+        // Aviso si un asegurado nuevo ya figura en otra póliza SPTI (no se borra nada automáticamente)
+        const _docsOld = new Set((vOld.asegurados || []).map(a => _clean(a.doc)));
+        const _dups = [];
+        _adicForm.filter(a => _clean(a.doc) && !_docsOld.has(_clean(a.doc))).forEach(a => {
+          const d = _clean(a.doc);
+          state.ventas.forEach(o => {
+            if (o.id === vOld.id || o.producto !== 'SPTI' || o.tipo === 'CANCELACION') return;
+            const enOtra = _clean(o.doc) === d || _clean(o.tomadorDoc) === d || (Array.isArray(o.asegurados) && o.asegurados.some(x => _clean(x.doc) === d));
+            if (enOtra) _dups.push('• ' + (a.nombre || d) + ' (' + a.doc + ') ya está en la póliza ' + (o.poliza || '(sin número)') + ' de ' + (o.tomadorNombre || o.nombre || '—') + ' — ' + getPagosVenta(o.id).length + ' pago(s) registrado(s)');
+          });
+        });
+        if (_dups.length && !confirm('Atención: estos asegurados ya tienen otra póliza SPTI vigente:\n\n' + _dups.join('\n') + '\n\nSi continúas quedarán en ambas pólizas (duplicados) hasta que cancele o elimine la otra.\nAl ELIMINAR una póliza se borran también sus pagos y baja la «Com. real cobrada» del dashboard.\n\n¿Continuar de todos modos?')) return;
+        // Primas: solo se recalculan si el usuario cambió algo que afecta el precio (nunca en tarifa congelada)
+        const _fechaNacForm = document.getElementById('vFechaNacSPTI')?.value || '';
+        const _base = _snap || { plan: vOld.plan, per: vOld.periodicidad, fechaNac: vOld.fechaNac || '', nAdic: _nAdicOld, adicF: (vOld.asegurados || []).map(a => a.fechaNac || '') };
+        const _preciosCambian = !(_tcAntes && _tcAhora) && (
+          planEdit !== _base.plan || perEdit !== _base.per || _fechaNacForm !== _base.fechaNac ||
+          _adicForm.length !== _base.nAdic || _adicForm.map(a => a.fechaNac).join('|') !== _base.adicF.join('|'));
+        let _extra = {};
+        if (_preciosCambian) {
+          const _parse = (str) => { if (!str) return 0; const c = String(str).replace(/\$/g,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.'); return parseFloat(c) || 0; };
+          const _pBase = parseFloat(document.getElementById('vPrimaBaseSPTI')?.value) || 0;
+          const _pTot = _parse(document.getElementById('vPrimaTotalSPTI')?.value) || _pBase;
+          let _pSinIVA = 0;
+          if (planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
+            const t = SPTI_TARIFAS[planEdit][rangoEdit];
+            if (perEdit === 'TRIMESTRAL') _pSinIVA = Math.round(t.trimestre / IVA_FACTOR);
+            else if (perEdit === 'SEMESTRAL') _pSinIVA = Math.round(t.semestre / IVA_FACTOR);
+            else if (perEdit === 'ANUAL') _pSinIVA = Math.round(t.anual / IVA_FACTOR);
+            else _pSinIVA = Math.round(t.mensual / IVA_FACTOR);
+          } else { _pSinIVA = Math.round(_pTot / IVA_FACTOR); }
+          const _edadForm = document.getElementById('vEdadSPTI')?.value || vOld.edad;
+          const _adicCalc = _adicForm.map(a => {
+            const rg = getRangoEdadSPTI(parseInt(a.edad)); let p = 0, conIVA = true;
+            if (planEdit && rg && SPTI_TARIFAS[planEdit]?.[rg]) {
+              const tA = SPTI_TARIFAS[planEdit][rg];
+              p = perEdit === 'TRIMESTRAL' ? tA.trimestre : perEdit === 'SEMESTRAL' ? tA.semestre : perEdit === 'ANUAL' ? tA.anual : tA.mensual;
+            } else { p = _pSinIVA; conIVA = false; }
+            return { ...a, primaTotalSinIVA: conIVA ? Math.round(p / IVA_FACTOR) : p, primaTotal: conIVA ? p : Math.round(p * IVA_FACTOR) };
+          });
+          if (_adicCalc.length) {
+            const _sum = _pTot + _adicCalc.reduce((t, a) => t + a.primaTotal, 0);
+            _extra = { prima: _pBase, edad: _edadForm, asegurados: _adicCalc, numAsegurados: _sptiAsegCount, modoRegistro: 'sumado', primaTotal: _sum, primaTotalSinIVA: Math.round(_sum / IVA_FACTOR) };
+          } else {
+            _extra = { prima: _pBase, edad: _edadForm, modoRegistro: 'individual', primaTotal: _pTot, primaTotalSinIVA: _pSinIVA };
+          }
+        } else if (_adicForm.length) {
+          // Sin cambios de precio: solo se actualizan los datos de identidad de los adicionales y se conservan sus primas y edades
+          _extra = { asegurados: _adicForm.map((a, i) => ({ ...(vOld.asegurados?.[i] || {}), nombre: a.nombre, tipoDoc: a.tipoDoc, doc: a.doc, fechaNac: a.fechaNac, edad: vOld.asegurados?.[i]?.edad ?? a.edad })) };
+        }
+        // Tomador y asegurado 1: se escriben los campos que realmente leen la plantilla, Cartera y el formulario (como la creación)
+        const _tNombre  = document.getElementById('vNombreSPTI')?.value  || vOld.tomadorNombre  || vOld.nombre;
+        const _tTipoDoc = document.getElementById('vTipoDocSPTI')?.value || vOld.tomadorTipoDoc || vOld.tipoDoc;
+        const _tDoc     = document.getElementById('vDocSPTI')?.value     || vOld.tomadorDoc     || vOld.doc;
+        const _tTel     = document.getElementById('vTelSPTI')?.value     || vOld.tomadorTel     || vOld.telefono;
+        const _tCorreo  = document.getElementById('vCorreoSPTI')?.value  || vOld.tomadorCorreo  || vOld.correo;
+        // Asegurado 1: si era la misma persona que el tomador y no se tocaron sus campos, acompaña al tomador (como «Mismo que el tomador» en la creación)
+        const _aNom = document.getElementById('vAseguradoNombreSPTI')?.value, _aTipo = document.getElementById('vAseguradoTipoDocSPTI')?.value, _aDoc = document.getElementById('vAseguradoDocSPTI')?.value;
+        const _mismaPersona = _clean(vOld.doc) === _clean(vOld.tomadorDoc || vOld.doc) && (vOld.nombre || '') === (vOld.tomadorNombre || vOld.nombre || '');
+        const _asegSinTocar = (_aNom || '') === (vOld.nombre || '') && (_aDoc || '') === (vOld.doc || '') && (_aTipo || 'CC') === (vOld.tipoDoc || 'CC');
+        const _aseg1 = (_mismaPersona && _asegSinTocar)
+          ? { nombre: _tNombre, tipoDoc: _tTipoDoc, doc: _tDoc }
+          : { nombre: _aNom || _tNombre, tipoDoc: _aTipo || _tTipoDoc, doc: _aDoc || _tDoc };
         state.ventas[idxEdit] = {
           ...vOld,
           fecha,
@@ -15792,17 +15914,18 @@ function guardarVenta() {
           fechaExp: document.getElementById('vFechaExpSPTI')?.value || vOld.fechaExp,
           poliza:   document.getElementById('vPolizaSPTI')?.value   || vOld.poliza,
           tipo:     document.getElementById('vTipoSPTI')?.value     || vOld.tipo,
-          nombre:   document.getElementById('vNombreSPTI')?.value   || vOld.nombre,
-          tipoDoc:  document.getElementById('vTipoDocSPTI')?.value  || vOld.tipoDoc,
-          doc:      document.getElementById('vDocSPTI')?.value      || vOld.doc,
-          fechaNac: document.getElementById('vFechaNacSPTI')?.value || vOld.fechaNac,
-          telefono: document.getElementById('vTelSPTI')?.value      || vOld.telefono,
-          correo:   document.getElementById('vCorreoSPTI')?.value   || vOld.correo,
+          tomadorNombre: _tNombre, tomadorTipoDoc: _tTipoDoc, tomadorDoc: _tDoc, tomadorTel: _tTel, tomadorCorreo: _tCorreo,
+          telefono: _tTel, correo: _tCorreo,
+          nombre:   _aseg1.nombre,
+          tipoDoc:  _aseg1.tipoDoc,
+          doc:      _aseg1.doc,
+          fechaNac: _fechaNacForm || vOld.fechaNac,
           ciudad:   document.getElementById('vCiudadSPTI')?.value   || vOld.ciudad,
           notas:    document.getElementById('vNotasSPTI')?.value    || vOld.notas,
           plan: planEdit, periodicidad: perEdit, dcto: dctoEdit,
           tarifaCongelada: !!(document.getElementById('chkTarifaCongeladaSPTI')?.checked),
           anioTarifa: document.getElementById('chkTarifaCongeladaSPTI')?.checked ? (vOld.anioTarifa || AÑO_ACTUAL) : null,
+          ..._extra,
         };
       } else if (modalTab === 'spd') {
         const fecha = document.getElementById('vFechaSPD')?.value || vOld.fecha;
@@ -34801,9 +34924,17 @@ function contactosIndicePolizas() {
   const ventas = (getState().ventas || []).filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto));
   ventas.forEach(v => {
     const est = contactoEstadoPoliza(v);
-    const docs = new Set([v.tomadorDoc, v.doc].map(x => String(x || '').replace(/\D/g, '')).filter(Boolean));
-    const claves = docs.size ? docs : new Set([_contactoClave('', v.tomadorNombre || v.nombre)].filter(Boolean));
-    claves.forEach(k => { if (!idx.has(k)) idx.set(k, []); idx.get(k).push({ v, est }); });
+    const lim = x => String(x || '').replace(/\D/g, '');
+    // Rol de cada documento en la póliza: el tomador es quien contrata; los demás son asegurados (nunca se cuenta dos veces la misma póliza para una persona)
+    const dTom = lim(v.tomadorDoc), dDoc = lim(v.doc);
+    const roles = new Map();
+    if (dTom) roles.set(dTom, 'tomador');
+    if (dDoc && !roles.has(dDoc)) roles.set(dDoc, dTom ? 'asegurado' : 'tomador');   // SPTI: `doc` es el asegurado 1, que puede ser otra persona
+    // Asegurados adicionales de pólizas grupales: SPTI/PSM/PAC60 → asegurados[].doc · SPD → aseguradoDoc y asegurado2Doc
+    [...(Array.isArray(v.asegurados) ? v.asegurados.map(a => a && a.doc) : []), v.aseguradoDoc, v.asegurado2Doc]
+      .map(lim).filter(Boolean).forEach(d => { if (!roles.has(d)) roles.set(d, 'asegurado'); });
+    if (!roles.size) { const k = _contactoClave('', v.tomadorNombre || v.nombre); if (k) roles.set(k, 'tomador'); }
+    roles.forEach((rol, k) => { if (!idx.has(k)) idx.set(k, []); idx.get(k).push({ v, est, rol }); });
   });
   return idx;
 }
@@ -34885,7 +35016,7 @@ function renderTablaContactos() {
     const conteo = r.items.length > 1 ? `<div style="font-size:10px;color:var(--text-dim);margin-top:3px;">${partes.join(' · ')}</div>` : '';
     const icono = { VIGENTE:'✅', SUSPENDIDO:'🔴', CANCELADO:'⛔' };
     const planes = r.items.length
-      ? r.items.map(x => `<div>${icono[x.est]} ${_contactoEsc(contactoPlanTexto(x.v))}</div>`).join('')
+      ? r.items.map(x => `<div>${icono[x.est]} ${_contactoEsc(contactoPlanTexto(x.v))}${x.rol === 'asegurado' ? ' <span style="color:var(--text-dim);">· asegurado</span>' : ''}</div>`).join('')
       : '—';
     return `<tr style="background:${rowBg};border-top:1px solid var(--border);">
       <td style="padding:9px 12px;font-weight:500;">${tc(c.nombre)}</td>
@@ -34925,17 +35056,17 @@ async function exportarContactosExcel() {
   const rows1 = vista.map(({ c, r }) => [
     tc(c.nombre) || '', String(c.cedula || ''), String(c.celular || ''), wa(c.celular), c.correo || '', c.ciudad || '', c.vinculacion || '',
     ETQ[r.estado], r.vig, r.susp, r.canc,
-    r.items.map(x => `${contactoPlanTexto(x.v)} (${ETQ[x.est]})`).join('; ')
+    r.items.map(x => `${contactoPlanTexto(x.v)} (${ETQ[x.est]}${x.rol === 'asegurado' ? ', asegurado' : ''})`).join('; ')
   ]);
 
-  const hdr2 = ['Cédula','Nombre','Producto','Plan','N° póliza','Estado','Fecha cancelación','Motivo cancelación'];
+  const hdr2 = ['Cédula','Nombre','Producto','Plan','N° póliza','Estado','Fecha cancelación','Motivo cancelación','Rol'];
   const rows2 = [];
   vista.forEach(({ c, r }) => r.items.forEach(x => {
     const v = x.v;
     const PL = { CLASICO:'Clásico', PREFERENCIAL:'Preferencial', 'Salud Para Dos':'Salud Para Dos Plus', 'Salud Para Dos Plus':'Salud Para Dos Plus' };
     const plan = v.producto === 'PSM' ? (Array.isArray(v.modulos) ? v.modulos.join(', ') : (v.modulos || '')) : (PL[v.plan] || v.plan || '');
     rows2.push([ String(c.cedula || ''), tc(c.nombre) || '', v.producto || '', plan, String(v.poliza || ''), ETQ[x.est],
-      x.est === 'CANCELADO' ? (v.fechaCancelacion || '') : '', x.est === 'CANCELADO' ? (v.motivoCancelacion || '') : '' ]);
+      x.est === 'CANCELADO' ? (v.fechaCancelacion || '') : '', x.est === 'CANCELADO' ? (v.motivoCancelacion || '') : '', x.rol === 'asegurado' ? 'Asegurado' : 'Tomador' ]);
   }));
 
   const ancho = hs => hs.map(h => ({ wch: Math.max(12, String(h).length + 2) }));
