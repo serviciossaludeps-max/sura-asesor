@@ -9559,7 +9559,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       <!-- Póliza -->
       <div class="form-group">
         <label class="form-label">Producto real</label>
-        <select class="form-control" id="eSuraProducto" onchange="eSuraActualizarPlanes()">
+        <select class="form-control" id="eSuraProducto" onchange="eSuraActualizarPlanes();eSuraActualizarFechas()">
           <option value="SPTI">SPTI — Salud Individual</option>
           <option value="SPD">SPD — Salud para Dos Plus</option>
           <option value="PSM">PSM — Modular</option>
@@ -9586,6 +9586,22 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       <div class="form-group">
         <label class="form-label">Prima a cobrar</label>
         <input type="number" class="form-control" id="eSuraPrima" placeholder="0" min="0">
+      </div>
+
+      <!-- Fechas (OT-2026-TARIFAS-ANIVERSARIO · N-7 / N-8) -->
+      <div class="form-group" id="eSuraFechaNacGrp">
+        <label class="form-label">Fecha de nacimiento</label>
+        <input type="date" class="form-control" id="eSuraFechaNac" onchange="eSuraCalcEdad()">
+      </div>
+      <div class="form-group" id="eSuraEdadGrp">
+        <label class="form-label">Edad calculada</label>
+        <input type="text" class="form-control" id="eSuraEdad" placeholder="—" readonly style="color:var(--text-muted);">
+        <div id="eSuraEdadHint" style="font-size:11px;color:var(--amber);margin-top:4px;"></div>
+      </div>
+      <div class="form-group" id="eSuraFechaOrigGrp">
+        <label class="form-label">Fecha original de afiliación</label>
+        <input type="date" class="form-control" id="eSuraFechaOrig">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Opcional. Un campo vacío no borra el dato existente.</div>
       </div>
 
       <!-- Notas -->
@@ -13181,6 +13197,28 @@ function eSuraActualizarPlanes() {
   if (opts.some(([v]) => v === current)) planSel.value = current;
 }
 
+// Fechas del modal «Editar Póliza Importada» (OT-2026-TARIFAS-ANIVERSARIO · N-7 / N-8)
+function eSuraActualizarFechas() {
+  const prod = document.getElementById('eSuraProducto')?.value || 'SPTI';
+  const show = prod !== 'SPD' ? '' : 'none';   // SPD no usa edad
+  ['eSuraFechaNacGrp', 'eSuraEdadGrp'].forEach(i => { const el = document.getElementById(i); if (el) el.style.display = show; });
+  eSuraCalcEdad();
+}
+function eSuraCalcEdad() {
+  const fn = document.getElementById('eSuraFechaNac')?.value || '';
+  const out = document.getElementById('eSuraEdad');
+  const hint = document.getElementById('eSuraEdadHint');
+  if (!out) return;
+  if (hint) hint.textContent = '';
+  const e = fn ? edadVigente(fn) : null;
+  out.value = (e === null || isNaN(e)) ? '' : e + ' años';
+  if (e === null || isNaN(e) || !hint) return;
+  const prod = document.getElementById('eSuraProducto')?.value || 'SPTI';
+  const lim = { SPTI: [0, 59], PSM: [0, 64], PAC60: [60, 79] }[prod];
+  if (e < 0) hint.textContent = 'Fecha futura: no se puede guardar.';
+  else if (lim && (e < lim[0] || e > lim[1])) hint.textContent = 'Fuera del rango de venta nueva (' + lim[0] + '-' + lim[1] + '); se puede guardar porque es una póliza importada.';
+}
+
 function abrirEditarSura(id) {
   const s = getState();
   const v = s.ventas.find(x => x.id === id);
@@ -13203,6 +13241,9 @@ function abrirEditarSura(id) {
   const prodEl = g('eSuraProducto');
   if (prodEl) { prodEl.value = v.producto || 'SPTI'; eSuraActualizarPlanes(); }
   g('eSuraPlan').value         = v.plan || '';
+  g('eSuraFechaNac').value     = String(v.fechaNac || '').slice(0, 10);
+  g('eSuraFechaOrig').value    = String(v.fechaExpOriginal || '').slice(0, 10);
+  eSuraActualizarFechas();
 
   openModal('modalEditarSura');
 }
@@ -13220,6 +13261,14 @@ function guardarEdicionSura() {
   const prima = parseFloat(g('eSuraPrima').value) || v.prima || 0;
 
   const productoEdit = g('eSuraProducto')?.value || v.producto || 'SPTI';
+  // Fechas (OT-2026-TARIFAS-ANIVERSARIO · N-7 / N-8): un campo vacío nunca borra un dato existente
+  const _d = new Date();
+  const _hoyIso = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
+  const _fnIn = productoEdit === 'SPD' ? '' : (g('eSuraFechaNac')?.value || '').trim();
+  const _foIn = (g('eSuraFechaOrig')?.value || '').trim();
+  if (_fnIn && (!/^\d{4}-\d{2}-\d{2}$/.test(_fnIn) || _fnIn > _hoyIso)) { showToast('La fecha de nacimiento no es válida o es futura'); return; }
+  if (_foIn && (!/^\d{4}-\d{2}-\d{2}$/.test(_foIn) || _foIn > _hoyIso)) { showToast('La fecha original de afiliación no es válida o es futura'); return; }
+  const _edadIn = _fnIn ? edadVigente(_fnIn) : null;
   s.ventas[idx] = {
     ...v,
     // Contacto
@@ -13239,6 +13288,8 @@ function guardarEdicionSura() {
     // Preservar flags de importación
     _importadoSura: true,
     mesComp: 'IMPORTADO_SURA',
+    ...(_fnIn && _edadIn !== null && !isNaN(_edadIn) ? { fechaNac: _fnIn, edad: _edadIn } : {}),
+    ...(_foIn ? { fechaExpOriginal: _foIn } : {}),
   };
 
   setState(s);
