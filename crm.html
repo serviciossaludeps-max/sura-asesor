@@ -17006,6 +17006,24 @@ let _importData = [];
 // =============================================
 // PLANTILLA PBS (página independiente)
 // =============================================
+// Orden por fecha de venta para la plantilla PBS. Solo ordena lo que se muestra o exporta (no toca los datos).
+// Estable: a igual fecha se conserva el orden de registro; cada beneficiario sigue la fecha y la posición de su cotizante.
+function ordenarVentasPBSPorFecha(lista) {
+  const todas = getState().ventas || [];
+  const pos = {};
+  todas.forEach((v, i) => { pos[v.id] = i; });
+  const info = (v) => {
+    const ref = (v.tipo === 'BENEFICIARIO' && v.cotizanteId && pos[v.cotizanteId] !== undefined)
+      ? todas[pos[v.cotizanteId]] : v;
+    const f = String(ref.fecha || '').slice(0, 10);
+    return { k: /^\d{4}-\d{2}-\d{2}$/.test(f) ? f : '9999-99-99', g: pos[ref.id] !== undefined ? pos[ref.id] : 0,
+             b: ref === v ? 0 : 1, i: pos[v.id] !== undefined ? pos[v.id] : 0 };
+  };
+  return lista.map(v => ({ v, x: info(v) }))
+    .sort((a, b) => (a.x.k < b.x.k ? -1 : a.x.k > b.x.k ? 1 : (a.x.g - b.x.g) || (a.x.b - b.x.b) || (a.x.i - b.x.i)))
+    .map(e => e.v);
+}
+
 function renderPlantillaPBS() {
   ptLimpiarBuscadorPBS();
   ptRefreshScrollBars();
@@ -17032,6 +17050,7 @@ function renderPlantillaPBS() {
     const d = new Date((v.fecha || '') + 'T12:00:00');
     return !isNaN(d) && MESES[d.getMonth()] === mesFilter;
   });
+  ventas = ordenarVentasPBSPorFecha(ventas);
 
   const periodoLabel = mesFilter ? `${mesFilter} ${anioFilter}` : `Todo el año ${anioFilter||''}`;
   document.getElementById('ptSubtituloPBS').textContent = `${periodoLabel} · ${ventas.length} registros`;
@@ -17101,6 +17120,7 @@ function exportarPlantillaExcelPBS() {
   if (anioFilter) ventas = ventas.filter(v => new Date((v.fecha||'')+'T12:00:00').getFullYear() == anioFilter);
   if (mesFilter)  ventas = ventas.filter(v => MESES[new Date((v.fecha||'')+'T12:00:00').getMonth()] === mesFilter);
   if (!ventas.length) { showToast('⚠️ No hay ventas PBS para exportar'); return; }
+  ventas = ordenarVentasPBSPorFecha(ventas);
   exportarPlantillaExcelDirecto('PBS', ventas, anioFilter, mesFilter);
 }
 
