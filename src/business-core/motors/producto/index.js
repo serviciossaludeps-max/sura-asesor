@@ -21,6 +21,11 @@
  *     usada en impacto de cancelación — permanece intacta hasta que el
  *     Product Owner confirme cuál valor es correcto.
  *
+ * OT-2026-TARIFAS-ANIVERSARIO · Fase 3a (funciones puras, aún sin conectar al CRM):
+ *   sumarMesesFinDeMes, aniversarioEn, cicloDeFecha, edadEnFecha, tablasDelAnio, y un
+ *   parámetro opcional `tablas` en calcularPrecioSPTI/PSM/PAC60. Sin ese parámetro el
+ *   comportamiento es idéntico al anterior. Ninguna función existente del CRM las usa todavía.
+ *
  * Carga requerida en el HTML consumidor, después de business-config:
  *   <script src="src/business-core/motors/producto/index.js"></script>
  */
@@ -38,6 +43,81 @@
 
   function _pricing() { return (global.BusinessConfig && global.BusinessConfig.pricing) || null; }
   function _constants() { return (global.BusinessConfig && global.BusinessConfig.constants) || null; }
+
+  // Tablas a usar en un cálculo. Sin `tablas` se usan las vigentes (comportamiento de siempre). Con `tablas`
+  // se usan solo esas (sin completar con las vigentes: si falta una tabla, el cálculo devuelve null).
+  // computeSPTIConIVA es una función, no un dato por año, así que se toma siempre de las tablas vigentes.
+  function _tablasDe(tablas) {
+    const base = _pricing();
+    if (!tablas || typeof tablas !== 'object') return base;
+    return Object.assign({}, tablas, { computeSPTIConIVA: base && base.computeSPTIConIVA });
+  }
+
+  // ---------------------------------------------------------------------
+  // Fechas de aniversario y edad en una fecha (OT-2026-TARIFAS-ANIVERSARIO · Fase 3a)
+  // Todas puras: reciben 'YYYY-MM-DD' (o Date) y devuelven 'YYYY-MM-DD', número o null. No usan la fecha de hoy.
+  // ---------------------------------------------------------------------
+
+  function _aFecha(f) {
+    if (Object.prototype.toString.call(f) === '[object Date]') return isNaN(f) ? null : new Date(f.getFullYear(), f.getMonth(), f.getDate(), 12);
+    if (typeof f !== 'string') return null;
+    const m = f.slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    const y = +m[1], mo = +m[2] - 1, d = +m[3];
+    const dt = new Date(y, mo, d, 12);
+    return (dt.getFullYear() === y && dt.getMonth() === mo && dt.getDate() === d) ? dt : null; // rechaza 2026-02-30
+  }
+  function _iso(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  /** Suma n meses; si el día no existe en el mes de destino usa el último día de ese mes (D-13). null si la fecha es inválida. */
+  function sumarMesesFinDeMes(fecha, n) {
+    const d = _aFecha(fecha);
+    if (!d || !Number.isInteger(n)) return null;
+    const t = d.getMonth() + n;
+    const y = d.getFullYear() + Math.floor(t / 12);
+    const m = ((t % 12) + 12) % 12;
+    const ultimo = new Date(y, m + 1, 0).getDate();
+    return _iso(new Date(y, m, Math.min(d.getDate(), ultimo), 12));
+  }
+
+  /** Aniversario número k (k >= 0) de una fecha ancla. Siempre se calcula desde la ancla, no encadenado. */
+  function aniversarioEn(ancla, k) {
+    if (!Number.isInteger(k) || k < 0) return null;
+    return sumarMesesFinDeMes(ancla, 12 * k);
+  }
+
+  /** Cantidad de aniversarios (k >= 1) ya cumplidos hasta `fecha`, inclusive. 0 si la fecha es anterior al primero. null si algo es inválido. */
+  function cicloDeFecha(ancla, fecha) {
+    const a = _aFecha(ancla), f = _aFecha(fecha);
+    if (!a || !f) return null;
+    const fi = _iso(f);
+    let k = 0;
+    while (k < 400 && aniversarioEn(ancla, k + 1) <= fi) k++;
+    return k;
+  }
+
+  /** Edad cumplida en `fecha`. Misma fórmula de edadVigente() del CRM, pero con la fecha como parámetro. null si falta o es inválida alguna fecha, o si nació después. */
+  function edadEnFecha(fechaNac, fecha) {
+    const n = _aFecha(fechaNac), f = _aFecha(fecha);
+    if (!n || !f || n > f) return null;
+    let e = f.getFullYear() - n.getFullYear();
+    const m = f.getMonth() - n.getMonth();
+    if (m < 0 || (m === 0 && f.getDate() < n.getDate())) e--;
+    return e;
+  }
+
+  /**
+   * Tablas autorizadas de un año, o null si no existen. NO hay valor por defecto: un año sin tablas es null.
+   * Lee BusinessConfig.pricing.TARIFAS_POR_ANIO[anio] (el registro llega en la Fase 3b; hoy no existe y devuelve null).
+   */
+  function tablasDelAnio(anio) {
+    const pricing = _pricing();
+    const reg = pricing && pricing.TARIFAS_POR_ANIO;
+    const t = reg && reg[anio];
+    return (t && typeof t === 'object') ? t : null;
+  }
 
   // ---------------------------------------------------------------------
   // Clasificación de rango (BR-014/BR-015 — solo clasificación, no elegibilidad)
@@ -83,9 +163,9 @@
    * @param {{plan:string, edad:number|string, periodicidad:string, tarifaCongelada?:boolean}} p
    * @returns {{valor:number, dcto:number, mensual:number, rango:string}|null}
    */
-  function calcularPrecioSPTI(p) {
+  function calcularPrecioSPTI(p, tablas) {
     if (!p || p.tarifaCongelada) return null;
-    const pricing = _pricing();
+    const pricing = _tablasDe(tablas);
     const constants = _constants();
     if (!pricing || !pricing.SPTI_SIN_IVA || !pricing.computeSPTIConIVA || !constants || !constants.IVA_FACTOR) return null;
     const rango = getRangoEdadSPTI(p.edad);
@@ -102,9 +182,9 @@
    * @param {{edad:number, emd?:boolean, altoCosto?:boolean, cirugia?:boolean, maternidad?:boolean, periodicidad:string, asegurados?:Array<{rangoEdad:string}>}} p
    * @returns {{valor:number, dcto:number, mensual:number, rango:string}|null}
    */
-  function calcularPrecioPSM(p) {
+  function calcularPrecioPSM(p, tablas) {
     if (!p) return null;
-    const pricing = _pricing();
+    const pricing = _tablasDe(tablas);
     if (!pricing || !pricing.PSM_TARIFAS || !pricing.PSM_IVA || !pricing.PSM_DCTOS) return null;
     const rango = getRangoPSM(p.edad);
     if (!rango) return null;
@@ -139,10 +219,10 @@
    * @param {{edad:number, conAnexo?:boolean, periodicidad:string, contexto:'ADMINISTRATIVO'|'VENTA_NUEVA', asegurados?:Array<{rangoEdad:string}>, tarifaCongelada?:boolean}} p
    * @returns {{valor:number, dcto:number, mensual:number, rango:string}|null}
    */
-  function calcularPrecioPAC60(p) {
+  function calcularPrecioPAC60(p, tablas) {
     if (!p || p.tarifaCongelada) return null;
     if (p.contexto !== 'ADMINISTRATIVO' && p.contexto !== 'VENTA_NUEVA') return null; // sin inferencia silenciosa
-    const pricing = _pricing();
+    const pricing = _tablasDe(tablas);
     if (!pricing || !pricing.PAC60_TARIFAS || !pricing.PAC60_DCTOS) return null;
 
     const rango = p.contexto === 'ADMINISTRATIVO' ? getRangoPAC60Administrativo(p.edad) : getRangoPAC60VentaNueva(p.edad);
@@ -204,7 +284,13 @@
     calcularPrecioSPTI,
     calcularPrecioPSM,
     calcularPrecioPAC60,
-    calcularPrimaAnual
+    calcularPrimaAnual,
+    // Fase 3a (OT-2026-TARIFAS-ANIVERSARIO)
+    sumarMesesFinDeMes,
+    aniversarioEn,
+    cicloDeFecha,
+    edadEnFecha,
+    tablasDelAnio
   };
 
 })(typeof window !== 'undefined' ? window : globalThis);
