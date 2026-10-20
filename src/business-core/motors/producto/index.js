@@ -159,6 +159,17 @@
   // Cálculo de precio por periodo (BR-014)
   // ---------------------------------------------------------------------
 
+  // OT-2026-TARIFAS-ANIVERSARIO · Fase 3b (N-9): si la tabla no trae el campo de descuento (las tablas que vienen de
+  // Firestore no lo traen), se calcula con la misma fórmula con la que se construyeron los del archivo: mensual × meses
+  // menos el valor del período, en pesos sin IVA. Con los valores actuales da exactamente los del archivo (10 de 10 celdas).
+  function _dctoSPTI(tablaConIVA, dctoCampo, sinIvaCelda, campo) {
+    const dado = tablaConIVA[dctoCampo];
+    if (dado !== undefined && dado !== null) return dado || 0;
+    const meses = PERIODOS_MESES[{ trimestre: 'TRIMESTRAL', semestre: 'SEMESTRAL', anual: 'ANUAL' }[campo]];
+    if (!sinIvaCelda || !meses || typeof sinIvaCelda.mensual !== 'number' || typeof sinIvaCelda[campo] !== 'number') return 0;
+    return sinIvaCelda.mensual * meses - sinIvaCelda[campo];
+  }
+
   /**
    * @param {{plan:string, edad:number|string, periodicidad:string, tarifaCongelada?:boolean}} p
    * @returns {{valor:number, dcto:number, mensual:number, rango:string}|null}
@@ -175,7 +186,7 @@
     const campo = CAMPO_POR_PERIODO[p.periodicidad] || 'mensual';
     const dctoCampo = { trimestre: 'dctoTrim', semestre: 'dctoSem', anual: 'dctoAnual' }[campo];
     if (tabla[campo] === undefined) return null;
-    return { valor: tabla[campo], dcto: dctoCampo ? (tabla[dctoCampo] || 0) : 0, mensual: tabla.mensual, rango };
+    return { valor: tabla[campo], dcto: dctoCampo ? _dctoSPTI(tabla, dctoCampo, pricing.SPTI_SIN_IVA[p.plan][rango], campo) : 0, mensual: tabla.mensual, rango };
   }
 
   /**
