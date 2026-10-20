@@ -24934,11 +24934,39 @@ function guardarConfigAnio(seccion) {
   if (configAnioActivo == AÑO_ACTUAL) syncConfigAnioActual();
 }
 
+// OT-2026-TARIFAS-ANIVERSARIO · Fase 3b (N-9). Las tablas SPTI de configAnios no traen los campos de descuento
+// (dctoTrim, dctoSem, dctoAnual). Al reemplazar con ellas las tablas del archivo, el descuento se perdía y el formulario, la
+// plantilla y lo guardado al crear o editar una venta SPTI no mensual quedaban con descuento 0. Esta función devuelve una
+// COPIA de la tabla (la configuración no se modifica) con esos campos completos. El descuento es en pesos sin IVA:
+// mensual × meses − valor del período, calculado en la tabla sin IVA; la tabla con IVA no lo escala, así que toma el mismo.
+function _completarDescuentosSPTI(tabla, tablaSinIva) {
+  const out = {};
+  const CAMPOS = { dctoTrim: ['trimestre', 3], dctoSem: ['semestre', 6], dctoAnual: ['anual', 12] };
+  for (const plan in (tabla || {})) {
+    out[plan] = {};
+    for (const rango in tabla[plan]) {
+      const celda = Object.assign({}, tabla[plan][rango]);
+      for (const k in CAMPOS) {
+        if (celda[k] !== undefined && celda[k] !== null) continue;
+        if (tablaSinIva) {
+          const ref = tablaSinIva[plan] && tablaSinIva[plan][rango];
+          if (ref && ref[k] !== undefined) celda[k] = ref[k];
+        } else if (typeof celda.mensual === 'number' && typeof celda[CAMPOS[k][0]] === 'number') {
+          celda[k] = celda.mensual * CAMPOS[k][1] - celda[CAMPOS[k][0]];
+        }
+      }
+      out[plan][rango] = celda;
+    }
+  }
+  return out;
+}
+
 function syncConfigAnioActual() {
   const d = getConfigAnio(AÑO_ACTUAL);
   // Actualizar constantes runtime (tarifas, comisiones) — solo en memoria
-  Object.assign(SPTI_TARIFAS, d.tarifasSptiConIVA || {});
-  Object.assign(SPTI_SIN_IVA, d.tarifasSptiSinIVA || {});
+  const _sinIvaConDctos = _completarDescuentosSPTI(d.tarifasSptiSinIVA);
+  Object.assign(SPTI_TARIFAS, _completarDescuentosSPTI(d.tarifasSptiConIVA, _sinIvaConDctos));
+  Object.assign(SPTI_SIN_IVA, _sinIvaConDctos);
   if (d.tablaComPBS) Object.assign(COM_TABLE, d.tablaComPBS);
   // Actualizar presupuesto en memoria (sin escribir a Firestore)
   // guardarConfig() ya mantiene configAnios y estadoMeta sincronizados entre sí
