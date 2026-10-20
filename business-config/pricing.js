@@ -86,3 +86,27 @@ window.BusinessConfig.pricing = {
   PSM_DCTOS: { MENSUAL: 0, TRIMESTRAL: 0.0197, SEMESTRAL: 0.0452, ANUAL: 0.0901 },
   PAC60_DCTOS: { MENSUAL: 0, TRIMESTRAL: 0.025, SEMESTRAL: 0.048, ANUAL: 0.0901 }
 };
+
+/**
+ * OT-2026-TARIFAS-ANIVERSARIO · Fase 3b — Tablas autorizadas por año.
+ * MotorProducto.tablasDelAnio(anio) lee este registro. Un año que no esté aquí NO tiene tablas: no hay valor por defecto.
+ * 2026 apunta a las MISMAS tablas de arriba (no son copias): así el SPTI de 2026 sigue reflejando la configuración
+ * de Firestore que el CRM carga al iniciar. No se define ningún año posterior: las tarifas de 2027 las entrega SURA
+ * y se agregan aquí cuando existan.
+ * SPD 2026 (aprobado por el PO): tarifa familiar fija sin IVA, vigencia del 1-abr al 31-dic-2026.
+ */
+window.BusinessConfig.pricing.TARIFAS_POR_ANIO = {
+  2026: {
+    SPTI_SIN_IVA: window.BusinessConfig.pricing.SPTI_SIN_IVA,
+    PSM_TARIFAS: window.BusinessConfig.pricing.PSM_TARIFAS,
+    PSM_IVA: window.BusinessConfig.pricing.PSM_IVA,
+    PSM_DCTOS: window.BusinessConfig.pricing.PSM_DCTOS,
+    PAC60_TARIFAS: window.BusinessConfig.pricing.PAC60_TARIFAS,
+    PAC60_DCTOS: window.BusinessConfig.pricing.PAC60_DCTOS,
+    SPD: {
+      vigenciaDesde: '2026-04-01',
+      vigenciaHasta: '2026-12-31',
+      sinIVA: { MENSUAL: 92070, TRIMESTRAL: 270773, SEMESTRAL: 527442, ANUAL: 1005245 }
+    }
+  }
+};
