@@ -10139,7 +10139,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
           </div>
         </div>
         <div style="margin-top:10px;font-size:12px;color:var(--text-muted);" id="pagoPreviewPeriodo"></div>
-        <button class="btn btn-primary" style="margin-top:12px;width:100%;" onclick="confirmarPago()">✅ Registrar pago</button>
+        <div id="pagoAvisoTarifa" style="display:none;margin-top:10px;padding:10px 12px;border-radius:var(--radius-sm);font-size:12px;line-height:1.5;"></div>
+        <button class="btn btn-primary" id="btnRegistrarPago" style="margin-top:12px;width:100%;" onclick="confirmarPago()">✅ Registrar pago</button>
       </div>
       <!-- Historial -->
       <div>
@@ -18174,8 +18175,13 @@ function registrarPago(ventaId, fechaPago) {
   // HALLAZGO-OP-005 (fix): para periodicidad no mensual (SPTI/PSM/PAC60) se
   // registra el valor correcto por periodo, recalculado desde el módulo.
   const _primaBase = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
-  const _montoRecalculado = calcMontoPeriodoVenta(venta);
-  const prima    = (_montoRecalculado !== null) ? _montoRecalculado : _primaBase;
+  // Fase 3c: tarifa por ciclo. Si el resolvedor bloquea, no se registra nada y el motivo queda en registrarPago.ultimoBloqueo.
+  const _rt = resolverTarifaPeriodo(venta, periodoDesde);
+  registrarPago.ultimoBloqueo = null;
+  registrarPago.ultimaAdvertencia = null;
+  if (_rt.estado === 'BLOQUEADO') { registrarPago.ultimoBloqueo = _rt; return null; }
+  registrarPago.ultimaAdvertencia = _rt.advertencia ? Object.assign({ estado: 'OK' }, _rt.advertencia) : null;
+  const prima    = (_rt.valor !== null && _rt.valor !== undefined) ? _rt.valor : _primaBase;
   // BR-009/BR-016 centralizadas en MotorPago (ADR-007/011) — HALLAZGO-OP-002 cerrado
   const comision = (window.MotorPago ? window.MotorPago.calcularComision(venta) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07));
 
@@ -18541,14 +18547,22 @@ function _precioSPTIPersona(plan, edad, periodicidad) {
   return (campo && tarifa[campo]) || null;
 }
 
-function calcMontoSPTIPeriodo(venta) {
+// OT-2026-TARIFAS-ANIVERSARIO · Fase 3c. Los tres calcMonto*Periodo reciben un segundo parámetro OPCIONAL `opts`:
+//   opts.fechaRef: la edad se toma en esa fecha (edadEnFecha) en vez de la de hoy (edadVigente).
+//   opts.incluirMensual: calcula también la periodicidad mensual (por defecto devuelven null en mensual).
+// Sin `opts` se comportan exactamente como antes. Solo los usa resolverTarifaPeriodo.
+function _edadParaCalculo(fechaNac, opts) {
+  return (opts && opts.fechaRef) ? window.MotorProducto.edadEnFecha(fechaNac, opts.fechaRef) : edadVigente(fechaNac);
+}
+
+function calcMontoSPTIPeriodo(venta, opts) {
   if (venta.producto !== 'SPTI' || !venta.plan || !venta.periodicidad) return null;
-  if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
+  if (venta.periodicidad === 'MENSUAL' && !(opts && opts.incluirMensual)) return null; // sin cambios: ese caso ya funcionaba bien
   if (venta.tarifaCongelada) return null; // tarifa histórica fija — no se puede reconstruir desde la tabla actual
   // Continuidad tarifaria por edad (autorizado por el PO): el próximo cobro usa
   // la edad de HOY, calculada desde fechaNac — nunca sobrescribe venta.edad.
   // Sin fechaNac (pólizas legadas), cae exactamente al comportamiento anterior.
-  const edadTitular = edadVigente(venta.fechaNac) ?? venta.edad;
+  const edadTitular = _edadParaCalculo(venta.fechaNac, opts) ?? venta.edad;
   const primaTitular = _precioSPTIPersona(venta.plan, edadTitular, venta.periodicidad);
   if (primaTitular === null) return null;
   // HALLAZGO SPTI-GRUPAL (fix): sumar cada asegurado adicional registrado
@@ -18557,7 +18571,7 @@ function calcMontoSPTIPeriodo(venta) {
   if (!Array.isArray(venta.asegurados) || venta.asegurados.length === 0) return primaTitular;
   let total = primaTitular;
   for (const a of venta.asegurados) {
-    const edadAi = edadVigente(a.fechaNac) ?? a.edad;
+    const edadAi = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
     const primaAi = _precioSPTIPersona(venta.plan, edadAi, venta.periodicidad);
     if (primaAi === null) return null; // un adicional sin tarifa válida invalida el recálculo del grupo — no se cobra un valor parcial; el llamador cae al respaldo (venta.primaTotal/prima guardado)
     total += primaAi;
@@ -18575,9 +18589,9 @@ function calcMontoSPTIPeriodo(venta) {
 // así corrige tanto pólizas nuevas como las que ya existían con el error.
 const _PSM_LABEL_A_CLAVE = { 'Básico': 'basico', 'Atención Domiciliaria': 'emd', 'Alto Costo': 'altoCosto', 'Cirugía Ambulatoria': 'cirugia', 'Maternidad': 'maternidad' };
 
-function calcMontoPSMPeriodo(venta) {
+function calcMontoPSMPeriodo(venta, opts) {
   if (venta.producto !== 'PSM' || !venta.periodicidad) return null;
-  if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
+  if (venta.periodicidad === 'MENSUAL' && !(opts && opts.incluirMensual)) return null; // sin cambios: ese caso ya funcionaba bien
   if (venta.tarifaCongelada) return null; // tarifa histórica fija — no se puede reconstruir desde la tabla actual
 
   // MotorProducto — Business Core Fase 1 (ADR-007/ADR-011). BR-014 centralizada.
@@ -18591,9 +18605,9 @@ function calcMontoPSMPeriodo(venta) {
     // asegurado adicional (modo sumado) se evalúan con su PROPIA edad vigente
     // (desde fechaNac). Si un adicional no tiene fechaNac, conserva su
     // rangoEdad guardado tal cual — no se inventa nada nuevo sobre datos legados.
-    const _edadTitularVigente = edadVigente(venta.fechaNac) ?? venta.edad;
+    const _edadTitularVigente = _edadParaCalculo(venta.fechaNac, opts) ?? venta.edad;
     const _aseguradosVigentes = Array.isArray(venta.asegurados) ? venta.asegurados.map(a => {
-      const _edadAiVigente = edadVigente(a.fechaNac) ?? a.edad;
+      const _edadAiVigente = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
       const _rangoAiVigente = window.MotorProducto.getRangoPSM(_edadAiVigente);
       return _rangoAiVigente ? { ...a, rangoEdad: _rangoAiVigente.key } : a;
     }) : venta.asegurados;
@@ -18647,9 +18661,9 @@ function calcMontoPSMPeriodo(venta) {
   return totalBruto - Math.round(totalBruto * dctoPct);
 }
 
-function calcMontoPAC60Periodo(venta) {
+function calcMontoPAC60Periodo(venta, opts) {
   if (venta.producto !== 'PAC60' || !venta.periodicidad) return null;
-  if (venta.periodicidad === 'MENSUAL') return null; // sin cambios: ese caso ya funcionaba bien
+  if (venta.periodicidad === 'MENSUAL' && !(opts && opts.incluirMensual)) return null; // sin cambios: ese caso ya funcionaba bien
   if (venta.tarifaCongelada) return null; // tarifa histórica fija (oferta de diciembre) — no se reconstruye desde la tabla actual
 
   // MotorProducto — Business Core Fase 1 (ADR-007/ADR-011). BR-014/BR-015.
@@ -18665,14 +18679,14 @@ function calcMontoPAC60Periodo(venta) {
     // origen de la póliza) — sale de la edad vigente del titular. >79 usa el
     // contexto administrativo (80-89/90+), <=79 sigue en venta nueva (60-69/70-79),
     // igual que hoy para pólizas que todavía no cruzan el límite.
-    const _edadTitularVigentePAC60 = edadVigente(venta.fechaNac) ?? venta.edad;
+    const _edadTitularVigentePAC60 = _edadParaCalculo(venta.fechaNac, opts) ?? venta.edad;
     const _contextoPAC60 = _edadTitularVigentePAC60 > 79 ? 'ADMINISTRATIVO' : 'VENTA_NUEVA';
     // Cada asegurado adicional se evalúa con su PROPIA edad vigente — el
     // clasificador administrativo es superconjunto exacto del de venta nueva
     // para <=79 (mismas claves 60-69/70-79), así que sirve para ambos casos.
     // Sin fechaNac, conserva el rangoEdad guardado tal cual (dato legado).
     const _aseguradosVigentesPAC60 = Array.isArray(venta.asegurados) ? venta.asegurados.map(a => {
-      const _edadAiVigente = edadVigente(a.fechaNac) ?? a.edad;
+      const _edadAiVigente = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
       const _rangoAiVigente = window.MotorProducto.getRangoPAC60Administrativo(_edadAiVigente);
       return _rangoAiVigente ? { ...a, rangoEdad: _rangoAiVigente } : a;
     }) : venta.asegurados;
@@ -18714,6 +18728,153 @@ function calcMontoPeriodoVenta(venta) {
   return calcMontoSPTIPeriodo(venta) ?? calcMontoPSMPeriodo(venta) ?? calcMontoPAC60Periodo(venta);
 }
 
+// =====================================================================
+// OT-2026-TARIFAS-ANIVERSARIO · Fase 3c — tarifa por ciclo anual
+//
+// La tarifa de una póliza se mantiene durante los 12 meses desde su expedición (el «ciclo»), en cualquier periodicidad.
+// Al cumplirse el año (renovación, mes 13) se aplican la tabla de ese año y la edad que tenga cada persona en esa fecha.
+// Dentro del ciclo manda el valor guardado. El período que se cobra lo sigue calculando registrarPago/abrirModalPago
+// (fechaExp + N × intervalo); aquí solo se decide CUÁNTO cuesta ese período. Un período se rige por su fecha de inicio.
+//
+// TARIFAS_FECHA_ACTIVACION: día en que se entregó este archivo. Para cada póliza, los aniversarios cumplidos hasta
+//   ese día ya están «incluidos» en su valor guardado: el primer cambio de tarifa es el primer aniversario posterior.
+// TARIFAS_FIN_TRANSICION: un mes después. Hasta esa fecha, una póliza sin fecha original o sin fecha de nacimiento
+//   se cobra con el valor guardado y una advertencia; después se bloquea. Sin tabla del año (hoy, desde 2027) siempre se bloquea.
+// =====================================================================
+const TARIFAS_FECHA_ACTIVACION = '2026-10-21';
+const TARIFAS_FIN_TRANSICION   = '2026-11-21';
+
+function _isoLocalHoy() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// Valor guardado de la póliza para UN período: en mensual y en modo sumado, el mismo que se usaba hasta ahora;
+// en no mensual individual, el total del período (primaTotal), no la mensualidad.
+function _valorGuardadoPeriodo(venta) {
+  if (venta.modoRegistro === 'sumado') return venta.primaTotal || venta.prima || 0;
+  if ((venta.periodicidad || 'MENSUAL') === 'MENSUAL') return venta.prima || 0;
+  return venta.primaTotal || venta.prima || 0;
+}
+
+// Fecha ancla del aniversario: la fecha original capturada; si no existe, en pólizas creadas en el CRM la fecha de
+// expedición (fechaExp). En las importadas de cartera SURA fechaExp es el inicio de vigencia del período, no la
+// afiliación, así que sin fecha original no hay ancla.
+function _anclaAniversario(venta) {
+  const o = String(venta.fechaExpOriginal || '').slice(0, 10);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(o)) return o;
+  if (venta._importadoSura) return null;
+  const f = String(venta.fechaExp || '').slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(f) ? f : null;
+}
+
+// Decide el importe de un período. Devuelve { estado:'OK'|'BLOQUEADO', origen, valor, motivo, advertencia, ... }.
+// valor === null significa «usar el valor base de siempre» (el llamador conserva su comportamiento).
+function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
+  const MP = window.MotorProducto;
+  const ok = (origen, extra) => Object.assign({ estado: 'OK', origen, valor: null, motivo: null, advertencia: null }, extra || {});
+  const bloq = (motivo, extra) => Object.assign({ estado: 'BLOQUEADO', origen: 'BLOQUEADO', valor: null, motivo, advertencia: null }, extra || {});
+  const prod = venta && venta.producto;
+  if (!['SPTI', 'PSM', 'PAC60', 'SPD'].includes(prod)) return ok('FUERA_DE_ALCANCE');
+  // Si el motor desplegado no trae las funciones nuevas, se conserva el cálculo anterior.
+  if (!MP || typeof MP.cicloDeFecha !== 'function' || typeof MP.tablasDelAnio !== 'function') return ok('LEGADO', { valor: calcMontoPeriodoVenta(venta) });
+  if (venta.tarifaCongelada === true) return ok('CONGELADA');
+
+  const guardado = prod === 'SPD' ? null : _valorGuardadoPeriodo(venta);
+  const hoy = (opciones && opciones.hoy) || _isoLocalHoy();
+  const enTransicion = hoy <= TARIFAS_FIN_TRANSICION;
+
+  const ancla = _anclaAniversario(venta);
+  if (!ancla) {
+    if (enTransicion) return ok('GUARDADO', { valor: guardado, advertencia: { motivo: 'FALTA_FECHA_ORIGINAL' } });
+    return bloq('FALTA_FECHA_ORIGINAL');
+  }
+  const c = MP.cicloDeFecha(ancla, periodoDesde);
+  const cAct = MP.cicloDeFecha(ancla, TARIFAS_FECHA_ACTIVACION);
+  if (c === null || cAct === null) return bloq('FECHA_INVALIDA');
+  if (c <= cAct) return ok('GUARDADO', { valor: guardado });
+
+  const fechaRenovacion = MP.aniversarioEn(ancla, c);
+  const anio = parseInt(fechaRenovacion.slice(0, 4), 10);
+  const tablas = MP.tablasDelAnio(anio);
+  if (!tablas) return bloq('SIN_TABLA_ANIO', { anio, fechaRenovacion });
+
+  if (prod === 'SPD') {
+    const spd = tablas.SPD;
+    if (!spd || fechaRenovacion < spd.vigenciaDesde || fechaRenovacion > spd.vigenciaHasta) return bloq('SIN_TABLA_ANIO', { anio, fechaRenovacion });
+    const sinIva = spd.sinIVA && spd.sinIVA[venta.periodicidad || 'MENSUAL'];
+    const iva = window.BusinessConfig && window.BusinessConfig.constants && window.BusinessConfig.constants.IVA_FACTOR;
+    if (typeof sinIva !== 'number' || !iva) return bloq('TARIFA_NO_RESUELTA', { anio, fechaRenovacion });
+    return ok('RENOVACION', { valor: Math.round(sinIva * iva), anioTabla: anio, fechaRenovacion });
+  }
+
+  const personas = [venta.fechaNac].concat(Array.isArray(venta.asegurados) ? venta.asegurados.map(a => a.fechaNac) : []);
+  const edades = personas.map(f => MP.edadEnFecha(f, fechaRenovacion));
+  if (edades.some(e => e === null)) {
+    if (enTransicion) return ok('GUARDADO', { valor: guardado, advertencia: { motivo: 'FALTA_FECHA_NACIMIENTO', fechaRenovacion } });
+    return bloq('FALTA_FECHA_NACIMIENTO', { anio, fechaRenovacion });
+  }
+  const tipoOk = ['NUEVO', 'RENOVACION', 'CANCELACION'].includes(venta.tipo) ? venta.tipo : 'NUEVO';
+  const ventaRef = Object.assign({}, venta, { edad: edades[0], tipo: tipoOk });
+  const opts = { fechaRef: fechaRenovacion, incluirMensual: true };
+  const valor = calcMontoSPTIPeriodo(ventaRef, opts) ?? calcMontoPSMPeriodo(ventaRef, opts) ?? calcMontoPAC60Periodo(ventaRef, opts);
+  if (valor === null || valor === undefined) return bloq('TARIFA_NO_RESUELTA', { anio, fechaRenovacion });
+  return ok('RENOVACION', { valor, anioTabla: anio, edadRef: edades[0], fechaRenovacion });
+}
+
+// Mismo cálculo del período que usa registrarPago (fechaExp + N × intervalo, N = pagos ya registrados).
+function _periodoSiguientePago(venta) {
+  const meses = { MENSUAL: 1, TRIMESTRAL: 3, SEMESTRAL: 6, ANUAL: 12 };
+  const intervalo = meses[venta.periodicidad] || 1;
+  const nAntes = getPagosVenta(venta.id).length;
+  const diaExp = new Date(venta.fechaExp + 'T12:00:00');
+  const desde = new Date(diaExp); desde.setMonth(desde.getMonth() + nAntes * intervalo);
+  const hasta = new Date(diaExp); hasta.setMonth(hasta.getMonth() + (nAntes + 1) * intervalo);
+  return { desde: desde.toISOString().slice(0, 10), hasta: hasta.toISOString().slice(0, 10) };
+}
+
+function textoAvisoTarifa(r) {
+  const fin = new Date(TARIFAS_FIN_TRANSICION + 'T12:00:00').toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' });
+  const m = r && r.motivo;
+  if (m === 'FALTA_FECHA_ORIGINAL') return (r.estado === 'BLOQUEADO' ? 'Falta la fecha original de afiliación. Completa la fecha editando la póliza para poder registrar el pago.' : 'Falta la fecha original de afiliación. Hasta el ' + fin + ' se cobra el valor guardado; después se bloqueará. Complétala editando la póliza.');
+  if (m === 'FALTA_FECHA_NACIMIENTO') return (r.estado === 'BLOQUEADO' ? 'La póliza está en renovación y falta la fecha de nacimiento de alguna persona. Complétala editando la póliza para registrar el pago.' : 'La póliza está en renovación y falta la fecha de nacimiento de alguna persona. Hasta el ' + fin + ' se cobra el valor guardado; completa la fecha para aplicar la tarifa nueva.');
+  if (m === 'SIN_TABLA_ANIO') return 'No hay tarifas autorizadas para ' + (r.anio || 'ese año') + '. La renovación no se puede cobrar hasta que SURA las entregue.';
+  if (m === 'TARIFA_NO_RESUELTA') return 'No se pudo calcular la tarifa de la renovación con los datos de la póliza. Revisa plan, módulos y fechas de nacimiento.';
+  if (m === 'FECHA_INVALIDA') return 'La fecha de expedición o la fecha original de la póliza no es válida.';
+  return 'Revisión de tarifa pendiente.';
+}
+
+function _editarPolizaDesdeAviso(id) {
+  const v = getState().ventas.find(x => x.id === id);
+  closeModal('modalPago');
+  if (v && v._importadoSura && typeof abrirEditarSura === 'function') abrirEditarSura(id);
+  else if (typeof editarVenta === 'function') editarVenta(id);
+}
+
+// Muestra en el modal de pago el importe y el aviso/bloqueo del PRÓXIMO período. Se llama al abrir y tras cada pago.
+function actualizarAvisoTarifaPago(venta) {
+  const per = _periodoSiguientePago(venta);
+  const rt = resolverTarifaPeriodo(venta, per.desde);
+  const base = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
+  const prima = (rt.valor !== null && rt.valor !== undefined) ? rt.valor : base;
+  const inp = document.getElementById('pagoPrima');
+  if (inp) inp.value = rt.estado === 'BLOQUEADO' ? '—' : '$' + Math.round(prima).toLocaleString('es-CO');
+  const btn = document.getElementById('btnRegistrarPago');
+  if (btn) { btn.disabled = rt.estado === 'BLOQUEADO'; btn.style.opacity = rt.estado === 'BLOQUEADO' ? '0.5' : ''; }
+  const box = document.getElementById('pagoAvisoTarifa');
+  if (!box) return rt;
+  const aviso = rt.estado === 'BLOQUEADO' ? rt : (rt.advertencia ? { estado: 'OK', motivo: rt.advertencia.motivo } : null);
+  if (!aviso) { box.style.display = 'none'; box.innerHTML = ''; return rt; }
+  const bloqueado = rt.estado === 'BLOQUEADO';
+  const puedeEditar = ['FALTA_FECHA_ORIGINAL', 'FALTA_FECHA_NACIMIENTO', 'FECHA_INVALIDA'].includes(aviso.motivo);
+  box.style.display = '';
+  box.style.background = bloqueado ? 'rgba(239,68,68,0.10)' : 'rgba(245,158,11,0.12)';
+  box.style.borderLeft = '3px solid ' + (bloqueado ? 'var(--red)' : 'var(--amber)');
+  box.innerHTML = '<div>' + (bloqueado ? '⛔ ' : '⚠️ ') + textoAvisoTarifa(Object.assign({}, aviso, { estado: bloqueado ? 'BLOQUEADO' : 'OK', anio: rt.anio })) + '</div>' +
+    (puedeEditar ? '<button class="btn btn-secondary" style="margin-top:8px;padding:5px 10px;font-size:12px;" onclick="_editarPolizaDesdeAviso(\'' + venta.id + '\')">✏️ Editar póliza</button>' : '');
+  return rt;
+}
+
 function abrirModalPago(ventaId) {
   const state = getState();
   const venta = state.ventas.find(v => v.id === ventaId);
@@ -18730,10 +18891,8 @@ function abrirModalPago(ventaId) {
   // HALLAZGO-OP-005 (fix): para periodicidad no mensual (SPTI/PSM/PAC60) se
   // usa el valor correcto por periodo recalculado desde el módulo, en vez
   // del valor guardado (mensual para SPTI; sin descuento para PSM/PAC60).
-  const _primaPagoBase = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
-  const _montoRecalculado = calcMontoPeriodoVenta(venta);
-  const _primaPago = (_montoRecalculado !== null) ? _montoRecalculado : _primaPagoBase;
-  document.getElementById('pagoPrima').value = '$' + Math.round(_primaPago).toLocaleString('es-CO');
+  // Fase 3c: el importe y el aviso de tarifa salen de resolverTarifaPeriodo (misma función que usa registrarPago).
+  actualizarAvisoTarifaPago(venta);
 
   actualizarPreviewPago();
   renderHistorialPagoModal(ventaId);
@@ -18810,10 +18969,15 @@ function confirmarPago() {
   const fechaPago = document.getElementById('pagoFecha')?.value;
   if (!fechaPago) { showToast('⚠️ Selecciona la fecha del pago'); return; }
   const pago = registrarPago(_pagoVentaId, fechaPago);
-  if (!pago) return;
+  if (!pago) {
+    if (registrarPago.ultimoBloqueo) showToast('⛔ ' + textoAvisoTarifa(registrarPago.ultimoBloqueo));
+    return;
+  }
   const fmtD = str => str ? new Date(str+'T12:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-  showToast(`✅ Pago registrado · Próx. venc: ${fmtD(pago.periodoHasta)}`);
+  showToast(`✅ Pago registrado · Próx. venc: ${fmtD(pago.periodoHasta)}` + (registrarPago.ultimaAdvertencia ? ' · ⚠️ con advertencia de tarifa' : ''));
   renderHistorialPagoModal(_pagoVentaId);
+  const _vPagada = getState().ventas.find(x => x.id === _pagoVentaId);
+  if (_vPagada) actualizarAvisoTarifaPago(_vPagada);
   renderCartera();
 }
 
@@ -24479,6 +24643,8 @@ function confirmarPagosMasivos() {
 
   const pagos = getPagos();
   let registrados = 0;
+  let conAdvertencia = 0;       // Fase 3c: pagos registrados con advertencia de tarifa
+  const noRegistrados = [];     // Fase 3c: pagos que el resolvedor de tarifa bloqueó, con su motivo
 
   seleccionados.forEach(p => {
     const s = getState();
@@ -24487,7 +24653,8 @@ function confirmarPagosMasivos() {
 
     // Usar registrarPago con fecha personalizada
     const pago = registrarPago(p.ventaId, p.fechaPago);
-    if (pago) registrados++;
+    if (pago) { registrados++; if (registrarPago.ultimaAdvertencia) conAdvertencia++; }
+    else if (registrarPago.ultimoBloqueo) noRegistrados.push((p.nombre || p.ventaId) + ' — ' + textoAvisoTarifa(registrarPago.ultimoBloqueo));
   });
 
   // Ocultar panel y actualizar cartera
@@ -24495,7 +24662,8 @@ function confirmarPagosMasivos() {
   _pagosDetectados = [];
   renderCartera();
 
-  showToast(`✅ ${registrados} pago${registrados>1?'s':''} registrado${registrados>1?'s':''} correctamente`);
+  showToast(`✅ ${registrados} pago${registrados>1?'s':''} registrado${registrados>1?'s':''} correctamente` + (conAdvertencia ? ` · ⚠️ ${conAdvertencia} con advertencia de tarifa` : ''));
+  if (noRegistrados.length) alert(`No se registraron ${noRegistrados.length} pago${noRegistrados.length>1?'s':''} por la tarifa:\n\n` + noRegistrados.join('\n'));
 }
 
 function limpiarCarteraSura() {
@@ -40862,7 +41030,10 @@ function _agenteEjecutarHerramienta(nombre, input) {
         // Registrar usando EXACTAMENTE la función del sistema manual
         if (typeof registrarPago !== 'function') return { error: 'Función registrarPago no disponible' };
         const nuevoPago = registrarPago(ventaId, fechaPago || null);
-        if (!nuevoPago) return { error: 'No se pudo registrar el pago — verifica que la póliza exista' };
+        if (!nuevoPago) {
+          const _b = registrarPago.ultimoBloqueo;   // Fase 3c: pago bloqueado por tarifa
+          return { error: _b ? ('Pago no registrado: ' + textoAvisoTarifa(_b)) : 'No se pudo registrar el pago — verifica que la póliza exista' };
+        }
 
         // Re-renderizar vistas afectadas
         if (typeof renderPagoMes === 'function') try { renderPagoMes(); } catch(_) {}
@@ -40873,6 +41044,7 @@ function _agenteEjecutarHerramienta(nombre, input) {
         return {
           exito: true,
           mensaje: `Pago de ${nombre2} registrado correctamente`,
+          ...(registrarPago.ultimaAdvertencia ? { advertencia: textoAvisoTarifa(registrarPago.ultimaAdvertencia) } : {}),
           pago: {
             fecha:        nuevoPago.fecha?.slice(0,10),
             periodoDesde: nuevoPago.periodoDesde,
