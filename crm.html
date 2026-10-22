@@ -18260,13 +18260,11 @@ function getCarteraEstado(v, pagos) {
     diasEfectivos = Math.max(0, Math.floor((hoy - finGracia) / 86400000));
   }
 
+  // OP Fase 2a: a los 60 días de mora ya NO se cancela sola. El asesor valida en SURA que no
+  // haya pagos y confirma con el botón Cancelar (calendario de fecha efectiva). Mientras tanto
+  // la póliza sigue como SUSPENDIDO, marcada como pendiente de cancelación.
   if (diasEfectivos >= 60) {
-    const s = getState(); const idx = s.ventas.findIndex(x => x.id === v.id);
-    if (idx !== -1 && s.ventas[idx].tipo !== 'CANCELACION') {
-      s.ventas[idx].tipo = 'CANCELACION'; s.ventas[idx].motivoCancelacion = 'No pago — mora ≥60 días';
-      s.ventas[idx].fechaCancelacion = hoy.toISOString().slice(0,10); setState(s);
-    }
-    return { estado:'CANCELADO', dias:diasEfectivos, color:'#6b7280', label:'⛔ Cancelado (mora)', proxVenc, prevVenc };
+    return { estado:'SUSPENDIDO', dias:diasEfectivos, color:'var(--red)', label:'⏳ Pendiente de cancelación', pendienteCancelacion:true, proxVenc, prevVenc };
   }
   if (diasEfectivos >= 35) return { estado:'SUSPENDIDO', dias:diasEfectivos, color:'var(--red)',   label:'🔴 Suspendido',  proxVenc, prevVenc };
   if (diasEfectivos >= 31) return { estado:'MORA',       dias:diasEfectivos, color:'var(--amber)', label:'🟡 En mora',      proxVenc, prevVenc };
@@ -21087,9 +21085,37 @@ function reactivarPoliza(id) {
   const state = getState();
   const idx = state.ventas.findIndex(v => v.id === id);
   if (idx === -1) return;
-  state.ventas[idx].tipo = 'NUEVO';
-  delete state.ventas[idx].motivoCancelacion;
-  delete state.ventas[idx].fechaCancelacion;
+  const _vr = state.ventas[idx];
+  // Archivar la cancelación en el historial (no se pierde: se necesita para la regla de los 6 meses)
+  const _hist = Array.isArray(_vr.historialCancelaciones) ? _vr.historialCancelaciones.slice() : [];
+  const _fEf = _vr.fechaEfectivaCancelacion || _vr.fechaCancelacion || '';
+  const _hoyR = _cancelFechaLocalISO(new Date());
+  const _ult = _hist.length ? _hist[_hist.length - 1] : null;
+  if (_ult && !_ult.reactivadaEn && _ult.fechaEfectiva === _fEf) {
+    _hist[_hist.length - 1] = Object.assign({}, _ult, { reactivadaEn: _hoyR });
+  } else {
+    _hist.push({
+      fechaEfectiva: _fEf,
+      fechaRegistro: _vr.fechaRegistroCancelacion || '',
+      motivo: _vr.motivoCancelacion || '',
+      esNoPago: _vr.cancelacionEsNoPago === true,
+      origen: _vr.fechaRegistroCancelacion ? 'MANUAL' : 'LEGADO',
+      impactoMes: typeof _vr.cancelacionImpactoMes === 'number' ? _vr.cancelacionImpactoMes : null,
+      impactoSiguiente: typeof _vr.cancelacionImpactoSiguiente === 'number' ? _vr.cancelacionImpactoSiguiente : null,
+      reactivadaEn: _hoyR
+    });
+  }
+  _vr.historialCancelaciones = _hist;
+  _vr.tipo = 'NUEVO';
+  delete _vr.motivoCancelacion;
+  delete _vr.fechaCancelacion;
+  delete _vr.fechaEfectivaCancelacion;
+  delete _vr.fechaRegistroCancelacion;
+  delete _vr.cancelacionEsNoPago;
+  delete _vr.cancelacionMes;
+  delete _vr.cancelacionAnio;
+  delete _vr.cancelacionImpactoMes;
+  delete _vr.cancelacionImpactoSiguiente;
   setState(state);
   renderCancelados();
   showToast('♻️ Póliza reactivada');
@@ -34014,6 +34040,11 @@ const RAZONES_CANCELACION = [
 // Razones que se clasifican como "no pago" para el flujo SURA
 const RAZONES_NO_PAGO = new Set(['No pago / mora']);
 
+// Fecha local (YYYY-MM-DD) sin pasar por UTC (en Colombia, de noche toISOString() ya marca el día siguiente)
+function _cancelFechaLocalISO(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
 function cancelarVentaCartera(id) {
   const state = getState();
   const v = state.ventas.find(x => x.id === id);
@@ -34025,24 +34056,19 @@ function cancelarVentaCartera(id) {
   const mesActual = hoy.getMonth();
   const anioActual = hoy.getFullYear();
 
-  // Construir opciones de mes (mes actual y los 2 anteriores)
-  const opcionesMes = [];
-  for (let i = 2; i >= 0; i--) {
-    const m = ((mesActual - i) + 12) % 12;
-    const a = mesActual - i < 0 ? anioActual - 1 : anioActual;
-    opcionesMes.push({ mes: m, anio: a, label: `${MESES_NOM[m]} ${a}` });
-  }
-  // Agregar mes siguiente (por si la cancelación proyecta al próximo)
-  const mSig = (mesActual + 1) % 12;
-  const aSig = mesActual === 11 ? anioActual + 1 : anioActual;
-  opcionesMes.push({ mes: mSig, anio: aSig, label: `${MESES_NOM[mSig]} ${aSig}` });
-
-  const opsMesHtml = opcionesMes.map((o, i) =>
-    `<option value="${o.mes}|${o.anio}" ${i === opcionesMes.length - 2 ? 'selected' : ''}>${o.label}</option>`
-  ).join('');
+  // Calendario de fecha efectiva: mínimo = expedición; máximo = último día del mes siguiente; por defecto hoy
+  const _finMesSig = new Date(anioActual, mesActual + 2, 0, 12, 0, 0);
+  const cancelMax = _cancelFechaLocalISO(_finMesSig);
+  const cancelMin = (v.fechaExp && /^\d{4}-\d{2}-\d{2}$/.test(v.fechaExp)) ? v.fechaExp : '';
+  let cancelFechaDef = _cancelFechaLocalISO(hoy);
+  if (cancelMin && cancelFechaDef < cancelMin) cancelFechaDef = cancelMin;
+  if (cancelFechaDef > cancelMax) cancelFechaDef = cancelMax;
+  // Si la póliza está pendiente de cancelación por 60 días de mora, el motivo sugerido es «No pago / mora»
+  let _pendMora = false;
+  try { const _e = getCarteraEstado(v, getPagos()); _pendMora = !!(_e && _e.pendienteCancelacion); } catch (e) {}
 
   const opsRazonHtml = RAZONES_CANCELACION.map((r, i) =>
-    `<option value="${i}">${r}</option>`
+    `<option value="${i}" ${_pendMora && i === 0 ? 'selected' : ''}>${r}</option>`
   ).join('');
 
   // Crear modal
@@ -34063,11 +34089,9 @@ function cancelarVentaCartera(id) {
       <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:20px;">${v.producto} · <strong>${nombre}</strong></div>
 
       <div style="margin-bottom:16px;">
-        <label style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:600;display:block;margin-bottom:6px;">Mes en que cae la cancelación</label>
-        <select id="cancelModalMes" style="width:100%;padding:9px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:var(--font);">
-          ${opsMesHtml}
-        </select>
-        <div style="font-size:10.5px;color:var(--text-dim);margin-top:5px;">El mes seleccionado determina cómo se distribuye el impacto en la proyección anual.</div>
+        <label style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:600;display:block;margin-bottom:6px;">Fecha efectiva de la cancelación</label>
+        <input type="date" id="cancelModalFecha" value="${cancelFechaDef}" ${cancelMin ? 'min="' + cancelMin + '"' : ''} max="${cancelMax}" style="width:100%;padding:9px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:var(--font);">
+        <div style="font-size:10.5px;color:var(--text-dim);margin-top:5px;">La fecha efectiva es la de la confirmación de SURA. Su mes determina cómo se distribuye el impacto en la proyección anual.</div>
       </div>
 
       <div style="margin-bottom:20px;">
@@ -34090,13 +34114,13 @@ function cancelarVentaCartera(id) {
 
   // Preview dinámico
   function actualizarPreview() {
-    const selMes = document.getElementById('cancelModalMes');
+    const inpFecha = document.getElementById('cancelModalFecha');
     const selRazon = document.getElementById('cancelModalRazon');
     const prev = document.getElementById('cancelModalPreview');
-    if (!selMes || !selRazon || !prev) return;
+    if (!inpFecha || !selRazon || !prev) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(inpFecha.value)) { prev.style.display = 'none'; return; }
 
-    const [mesStr, anioStr] = selMes.value.split('|');
-    const mesCancelacion = parseInt(mesStr);
+    const mesCancelacion = parseInt(inpFecha.value.slice(5, 7), 10) - 1;
     const mesSiguiente = (mesCancelacion + 1) % 12;
     const razonIdx = parseInt(selRazon.value);
     const razonTexto = RAZONES_CANCELACION[razonIdx];
@@ -34136,7 +34160,8 @@ function cancelarVentaCartera(id) {
     prev.style.display = 'block';
   }
 
-  document.getElementById('cancelModalMes').addEventListener('change', actualizarPreview);
+  document.getElementById('cancelModalFecha').addEventListener('change', actualizarPreview);
+  document.getElementById('cancelModalFecha').addEventListener('input', actualizarPreview);
   document.getElementById('cancelModalRazon').addEventListener('change', actualizarPreview);
   actualizarPreview();
 
@@ -34145,18 +34170,19 @@ function cancelarVentaCartera(id) {
 }
 
 function confirmarCancelacionModal(id) {
-  const selMes = document.getElementById('cancelModalMes');
+  const inpFecha = document.getElementById('cancelModalFecha');
   const selRazon = document.getElementById('cancelModalRazon');
-  if (!selMes || !selRazon) return;
+  if (!inpFecha || !selRazon) return;
 
-  const [mesStr, anioStr] = selMes.value.split('|');
-  const mes = parseInt(mesStr);
-  const anio = parseInt(anioStr);
+  // Fecha efectiva elegida en el calendario (YYYY-MM-DD)
+  const fechaEfectiva = inpFecha.value;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaEfectiva)) { showToast('⚠️ Elige la fecha efectiva de la cancelación'); return; }
+  const mes = parseInt(fechaEfectiva.slice(5, 7), 10) - 1;
+  const anio = parseInt(fechaEfectiva.slice(0, 4), 10);
   const razonIdx = parseInt(selRazon.value);
   const razonTexto = RAZONES_CANCELACION[razonIdx] || 'Otra razón';
-
-  // Construir fecha de cancelación: día 1 del mes seleccionado
-  const fechaCancelacion = `${anio}-${String(mes + 1).padStart(2,'0')}-01`;
+  const fechaCancelacion = fechaEfectiva; // se mantiene con el valor de la fecha efectiva (la consumen indicadores y exportaciones)
+  const fechaRegistro = _cancelFechaLocalISO(new Date()); // día en que se confirma en el CRM
   const esNoPago = RAZONES_NO_PAGO.has(razonTexto);
 
   const s = getState();
@@ -34164,6 +34190,13 @@ function confirmarCancelacionModal(id) {
   if (vi < 0) return;
 
   const v = s.ventas[vi];
+  // Límites del calendario: desde la expedición hasta el último día del mes siguiente
+  const _hoyC = new Date();
+  const _maxC = _cancelFechaLocalISO(new Date(_hoyC.getFullYear(), _hoyC.getMonth() + 2, 0, 12, 0, 0));
+  if ((v.fechaExp && /^\d{4}-\d{2}-\d{2}$/.test(v.fechaExp) && fechaEfectiva < v.fechaExp) || fechaEfectiva > _maxC) {
+    showToast('⚠️ La fecha efectiva está fuera del rango permitido');
+    return;
+  }
   const pagos = getPagos();
   const pList = pagos[v.id] || [];
   const mesesPagados = pList.length;
@@ -34189,6 +34222,17 @@ function confirmarCancelacionModal(id) {
   s.ventas[vi].cancelacionAnio = anio;
   s.ventas[vi].cancelacionImpactoMes = impactoMesCancelacion;
   s.ventas[vi].cancelacionImpactoSiguiente = impactoMesSiguiente;
+  s.ventas[vi].fechaEfectivaCancelacion = fechaEfectiva;
+  s.ventas[vi].fechaRegistroCancelacion = fechaRegistro;
+  s.ventas[vi].historialCancelaciones = (Array.isArray(v.historialCancelaciones) ? v.historialCancelaciones : []).concat([{
+    fechaEfectiva: fechaEfectiva,
+    fechaRegistro: fechaRegistro,
+    motivo: razonTexto,
+    esNoPago: esNoPago,
+    origen: 'MANUAL',
+    impactoMes: impactoMesCancelacion,
+    impactoSiguiente: impactoMesSiguiente
+  }]);
 
   setState(s);
 
