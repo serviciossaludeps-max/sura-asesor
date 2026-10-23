@@ -20712,6 +20712,44 @@ function calcPrimaMensualSinIVA(v) {
 // Calcula impacto presupuestal de una cancelación — Flujo oficial SURA
 // No pago: 3 facturas (60 días) en mes cancelación + excedente proyección en mes siguiente
 // Otro motivo: mes que se deja de pagar en mes cancelación + excedente proyección en mes siguiente
+// ═══════════════════════════════════════════════════════════════════════════
+// OP Fase 2c — Regla SURA desde 1-sep-2026: impacto completo en el mes de cancelación.
+// Una sola fuente para vista previa, confirmación (congela) y totales.
+// Antes del corte se conserva exactamente la regla anterior (dividida en dos meses).
+// ═══════════════════════════════════════════════════════════════════════════
+const F2C_CORTE_REGLA_SURA = '2026-09-01';
+function _f2cMesesCubiertos(pagos, periodicidad) {
+  const INTERV = { MENSUAL: 1, TRIMESTRAL: 3, SEMESTRAL: 6, ANUAL: 12 };
+  let meses = 0;
+  (pagos || []).forEach(p => {
+    if (p && p.periodoDesde && p.periodoHasta) {
+      const a = new Date(p.periodoDesde + 'T12:00:00'), b = new Date(p.periodoHasta + 'T12:00:00');
+      meses += Math.max(1, Math.round((b - a) / (30.4375 * 86400000)));
+    } else {
+      meses += INTERV[periodicidad] || 1;
+    }
+  });
+  return Math.min(12, meses);
+}
+function _f2cImpactoCancelacion({ primaMens, pagos, periodicidad, esNoPago, fechaEfectiva }) {
+  const proyAnual = primaMens * 12;
+  const fe = String(fechaEfectiva || '').slice(0, 10);
+  const completa = !!fe && fe >= F2C_CORTE_REGLA_SURA;
+  if (!completa) {
+    // Regla anterior, sin cambios: pagado = prima × número de pagos; impacto dividido en dos meses
+    const nPagos = (pagos || []).length;
+    const pagado = primaMens * nPagos;
+    const mes = esNoPago ? primaMens * 3 : primaMens;
+    return { regla: 'DIVIDIDA', pagado, mesesCubiertos: nPagos,
+      impactoMesCancelacion: mes, impactoMesSiguiente: Math.max(0, proyAnual - pagado - mes) };
+  }
+  // Regla SURA: pagado = prima × meses cubiertos; faltante completo en el mes de cancelación
+  const mesesCubiertos = _f2cMesesCubiertos(pagos, periodicidad);
+  const pagado = primaMens * mesesCubiertos;
+  return { regla: 'COMPLETA', pagado, mesesCubiertos,
+    impactoMesCancelacion: Math.max(0, proyAnual - pagado), impactoMesSiguiente: 0 };
+}
+
 function calcImpactoCancelacion(v, pagosState) {
   const pList = pagosState[v.id] || [];
   const mesesPagados = pList.length;
@@ -20730,14 +20768,16 @@ function calcImpactoCancelacion(v, pagosState) {
     (v.motivoCancelacion && v.motivoCancelacion.toLowerCase().includes('no pago'));
 
   // Impacto en el mes de cancelación
+  const _regL = _f2cImpactoCancelacion({ primaMens, pagos: pList, periodicidad: v.periodicidad, esNoPago,
+    fechaEfectiva: v.fechaEfectivaCancelacion || v.fechaCancelacion });
   let impactoMesCancelacion = v.cancelacionImpactoMes !== undefined
     ? v.cancelacionImpactoMes
-    : (esNoPago ? primaMens * 3 : primaMens);
+    : _regL.impactoMesCancelacion;
 
   // Excedente en el mes siguiente (primas faltantes, no es cancelación adicional)
   let impactoMesSiguiente = v.cancelacionImpactoSiguiente !== undefined
     ? v.cancelacionImpactoSiguiente
-    : Math.max(0, proyAnual - pagado - impactoMesCancelacion);
+    : _regL.impactoMesSiguiente;
 
   const impacto = impactoMesCancelacion + impactoMesSiguiente;
 
@@ -34243,28 +34283,30 @@ function cancelarVentaCartera(id) {
     const pList = pagos[v.id] || [];
     const mesesPagados = pList.length;
     const primaMens = calcPrimaMensualSinIVA(v);
+    const _fPrev = ((document.getElementById('cancelModalFecha') || {}).value || '');
+    const _reg = _f2cImpactoCancelacion({ primaMens, pagos: pList, periodicidad: v.periodicidad, esNoPago, fechaEfectiva: _fPrev });
     const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
     let previewHtml = '';
     if (esNoPago) {
-      const val3Fact = primaMens * 3;
-      const valExcedente = Math.max(0, (primaMens * 12) - val3Fact - (primaMens * (mesesPagados)));
+      const val3Fact = _reg.impactoMesCancelacion;
+      const valExcedente = _reg.impactoMesSiguiente;
       previewHtml = `
         <div style="font-weight:700;color:var(--red);margin-bottom:8px;">Flujo SURA · No pago</div>
         <div style="display:flex;flex-direction:column;gap:5px;">
           <div style="display:flex;justify-content:space-between;"><span>📅 Mes cancelación (<b>${MESES[mesCancelacion]}</b>):</span><span style="color:var(--red);font-weight:700;">−${fmt(val3Fact)}</span></div>
-          <div style="font-size:10.5px;color:var(--text-dim);margin-top:-3px;margin-bottom:2px;">3 facturas (60 días) + mes proyectado siguiente</div>
+          <div style="font-size:10.5px;color:var(--text-dim);margin-top:-3px;margin-bottom:2px;">${_reg.regla === 'COMPLETA' ? 'Regla SURA desde sept: faltante completo en el mes de cancelación' : '3 facturas (60 días) + mes proyectado siguiente'}</div>
           <div style="display:flex;justify-content:space-between;"><span>📅 Mes siguiente (<b>${MESES[mesSiguiente]}</b>) — excedente:</span><span style="color:var(--amber);font-weight:700;">−${fmt(valExcedente)}</span></div>
           <div style="font-size:10.5px;color:var(--text-dim);margin-top:-3px;">Primas faltantes en proyección anual · no cuenta como nueva cancelación</div>
         </div>`;
     } else {
-      const valMesCancelacion = primaMens;
-      const valExcedente = Math.max(0, (primaMens * 12) - (primaMens * mesesPagados) - valMesCancelacion);
+      const valMesCancelacion = _reg.impactoMesCancelacion;
+      const valExcedente = _reg.impactoMesSiguiente;
       previewHtml = `
         <div style="font-weight:700;color:var(--amber);margin-bottom:8px;">Flujo SURA · Otro motivo</div>
         <div style="display:flex;flex-direction:column;gap:5px;">
           <div style="display:flex;justify-content:space-between;"><span>📅 Mes cancelación (<b>${MESES[mesCancelacion]}</b>):</span><span style="color:var(--red);font-weight:700;">−${fmt(valMesCancelacion)}</span></div>
-          <div style="font-size:10.5px;color:var(--text-dim);margin-top:-3px;margin-bottom:2px;">Mes que se deja de pagar · ${mesesPagados} meses pagados desde expedición</div>
+          <div style="font-size:10.5px;color:var(--text-dim);margin-top:-3px;margin-bottom:2px;">Mes que se deja de pagar · ${_reg.regla === 'COMPLETA' ? _reg.mesesCubiertos + ' meses cubiertos por pagos' : mesesPagados + ' meses pagados desde expedición'}</div>
           <div style="display:flex;justify-content:space-between;"><span>📅 Mes siguiente (<b>${MESES[mesSiguiente]}</b>) — excedente:</span><span style="color:var(--amber);font-weight:700;">−${fmt(valExcedente)}</span></div>
           <div style="font-size:10.5px;color:var(--text-dim);margin-top:-3px;">Primas faltantes en proyección anual · no cuenta como nueva cancelación</div>
         </div>`;
@@ -34315,17 +34357,10 @@ function confirmarCancelacionModal(id) {
   const mesesPagados = pList.length;
   const primaMens = calcPrimaMensualSinIVA(v);
 
-  // Calcular impacto según flujo SURA
-  let impactoMesCancelacion, impactoMesSiguiente;
-  if (esNoPago) {
-    // No pago: 3 facturas (60 días) en mes cancelación + excedente en siguiente
-    impactoMesCancelacion = primaMens * 3;
-    impactoMesSiguiente = Math.max(0, (primaMens * 12) - impactoMesCancelacion - (primaMens * mesesPagados));
-  } else {
-    // Otro motivo: mes que se deja de pagar en mes cancelación + excedente en siguiente
-    impactoMesCancelacion = primaMens;
-    impactoMesSiguiente = Math.max(0, (primaMens * 12) - (primaMens * mesesPagados) - impactoMesCancelacion);
-  }
+  // Impacto según flujo SURA (OP 2c: misma función que la vista previa y los totales)
+  const _regC = _f2cImpactoCancelacion({ primaMens, pagos: pList, periodicidad: v.periodicidad, esNoPago, fechaEfectiva });
+  const impactoMesCancelacion = _regC.impactoMesCancelacion;
+  const impactoMesSiguiente = _regC.impactoMesSiguiente;
 
   s.ventas[vi].tipo = 'CANCELACION';
   s.ventas[vi].motivoCancelacion = razonTexto;
