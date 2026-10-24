@@ -5712,6 +5712,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
                 <select id="cancelImpactoMesFiltro" onchange="renderImpactoCancelaciones()" style="font-size:11.5px;padding:4px 8px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font);">
                   <option value="todos">Todos los meses</option>
                 </select>
+                <select id="cancelImpactoAnioFiltro" onchange="renderImpactoCancelaciones()" style="font-size:11.5px;padding:4px 8px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--text);"></select>
               </div>
             </div>
             <div id="ctImpactoCancelaciones"></div>
@@ -20875,6 +20876,43 @@ function renderCancelados() {
   renderImpactoCancelaciones();
 }
 
+// ═══ OP Fase 2c — Adenda de año: helpers (KPI por año, metas por año, vigentes al inicio del semestre) ═══
+function _f2dMetaCancelacion(anio) {
+  const cfg = (typeof getConfigAnio === 'function') ? getConfigAnio(anio) : null;
+  const m = cfg && cfg.metaCancelacion;
+  if (m && m.S1 != null && m.S2 != null) return { S1: Number(m.S1), S2: Number(m.S2) };
+  if (anio === 2026) return { S1: 4.5, S2: 3.5 }; // precarga vigente 2026 (no persistida hasta guardar)
+  return null; // Meta no configurada
+}
+function _f2dCanceladaAntes(v, inicioISO) {
+  if (v.tipo === 'CANCELACION' && String(v.fechaCancelacion || '').slice(0,10) && String(v.fechaCancelacion).slice(0,10) < inicioISO) return true;
+  return (Array.isArray(v.historialCancelaciones) ? v.historialCancelaciones : []).some(h =>
+    h && h.fechaEfectiva && String(h.fechaEfectiva).slice(0,10) < inicioISO &&
+    (!h.reactivadaEn || String(h.reactivadaEn).slice(0,10) >= inicioISO));
+}
+function _f2dVigentesInicio(ventas, inicioISO) {
+  return (ventas || []).filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp
+    && String(v.fechaExp).slice(0,10) < inicioISO && !_f2dCanceladaAntes(v, inicioISO)).length;
+}
+function _f2dAnioSeleccionado(canceladas) {
+  const sel = document.getElementById('cancelImpactoAnioFiltro');
+  const actual = new Date().getFullYear();
+  const anios = new Set([actual]);
+  (canceladas || []).forEach(v => { if (v.fechaCancelacion) anios.add(parseInt(String(v.fechaCancelacion).slice(0,4))); });
+  const lista = [...anios].filter(a => a > 2000).sort((a,b) => b - a);
+  if (!sel) return actual;
+  const previo = sel.value;
+  while (sel.options.length) sel.remove(0);
+  lista.forEach(a => { const o = document.createElement('option'); o.value = a; o.textContent = a; sel.appendChild(o); });
+  sel.value = (previo && lista.includes(parseInt(previo))) ? previo : String(actual);
+  return parseInt(sel.value);
+}
+function _f2dAnioDashboard(v) {
+  const sel = document.getElementById('cancelImpactoAnioFiltro');
+  const a = sel && sel.value ? parseInt(sel.value) : new Date().getFullYear();
+  return parseInt(String(v.fechaCancelacion || '').slice(0,4)) === a;
+}
+
 function renderImpactoCancelaciones() {
   const cont = document.getElementById('ctImpactoCancelaciones');
   if (!cont) return;
@@ -20882,40 +20920,43 @@ function renderImpactoCancelaciones() {
   const pagos = getPagos();
   const MESES_NOM = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const canceladas = s.ventas.filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.tipo === 'CANCELACION');
+  const _anioSel = _f2dAnioSeleccionado(canceladas);
 
   // ── Indicador KPI SURA 2026: metas de cancelación por semestre ───────────
   // S1 (Ene–Jun): 4.5% · S2 (Jul–Dic): 3.5%
   const hoy = new Date();
   const mesActual = hoy.getMonth(); // 0=Ene
-  const esPrimerSemestre = mesActual <= 5;
-  const metaCancelacionPct = esPrimerSemestre ? 4.5 : 3.5;
-  const semestral = esPrimerSemestre ? '1° semestre (Ene–Jun)' : '2° semestre (Jul–Dic)';
+  const esPrimerSemestre = (_anioSel === hoy.getFullYear()) ? (mesActual <= 5) : false;
+  const _metaCfg = _f2dMetaCancelacion(_anioSel);
+  const metaCancelacionPct = _metaCfg ? (esPrimerSemestre ? _metaCfg.S1 : _metaCfg.S2) : null;
+  const metaPct = metaCancelacionPct ?? 0;
+  const metaTxt = metaCancelacionPct === null ? 'no configurada' : metaCancelacionPct + '%';
+  const semestral = (esPrimerSemestre ? '1° semestre (Ene–Jun)' : '2° semestre (Jul–Dic)') + ' ' + _anioSel;
 
   // Total pólizas vigentes voluntarias
-  const polizasVigentes = s.ventas.filter(v =>
-    ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.tipo !== 'CANCELACION' && v.fechaExp
-  ).length;
+  const _inicioSem = esPrimerSemestre ? _anioSel + '-01-01' : _anioSel + '-07-01';
+  const _finSem = esPrimerSemestre ? _anioSel + '-06-30' : _anioSel + '-12-31';
+  const polizasVigentes = _f2dVigentesInicio(s.ventas, _inicioSem);
 
   // Cancelaciones del semestre actual
   const cancelSemestre = canceladas.filter(v => {
-    if (!v.fechaCancelacion) return false;
-    const mc = new Date(v.fechaCancelacion + 'T12:00:00').getMonth();
-    return esPrimerSemestre ? mc <= 5 : mc >= 6;
+    const f = String(v.fechaCancelacion || '').slice(0,10);
+    return f >= _inicioSem && f <= _finSem;
   }).length;
 
-  const canceladasPermitidas = Math.floor((polizasVigentes + cancelSemestre) * (metaCancelacionPct / 100));
+  const canceladasPermitidas = Math.floor((polizasVigentes + cancelSemestre) * (metaPct / 100));
   const cancelRestantes = Math.max(0, canceladasPermitidas - cancelSemestre);
-  const superaMeta = cancelSemestre > canceladasPermitidas;
+  const superaMeta = _metaCfg ? cancelSemestre > canceladasPermitidas : false;
   const pctRealCancelacion = (polizasVigentes + cancelSemestre) > 0
     ? ((cancelSemestre / (polizasVigentes + cancelSemestre)) * 100).toFixed(2)
     : '0.00';
-  const colorKpi = superaMeta ? 'var(--red)' : cancelRestantes <= 1 ? 'var(--amber)' : 'var(--green)';
+  const colorKpi = !_metaCfg ? 'var(--text-muted)' : superaMeta ? 'var(--red)' : cancelRestantes <= 1 ? 'var(--amber)' : 'var(--green)';
 
   // Poblar filtro de meses
   const sel = document.getElementById('cancelImpactoMesFiltro');
   if (sel) {
     const mesesConCancelaciones = [...new Set(canceladas
-      .filter(v => v.fechaCancelacion)
+      .filter(v => v.fechaCancelacion && parseInt(String(v.fechaCancelacion).slice(0,4)) === _anioSel)
       .map(v => new Date(v.fechaCancelacion + 'T12:00:00').getMonth())
     )].sort((a,b)=>a-b);
     const valorActual = sel.value;
@@ -20931,8 +20972,9 @@ function renderImpactoCancelaciones() {
 
   const filtroMes = sel ? sel.value : 'todos';
   // Filtrar SOLO por mes de cancelación (no por mes siguiente del excedente)
-  const filtradas = filtroMes === 'todos' ? canceladas
-    : canceladas.filter(v => {
+  const canceladasAnio = canceladas.filter(v => v.fechaCancelacion && parseInt(String(v.fechaCancelacion).slice(0,4)) === _anioSel);
+  const filtradas = filtroMes === 'todos' ? canceladasAnio
+    : canceladasAnio.filter(v => {
         if (!v.fechaCancelacion) return false;
         const mc = v.cancelacionMes !== undefined ? v.cancelacionMes
           : new Date(v.fechaCancelacion + 'T12:00:00').getMonth();
@@ -20945,11 +20987,11 @@ function renderImpactoCancelaciones() {
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <div>
           <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.07em;">📊 Indicador SURA — % Cancelación ${semestral}</div>
-          <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px;">Meta: máx. ${metaCancelacionPct}% de cancelación · Fórmula: pólizas vigentes totales × ${metaCancelacionPct}%</div>
+          <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px;">Meta: máx. ${metaTxt} de cancelación · Fórmula: pólizas vigentes totales × ${metaTxt}</div>
         </div>
         <div style="text-align:right;">
           <div style="font-family:var(--mono);font-size:24px;font-weight:800;color:${colorKpi};">${pctRealCancelacion}%</div>
-          <div style="font-size:10px;color:var(--text-dim);">% real vs meta ${metaCancelacionPct}%</div>
+          <div style="font-size:10px;color:var(--text-dim);">% real vs meta ${metaTxt}</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
@@ -20966,7 +21008,7 @@ function renderImpactoCancelaciones() {
         <div style="background:var(--surface3);border-radius:8px;padding:10px;">
           <div style="font-size:10px;color:var(--text-dim);margin-bottom:3px;text-transform:uppercase;">Permitidas por meta</div>
           <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);">${canceladasPermitidas}</div>
-          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">${metaCancelacionPct}% del total</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">${metaTxt} del total</div>
         </div>
         <div style="background:${superaMeta ? 'rgba(220,38,38,0.1)' : 'rgba(52,211,153,0.08)'};border-radius:8px;padding:10px;border:1px solid ${superaMeta ? 'rgba(220,38,38,0.2)' : 'rgba(52,211,153,0.2)'};">
           <div style="font-size:10px;color:${colorKpi};margin-bottom:3px;text-transform:uppercase;">${superaMeta ? '⚠️ Exceso' : '✅ Margen'}</div>
@@ -20975,11 +21017,11 @@ function renderImpactoCancelaciones() {
         </div>
       </div>
       <div style="height:8px;background:var(--surface3);border-radius:4px;overflow:hidden;margin-bottom:6px;">
-        <div style="width:${Math.min(parseFloat(pctRealCancelacion) / metaCancelacionPct * 100, 100)}%;height:100%;background:${colorKpi};border-radius:4px;transition:width .5s;"></div>
+        <div style="width:${Math.min(parseFloat(pctRealCancelacion) / metaPct * 100, 100)}%;height:100%;background:${colorKpi};border-radius:4px;transition:width .5s;"></div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-dim);">
         <span>${superaMeta ? '⛔ Superaste la meta — revisa causas de cancelación' : cancelRestantes === 0 ? '⚠️ En el límite — sin margen adicional' : 'Dentro del rango aceptable'}</span>
-        <span style="color:${colorKpi};font-weight:600;">${pctRealCancelacion}% / ${metaCancelacionPct}% meta</span>
+        <span style="color:${colorKpi};font-weight:600;">${pctRealCancelacion}% / ${metaTxt} meta</span>
       </div>
     </div>`;
 
@@ -25178,6 +25220,14 @@ function renderConfigAnioTab(tab) {
     buildConfigAnioInputs('caConfigPBS', d.pbs, 'pbs');
     buildConfigAnioInputs('caConfigSPTI', d.spti, 'spti');
     buildConfigAnioInputs('caConfigSPD', d.spd, 'spd');
+    // OP Fase 2c — meta de cancelación por semestre (se guarda en configAnios del año)
+    if (!document.getElementById('caMetaCancelacion')) {
+      const _host = document.getElementById('caConfigProductosExtra');
+      if (_host) _host.insertAdjacentHTML('beforebegin', '<div id="caMetaCancelacion" class="card" style="margin-top:14px;"><div class="form-label" style="font-weight:700;">Meta de cancelación (KPI SURA)</div><div class="grid-4"><div class="form-group"><label class="form-label">S1 Ene–Jun (%)</label><input type="number" step="0.1" class="form-control" id="caMetaS1"></div><div class="form-group"><label class="form-label">S2 Jul–Dic (%)</label><input type="number" step="0.1" class="form-control" id="caMetaS2"></div></div><div style="font-size:11px;color:var(--text-muted);">Vacío = «Meta no configurada».</div></div>');
+    }
+    { const _mc = d.metaCancelacion || {};
+      const _a = document.getElementById('caMetaS1'), _b = document.getElementById('caMetaS2');
+      if (_a) _a.value = _mc.S1 ?? ''; if (_b) _b.value = _mc.S2 ?? ''; }
     // Extra products
     const extraEl = document.getElementById('caConfigProductosExtra');
     extraEl.innerHTML = productosExtraTemp.map((p,i) => `
@@ -25259,6 +25309,8 @@ function guardarConfigAnio(seccion) {
       d[key] = MESES.map((_,i) => parseInt(document.getElementById(`ca_${key}_${i}`)?.value)||0);
     });
     d.productosExtra = productosExtraTemp;
+    { const _s1 = parseFloat(document.getElementById('caMetaS1')?.value), _s2 = parseFloat(document.getElementById('caMetaS2')?.value);
+      d.metaCancelacion = (isNaN(_s1) || isNaN(_s2)) ? null : { S1: _s1, S2: _s2 }; }
   } else if (seccion === 'tarifas') {
     const planes = [
       { plan:'PREFERENCIAL', edad:'0-40' }, { plan:'PREFERENCIAL', edad:'41-50' }, { plan:'PREFERENCIAL', edad:'51-59' },
@@ -35672,11 +35724,12 @@ function eliminarAccesoPersonalizado(idx) {
 // Una cancelación es PREMATURA si ocurre dentro del primer año de vigencia
 // (fecha cancelación - fecha expedición < 365 días)
 
-function calcularIndicadorCancelaciones() {
+function calcularIndicadorCancelaciones(anio) {
   const s = getState();
   const canceladas = (s.ventas || []).filter(v =>
     ['SPTI','SPD','PSM','PAC60'].includes(v.producto) &&
     v.tipo === 'CANCELACION' && v.fechaCancelacion && v.fechaExp
+    && (!anio || parseInt(String(v.fechaCancelacion).slice(0,4)) === anio)
   );
 
   const hoy = new Date();
@@ -35715,7 +35768,7 @@ function renderDashboardCancelaciones() {
   const s = getState();
   const canceladas = s.ventas.filter(v =>
     ['SPTI','SPD','PSM','PAC60'].includes(v.producto) &&
-    v.tipo === 'CANCELACION' && v.motivoCancelacion
+    v.tipo === 'CANCELACION' && v.motivoCancelacion && _f2dAnioDashboard(v)
   );
   if (!canceladas.length) {
     cont.innerHTML = '<div style="color:var(--text-dim);font-size:12.5px;text-align:center;padding:16px;">Sin cancelaciones con razón registrada aún.</div>';
