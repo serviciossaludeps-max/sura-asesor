@@ -20731,6 +20731,36 @@ function _f2cMesesCubiertos(pagos, periodicidad) {
   });
   return Math.min(12, meses);
 }
+// OP Fase 2c-B2 — Base de proyección = precio que paga la póliza, sin IVA.
+// Base = monto del último pago ÷ meses que cubre ÷ IVA. Pagado = Σ (monto ÷ IVA).
+// Sin monto (datos antiguos): se usa la prima de respaldo × meses.
+function _f2cIva() { return (window.BusinessConfig && BusinessConfig.constants && BusinessConfig.constants.IVA_FACTOR) || 1.05; }
+function _f2cMesesDePago(p, periodicidad) {
+  const INTERV = { MENSUAL: 1, TRIMESTRAL: 3, SEMESTRAL: 6, ANUAL: 12 };
+  if (p && p.periodoDesde && p.periodoHasta) {
+    const a = new Date(p.periodoDesde + 'T12:00:00'), b = new Date(p.periodoHasta + 'T12:00:00');
+    return Math.max(1, Math.round((b - a) / (30.4375 * 86400000)));
+  }
+  return INTERV[periodicidad] || 1;
+}
+function _f2cBaseYPagado(pagos, periodicidad, primaFallback) {
+  const iva = _f2cIva();
+  let pagado = 0, meses = 0, base = null, ultimoDesde = '';
+  (pagos || []).forEach(p => {
+    const m = _f2cMesesDePago(p, periodicidad);
+    const monto = Number((p && (p.monto || p.prima)) || 0);
+    meses += m;
+    if (monto > 0) {
+      pagado += Math.round(monto / iva);
+      const desde = String((p && p.periodoDesde) || '');
+      if (base === null || desde >= ultimoDesde) { base = Math.round(monto / m / iva); ultimoDesde = desde; }
+    } else {
+      pagado += Math.round(primaFallback * m);
+    }
+  });
+  if (base === null) base = Math.round(primaFallback);
+  return { base, pagado, mesesCubiertos: Math.min(12, meses) };
+}
 function _f2cImpactoCancelacion({ primaMens, pagos, periodicidad, esNoPago, fechaEfectiva }) {
   const proyAnual = primaMens * 12;
   const fe = String(fechaEfectiva || '').slice(0, 10);
@@ -20743,11 +20773,10 @@ function _f2cImpactoCancelacion({ primaMens, pagos, periodicidad, esNoPago, fech
     return { regla: 'DIVIDIDA', pagado, mesesCubiertos: nPagos,
       impactoMesCancelacion: mes, impactoMesSiguiente: Math.max(0, proyAnual - pagado - mes) };
   }
-  // Regla SURA: pagado = prima × meses cubiertos; faltante completo en el mes de cancelación
-  const mesesCubiertos = _f2cMesesCubiertos(pagos, periodicidad);
-  const pagado = primaMens * mesesCubiertos;
-  return { regla: 'COMPLETA', pagado, mesesCubiertos,
-    impactoMesCancelacion: Math.max(0, proyAnual - pagado), impactoMesSiguiente: 0 };
+  // Regla SURA (B2): base = precio que paga la póliza sin IVA; faltante completo en el mes de cancelación
+  const bp = _f2cBaseYPagado(pagos, periodicidad, primaMens);
+  return { regla: 'COMPLETA', pagado: bp.pagado, mesesCubiertos: bp.mesesCubiertos, base: bp.base,
+    impactoMesCancelacion: Math.max(0, 12 * bp.base - bp.pagado), impactoMesSiguiente: 0 };
 }
 
 function calcImpactoCancelacion(v, pagosState) {
