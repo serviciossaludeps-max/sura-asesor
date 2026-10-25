@@ -24463,6 +24463,18 @@ async function importarBDEmpresas(event) {
 // =============================================
 // IMPORTAR CARTERA SURA
 // =============================================
+// OP Fase 2d — cruce de cartera SURA: solo documento + número de póliza (sin nombre), nunca PBS.
+function _f2dCanonPoliza(x) {
+  let d = String(x || '').replace(/\D/g, '');
+  if (d.length >= 10 && d.startsWith('09000')) d = d.slice(5);
+  return d.replace(/^0+/, '');
+}
+function _f2dEnlaceValido(item, v) {
+  if (!v || v.producto === 'PBS') return false;
+  const dig = z => String(z || '').replace(/\D/g, '');
+  const vDoc = dig(v.doc || v.cedula || v.documento || v.tomadorDoc);
+  return !!item && !!item.cedula && vDoc === dig(item.cedula);
+}
 let _carteraSuraData = [];
 let _carteraSuraFiltro = 'todos';
 
@@ -24544,12 +24556,13 @@ async function importarCarteraSura(event) {
 
         // Cross-reference with app ventas by cedula or name
         const matchVenta = todasVentas.find(v => {
-          const vCed = String(v.cedula || v.documento || '').replace(/\D/g,'');
-          const vNom = String(v.tomadorNombre || v.nombre || '').toLowerCase().trim();
-          if (cedula && vCed && vCed === cedula) return true;
-          if (nombre && vNom && vNom.includes(nombre.toLowerCase().split(' ')[0])) return true;
-          return false;
-        });
+        // OP Fase 2d: sin cruce por nombre; nunca PBS; documento + número de póliza
+        if (v.producto === 'PBS') return false;
+        const vDoc = String(v.doc || v.cedula || v.documento || v.tomadorDoc || '').replace(/\D/g, '');
+        if (!cedula || !vDoc || vDoc !== cedula) return false;
+        if (!v.poliza) return true;
+        return _f2dCanonPoliza(v.poliza) === _f2dCanonPoliza(poliza);
+      });
 
         // Get phone with priority: BD Contactos > App > Reporte SURA
         let telefono = resolverTelefonoContacto(cedula, nombre, matchVenta, telSura);
@@ -34530,6 +34543,7 @@ function sincronizarFechaExpDesdeCarteraSura() {
     if (!item.ventaId) return;
     const v = s.ventas.find(x => x.id === item.ventaId);
     if (!v) return;
+    if (!_f2dEnlaceValido(item, v)) return; // OP Fase 2d: no escribir en PBS ni en registros de otra persona
 
     // ── 1. Actualizar fechaExp desde pagoMax del reporte ─────────────────
     if (item.pagoMax) {
