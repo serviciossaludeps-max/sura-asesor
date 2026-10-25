@@ -13294,7 +13294,7 @@ async function guardarEdicionSura() {
     _importadoSura: true,
     mesComp: 'IMPORTADO_SURA',
     ...(_fnIn && _edadIn !== null && !isNaN(_edadIn) ? { fechaNac: _fnIn, edad: _edadIn } : {}),
-    ...(_foIn ? { fechaExpOriginal: _foIn } : {}),
+    ...(_foIn ? { fechaExpOriginal: _foIn, fechaExp: _foIn } : {}), // OP Fase 2f: expedición = afiliación
   };
 
   const _okE = await setState(s);
@@ -17687,7 +17687,7 @@ function renderPlantilla() {
     MESES.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; mesEl.appendChild(o); });
   }
 
-  let ventas = state.ventas.filter(v => v.producto === producto);
+  let ventas = state.ventas.filter(v => v.producto === producto && !v._importadoSura); // OP Fase 2f: importadas no van a la plantilla de ventas
   if (anioFilter) ventas = ventas.filter(v => parseFechaLocal(v.fecha).getFullYear() == anioFilter);
   if (mesFilter) ventas = ventas.filter(v => MESES[parseFechaLocal(v.fecha).getMonth()] === mesFilter);
 
@@ -34609,15 +34609,18 @@ function _f2dSeleccionarProducto(item) {
     const ov = document.createElement('div');
     ov.id = 'f2dProdOverlay';
     ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;display:flex;align-items:center;justify-content:center;';
-    ov.innerHTML = '<div style="background:#fff;color:#111;padding:22px;border-radius:12px;max-width:440px;width:92%;">' +
-      '<div style="font-weight:700;margin-bottom:6px;">Elige el producto de la póliza</div>' +
+    ov.innerHTML = '<div style="background:#fff;color:#111;padding:22px;border-radius:12px;max-width:460px;width:92%;">' +
+      '<div style="font-weight:700;margin-bottom:6px;">Datos de la póliza a importar</div>' +
       '<div style="font-size:12px;margin-bottom:10px;">' + esc(item.nombre) + ' · Póliza ' + esc(item.poliza) + '</div>' +
-      '<div style="font-size:11px;color:#b45309;margin-bottom:12px;">El reporte de SURA dice «' + esc(item.solucion) + '» para todos los planes de salud. Confirma el producto con el contrato.</div>' +
-      '<select id="f2dProdSel" style="width:100%;padding:8px;margin-bottom:14px;">' +
+      '<div style="font-size:11px;color:#b45309;margin-bottom:12px;">El reporte de SURA dice «' + esc(item.solucion) + '» para todos los planes de salud, y sus fechas son de cobro, no de afiliación. Captura lo que aparece en el sistema de SURA.</div>' +
+      '<label style="font-size:12px;">Producto</label>' +
+      '<select id="f2dProdSel" style="width:100%;padding:8px;margin:4px 0 12px;">' +
         '<option value="">— Selecciona —</option>' +
         '<option value="SPTI">SPTI</option><option value="SPD">SPD Plus</option>' +
         '<option value="PSM">Plan Modular (PSM)</option><option value="PAC60">PAC60 (60+)</option>' +
       '</select>' +
+      '<label style="font-size:12px;">Fecha original de afiliación</label>' +
+      '<input type="date" id="f2dAfiliacion" style="width:100%;padding:8px;margin:4px 0 14px;">' +
       '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
         '<button id="f2dProdCancel" type="button">Cancelar</button>' +
         '<button id="f2dProdOk" type="button">Continuar</button>' +
@@ -34626,15 +34629,19 @@ function _f2dSeleccionarProducto(item) {
     const fin = v => { ov.remove(); resolve(v); };
     ov.querySelector('#f2dProdCancel').onclick = () => fin(null);
     ov.querySelector('#f2dProdOk').onclick = () => {
-      const v = ov.querySelector('#f2dProdSel').value;
-      if (v) fin(v);
+      const prod = ov.querySelector('#f2dProdSel').value;
+      const af = ov.querySelector('#f2dAfiliacion').value;
+      const hoyISO = _cancelFechaLocalISO(new Date());
+      if (!prod || !/^\d{4}-\d{2}-\d{2}$/.test(af) || af > hoyISO) return;
+      fin({ producto: prod, afiliacion: af });
     };
   });
 }
 async function importarClienteDesdeCarteraSura(item) {
   // OP Fase 2d: el producto se elige aquí. No se asume SPTI.
-  const producto = await _f2dSeleccionarProducto(item);
-  if (!producto) return;
+  const _sel = await _f2dSeleccionarProducto(item);
+  if (!_sel) return;
+  const producto = _sel.producto;
 
   if (!confirm(
     `¿Importar a tu cartera?\n\n` +
@@ -34681,9 +34688,9 @@ async function importarClienteDesdeCarteraSura(item) {
   const nuevaVenta = {
     id,
     producto,
-    fecha: fechaIniVig || fechaVenta,   // inicio vigencia real del período actual
+    fecha: _cancelFechaLocalISO(new Date()), // OP Fase 2f: fecha de venta = día de importación   // inicio vigencia real del período actual
     mesComp: 'IMPORTADO_SURA',
-    fechaExp: fechaIniVig || fechaVenta, // ANCLA = Fecha Inicio Vig. (NO pagoMax)
+    fechaExp: _sel.afiliacion, // OP Fase 2f: expedición = afiliación capturada (no fecha de cobro)
     poliza: item.poliza || '',
     tipo: 'NUEVO',
     nombre: item.nombre || '',
@@ -34702,15 +34709,7 @@ async function importarClienteDesdeCarteraSura(item) {
     // Fecha de expedición ORIGINAL de la póliza (Col 12 del reporte Sura).
     // Usada en indicador de cancelaciones prematuras para medir antigüedad real,
     // no desde el inicio del período vigente importado.
-    fechaExpOriginal: (() => {
-      if (!item.fechaExpOrig) return '';
-      const p = item.fechaExpOrig.split('/');
-      if (p.length === 3) {
-        const [d, m, a] = p;
-        return `${a.length===2?'20'+a:a}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-      }
-      return item.fechaExpOrig.match(/^\d{4}-\d{2}-\d{2}$/) ? item.fechaExpOrig : '';
-    })(),
+    fechaExpOriginal: _sel.afiliacion, // OP Fase 2f
   };
 
   s.ventas.push(nuevaVenta);
