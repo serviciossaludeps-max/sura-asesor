@@ -34545,26 +34545,20 @@ function sincronizarFechaExpDesdeCarteraSura() {
     if (!v) return;
     if (!_f2dEnlaceValido(item, v)) return; // OP Fase 2d: no escribir en PBS ni en registros de otra persona
 
-    // ── 1. Actualizar fechaExp desde pagoMax del reporte ─────────────────
-    if (item.pagoMax) {
-      const raw    = item.pagoMax.trim();
-      let fechaReal = '';
-      const partes = raw.split('/');
-      if (partes.length === 3) {
-        const [d, m, a] = partes;
-        fechaReal = `${a.length===2?'20'+a:a}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-      } else if (raw.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        fechaReal = raw;
-      }
-      if (fechaReal && fechaReal !== v.fechaExp) {
-        v.fechaExp = fechaReal;
-        actuFechas++;
-      }
+    // ── 1. OP Fase 2d: fechaExp NUNCA se toma de pagoMax (es la fecha límite de pago).
+    //    Solo se completa si el registro no tiene fecha, con el inicio de vigencia del reporte.
+    if (!v.fechaExp && item.fIniVig) {
+      const raw = String(item.fIniVig).trim();
+      const pts = raw.split('/');
+      let fechaIni = '';
+      if (pts.length === 3) { const [d, mo, a] = pts; fechaIni = `${a.length===2?'20'+a:a}-${mo.padStart(2,'0')}-${d.padStart(2,'0')}`; }
+      else if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) fechaIni = raw;
+      if (fechaIni) { v.fechaExp = fechaIni; actuFechas++; }
     }
 
     // ── 2. Si SURA dice diasCart=0 (al día) pero app no tiene pagos → registrar pago sintético ──
     // Esto corrige el falso positivo de mora para clientes que pagaron fuera de la app
-    if (item.diasCart === 0 && item.saldo === 0) {
+    if (false) { // OP Fase 2d: desactivado. La sincronización no crea pagos.
       const pagosActuales = pagos[item.ventaId] || [];
       // Solo registrar si no hay ningún pago reciente (último mes)
       const hoy      = new Date();
@@ -34607,13 +34601,40 @@ function sincronizarFechaExpDesdeCarteraSura() {
 }
 
 // ── Importar cliente desde cartera SURA a BD de la app ───────────────────────
-function importarClienteDesdeCarteraSura(item) {
-  // Detectar producto desde solucion string
-  const sol = (item.solucion || '').toLowerCase();
-  let producto = 'SPTI';
-  if (sol.includes('spd') || sol.includes('salud para dos')) producto = 'SPD';
-  else if (sol.includes('modular') || sol.includes('psm'))   producto = 'PSM';
-  else if (sol.includes('60') || sol.includes('pac'))        producto = 'PAC60';
+// OP Fase 2d — Selector obligatorio de producto al importar desde cartera SURA.
+// El reporte usa «SALUD FAMILIAR» para todos los planes de salud: el producto no se asume.
+function _f2dSeleccionarProducto(item) {
+  const esc = z => String(z == null ? '' : z).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return new Promise(resolve => {
+    const ov = document.createElement('div');
+    ov.id = 'f2dProdOverlay';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;display:flex;align-items:center;justify-content:center;';
+    ov.innerHTML = '<div style="background:#fff;color:#111;padding:22px;border-radius:12px;max-width:440px;width:92%;">' +
+      '<div style="font-weight:700;margin-bottom:6px;">Elige el producto de la póliza</div>' +
+      '<div style="font-size:12px;margin-bottom:10px;">' + esc(item.nombre) + ' · Póliza ' + esc(item.poliza) + '</div>' +
+      '<div style="font-size:11px;color:#b45309;margin-bottom:12px;">El reporte de SURA dice «' + esc(item.solucion) + '» para todos los planes de salud. Confirma el producto con el contrato.</div>' +
+      '<select id="f2dProdSel" style="width:100%;padding:8px;margin-bottom:14px;">' +
+        '<option value="">— Selecciona —</option>' +
+        '<option value="SPTI">SPTI</option><option value="SPD">SPD Plus</option>' +
+        '<option value="PSM">Plan Modular (PSM)</option><option value="PAC60">PAC60 (60+)</option>' +
+      '</select>' +
+      '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+        '<button id="f2dProdCancel" type="button">Cancelar</button>' +
+        '<button id="f2dProdOk" type="button">Continuar</button>' +
+      '</div></div>';
+    document.body.appendChild(ov);
+    const fin = v => { ov.remove(); resolve(v); };
+    ov.querySelector('#f2dProdCancel').onclick = () => fin(null);
+    ov.querySelector('#f2dProdOk').onclick = () => {
+      const v = ov.querySelector('#f2dProdSel').value;
+      if (v) fin(v);
+    };
+  });
+}
+async function importarClienteDesdeCarteraSura(item) {
+  // OP Fase 2d: el producto se elige aquí. No se asume SPTI.
+  const producto = await _f2dSeleccionarProducto(item);
+  if (!producto) return;
 
   if (!confirm(
     `¿Importar a tu cartera?\n\n` +
