@@ -10401,6 +10401,8 @@ function getState() {
   return {};
 }
 async function setState(s) {
+  // OP Fase 2e: guardar la referencia previa de la caché para revertirla si el guardado falla
+  const _prevEstado = window.__FB_CACHE__ ? window.__FB_CACHE__.estado : null;
   // GUARD: nunca sobrescribir Firestore con menos ventas de las que hay en caché
   const ventasNuevas   = (s?.ventas || []).length;
   const ventasActuales = (window.__FB_CACHE__?.estado?.ventas || []).length;
@@ -10413,8 +10415,7 @@ async function setState(s) {
     // avisa explícitamente para que el asesor sepa que debe recargar y
     // reintentar, en vez de perder el cambio sin darse cuenta.
     alert('⚠️ No se pudo guardar: se detectaron cambios más recientes en el sistema (por ejemplo, otra venta registrada mientras editabas). Por seguridad, tu edición NO se guardó para evitar perder información. Por favor recarga la página e inténtalo de nuevo.');
-    if (window.__FB_CACHE__) window.__FB_CACHE__.estado = s;
-    if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
+    if (window.__FB_CACHE__) window.__FB_CACHE__.estado = _prevEstado;
     return false;
   }
   if (window.__FB_CACHE__) window.__FB_CACHE__.estado = s;
@@ -10434,13 +10435,13 @@ async function setState(s) {
         // la causa (permisos, cuota, tamaño de documento, red, etc.)
         const detalle = (typeof ok === 'string' && ok) ? ok : 'sin detalle disponible';
         alert('⚠️ El guardado no se completó en el servidor.\n\nDetalle técnico: ' + detalle + '\n\nTu cambio quedó solo en esta pestaña — si recargas la página ahora, se puede perder. Revisa tu conexión e inténtalo de nuevo. Si el problema persiste, comparte este detalle técnico con soporte.');
-        if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
+        if (window.__FB_CACHE__) window.__FB_CACHE__.estado = _prevEstado;
         return false;
       }
     } catch (e) {
       console.error('[setState] Error al escribir en Firestore:', e.message);
       alert('⚠️ El guardado no se completó en el servidor.\n\nDetalle técnico: ' + (e.code || '') + ' ' + e.message + '\n\nTu cambio quedó solo en esta pestaña — si recargas la página ahora, se puede perder. Revisa tu conexión e inténtalo de nuevo. Si el problema persiste, comparte este detalle técnico con soporte.');
-      if (s && s.ventas) syncContactosDesdeVentas(s.ventas);
+      if (window.__FB_CACHE__) window.__FB_CACHE__.estado = _prevEstado;
       return false;
     }
   }
@@ -13252,10 +13253,10 @@ function abrirEditarSura(id) {
   openModal('modalEditarSura');
 }
 
-function guardarEdicionSura() {
+async function guardarEdicionSura() {
   const id = document.getElementById('eSuraId').value;
   if (!id) return;
-  const s = getState();
+  const s = structuredClone(getState());
   const idx = s.ventas.findIndex(x => x.id === id);
   if (idx < 0) { showToast('Registro no encontrado'); return; }
 
@@ -13296,13 +13297,23 @@ function guardarEdicionSura() {
     ...(_foIn ? { fechaExpOriginal: _foIn } : {}),
   };
 
-  setState(s);
+  const _okE = await setState(s);
+  if (_okE === false) return; // OP Fase 2e: no cerrar si no se guardó
   _editId = null;
   closeModal('modalEditarSura');
   showToast('Póliza actualizada correctamente');
   navigate('cartera');
 }
 
+// OP Fase 2e: vaciar el formulario antes de cargar un registro en edición (evita datos de otra venta)
+function _f2eLimpiarFormulario(modalId) {
+  const m = document.getElementById(modalId);
+  if (!m) return;
+  m.querySelectorAll('input, textarea').forEach(el => {
+    if (el.type === 'checkbox' || el.type === 'radio') el.checked = false; else el.value = '';
+  });
+  m.querySelectorAll('select').forEach(sel => { sel.selectedIndex = 0; });
+}
 function editarVenta(id) {
   state = getState();
   const v = state.ventas.find(x => x.id === id);
@@ -13325,6 +13336,7 @@ function editarVenta(id) {
   if (tabProd) {
     // Primero resetear modalTab a pbs para limpiar estado anterior
     modalTab = 'pbs';
+    _f2eLimpiarFormulario('modalVenta'); // OP Fase 2e
     openModal('modalVenta');
     const tab = PROD_TAB[tabProd];
 
@@ -13507,6 +13519,7 @@ function editarVenta(id) {
   }
 
   // ── PBS: usar modalEditar (formulario genérico) ───────────────────
+  _editId = null; // OP Fase 2e: PBS usa su propio id (eId); no dejar _editId activo para la siguiente venta nueva
   document.getElementById('eId').value = id;
   document.getElementById('eFecha').value = v.fecha || '';
   document.getElementById('eMesComp').value = v.mesComp || '';
@@ -14014,7 +14027,7 @@ function openModal(id) {
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
   // Limpiar _editId si se cierra el modal de venta sin guardar
-  if (id === 'modalVenta') _editId = null;
+  if (id === 'modalVenta' || id === 'modalEditar') _editId = null;
 }
 
 function setModalTab(tab, btn) {
@@ -15879,15 +15892,34 @@ function _ventaComisionEnFecha(venta, fechaPago) {
   return Object.assign({}, venta, { edad: e });
 }
 
-function guardarVenta() {
+async function guardarVenta() {
   // HALLAZGO-OP-007 (fix): refrescar 'state' aquí, al inicio, en vez de
   // confiar en la variable global (que puede llevar rato sin actualizarse
   // si el formulario estuvo abierto mientras llegaban cambios de otra
   // fuente). Cierra la ventana de datos obsoletos que hacía que setState()
   // bloqueara guardados legítimos (ver HALLAZGO-OP-006) al construir el
   // nuevo registro sobre una base más vieja que el caché real.
-  state = getState();
+  // OP Fase 2e: protección — una edición activa de otro producto no se puede guardar desde este formulario
+  if (_editId) {
+    const _vE = getState().ventas.find(x => x.id === _editId);
+    const _PT = { spti: 'SPTI', spd: 'SPD', psm: 'PSM', pac60: 'PAC60' };
+    if (_vE && _PT[modalTab] && _vE.producto !== _PT[modalTab]) {
+      showToast('⚠️ Hay una edición activa de otro producto (' + _vE.producto + '). Cierra y vuelve a abrir el registro.');
+      _editId = null;
+      return;
+    }
+  }
+  state = structuredClone(getState()); // OP Fase 2e: trabajar sobre copia
 
+  // OP Fase 2e: la expedición no puede ser anterior a hoy menos un día
+  if (!_editId && _F2B_FORM[modalTab]) {
+    const _e = ((document.getElementById(_F2B_FORM[modalTab].exp) || {}).value || '');
+    const _dm = new Date(_cancelFechaLocalISO(new Date()) + 'T12:00:00'); _dm.setDate(_dm.getDate() - 1);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(_e) && _e < _cancelFechaLocalISO(_dm)) {
+      showToast('⚠️ La fecha de expedición no puede ser anterior a un día antes de hoy');
+      return;
+    }
+  }
   // OP F2b: clasificación de altas voluntarias (solo ventas nuevas, no edición)
   const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : null;
   const _f2bIdsAntes = new Set((state.ventas || []).map(v => v.id));
@@ -16814,7 +16846,8 @@ function guardarVenta() {
       }
     });
   }
-  setState(state); // ← persiste a Firestore (fix: antes era state=getState() que no guardaba)
+  const _okV = await setState(state); // ← persiste a Firestore antes de mostrar el cambio
+  if (_okV === false) return; // OP Fase 2e: no cerrar si no se guardó
   closeModal('modalVenta');
 
   // Contar beneficiarios guardados para el toast
@@ -18255,6 +18288,9 @@ function _baseComVol(venta) {
 }
 
 function registrarPago(ventaId, fechaPago) {
+  // OP Fase 2e: no se registran pagos antes de la fecha de expedición
+  { const _vP = getState().ventas.find(x => x.id === ventaId);
+    if (_f2eEsProyectada(_vP)) { showToast('⏳ Póliza proyectada: no se registran pagos antes de la expedición (' + _vP.fechaExp + ')'); return; } }
   const state = getState();
   const venta = state.ventas.find(v => v.id === ventaId);
   if (!venta) return;
@@ -18391,6 +18427,11 @@ function calcPrimaAnual(v) {
   return Math.round((v.prima || 0) * 12 * factor);
 }
 
+// OP Fase 2e — Póliza proyectada: fecha de expedición posterior a hoy. Calculada, no se guarda.
+function _f2eEsProyectada(v) {
+  if (!v || !v.fechaExp) return false;
+  return String(v.fechaExp).slice(0, 10) > _cancelFechaLocalISO(new Date());
+}
 function renderCartera() {
   ptLimpiarBuscadorCartera();
   ptRefreshScrollBars();
@@ -18403,7 +18444,7 @@ function renderCartera() {
   const refMensual = carteraConIVA ? REF_PREF_040_CON_IVA : REF_PREF_040_SIN_IVA;
 
   // Get all voluntarios with fechaExp — excluir cancelados (van a su propia pestaña)
-  let ventas = state.ventas.filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION');
+  let ventas = state.ventas.filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION' && !_f2eEsProyectada(v));
   if (filtroProducto) ventas = ventas.filter(v => v.producto === filtroProducto);
   if (filtroPeriodo)  ventas = ventas.filter(v => v.periodicidad === filtroPeriodo);
 
@@ -19374,7 +19415,7 @@ function _lanzarNotifRenovaciones() {
   const hoy = new Date(); hoy.setHours(0,0,0,0);
   const PRODS = ['SPTI','SPD','PSM','PAC60'];
   const conVenc = s.ventas
-    .filter(v => PRODS.includes(v.producto) && v.tipo !== 'CANCELACION' && !v._importadoSura && v.fechaExp)
+    .filter(v => PRODS.includes(v.producto) && v.tipo !== 'CANCELACION' && !v._importadoSura && v.fechaExp && !_f2eEsProyectada(v))
     .map(v => {
       const pv = calcProxVencimiento(v.fechaExp, v.periodicidad, v.id);
       if (!pv) return null;
@@ -19925,7 +19966,7 @@ async function renovGenerarBandeja() {
   const nuevos = [];
 
   state.ventas
-    .filter(v => PRODS.includes(v.producto) && v.tipo !== 'CANCELACION' && !v._importadoSura && v.fechaExp)
+    .filter(v => PRODS.includes(v.producto) && v.tipo !== 'CANCELACION' && !v._importadoSura && v.fechaExp && !_f2eEsProyectada(v))
     .forEach(v => {
       const proxVenc = calcProxVencimiento(v.fechaExp, v.periodicidad, v.id);
       if (!proxVenc) return;
@@ -21350,7 +21391,7 @@ function renderAlertasSuspensionInminente() {
   if (!el) return;
   const s = getState();
   const pagos = getPagos ? getPagos() : {};
-  const ventas = s.ventas.filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION');
+  const ventas = s.ventas.filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION' && !_f2eEsProyectada(v));
   const conEst = ventas.map(v => ({ ...v, _est: getCarteraEstado(v, pagos) })).filter(v => v._est);
 
   // Vencidos proximos a mora (dia 25-30) — alertas tempranas
@@ -21395,7 +21436,7 @@ function renderCarteraAlertas(conEstado) {
 function checkCarteraEnDashboard() {
   state = getState();
   const pagos = getPagos();
-  const ventas = state.ventas.filter(v => ['SPTI','SPD'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION');
+  const ventas = state.ventas.filter(v => ['SPTI','SPD'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION' && !_f2eEsProyectada(v));
   const criticos = ventas.map(v => ({ ...v, _est: getCarteraEstado(v, pagos) }))
     .filter(v => v._est && ['MORA','SUSPENDIDO','VENCIDO'].includes(v._est.estado));
   const bannerEl = document.getElementById('dashboardCarteraBanner');
@@ -23351,7 +23392,7 @@ function renderResumenDia() {
   const rSPTI = ritmo(vSPTI, pSPTI);
   const rSPD  = ritmo(vSPD,  pSPD);
 
-  const cartCritica = state.ventas.filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION')
+  const cartCritica = state.ventas.filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION' && !_f2eEsProyectada(v))
     .map(v => ({...v, _est: getCarteraEstado(v, pagos)}))
     .filter(v => v._est && ['MORA','SUSPENDIDO','VENCIDO','PROXIMO'].includes(v._est.estado));
   const coberturasHoy = state.ventas.filter(v => v.producto === 'PBS' && v.inicioCobertura === hoyStr);
@@ -24749,7 +24790,7 @@ function detectarPagosDesdeReporte() {
   const ventasConPosiblePago = [];
 
   s.ventas
-    .filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION')
+    .filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.fechaExp && v.tipo !== 'CANCELACION' && !_f2eEsProyectada(v))
     .forEach(v => {
       const est = getCarteraEstado(v, pagos);
       if (!est || ['AL_DIA'].includes(est.estado)) return; // ya al día → ignorar
