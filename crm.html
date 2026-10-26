@@ -18249,6 +18249,24 @@ function _f2gContarPagos(v, pagosVenta) {
   const corte = v.corteSura || '2026-10-25';
   return lista.filter(p => String(p.fecha || p.fechaPago || '').slice(0, 10) >= corte).length; // igual o posterior al corte
 }
+// OP Fase 2h — Periodos de importadas según SURA. Mismo criterio que la cartera:
+// desde/hasta = pagada hasta + n*intervalo; prox = pago máximo + n*intervalo; ultimo = último recibo legalizado.
+// n = pagos con fecha igual o posterior al corte (los anteriores ya están en el reporte).
+function _f2gPeriodoImportada(v, pagosLista) {
+  const meses = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
+  const intv = meses[v.periodicidad] || 1;
+  const n = _f2gContarPagos(v, pagosLista || []);
+  const sumar = (iso, k) => { const d = new Date(iso + 'T12:00:00'); d.setMonth(d.getMonth() + k * intv); return d.toISOString().slice(0, 10); };
+  return {
+    desde: sumar(v.pagadaHasta, n),
+    hasta: sumar(v.pagadaHasta, n + 1),
+    prox: sumar(v.pagoMaxPendiente, n),
+    ultimo: sumar(v.pagadaHasta, -1)
+  };
+}
+function _f2gEsImportadaSura(v) {
+  return !!(v && v._importadoSura && v.pagadaHasta && v.pagoMaxPendiente);
+}
 function _f2gBaseVenc(v, fallbackExp) {
   if (v && v._importadoSura && v.pagoMaxPendiente) return { base: v.pagoMaxPendiente, shift: 0 };
   return { base: (v && v.fechaExp) || fallbackExp, shift: 1 };
@@ -18339,8 +18357,10 @@ function registrarPago(ventaId, fechaPago) {
   const diaExp = new Date(venta.fechaExp + 'T12:00:00');
   const desde = new Date(diaExp); desde.setMonth(desde.getMonth() + nAntes * intervalo);
   const hasta = new Date(diaExp); hasta.setMonth(hasta.getMonth() + (nAntes + 1) * intervalo);
-  let periodoDesde = desde.toISOString().slice(0,10);
-  let periodoHasta = hasta.toISOString().slice(0,10);
+  const _impR = _f2gEsImportadaSura(venta);
+  const _piR = _impR ? _f2gPeriodoImportada(venta, pagosExistentes) : null; // OP Fase 2h
+  let periodoDesde = _impR ? _piR.desde : desde.toISOString().slice(0,10);
+  let periodoHasta = _impR ? _piR.hasta : hasta.toISOString().slice(0,10);
 
   const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
   // Para modo sumado usar primaTotal (suma de todos los planes)
@@ -19096,13 +19116,16 @@ function actualizarPreviewPago() {
   const intervaloP = mesesP[venta.periodicidad] || 1;
   const pagosActuales = getPagosVenta(_pagoVentaId);
   const nP = pagosActuales.length;
+  const _impP = _f2gEsImportadaSura(venta); // OP Fase 2h: importadas usan recibos de SURA
+  const _piP = _impP ? _f2gPeriodoImportada(venta, pagosActuales) : null;
   const diaExpP = new Date(venta.fechaExp + 'T12:00:00');
-  const desdeP = new Date(diaExpP); desdeP.setMonth(desdeP.getMonth() + nP * intervaloP);
-  const hastaP = new Date(diaExpP); hastaP.setMonth(hastaP.getMonth() + (nP + 1) * intervaloP);
+  const desdeP = _impP ? new Date(_piP.desde + 'T12:00:00') : (() => { const d = new Date(diaExpP); d.setMonth(d.getMonth() + nP * intervaloP); return d; })();
+  const hastaP = _impP ? new Date(_piP.hasta + 'T12:00:00') : (() => { const d = new Date(diaExpP); d.setMonth(d.getMonth() + (nP + 1) * intervaloP); return d; })();
+  const proxP  = _impP ? new Date(_piP.prox + 'T12:00:00') : hastaP;
   const fmtD = d => d.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});
   const preview = document.getElementById('pagoPreviewPeriodo');
   if (preview) {
-    preview.textContent = `Pago: ${fmtD(new Date(fechaPago+'T12:00:00'))} · Cubre: ${fmtD(desdeP)} → ${fmtD(hastaP)} · Próx. venc (SURA): ${fmtD(hastaP)}`;
+    preview.textContent = `Pago: ${fmtD(new Date(fechaPago+'T12:00:00'))} · Cubre: ${fmtD(desdeP)} → ${fmtD(hastaP)} · Próx. venc: ${fmtD(proxP)}`;
   }
 }
 
@@ -20711,9 +20734,10 @@ function renderHistorialPagos() {
       const fStr   = fechaPago.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});
       const desde  = p.periodoDesde ? new Date(p.periodoDesde+'T12:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short'}) : '—';
       const hasta  = p.periodoHasta ? new Date(p.periodoHasta+'T12:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+      const _antesCorte = _f2gEsImportadaSura(v) && fechaPago < new Date((v.corteSura || '2026-10-25') + 'T00:00:00'); // OP Fase 2h
       return `<tr style="background:rgba(26,76,232,0.04);border-top:1px solid var(--border);">
         <td style="padding:6px 12px 6px 36px;font-family:var(--mono);font-size:11px;color:var(--text-muted);" colspan="2">📅 ${fStr}</td>
-        <td style="padding:6px 12px;font-family:var(--mono);font-size:11px;color:var(--text-muted);">Período: ${desde} → ${hasta}</td>
+        <td style="padding:6px 12px;font-family:var(--mono);font-size:11px;color:var(--text-muted);">${_antesCorte ? 'Reflejado en reporte SURA (anterior al corte)' : 'Período: ' + desde + ' → ' + hasta}</td>
         <td style="padding:6px 12px;text-align:center;"></td>
         <td style="padding:6px 12px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--sura-lime);">${fmt(p.prima||0)}</td>
         <td style="padding:6px 12px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--green);">
@@ -41194,12 +41218,14 @@ function _agenteEjecutarHerramienta(nombre, input) {
           const nombre     = v.cliente || v.nombre || 'Sin nombre';
           const intervalo  = mesesMap[v.periodicidad] || 1;
           const pagosVenta = (pagos[v.id] || []).slice().sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-          const nPagos     = pagosVenta.length;
+          const _impA   = _f2gEsImportadaSura(v); // OP Fase 2h
+          const _pA     = _impA ? _f2gPeriodoImportada(v, pagosVenta) : null;
+          const nPagos     = _impA ? _f2gContarPagos(v, pagosVenta) : pagosVenta.length;
           const diaExp     = new Date(v.fechaExp + 'T12:00:00');
 
           // Próximo vencimiento: misma lógica que getCarteraEstado
-          const proxVenc = new Date(diaExp);
-          proxVenc.setMonth(proxVenc.getMonth() + (nPagos + 1) * intervalo);
+          const proxVenc = _impA ? new Date(_pA.prox + 'T12:00:00') : new Date(diaExp);
+          if (!_impA) proxVenc.setMonth(proxVenc.getMonth() + (nPagos + 1) * intervalo);
           const diasParaVencer = Math.floor((proxVenc - hoy) / 86400000);
 
           // Estado en la app
@@ -41248,7 +41274,7 @@ function _agenteEjecutarHerramienta(nombre, input) {
 
           resultados.push({
             ventaId:v.id, nombre, cedula:cedula||'?', producto:v.producto,
-            prima:v.prima||0, periodicidad:v.periodicidad, fechaExp:v.fechaExp,
+            prima:v.prima||0, periodicidad:v.periodicidad, fechaExp: _impA ? _pA.ultimo : v.fechaExp,
             nPagos, proxVencimiento:proxVenc.toISOString().split('T')[0],
             diasParaVencer, estadoApp,
             estadoSura: estadoSura || (hayDatos ? 'No encontrado en informe' : 'Informe no cargado'),
@@ -41396,9 +41422,11 @@ function _agenteEjecutarHerramienta(nombre, input) {
           const mesesM    = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
           const pagosEx   = getPagosVenta ? getPagosVenta(ventaId) : [];
           const intervalo = mesesM[venta.periodicidad] || 1;
+          const _impG     = _f2gEsImportadaSura(venta); // OP Fase 2h: importadas usan recibos de SURA
+          const _piG      = _impG ? _f2gPeriodoImportada(venta, pagosEx) : null;
           const diaExp    = new Date(venta.fechaExp + 'T12:00:00');
-          const desde     = new Date(diaExp); desde.setMonth(desde.getMonth() + pagosEx.length * intervalo);
-          const hasta     = new Date(diaExp); hasta.setMonth(hasta.getMonth() + (pagosEx.length+1) * intervalo);
+          const desde     = _impG ? new Date(_piG.desde + 'T12:00:00') : (() => { const d = new Date(diaExp); d.setMonth(d.getMonth() + pagosEx.length * intervalo); return d; })();
+          const hasta     = _impG ? new Date(_piG.hasta + 'T12:00:00') : (() => { const d = new Date(diaExp); d.setMonth(d.getMonth() + (pagosEx.length+1) * intervalo); return d; })();
           const comision  = (window.MotorPago ? window.MotorPago.calcularComision(venta) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto]||0.07));
           return {
             requiereConfirmacion: true,
