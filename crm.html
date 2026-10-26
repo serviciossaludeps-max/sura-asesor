@@ -18241,6 +18241,14 @@ function getUltimoPago(ventaId) {
 // OP Fase 2g — Base de vencimiento.
 // Importadas con recibo pendiente: el vencimiento es la Fe. Pago Max del recibo pendiente MÁS ANTIGUO.
 // Cada pago registrado avanza un periodo (mensual, trimestral, semestral o anual). Resto: regla anterior.
+// OP Fase 2h — Corte del reporte. Los pagos anteriores al corte ya están reflejados en el reporte de SURA
+// (pagada hasta / próximo recibo). Cuentan los pagos con fecha igual o posterior al corte.
+function _f2gContarPagos(v, pagosVenta) {
+  const lista = pagosVenta || [];
+  if (!(v && v._importadoSura && v.pagoMaxPendiente)) return lista.length;
+  const corte = v.corteSura || '2026-10-25';
+  return lista.filter(p => String(p.fecha || p.fechaPago || '').slice(0, 10) >= corte).length; // igual o posterior al corte
+}
 function _f2gBaseVenc(v, fallbackExp) {
   if (v && v._importadoSura && v.pagoMaxPendiente) return { base: v.pagoMaxPendiente, shift: 0 };
   return { base: (v && v.fechaExp) || fallbackExp, shift: 1 };
@@ -18278,7 +18286,7 @@ function calcProxVencimiento(fechaExp, periodicidad, ventaId) {
   let nPagos = 0;
   if (ventaId) {
     const pagosVenta = getPagosVenta ? getPagosVenta(ventaId) : [];
-    nPagos = pagosVenta.length;
+    nPagos = _f2gContarPagos(_vAnc, pagosVenta); // OP Fase 2h: corte
   }
 
   // MISMA fórmula que getCarteraEstado:
@@ -18392,7 +18400,7 @@ function getCarteraEstado(v, pagos) {
   // El proximo vencimiento a pagar es: fechaExp + (N+1)*intervalo
   // Si hoy < proxVenc → al dia. Si hoy >= proxVenc → mora contada desde proxVenc.
   const pagosVenta = getPagosVenta ? getPagosVenta(v.id) : [];
-  const nPagos = pagosVenta.length;
+  const nPagos = _f2gContarPagos(v, pagosVenta); // OP Fase 2h: corte
 
   const _f2 = _f2gBaseVenc(v); // OP Fase 2g
   const diaExp = new Date(_f2.base + 'T12:00:00');
@@ -18406,6 +18414,12 @@ function getCarteraEstado(v, pagos) {
   prevVenc.setMonth(prevVenc.getMonth() + (nPagos + _f2.shift - 1) * intervalo);
 
   const diasParaVencer = Math.floor((proxVenc - hoy) / 86400000);
+
+  // OP Fase 2h — Importada sin dato de SURA (no aparece con recibos pendientes en el reporte).
+  // Sin vencimiento real no se calcula mora ni se permite cancelación. Ante incertidumbre, no cancelar.
+  if (v && v._importadoSura && !v.pagoMaxPendiente) {
+    return { estado:'SIN_DATO_SURA', dias:0, color:'var(--amber)', label:'⚠️ Sin datos en SURA', pendienteCancelacion:false, proxVenc, prevVenc };
+  }
 
   // Al dia o proximo vencimiento
   if (hoy < proxVenc) {
@@ -34735,6 +34749,7 @@ async function importarClienteDesdeCarteraSura(item) {
     // no desde el inicio del período vigente importado.
     fechaExpOriginal: _sel.afiliacion, // OP Fase 2f
     ...(_f2gReciboAntiguo(item) || { pagadaHasta: '', pagoMaxPendiente: '' }), // OP Fase 2g: recibo pendiente más antiguo
+    corteSura: _cancelFechaLocalISO(new Date()), // OP Fase 2h: corte del reporte
   };
 
   s.ventas.push(nuevaVenta);
