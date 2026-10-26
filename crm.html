@@ -18238,16 +18238,26 @@ function getUltimoPago(ventaId) {
 }
 
 // Calcula el próximo vencimiento basado en fechaExp o en el último pago
-// OP Fase 2g — Periodos pagados antes de importar. «pagadaHasta» = inicio del recibo pendiente del reporte de SURA.
-// Esos periodos NO generan pagos ni comisiones en el CRM; solo cuentan para el próximo vencimiento y la mora.
-function _f2gPagosPrevios(v) {
-  if (!v || !v._importadoSura || !v.pagadaHasta || !v.fechaExp) return 0;
-  const meses = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
-  const intervalo = meses[v.periodicidad] || 1;
-  const a = new Date(v.fechaExp + 'T12:00:00');
-  const b = new Date(v.pagadaHasta + 'T12:00:00');
-  const entre = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
-  return entre > 0 ? Math.floor(entre / intervalo) : 0;
+// OP Fase 2g — Base de vencimiento.
+// Importadas con recibo pendiente: el vencimiento es la Fe. Pago Max del recibo pendiente MÁS ANTIGUO.
+// Cada pago registrado avanza un periodo (mensual, trimestral, semestral o anual). Resto: regla anterior.
+function _f2gBaseVenc(v, fallbackExp) {
+  if (v && v._importadoSura && v.pagoMaxPendiente) return { base: v.pagoMaxPendiente, shift: 0 };
+  return { base: (v && v.fechaExp) || fallbackExp, shift: 1 };
+}
+// OP Fase 2g — Recibo pendiente más antiguo de una póliza agrupada (saldo > 0). Ignora devoluciones.
+function _f2gReciboAntiguo(item) {
+  const iso = x => {
+    const t = String(x || '').trim();
+    if (typeof parseFechaSura === 'function') { const r = parseFechaSura(t); if (r) return r; }
+    const q = t.split('/');
+    return q.length === 3 ? `${q[2].length === 2 ? '20' + q[2] : q[2]}-${q[1].padStart(2,'0')}-${q[0].padStart(2,'0')}` : '';
+  };
+  const rec = (item && item.recibos || []).filter(r => r.saldo > 0 && r.fIniVig);
+  if (!rec.length) return null;
+  rec.sort((a, b) => iso(a.fIniVig).localeCompare(iso(b.fIniVig)));
+  const r = rec[0];
+  return { pagadaHasta: iso(r.fIniVig), pagoMaxPendiente: iso(r.pagoMax) };
 }
 function calcProxVencimiento(fechaExp, periodicidad, ventaId) {
   if (!fechaExp) return null;
@@ -18260,23 +18270,23 @@ function calcProxVencimiento(fechaExp, periodicidad, ventaId) {
   // y se avanza ese numero de intervalos desde fechaExp para obtener
   // el proximo vencimiento real. Esto es independiente de la fecha en que
   // pago el cliente — el periodoHasta guardado no se usa como ancla.
-  const diaExp = new Date(fechaExp + 'T12:00:00');
+  const _vAnc = ventaId ? getState().ventas.find(x => x.id === ventaId) : null;
+  const _f2 = _f2gBaseVenc(_vAnc, fechaExp);
+  const diaExp = new Date(_f2.base + 'T12:00:00');
 
   // Contar pagos registrados (para saber cuantos periodos ya cubrió)
   let nPagos = 0;
   if (ventaId) {
     const pagosVenta = getPagosVenta ? getPagosVenta(ventaId) : [];
     nPagos = pagosVenta.length;
-    const _vv = getState().ventas.find(x => x.id === ventaId);
-    nPagos += _f2gPagosPrevios(_vv); // OP Fase 2g
   }
 
   // MISMA fórmula que getCarteraEstado:
-  // proxVenc = fechaExp + (nPagos + 1) * intervalo
+  // proxVenc = base + (nPagos + shift) * intervalo (base = fechaExp, o Fe. Pago Max en importadas)
   // Con 0 pagos → fechaExp + 1*intervalo (primer vencimiento)
   // Con 3 pagos → fechaExp + 4*intervalo (cuarto vencimiento, el que aún no se ha pagado)
   let venc = new Date(diaExp);
-  venc.setMonth(venc.getMonth() + (nPagos + 1) * intervalo);
+  venc.setMonth(venc.getMonth() + (nPagos + _f2.shift) * intervalo); // OP Fase 2g
   return venc;
 }
 
@@ -18382,17 +18392,18 @@ function getCarteraEstado(v, pagos) {
   // El proximo vencimiento a pagar es: fechaExp + (N+1)*intervalo
   // Si hoy < proxVenc → al dia. Si hoy >= proxVenc → mora contada desde proxVenc.
   const pagosVenta = getPagosVenta ? getPagosVenta(v.id) : [];
-  const nPagos = pagosVenta.length + _f2gPagosPrevios(v); // OP Fase 2g
+  const nPagos = pagosVenta.length;
 
-  const diaExp = new Date(v.fechaExp + 'T12:00:00');
+  const _f2 = _f2gBaseVenc(v); // OP Fase 2g
+  const diaExp = new Date(_f2.base + 'T12:00:00');
 
   // proxVenc = vencimiento que el cliente debe pagar AHORA (el siguiente sin cubrir)
   const proxVenc = new Date(diaExp);
-  proxVenc.setMonth(proxVenc.getMonth() + (nPagos + 1) * intervalo);
+  proxVenc.setMonth(proxVenc.getMonth() + (nPagos + _f2.shift) * intervalo);
 
   // prevVenc = el vencimiento anterior (inicio del periodo actual)
   const prevVenc = new Date(diaExp);
-  prevVenc.setMonth(prevVenc.getMonth() + nPagos * intervalo);
+  prevVenc.setMonth(prevVenc.getMonth() + (nPagos + _f2.shift - 1) * intervalo);
 
   const diasParaVencer = Math.floor((proxVenc - hoy) / 86400000);
 
@@ -24599,11 +24610,11 @@ async function importarCarteraSura(event) {
         const existing = dedupMap.get(key);
         if (!existing) {
           // Primer recibo: guardar con lista de recibos y saldoTotal
-          dedupMap.set(key, { ...r, saldoTotal: r.saldo, recibos: [{ diasCart: r.diasCart, saldo: r.saldo, pagoMax: r.pagoMax }] });
+          dedupMap.set(key, { ...r, saldoTotal: r.saldo, recibos: [{ diasCart: r.diasCart, saldo: r.saldo, pagoMax: r.pagoMax, fIniVig: r.fIniVig }] }); // OP Fase 2g: + fIniVig por recibo
         } else {
           // Recibos adicionales: acumular saldo y lista
           existing.saldoTotal += r.saldo;
-          existing.recibos.push({ diasCart: r.diasCart, saldo: r.saldo, pagoMax: r.pagoMax });
+          existing.recibos.push({ diasCart: r.diasCart, saldo: r.saldo, pagoMax: r.pagoMax, fIniVig: r.fIniVig }); // OP Fase 2g
           // Conservar el diasCart mayor (más urgente) para urgencia y ordenamiento
           if (r.diasCart > existing.diasCart) {
             existing.diasCart = r.diasCart;
@@ -34723,7 +34734,7 @@ async function importarClienteDesdeCarteraSura(item) {
     // Usada en indicador de cancelaciones prematuras para medir antigüedad real,
     // no desde el inicio del período vigente importado.
     fechaExpOriginal: _sel.afiliacion, // OP Fase 2f
-    pagadaHasta: (typeof parseFechaSura === 'function' ? parseFechaSura(item.fIniVig) : '') || '', // OP Fase 2g
+    ...(_f2gReciboAntiguo(item) || { pagadaHasta: '', pagoMaxPendiente: '' }), // OP Fase 2g: recibo pendiente más antiguo
   };
 
   s.ventas.push(nuevaVenta);
