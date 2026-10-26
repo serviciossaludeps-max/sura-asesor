@@ -18209,7 +18209,7 @@ function migrarPagosV1() {
       if (!venta || nuevo[id]) return;
       // Crear un pago sintético con la fecha registrada en v1
       const fechaPago = old[key];
-      const proxVenc = calcProxVencimiento(venta.fechaExp, venta.periodicidad);
+      const proxVenc = calcProxVencimiento(venta.fechaExp, venta.periodicidad, venta.id);
       const prevVenc = proxVenc ? calcPrevVencimiento(proxVenc, venta.periodicidad) : null;
       const COM_PCT = window.BusinessConfig.commissions.COM_PCT; // BR-009 consolidada (Sprint 0.2)
       nuevo[id] = [{
@@ -18238,6 +18238,17 @@ function getUltimoPago(ventaId) {
 }
 
 // Calcula el próximo vencimiento basado en fechaExp o en el último pago
+// OP Fase 2g — Periodos pagados antes de importar. «pagadaHasta» = inicio del recibo pendiente del reporte de SURA.
+// Esos periodos NO generan pagos ni comisiones en el CRM; solo cuentan para el próximo vencimiento y la mora.
+function _f2gPagosPrevios(v) {
+  if (!v || !v._importadoSura || !v.pagadaHasta || !v.fechaExp) return 0;
+  const meses = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
+  const intervalo = meses[v.periodicidad] || 1;
+  const a = new Date(v.fechaExp + 'T12:00:00');
+  const b = new Date(v.pagadaHasta + 'T12:00:00');
+  const entre = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+  return entre > 0 ? Math.floor(entre / intervalo) : 0;
+}
 function calcProxVencimiento(fechaExp, periodicidad, ventaId) {
   if (!fechaExp) return null;
   const meses = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
@@ -18256,6 +18267,8 @@ function calcProxVencimiento(fechaExp, periodicidad, ventaId) {
   if (ventaId) {
     const pagosVenta = getPagosVenta ? getPagosVenta(ventaId) : [];
     nPagos = pagosVenta.length;
+    const _vv = getState().ventas.find(x => x.id === ventaId);
+    nPagos += _f2gPagosPrevios(_vv); // OP Fase 2g
   }
 
   // MISMA fórmula que getCarteraEstado:
@@ -18369,7 +18382,7 @@ function getCarteraEstado(v, pagos) {
   // El proximo vencimiento a pagar es: fechaExp + (N+1)*intervalo
   // Si hoy < proxVenc → al dia. Si hoy >= proxVenc → mora contada desde proxVenc.
   const pagosVenta = getPagosVenta ? getPagosVenta(v.id) : [];
-  const nPagos = pagosVenta.length;
+  const nPagos = pagosVenta.length + _f2gPagosPrevios(v); // OP Fase 2g
 
   const diaExp = new Date(v.fechaExp + 'T12:00:00');
 
@@ -34710,6 +34723,7 @@ async function importarClienteDesdeCarteraSura(item) {
     // Usada en indicador de cancelaciones prematuras para medir antigüedad real,
     // no desde el inicio del período vigente importado.
     fechaExpOriginal: _sel.afiliacion, // OP Fase 2f
+    pagadaHasta: (typeof parseFechaSura === 'function' ? parseFechaSura(item.fIniVig) : '') || '', // OP Fase 2g
   };
 
   s.ventas.push(nuevaVenta);
