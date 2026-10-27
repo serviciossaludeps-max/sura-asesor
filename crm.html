@@ -15825,10 +15825,10 @@ function calcPreviewCom() {
 // (cualquier producto). Venta nueva ≥ 6 meses o sin cancelación previa.
 // ═══════════════════════════════════════════════════════════════════════════
 const _F2B_FORM = {
-  spti:  { tipo:'vTipoSPTI',     doc:'vDocSPTI',          tdoc:'vTipoDocSPTI',          exp:'vFechaExpSPTI',  prod:'SPTI'  },
-  spd:   { tipo:'vTipoSPD',      doc:'vTomadorDoc',       tdoc:'vTomadorTipoDoc',       exp:'vFechaExpSPD',   prod:'SPD'   },
-  psm:   { tipo:'vTipoMovPSM',   doc:'vTomadorDocPSM',    tdoc:'vTomadorTipoDocPSM',    exp:'vFechaExpPSM',   prod:'PSM'   },
-  pac60: { tipo:'vTipoMovPAC60', doc:'vTomadorDocPAC60',  tdoc:'vTomadorTipoDocPAC60',  exp:'vFechaExpPAC60', prod:'PAC60' }
+  spti:  { tipo:'vTipoSPTI',     doc:'vDocSPTI',          tdoc:'vTipoDocSPTI',          exp:'vFechaExpSPTI',  prod:'SPTI',  poliza:'vPolizaSPTI'  },
+  spd:   { tipo:'vTipoSPD',      doc:'vTomadorDoc',       tdoc:'vTomadorTipoDoc',       exp:'vFechaExpSPD',   prod:'SPD',   poliza:'vPolizaSPD'   },
+  psm:   { tipo:'vTipoMovPSM',   doc:'vTomadorDocPSM',    tdoc:'vTomadorTipoDocPSM',    exp:'vFechaExpPSM',   prod:'PSM',   poliza:'vPolizaPSM'   },
+  pac60: { tipo:'vTipoMovPAC60', doc:'vTomadorDocPAC60',  tdoc:'vTomadorTipoDocPAC60',  exp:'vFechaExpPAC60', prod:'PAC60', poliza:'vPolizaPAC60' }
 };
 function _f2bDigitos(x) { return String(x || '').replace(/\D/g, ''); }
 // Suma n meses calendario a una fecha ISO (YYYY-MM-DD). Si el día no existe, usa el último del mes.
@@ -15841,32 +15841,47 @@ function _f2bAddMeses(iso, n) {
   return ty + '-' + String(tm + 1).padStart(2, '0') + '-' + String(Math.min(d, last)).padStart(2, '0');
 }
 // Función pura: sin DOM ni almacenamiento. cancelaciones = [{fecha, ventaId, producto, actual}]
-function _f2bClasificarAlta(producto, fechaAlta, cancelaciones) {
+function _f2bClasificarAlta(producto, fechaAlta, cancelaciones, ctx) {
   const cands = (cancelaciones || [])
     .filter(c => c.fecha && c.fecha <= fechaAlta)
     .sort((a, b) => (a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0));
   if (!cands.length) return { clase: 'NUEVO', cancelacion: null };
   const c = cands[0];
   if (fechaAlta >= _f2bAddMeses(c.fecha, 6)) return { clase: 'NUEVO', cancelacion: null };
-  if (fechaAlta <= _f2bAddMeses(c.fecha, 3) && c.actual && c.producto === producto) {
+  // OP 2j: rehabilitación = mismo tomador y misma póliza (si el contexto los trae). Cambio de tomador o de póliza = reingreso.
+  const mismoTomador = !ctx || !ctx.tomadorDoc || !c.tomadorDoc || ctx.tomadorDoc === c.tomadorDoc;
+  const mismaPoliza  = !ctx || !ctx.poliza || !c.poliza || ctx.poliza === c.poliza;
+  if (fechaAlta <= _f2bAddMeses(c.fecha, 3) && c.actual && c.producto === producto && mismoTomador && mismaPoliza) {
     return { clase: 'REHABILITACION', cancelacion: c };
   }
   return { clase: 'REINGRESO', cancelacion: c };
 }
 // Todas las cancelaciones conocidas de una persona (por documento del tomador, solo dígitos).
+// OP 2j: se busca por el documento del ASEGURADO (v.doc y v.asegurados[].doc). El tomador queda en el contexto.
+// SPD guarda el documento del tomador en v.doc; se mantiene así como excepción documentada.
 function _f2bCancelacionesDelDoc(doc) {
   const out = [];
   (getState().ventas || []).forEach(v => {
-    if (_f2bDigitos(v.tomadorDoc || v.doc) !== doc) return;
+    // Sin documento de asegurado (registro antiguo), se usa el del tomador como respaldo.
+    const docsV = [v.doc || v.tomadorDoc].concat((Array.isArray(v.asegurados) ? v.asegurados : []).map(a => a && a.doc)).map(_f2bDigitos);
+    if (!docsV.includes(doc)) return;
+    const tomadorV = _f2bDigitos(v.tomadorDoc || v.doc);
     (Array.isArray(v.historialCancelaciones) ? v.historialCancelaciones : []).forEach(h => {
-      if (h && h.fechaEfectiva) out.push({ fecha: String(h.fechaEfectiva).slice(0, 10), ventaId: v.id, producto: v.producto, actual: false });
+      if (h && h.fechaEfectiva) out.push({ fecha: String(h.fechaEfectiva).slice(0, 10), ventaId: v.id, producto: v.producto, actual: false, tomadorDoc: tomadorV, poliza: v.poliza });
     });
     if (v.tipo === 'CANCELACION') {
       const f = v.fechaEfectivaCancelacion || v.fechaCancelacion;
-      if (f) out.push({ fecha: String(f).slice(0, 10), ventaId: v.id, producto: v.producto, actual: true });
+      if (f) out.push({ fecha: String(f).slice(0, 10), ventaId: v.id, producto: v.producto, actual: true, tomadorDoc: tomadorV, poliza: v.poliza });
     }
   });
   return out;
+}
+// OP 2j: documentos de asegurados capturados en el formulario. SPD no tiene campo de asegurado (excepción).
+function _f2bDocsAseguradosForm(modalTab) {
+  if (modalTab === 'spti') return [...document.querySelectorAll('[id^="vAseguradoDocSPTI"]')].map(e => _f2bDigitos(e.value)).filter(Boolean);
+  if (modalTab === 'psm')  return [_f2bDigitos((document.getElementById('vDocPSM') || {}).value)].filter(Boolean);
+  if (modalTab === 'pac60')return [_f2bDigitos((document.getElementById('vDocPAC60') || {}).value)].filter(Boolean);
+  return [];
 }
 // Solo aplica a ventas NUEVAS escritas desde el formulario. Aumento, inclusión, renovación y cancelación no se reclasifican.
 function _f2bPrecheck(modalTab) {
@@ -15874,12 +15889,21 @@ function _f2bPrecheck(modalTab) {
   if (!cfg) return null;
   const g = id => ((document.getElementById(id) || {}).value || '');
   if (g(cfg.tipo) !== 'NUEVO') return null;
-  const doc = _f2bDigitos(g(cfg.doc));
+  const tomador = _f2bDigitos(g(cfg.doc));
   const fechaAlta = g(cfg.exp);
-  if (!doc || !/^\d{4}-\d{2}-\d{2}$/.test(fechaAlta)) return null;
-  const r = _f2bClasificarAlta(cfg.prod, fechaAlta, _f2bCancelacionesDelDoc(doc));
-  if (r.clase === 'NUEVO') return null;
-  return { clase: r.clase, producto: cfg.prod, fechaAlta, cancelacion: r.cancelacion };
+  const asegs = _f2bDocsAseguradosForm(modalTab);
+  const docs = asegs.length ? asegs : [tomador];
+  if (!docs.filter(Boolean).length || !/^\d{4}-\d{2}-\d{2}$/.test(fechaAlta)) return null;
+  const ctx = { tomadorDoc: tomador, poliza: String(g(cfg.poliza) || '').trim() };
+  let mejor = null;
+  docs.forEach(d => {
+    if (!d) return;
+    const r = _f2bClasificarAlta(cfg.prod, fechaAlta, _f2bCancelacionesDelDoc(d), ctx);
+    if (r.clase === 'NUEVO') return;
+    if (!mejor || (r.clase === 'REHABILITACION' && mejor.clase !== 'REHABILITACION')) mejor = r;
+  });
+  if (!mejor) return null;
+  return { clase: mejor.clase, producto: cfg.prod, fechaAlta, cancelacion: mejor.cancelacion };
 }
 // Comisión de rehabilitación: usa la edad vigente a la fecha de cada pago (desde la rehabilitación).
 // Copia temporal para el cálculo; el registro guardado no cambia.
@@ -35589,6 +35613,24 @@ function renderContactos() {
 // ─────────────────────────────────────────────────────────────────────────────
 function contactoEstadoPoliza(v) {
   if (v.tipo === 'CANCELACION') return 'CANCELADO';
+  // OP Fase 2i-4: importadas se evalúan con los recibos de SURA (misma base que la cartera).
+  // Sin dato de SURA no se marca cancelación.
+  if (v._importadoSura && !v.pagoMaxPendiente) return 'VIGENTE';
+  if (_f2gEsImportadaSura(v)) {
+    const hoyI = new Date(); hoyI.setHours(12,0,0,0);
+    const intI = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 }[v.periodicidad] || 1;
+    const pI = _f2gPeriodoImportada(v, (typeof getPagosVenta === 'function' ? getPagosVenta(v.id) : []));
+    const vencI = new Date(pI.prox + 'T12:00:00');
+    if (hoyI < vencI) return 'VIGENTE';
+    let diasI = Math.max(0, Math.floor((hoyI - vencI) / 86400000));
+    if (intI > 1) {
+      const fgI = new Date(vencI.getFullYear(), vencI.getMonth() + 1, 0, 12, 0, 0);
+      diasI = Math.max(0, Math.floor((hoyI - fgI) / 86400000));
+    }
+    if (diasI >= 60) return 'CANCELADO';
+    if (diasI >= 35) return 'SUSPENDIDO';
+    return 'VIGENTE';
+  }
   if (!v.fechaExp) return 'VIGENTE';
   const hoy = new Date(); hoy.setHours(12,0,0,0);
   const meses = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
