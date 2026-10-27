@@ -17485,7 +17485,7 @@ function renderPlantillaVol() {
   const mesFilter  = mesEl.value;
   const anioFilter = anioEl.value;
 
-  let ventas = state.ventas.filter(v => v.producto === producto);
+  let ventas = state.ventas.filter(v => v.producto === producto && !v._importadoSura); // OP Fase 2i-3: importadas viven en cartera, no en la plantilla de ventas
   if (anioFilter) ventas = ventas.filter(v => {
     const d = new Date((v.fecha || v.fechaExp || '') + 'T12:00:00');
     return !isNaN(d) && d.getFullYear() == anioFilter;
