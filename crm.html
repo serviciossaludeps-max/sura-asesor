@@ -13180,6 +13180,7 @@ function splitNombre(nombre, idx) {
 // EDITAR VENTA
 // =============================================
 let _editId = null;
+let _modoEdicion = false; // OP Fase 2i: solo true cuando el formulario se abrió para EDITAR
 
 
 // ══════════════════════════════════════════════════════════
@@ -13228,7 +13229,7 @@ function abrirEditarSura(id) {
   const s = getState();
   const v = s.ventas.find(x => x.id === id);
   if (!v) return;
-  _editId = id;
+  _editId = id; _modoEdicion = true; // OP Fase 2i
 
   const g = eid => document.getElementById(eid);
   g('eSuraId').value           = id;
@@ -13318,7 +13319,7 @@ function editarVenta(id) {
   state = getState();
   const v = state.ventas.find(x => x.id === id);
   if (!v) return;
-  _editId = id;
+  _editId = id; _modoEdicion = true; // OP Fase 2i
 
   // ── Importados de Sura: modal simplificado (solo contacto + póliza) ──
   if (v._importadoSura) {
@@ -14027,7 +14028,7 @@ function openModal(id) {
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
   // Limpiar _editId si se cierra el modal de venta sin guardar
-  if (id === 'modalVenta' || id === 'modalEditar') _editId = null;
+  if (id === 'modalVenta' || id === 'modalEditar' || id === 'modalEditarSura') { _editId = null; _modoEdicion = false; } // OP Fase 2i
 }
 
 function setModalTab(tab, btn) {
@@ -15909,6 +15910,7 @@ async function guardarVenta() {
       return;
     }
   }
+  if (_editId && !_modoEdicion) _editId = null; // OP Fase 2i: edición colgada, se descarta
   state = structuredClone(getState()); // OP Fase 2e: trabajar sobre copia
 
   // OP Fase 2e: la expedición no puede ser anterior a hoy menos un día
@@ -15978,8 +15980,13 @@ async function guardarVenta() {
 
   // ── MODO EDICIÓN: si _editId tiene valor y el producto es voluntario,
   // actualizar el registro existente en lugar de crear uno nuevo ─────
-  if (_editId && modalTab !== 'pbs' && modalTab !== 'extra') {
+  if (_editId && _modoEdicion && modalTab !== 'pbs' && modalTab !== 'extra') {
     const idxEdit = state.ventas.findIndex(x => x.id === _editId);
+    if (idxEdit >= 0 && state.ventas[idxEdit]._importadoSura) { // OP Fase 2i
+      showToast('⚠️ Ese registro es una importada de SURA. Edítala desde Cartera, no desde el formulario de venta.');
+      _editId = null; _modoEdicion = false;
+      return;
+    }
     if (idxEdit >= 0) {
       const vOld = state.ventas[idxEdit];
       // Para registros importados de Sura, preservar mesComp especial
