@@ -20931,16 +20931,24 @@ function _f2cImpactoCancelacion({ primaMens, pagos, periodicidad, esNoPago, fech
     impactoMesCancelacion: Math.max(0, 12 * bp.base - pagadoTotal), impactoMesSiguiente: 0 };
 }
 
-function calcImpactoCancelacion(v, pagosState) {
-  let pList = pagosState[v.id] || [];
-  let suraPeriodos = 0; // OP Fase 2k
+// OP Fase 2k-2: contexto único del impacto. Importadas: pagos posteriores al corte + periodos ya pagados según SURA.
+function _f2cContextoImpacto(v, pListRaw, fechaEfectiva) {
+  let pList = pListRaw || [];
+  let suraPeriodos = 0;
   if (v._importadoSura && v.pagadaHasta) {
     const corte = v.corteSura || '2026-10-25';
     pList = pList.filter(p => String(p.fecha || p.fechaPago || '').slice(0, 10) >= corte);
-    const feI = String(v.fechaEfectivaCancelacion || v.fechaCancelacion || '').slice(0, 10);
+    const feI = String(fechaEfectiva || v.fechaEfectivaCancelacion || v.fechaCancelacion || '').slice(0, 10);
     const anioI = feI ? parseInt(feI.slice(0, 4), 10) : new Date().getFullYear();
     suraPeriodos = _f2cPeriodosSuraEnAnio(v, anioI);
   }
+  return { pList, suraPeriodos };
+}
+
+function calcImpactoCancelacion(v, pagosState) {
+  const _ctxC = _f2cContextoImpacto(v, pagosState[v.id] || [], v.fechaEfectivaCancelacion || v.fechaCancelacion);
+  const pList = _ctxC.pList;
+  const suraPeriodos = _ctxC.suraPeriodos; // OP Fase 2k
   const mesesPagados = pList.length;
   const primaMens = calcPrimaMensualSinIVA(v);
   const proyAnual = primaMens * 12;
@@ -34553,7 +34561,8 @@ function cancelarVentaCartera(id) {
     const mesesPagados = pList.length;
     const primaMens = calcPrimaMensualSinIVA(v);
     const _fPrev = ((document.getElementById('cancelModalFecha') || {}).value || '');
-    const _reg = _f2cImpactoCancelacion({ primaMens, pagos: pList, periodicidad: v.periodicidad, esNoPago, fechaEfectiva: _fPrev });
+    const _ctxP = _f2cContextoImpacto(v, pList, _fPrev); // OP Fase 2k-2
+  const _reg = _f2cImpactoCancelacion({ primaMens, pagos: _ctxP.pList, periodicidad: v.periodicidad, esNoPago, fechaEfectiva: _fPrev, suraPeriodos: _ctxP.suraPeriodos });
     const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
     let previewHtml = '';
@@ -34634,7 +34643,8 @@ function confirmarCancelacionModal(id) {
   const primaMens = calcPrimaMensualSinIVA(v);
 
   // Impacto según flujo SURA (OP 2c: misma función que la vista previa y los totales)
-  const _regC = _f2cImpactoCancelacion({ primaMens, pagos: pList, periodicidad: v.periodicidad, esNoPago, fechaEfectiva });
+  const _ctxCf = _f2cContextoImpacto(v, pList, fechaEfectiva); // OP Fase 2k-2
+  const _regC = _f2cImpactoCancelacion({ primaMens, pagos: _ctxCf.pList, periodicidad: v.periodicidad, esNoPago, fechaEfectiva, suraPeriodos: _ctxCf.suraPeriodos });
   const impactoMesCancelacion = _regC.impactoMesCancelacion;
   const impactoMesSiguiente = _regC.impactoMesSiguiente;
 
