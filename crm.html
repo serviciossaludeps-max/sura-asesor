@@ -20896,7 +20896,22 @@ function _f2cBaseYPagado(pagos, periodicidad, primaFallback) {
   if (base === null) base = Math.round(primaFallback);
   return { base, pagado, mesesCubiertos: Math.min(12, meses) };
 }
-function _f2cImpactoCancelacion({ primaMens, pagos, periodicidad, esNoPago, fechaEfectiva }) {
+// OP Fase 2k: periodos del año (calendario de la cancelación) ya pagados según SURA para una importada.
+// Cuenta los periodos anteriores a la pagada hasta que caen dentro del año.
+function _f2cPeriodosSuraEnAnio(v, anio) {
+  const intv = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 }[v.periodicidad] || 1;
+  const ancla = new Date(String(v.pagadaHasta).slice(0,10) + 'T12:00:00');
+  const inicioAnio = new Date(anio, 0, 1, 12, 0, 0);
+  let n = 0;
+  for (let j = 1; j <= 60; j++) {
+    const d = new Date(ancla);
+    d.setMonth(d.getMonth() - j * intv);
+    if (d < inicioAnio) break;
+    n++;
+  }
+  return n;
+}
+function _f2cImpactoCancelacion({ primaMens, pagos, periodicidad, esNoPago, fechaEfectiva, suraPeriodos }) {
   const proyAnual = primaMens * 12;
   const fe = String(fechaEfectiva || '').slice(0, 10);
   const completa = !!fe && fe >= F2C_CORTE_REGLA_SURA;
@@ -20910,12 +20925,22 @@ function _f2cImpactoCancelacion({ primaMens, pagos, periodicidad, esNoPago, fech
   }
   // Regla SURA (B2): base = precio que paga la póliza sin IVA; faltante completo en el mes de cancelación
   const bp = _f2cBaseYPagado(pagos, periodicidad, primaMens);
-  return { regla: 'COMPLETA', pagado: bp.pagado, mesesCubiertos: bp.mesesCubiertos, base: bp.base,
-    impactoMesCancelacion: Math.max(0, 12 * bp.base - bp.pagado), impactoMesSiguiente: 0 };
+  const nSura = Number(suraPeriodos || 0); // OP Fase 2k
+  const pagadoTotal = bp.pagado + nSura * bp.base;
+  return { regla: 'COMPLETA', pagado: pagadoTotal, mesesCubiertos: Math.min(12, bp.mesesCubiertos + nSura), base: bp.base,
+    impactoMesCancelacion: Math.max(0, 12 * bp.base - pagadoTotal), impactoMesSiguiente: 0 };
 }
 
 function calcImpactoCancelacion(v, pagosState) {
-  const pList = pagosState[v.id] || [];
+  let pList = pagosState[v.id] || [];
+  let suraPeriodos = 0; // OP Fase 2k
+  if (v._importadoSura && v.pagadaHasta) {
+    const corte = v.corteSura || '2026-10-25';
+    pList = pList.filter(p => String(p.fecha || p.fechaPago || '').slice(0, 10) >= corte);
+    const feI = String(v.fechaEfectivaCancelacion || v.fechaCancelacion || '').slice(0, 10);
+    const anioI = feI ? parseInt(feI.slice(0, 4), 10) : new Date().getFullYear();
+    suraPeriodos = _f2cPeriodosSuraEnAnio(v, anioI);
+  }
   const mesesPagados = pList.length;
   const primaMens = calcPrimaMensualSinIVA(v);
   const proyAnual = primaMens * 12;
@@ -20933,7 +20958,7 @@ function calcImpactoCancelacion(v, pagosState) {
 
   // Impacto en el mes de cancelación
   const _regL = _f2cImpactoCancelacion({ primaMens, pagos: pList, periodicidad: v.periodicidad, esNoPago,
-    fechaEfectiva: v.fechaEfectivaCancelacion || v.fechaCancelacion });
+    fechaEfectiva: v.fechaEfectivaCancelacion || v.fechaCancelacion, suraPeriodos }); // OP Fase 2k
   let impactoMesCancelacion = v.cancelacionImpactoMes !== undefined
     ? v.cancelacionImpactoMes
     : _regL.impactoMesCancelacion;
