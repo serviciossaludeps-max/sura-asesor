@@ -34430,6 +34430,11 @@ function cancelarVentaCartera(id) {
   const state = getState();
   const v = state.ventas.find(x => x.id === id);
   if (!v) return;
+  // OP Fase 2j-guardia (BR-020): importada sin dato de SURA no se cancela desde la app
+  if (v._importadoSura && !v.pagoMaxPendiente) {
+    showToast('⛔ Esta póliza importada no tiene datos de SURA. Verifícala en SURA antes de cualquier cancelación.');
+    return;
+  }
 
   const nombre = tc(v.tomadorNombre || v.nombre || '—');
   const MESES_NOM = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -34461,6 +34466,16 @@ function cancelarVentaCartera(id) {
   overlay.id = overlayId;
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
 
+  // OP Fase 2j-guardia: aviso y verificación en SURA para importadas
+  const _avisoSura = v._importadoSura
+    ? `<div style="background:rgba(217,119,6,0.10);border:1px solid rgba(217,119,6,0.35);border-radius:10px;padding:10px 12px;margin-bottom:16px;font-size:12px;color:var(--text);">
+         <strong>Póliza importada de SURA.</strong> Confirma en SURA que esté cancelada antes de registrar.
+         <label style="display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;">
+           <input type="checkbox" id="cancelModalVerificadoSura"> Verificada en SURA
+         </label>
+       </div>`
+    : '';
+
   const boxHtml = `
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
@@ -34482,6 +34497,7 @@ function cancelarVentaCartera(id) {
         </select>
       </div>
 
+      ${_avisoSura}
       <div id="cancelModalPreview" style="background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.2);border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:12px;color:var(--text-muted);display:none;"></div>
 
       <div style="display:flex;gap:10px;">
@@ -34556,6 +34572,13 @@ function confirmarCancelacionModal(id) {
   const inpFecha = document.getElementById('cancelModalFecha');
   const selRazon = document.getElementById('cancelModalRazon');
   if (!inpFecha || !selRazon) return;
+  // OP Fase 2j-guardia (BR-020): importada requiere dato de SURA y verificación explícita
+  const _vG = getState().ventas.find(x => x.id === id);
+  if (_vG && _vG._importadoSura) {
+    if (!_vG.pagoMaxPendiente) { showToast('⛔ Sin datos de SURA: esta póliza no se puede cancelar desde la app.'); return; }
+    const _chk = document.getElementById('cancelModalVerificadoSura');
+    if (!_chk || !_chk.checked) { showToast('⚠️ Verifica la póliza en SURA y marca la casilla antes de confirmar.'); return; }
+  }
 
   // Fecha efectiva elegida en el calendario (YYYY-MM-DD)
   const fechaEfectiva = inpFecha.value;
