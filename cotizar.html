@@ -558,13 +558,13 @@ input.err,select.err{border-color:var(--red);}
 </footer>
 
 <!-- Business Configuration Module (ADR-003 / EPIC-002 Sprint 0.3 — BR-014) -->
-<script src="business-config/index.js"></script>
-<script src="business-config/constants.js"></script>
-<script src="business-config/pricing.js"></script>
+<script src="business-config/index.js?v=4ff07fb7"></script>
+<script src="business-config/constants.js?v=b4d09f8b"></script>
+<script src="business-config/pricing.js?v=749f360c"></script>
 <!-- MotorValidación — Business Core Fase 1 (ADR-007/ADR-011) -->
-<script src="src/business-core/motors/validacion/index.js"></script>
+<script src="src/business-core/motors/validacion/index.js?v=a357667f"></script>
 <!-- MotorProducto — Business Core Fase 1 (ADR-007/ADR-011) — SPTI integrado (v1.0.0) -->
-<script src="src/business-core/motors/producto/index.js"></script>
+<script src="src/business-core/motors/producto/index.js?v=3812f053"></script>
 <script>
   // Salvaguarda: mismo criterio de resiliencia aplicado en crm.html
   // (ver ADR-003/ADR-006). Si el módulo no carga, se usan los valores
@@ -580,14 +580,18 @@ input.err,select.err{border-color:var(--red);}
     window.BusinessConfig.pricing = window.BusinessConfig.pricing || {};
     window.BusinessConfig.pricing.SPTI_SIN_IVA = {
       PREFERENCIAL: {
-        '0-40':  { mensual:159120, trimestre:465441, dctoTrim:11919, semestre:908871,  dctoSem:45849,  anual:1737305, dctoAnual:172135 },
-        '41-50': { mensual:171167, trimestre:500681, dctoTrim:12820, semestre:977684,  dctoSem:49318,  anual:1868842, dctoAnual:185162 },
-        '51-59': { mensual:212095, trimestre:620398, dctoTrim:15887, semestre:1211456, dctoSem:61114,  anual:2315696, dctoAnual:229444 }
+        '0-40':  { mensual:159120, trimestre:465441, dctoTrim:11919, semestre:908871, dctoSem:45849,  anual:1737305, dctoAnual:172135 },
+        '41-50':  { mensual:171167, trimestre:500681, dctoTrim:12820, semestre:977684, dctoSem:49318,  anual:1868842, dctoAnual:185162 },
+        '51-59':  { mensual:212095, trimestre:620398, dctoTrim:15887, semestre:1211456, dctoSem:61114,  anual:2315696, dctoAnual:229444 },
+        '60-70':  { mensual:283676, trimestre:829782, dctoTrim:21246, semestre:1620322, dctoSem:81734,  anual:3097241, dctoAnual:306871 },
+        '71+':  { mensual:426190, trimestre:1246650, dctoTrim:31920, semestre:2434343, dctoSem:122797,  anual:4653241, dctoAnual:461039 }
       },
       CLASICO: {
-        '0-40':  { mensual:140457, trimestre:410852, dctoTrim:10519, semestre:802274,  dctoSem:40468,  anual:1533544, dctoAnual:151940 },
-        '41-50': { mensual:153628, trimestre:449379, dctoTrim:11505, semestre:877506,  dctoSem:44262,  anual:1677351, dctoAnual:166185 },
-        '51-59': { mensual:192544, trimestre:553310, dctoTrim:24322, semestre:1099785, dctoSem:55479,  anual:2102237, dctoAnual:208291 }
+        '0-40':  { mensual:140457, trimestre:410852, dctoTrim:10519, semestre:802274, dctoSem:40468,  anual:1533544, dctoAnual:151940 },
+        '41-50':  { mensual:153628, trimestre:449379, dctoTrim:11505, semestre:877506, dctoSem:44262,  anual:1677351, dctoAnual:166185 },
+        '51-59':  { mensual:192544, trimestre:553310, dctoTrim:24322, semestre:1099785, dctoSem:55479,  anual:2102237, dctoAnual:208291 },
+        '60-70':  { mensual:262644, trimestre:768261, dctoTrim:19671, semestre:1500189, dctoSem:75675,  anual:2867608, dctoAnual:284120 },
+        '71+':  { mensual:411446, trimestre:1203521, dctoTrim:30817, semestre:2350126, dctoSem:118550,  anual:4492260, dctoAnual:445092 }
       }
     };
     window.BusinessConfig.pricing.computeSPTIConIVA = window.BusinessConfig.pricing.computeSPTIConIVA || function(sinIva, ivaFactor) {
@@ -919,6 +923,7 @@ function esFormularioListo() {
 const PLAN_LABELS = { SPTI:'SPTI', SPD:'SPD', MODULAR:'Modular', PAC60:'Plan 60+' };
 
 function calcularPersona(p) {
+  if (!_tarifasDisponiblesPara(p && p.plan)) return null; // OP Fase 0 · D8c: sin tabla -> null, la UI muestra el aviso
   // Calcula resultado para un objeto persona {plan, sub, edad, peri, modulos}
   const peri = p.peri || state.peri;
   const mult = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 }[peri] || 1;
@@ -1289,6 +1294,17 @@ function calcular() {
   };
 }
 
+// OP Fase 0 · D8b: tablas necesarias por producto. SPD usa SPD_TARIFAS local (no depende de pricing.js).
+function _tarifasDisponiblesPara(plan) {
+  // OP Fase 0 · D8c2: SPD se reconoce primero; usa su tabla local y no depende de BusinessConfig.pricing
+  if (plan === 'SPD') return true;
+  const p = window.BusinessConfig && window.BusinessConfig.pricing;
+  if (!p) return false;
+  if (plan === 'SPTI') return !!p.SPTI_SIN_IVA;
+  if (plan === 'MODULAR') return !!(p.PSM_TARIFAS && p.PSM_IVA && p.PSM_DCTOS);
+  if (plan === 'PAC60') return !!(p.PAC60_TARIFAS && p.PAC60_DCTOS);
+  return true;
+}
 function mostrarResultado() {
   const res = calcular();
   if (!res) {
@@ -1298,7 +1314,9 @@ function mostrarResultado() {
     document.getElementById('step1Section').style.display = '';
     setStep(1);
     window.scrollTo({top:0,behavior:'smooth'});
-    setTimeout(() => alert('Verifica que hayas seleccionado plan, subplan (si aplica), fecha de nacimiento y periodicidad.'), 100);
+    // OP Fase 0 · D8b: disponibilidad según el producto seleccionado (solo las tablas que ese producto usa)
+    const _tarifasOk = _tarifasDisponiblesPara(state.plan);
+    setTimeout(() => alert(_tarifasOk ? 'Verifica que hayas seleccionado plan, subplan (si aplica), fecha de nacimiento y periodicidad.' : 'El servicio de cotización no está disponible en este momento para este producto. Intenta más tarde o comunícate con tu asesor.'), 100);
     return;
   }
   const peri  = state.peri || 'MENSUAL';

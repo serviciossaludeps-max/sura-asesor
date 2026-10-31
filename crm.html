@@ -10188,16 +10188,16 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 <div class="toast" id="toast">✅ <span id="toastMsg">Guardado</span></div>
 
 <!-- Business Configuration Module (ADR-003 / EPIC-002 Sprint 0.3 — BR-009, BR-014) -->
-<script src="business-config/index.js"></script>
-<script src="business-config/constants.js"></script>
-<script src="business-config/commissions.js"></script>
-<script src="business-config/pricing.js"></script>
+<script src="business-config/index.js?v=4ff07fb7"></script>
+<script src="business-config/constants.js?v=b4d09f8b"></script>
+<script src="business-config/commissions.js?v=b68ada48"></script>
+<script src="business-config/pricing.js?v=749f360c"></script>
 <!-- MotorPago — Business Core Fase 1 (ADR-007/ADR-011) -->
-<script src="src/business-core/motors/pago/index.js"></script>
+<script src="src/business-core/motors/pago/index.js?v=aaf9c924"></script>
 <!-- MotorValidación — Business Core Fase 1 (ADR-007/ADR-011) -->
-<script src="src/business-core/motors/validacion/index.js"></script>
+<script src="src/business-core/motors/validacion/index.js?v=a357667f"></script>
 <!-- MotorProducto — Business Core Fase 1 (ADR-007/ADR-011) -->
-<script src="src/business-core/motors/producto/index.js"></script>
+<script src="src/business-core/motors/producto/index.js?v=3812f053"></script>
 <script>
   // Salvaguarda: si business-config/*.js no cargó (ruta rota, red, caché,
   // o el archivo se abrió aislado sin su carpeta hermana), se usan los
@@ -10260,6 +10260,16 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       '90+':   { sinAnexo: 693652, conAnexo: 738905 }
     };
   }
+  // OP Fase 0 · F3: respaldo de descuentos por CLAVE. Completa solo claves ausentes (null/undefined); nunca sobrescribe valores existentes.
+  (function(){
+    const _pr = window.BusinessConfig.pricing || (window.BusinessConfig.pricing = {});
+    const _resp = { PSM_DCTOS: { MENSUAL: 0, TRIMESTRAL: 0.0197, SEMESTRAL: 0.0452, ANUAL: 0.0901 },
+                    PAC60_DCTOS: { MENSUAL: 0, TRIMESTRAL: 0.025, SEMESTRAL: 0.048, ANUAL: 0.0901 } };
+    Object.keys(_resp).forEach(function(nombre){
+      if (!_pr[nombre] || typeof _pr[nombre] !== 'object') _pr[nombre] = {};
+      Object.keys(_resp[nombre]).forEach(function(per){ if (_pr[nombre][per] == null) _pr[nombre][per] = _resp[nombre][per]; });
+    });
+  })();
 </script>
 
 <script>
@@ -21080,6 +21090,15 @@ function _f2dAnioDashboard(v) {
   return parseInt(String(v.fechaCancelacion || '').slice(0,4)) === a;
 }
 
+// OP Fase 0 · D1b: referencia SPTI mensual sin IVA por año.
+// 2026: valor congelado, separado de SPTI_SIN_IVA y de pricing.js. 2027+: TARIFAS_POR_ANIO. Sin valor -> null.
+const REF_SPTI_MENSUAL_2026 = 159120;
+function referenciaSPTIMensual(anio) {
+  if (Number(anio) === 2026) return REF_SPTI_MENSUAL_2026;
+  const t = window.BusinessConfig && window.BusinessConfig.pricing && window.BusinessConfig.pricing.TARIFAS_POR_ANIO && window.BusinessConfig.pricing.TARIFAS_POR_ANIO[anio];
+  const v = t && t.SPTI_SIN_IVA && t.SPTI_SIN_IVA.PREFERENCIAL && t.SPTI_SIN_IVA.PREFERENCIAL['0-40'] && t.SPTI_SIN_IVA.PREFERENCIAL['0-40'].mensual;
+  return (typeof v === 'number' && v > 0) ? v : null;
+}
 function renderImpactoCancelaciones() {
   const cont = document.getElementById('ctImpactoCancelaciones');
   if (!cont) return;
@@ -21088,6 +21107,10 @@ function renderImpactoCancelaciones() {
   const MESES_NOM = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const canceladas = s.ventas.filter(v => ['SPTI','SPD','PSM','PAC60'].includes(v.producto) && v.tipo === 'CANCELACION');
   const _anioSel = _f2dAnioSeleccionado(canceladas);
+  // OP Fase 0 · D1b: conteos de planes del MISMO año del presupuesto
+  const _AN_ACT = (typeof AÑO_ACTUAL !== 'undefined') ? AÑO_ACTUAL : new Date().getFullYear();
+  const _cfgAnio = (Number(_anioSel) === Number(_AN_ACT)) ? getState().config : ((typeof getAllConfigAnios === 'function' && getAllConfigAnios()[_anioSel]) || null);
+  if (!_cfgAnio) { cont.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--amber)">No hay configuración de planes para ' + _anioSel + '. Configúrela en Configuración por Año.</div>'; return; }
 
   // ── Indicador KPI SURA 2026: metas de cancelación por semestre ───────────
   // S1 (Ene–Jun): 4.5% · S2 (Jul–Dic): 3.5%
@@ -21210,7 +21233,8 @@ function renderImpactoCancelaciones() {
     return { v, imp };
   });
 
-  const PRIMA_MENSUAL_BASE = 159120;
+  const PRIMA_MENSUAL_BASE = referenciaSPTIMensual(_anioSel); // OP 0-D1b: referencia del año del presupuesto
+  if (PRIMA_MENSUAL_BASE == null) { cont.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--amber)">Referencia SPTI no configurada para ' + _anioSel + '. Configúrela en Configuración por Año.</div>'; return; }
   const PRIMA_ANUAL_BASE   = PRIMA_MENSUAL_BASE * 12;
   const planesEquivalentes = totalImpacto / PRIMA_MENSUAL_BASE;
   const tituloMes = filtroMes === 'todos' ? 'acumulado total' : 'mes de ' + MESES_NOM[parseInt(filtroMes)];
@@ -21218,19 +21242,19 @@ function renderImpactoCancelaciones() {
 
   // Presupuesto SPTI+SPD — prima real por producto desde pólizas vigentes
   const mesIdx = filtroMes !== 'todos' ? parseInt(filtroMes) : -1;
-  const nPlanesSptiMes = mesIdx >= 0 ? ((s.config.spti||[])[mesIdx]||0) : 0;
-  const nPlanesSpdMes  = mesIdx >= 0 ? ((s.config.spd ||[])[mesIdx]||0) : 0;
+  const nPlanesSptiMes = mesIdx >= 0 ? ((_cfgAnio.spti||[])[mesIdx]||0) : 0;
+  const nPlanesSpdMes  = mesIdx >= 0 ? ((_cfgAnio.spd ||[])[mesIdx]||0) : 0;
   const nPlanesMes     = nPlanesSptiMes + nPlanesSpdMes;
 
   // Prima mensual promedio real por producto (desde pólizas vigentes en cartera)
   // Prima base fija por producto (SURA): SPTI Preferencial 0-40 = 159.120 / SPD = 92.070
-  const PRIMA_MENS_SPTI = 159120;
+  const PRIMA_MENS_SPTI = PRIMA_MENSUAL_BASE; // OP 0-D1b
   const PRIMA_MENS_SPD  = 92070;
   const primaAnualSpti  = PRIMA_MENS_SPTI * 12; // 1.909.440
   const primaAnualSpd   = PRIMA_MENS_SPD  * 12; // 1.104.840
 
-  const pptoSptiAnual = (s.config.spti || []).reduce((sum,n) => sum + (n||0), 0) * primaAnualSpti;
-  const pptoSpdAnual  = (s.config.spd  || []).reduce((sum,n) => sum + (n||0), 0) * primaAnualSpd;
+  const pptoSptiAnual = (_cfgAnio.spti || []).reduce((sum,n) => sum + (n||0), 0) * primaAnualSpti;
+  const pptoSpdAnual  = (_cfgAnio.spd  || []).reduce((sum,n) => sum + (n||0), 0) * primaAnualSpd;
   const pptoVolAnual  = pptoSptiAnual + pptoSpdAnual;
   const pptoMesVol    = nPlanesSptiMes * primaAnualSpti + nPlanesSpdMes * primaAnualSpd;
   const pctImpactoMes   = pptoMesVol > 0 ? Math.min(Math.round(totalImpacto / pptoMesVol * 100), 999) : 0;
