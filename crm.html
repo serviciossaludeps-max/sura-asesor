@@ -1744,6 +1744,13 @@
   .prio-btn { background: transparent; border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: var(--font); }
   .prio-btn:hover { border-color: #2563EB; color: #2563EB; }
 </style>
+<style id="dashboard-orden">
+  /* ===== DASHBOARD · orden y bordes ===== */
+  .oculto-dash { display: none !important; }
+  .com-kpis-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .com-kpis-row { grid-template-columns: 1fr !important; } }
+  #page-dashboard .stat-card[style*="border-top:3px"] { border-top: 1px solid var(--border) !important; }
+</style>
 </head>
 <body>
 
@@ -2483,7 +2490,23 @@
           </div>
         </div>
 
-        <div class="dash-band"><h3 id="bandAccTitulo">Acumulado del año</h3><span>Del año hasta el mes seleccionado</span></div>
+        <div class="com-kpis-row"><div class="stat-card green" style="position:relative;">
+            <div class="stat-label">Com. PBS Est. Mes</div>
+            <div class="com-seg" role="group" aria-label="Vista de comisión PBS"><button id="comPBSBruto" type="button" onclick="setComPBSVistaFn('bruto')">Bruto</button><button id="comPBSComp" type="button" onclick="setComPBSVistaFn('compensado')" title="Compensada: del 6.º día hábil del mes al 5.º día hábil del mes siguiente">Compensada</button></div>
+            <div class="stat-value" id="kpi-com-mes" style="font-size:18px;">$0</div>
+            <div class="stat-sub" id="kpi-com-mes-sub">Mes seleccionado · bruto</div>
+            
+          </div><div class="stat-card green">
+            <div class="stat-label">Com. Vol. Real Cobrada</div>
+            <div class="stat-value" id="dash-com-vol-real" style="font-size:18px;">$0</div>
+            <div class="stat-sub">Pagos confirmados <svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-right:0px;"><path d="M21.801 10A10 10 0 1 1 17 3.335" />
+  <path d="m9 11 3 3L22 4" /></svg></div>
+          </div><div class="stat-card amber">
+            <div class="stat-label">Efectividad PBS</div>
+            <div class="stat-value" id="kpi-efect">0%</div>
+            <div class="stat-sub">vs presupuesto mes</div>
+          </div></div>
+<div class="dash-band"><h3 id="bandAccTitulo">Acumulado del año</h3><span>Del año hasta el mes seleccionado</span></div>
         <!-- Acumulado año + campañas progress -->
         <div class="grid-2">
           <div class="card">
@@ -2526,16 +2549,10 @@
             <div id="campaignProgress"></div>
           </div>
         </div>
-        <div class="dash-band"><h3>Comisiones</h3><span>Cada tarjeta indica su periodo</span></div>
+        <div class="dash-band oculto-dash"><h3>Comisiones</h3><span>Cada tarjeta indica su periodo</span></div>
         <!-- Fila 2: Comisiones todos los productos -->
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px;">
-          <div class="stat-card green" style="position:relative;">
-            <div class="stat-label">Com. PBS Est. Mes</div>
-            <div class="com-seg" role="group" aria-label="Vista de comisión PBS"><button id="comPBSBruto" type="button" onclick="setComPBSVistaFn('bruto')">Bruto</button><button id="comPBSComp" type="button" onclick="setComPBSVistaFn('compensado')" title="Compensada: del 6.º día hábil del mes al 5.º día hábil del mes siguiente">Compensada</button></div>
-            <div class="stat-value" id="kpi-com-mes" style="font-size:18px;">$0</div>
-            <div class="stat-sub" id="kpi-com-mes-sub">Mes seleccionado · bruto</div>
-            
-          </div>
+        <div class="oculto-dash" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:12px;">
+          
           <div class="stat-card teal">
             <div class="stat-label">Com. SPTI Proy.</div>
             <div class="stat-value" id="dash-com-spti" style="font-size:16px;">$0</div>
@@ -2559,18 +2576,9 @@
         </div>
 
         <!-- Fila 3: Totales y efectividad -->
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;">
-          <div class="stat-card amber">
-            <div class="stat-label">Efectividad PBS</div>
-            <div class="stat-value" id="kpi-efect">0%</div>
-            <div class="stat-sub">vs presupuesto mes</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Com. Vol. Real Cobrada</div>
-            <div class="stat-value" id="dash-com-vol-real" style="font-size:18px;">$0</div>
-            <div class="stat-sub">Pagos confirmados <svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-right:0px;"><path d="M21.801 10A10 10 0 1 1 17 3.335" />
-  <path d="m9 11 3 3L22 4" /></svg></div>
-          </div>
+        <div class="oculto-dash" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px;">
+          
+          
           <div class="stat-card" style="border-top:3px solid var(--sura-lime);">
             <div class="stat-label" id="lbl-com-pbs-acc">Com. PBS Acumulada 2026</div>
             <div class="stat-value" id="dash-com-pbs-acc" style="font-size:16px;color:var(--sura-lime);">$0</div>
