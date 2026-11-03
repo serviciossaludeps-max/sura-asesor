@@ -1679,6 +1679,8 @@
   }
   .brand-isotipo { display: block; width: 44px; height: 44px; object-fit: contain; }
   .sidebar.collapsed .brand-isotipo { width: 28px; height: 28px; }
+  .sidebar.collapsed .logo-badge.glass-logo { padding: 4px; border-radius: 12px; width: 36px; height: 36px; justify-content: center; overflow: hidden; }
+  .sidebar.collapsed .logo-badge.glass-logo::after { content: none !important; }
   body.theme-light .logo-badge.glass-logo { background: transparent; box-shadow: none; padding: 0; }
   .topbar-isotipo { display: none; width: 28px; height: 28px; object-fit: contain; margin-right: 8px; flex-shrink: 0; }
   @media (max-width: 900px) { .topbar-isotipo { display: block; } }
