@@ -1751,6 +1751,21 @@
   @media (max-width: 900px) { .com-kpis-row { grid-template-columns: 1fr !important; } }
   #page-dashboard .stat-card[style*="border-top:3px"] { border-top: 1px solid var(--border) !important; }
 </style>
+<style id="comisiones-vivas-css">
+  /* ===== COMISIONES VIVAS · anillo, barras y tema claro limpio ===== */
+  body.theme-light { --bg: #F2F2F7; }
+  body.theme-light .sidebar { background: #E5E5EA !important; border-right: 1px solid rgba(0,0,0,0.08) !important; box-shadow: none !important; }
+  body.theme-light .stat-card, body.theme-light .card { background: #FFFFFF; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .efect-ring-wrap { position: relative; width: 120px; height: 120px; margin: 6px auto 4px; }
+  .efect-ring { width: 120px; height: 120px; display: block; }
+  .efect-track { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 9; }
+  body.theme-light .efect-track { stroke: #E5E5EA; }
+  .efect-fg { fill: none; stroke: #2563EB; stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+  .efect-val { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .mini-bars { display: flex; align-items: flex-end; gap: 6px; height: 34px; margin-top: 12px; }
+  .mini-bars span { flex: 1; background: rgba(37,99,235,0.18); border-radius: 4px 4px 2px 2px; min-height: 4px; }
+  .mini-bars span.cur { background: rgba(37,99,235,0.55); }
+</style>
 </head>
 <body>
 
@@ -2501,9 +2516,9 @@
             <div class="stat-value" id="dash-com-vol-real" style="font-size:18px;">$0</div>
             <div class="stat-sub">Pagos confirmados <svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px;margin-right:0px;"><path d="M21.801 10A10 10 0 1 1 17 3.335" />
   <path d="m9 11 3 3L22 4" /></svg></div>
-          </div><div class="stat-card amber">
+          <div class="mini-bars" id="vol-mini-bars" aria-hidden="true"></div></div><div class="stat-card amber">
             <div class="stat-label">Efectividad PBS</div>
-            <div class="stat-value" id="kpi-efect">0%</div>
+            <div class="efect-ring-wrap"><svg class="efect-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="efect-track" cx="50" cy="50" r="40"/><circle id="ring-efect-fg" class="efect-fg" cx="50" cy="50" r="40" transform="rotate(-90 50 50)"/></svg><div class="stat-value efect-val" id="kpi-efect">0%</div></div>
             <div class="stat-sub">vs presupuesto mes</div>
           </div></div>
 <div class="dash-band"><h3 id="bandAccTitulo">Acumulado del año</h3><span>Del año hasta el mes seleccionado</span></div>
@@ -41936,6 +41951,59 @@ async function _agenteEnviar() {
   new ResizeObserver(ajustar).observe(t);
   window.addEventListener('resize',ajustar);
   ajustar();
+})();
+</script>
+
+<script id="comisiones-vivas">
+(function () {
+  var R = 40, C = 2 * Math.PI * R;
+  function num(t) { var n = parseFloat(String(t).replace('%', '').replace(',', '.')); return isFinite(n) ? n : 0; }
+  function anio() { var el = document.getElementById('acc-titulo'); var m = el && el.textContent.match(/(\d{4})/); return m ? parseInt(m[1], 10) : new Date().getFullYear(); }
+  function mesSel() {
+    var b = document.querySelector('#monthSelectorDash .month-btn.active'); if (!b) return new Date().getMonth();
+    var all = Array.prototype.slice.call(document.querySelectorAll('#monthSelectorDash .month-btn'));
+    return Math.max(0, all.indexOf(b));
+  }
+  function setRing() {
+    var src = document.getElementById('kpi-efect'), fg = document.getElementById('ring-efect-fg');
+    if (!src || !fg) return;
+    var p = Math.max(0, Math.min(100, num(src.textContent)));
+    fg.style.strokeDasharray = C;
+    fg.style.strokeDashoffset = C * (1 - p / 100);
+  }
+  function serieVol() {
+    try {
+      var st = getState(), pagos = getPagos(), y = anio(), sel = mesSel();
+      var ventas = (st.ventas || []).filter(function (v) { return ['SPTI','SPD','PSM','PAC60'].indexOf(v.producto) !== -1; });
+      var vals = [0,0,0,0,0,0,0,0,0,0,0,0];
+      ventas.forEach(function (v) {
+        (pagos[v.id] || []).forEach(function (p) {
+          var f = p && p.fecha; if (!f) return;
+          var d = new Date(String(f).slice(0, 10) + 'T00:00:00');
+          if (isNaN(d) || d.getFullYear() !== y) return;
+          vals[d.getMonth()] += (p.comision || 0);
+        });
+      });
+      return vals.slice(Math.max(0, sel - 5), sel + 1);
+    } catch (e) { return null; }
+  }
+  function setBars() {
+    var box = document.getElementById('vol-mini-bars'); if (!box) return;
+    var s = serieVol(); if (!s) { box.innerHTML = ''; return; }
+    var max = Math.max.apply(null, s.concat([1]));
+    box.innerHTML = s.map(function (v, i) {
+      var h = Math.max(4, Math.round(v / max * 34));
+      return '<span class="' + (i === s.length - 1 ? 'cur' : '') + '" style="height:' + h + 'px" title="' + Math.round(v) + '"></span>';
+    }).join('');
+  }
+  function watch(el, fn, opts) {
+    if (!el) return;
+    new MutationObserver(fn).observe(el, opts || { childList: true, characterData: true, subtree: true });
+    fn();
+  }
+  watch(document.getElementById('kpi-efect'), setRing);
+  watch(document.getElementById('dash-com-vol-real'), setBars);
+  watch(document.getElementById('monthSelectorDash'), setBars, { attributes: true, subtree: true, attributeFilter: ['class'] });
 })();
 </script>
 </body>
