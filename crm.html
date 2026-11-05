@@ -8497,7 +8497,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             <option value="NUEVO">Nuevo</option>
             <option value="AUMENTO">Aumento</option>
             <option value="CANCELACION">Cancelación</option>
-          </select>
+          </select><div class="form-group" style="margin-top:8px;"><label class="form-label">¿Venta nueva o reingreso?</label><select class="form-control" id="vReingSPTI" onchange="_d12Toggle('SPTI')"><option value="NUEVA">Venta nueva</option><option value="REINGRESO">Reingreso (SURA reporta póliza anterior)</option></select></div><div class="form-group" id="vFechaCancReingWrapSPTI" style="display:none;"><label class="form-label">Fecha de cancelación de la póliza anterior</label><input type="date" class="form-control" id="vFechaCancReingSPTI"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Plan</label>
@@ -8703,7 +8703,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             <option value="NUEVO">Nuevo</option>
             <option value="AUMENTO">Aumento</option>
             <option value="CANCELACION">Cancelación</option>
-          </select>
+          </select><div class="form-group" style="margin-top:8px;"><label class="form-label">¿Venta nueva o reingreso?</label><select class="form-control" id="vReingSPD" onchange="_d12Toggle('SPD')"><option value="NUEVA">Venta nueva</option><option value="REINGRESO">Reingreso (SURA reporta póliza anterior)</option></select></div><div class="form-group" id="vFechaCancReingWrapSPD" style="display:none;"><label class="form-label">Fecha de cancelación de la póliza anterior</label><input type="date" class="form-control" id="vFechaCancReingSPD"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Plan / Tipo de Cobertura</label>
@@ -8919,7 +8919,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             <option value="NUEVO">Nuevo</option>
             <option value="INCLUSION">Inclusión</option>
             <option value="CANCELACION">Cancelación</option>
-          </select>
+          </select><div class="form-group" style="margin-top:8px;"><label class="form-label">¿Venta nueva o reingreso?</label><select class="form-control" id="vReingPSM" onchange="_d12Toggle('PSM')"><option value="NUEVA">Venta nueva</option><option value="REINGRESO">Reingreso (SURA reporta póliza anterior)</option></select></div><div class="form-group" id="vFechaCancReingWrapPSM" style="display:none;"><label class="form-label">Fecha de cancelación de la póliza anterior</label><input type="date" class="form-control" id="vFechaCancReingPSM"></div>
         </div>
       </div>
 
@@ -9201,7 +9201,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             <option value="NUEVO">Nuevo</option>
             <option value="RENOVACION">Renovación</option>
             <option value="CANCELACION">Cancelación</option>
-          </select>
+          </select><div class="form-group" style="margin-top:8px;"><label class="form-label">¿Venta nueva o reingreso?</label><select class="form-control" id="vReingPAC60" onchange="_d12Toggle('PAC60')"><option value="NUEVA">Venta nueva</option><option value="REINGRESO">Reingreso (SURA reporta póliza anterior)</option></select></div><div class="form-group" id="vFechaCancReingWrapPAC60" style="display:none;"><label class="form-label">Fecha de cancelación de la póliza anterior</label><input type="date" class="form-control" id="vFechaCancReingPAC60"></div>
         </div>
       </div>
 
@@ -9688,7 +9688,26 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div id="eSuraTomadorBox" style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;">
+<div style="font-size:12px;font-weight:700;margin-bottom:10px;">Tomador (cartera y pagos)</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="form-group"><label class="form-label">Nombre del tomador</label><input class="form-control" id="eSuraTomNombre"></div>
+<div class="form-group"><label class="form-label">Documento del tomador</label><input class="form-control" id="eSuraTomDoc" placeholder="Solo números"></div>
+</div></div>
+<div id="eSuraAseguradoBox" style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;">
+<div style="font-size:12px;font-weight:700;margin-bottom:10px;">Asegurado principal (edad, tarifa, comisión y reingreso)</div>
+<label style="display:flex;gap:8px;align-items:center;margin-bottom:10px;"><input type="checkbox" id="eSuraAseguradoEsTomador" onchange="eSuraToggleAsegurado()"> El asegurado es el tomador</label>
+<div id="eSuraAseguradoCampos" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="form-group"><label class="form-label">Nombre del asegurado</label><input class="form-control" id="eSuraAsegNombre"></div>
+<div class="form-group"><label class="form-label">Documento del asegurado</label><input class="form-control" id="eSuraAsegDoc" placeholder="Solo números"></div>
+<div class="form-group"><label class="form-label">Fecha de nacimiento del asegurado</label><input type="date" class="form-control" id="eSuraAsegFechaNac"></div>
+</div>
+<div style="margin-top:10px;font-size:12px;font-weight:700;">Asegurados adicionales</div>
+<div id="eSuraAdicList"></div>
+<button type="button" class="btn" onclick="eSuraAddAdic()" style="margin-top:8px;">+ Agregar asegurado adicional</button>
+<label style="display:flex;gap:8px;align-items:center;margin-top:12px;"><input type="checkbox" id="eSuraAseguradoConfirmado"> Confirmo que estos datos coinciden con SURA</label>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
 
       <!-- Contacto -->
       <div class="form-group">
@@ -13382,6 +13401,43 @@ function eSuraCalcEdad() {
   else if (lim && (e < lim[0] || e > lim[1])) hint.textContent = 'Fuera del rango de venta nueva (' + lim[0] + '-' + lim[1] + '); se puede guardar porque es una póliza importada.';
 }
 
+function _eSuraEsc(x) { return String(x || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function eSuraToggleAsegurado() {
+  const esT = !!(document.getElementById('eSuraAseguradoEsTomador') || {}).checked;
+  const box = document.getElementById('eSuraAseguradoCampos');
+  if (box) box.style.display = esT ? 'none' : 'grid';
+}
+function eSuraAddAdic(a) {
+  const cont = document.getElementById('eSuraAdicList'); if (!cont) return;
+  const d = document.createElement('div');
+  d.className = 'eSuraAdicRow';
+  d.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-top:8px;';
+  d.innerHTML = '<input class="form-control" placeholder="Nombre" value="' + _eSuraEsc(a && a.nombre) + '">' +
+    '<input class="form-control" placeholder="Documento" value="' + _eSuraEsc(a && a.doc) + '">' +
+    '<input type="date" class="form-control" value="' + _eSuraEsc(a && a.fechaNac) + '">' +
+    '<button type="button" class="btn" onclick="this.parentElement.remove()">×</button>';
+  cont.appendChild(d);
+}
+function eSuraReadAdic() {
+  return [...document.querySelectorAll('#eSuraAdicList .eSuraAdicRow')].map(r => {
+    const i = r.querySelectorAll('input');
+    return { nombre: (i[0].value || '').trim(), tipoDoc: 'CC', doc: (i[1].value || '').replace(/\D/g, ''), fechaNac: (i[2].value || '').trim() };
+  }).filter(a => a.nombre || a.doc);
+}
+function _d12Toggle(suf) {
+  const sel = document.getElementById('vReing' + suf);
+  const w = document.getElementById('vFechaCancReingWrap' + suf);
+  if (w) w.style.display = (sel && sel.value === 'REINGRESO') ? '' : 'none';
+}
+function _d12Validar(modalTab) {
+  const suf = { spti:'SPTI', spd:'SPD', psm:'PSM', pac60:'PAC60' }[modalTab];
+  if (!suf) return null;
+  const sel = document.getElementById('vReing' + suf);
+  if (!sel || sel.value !== 'REINGRESO') return null;
+  const f = ((document.getElementById('vFechaCancReing' + suf) || {}).value || '');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(f)) return 'Indica la fecha de cancelación de la póliza anterior: es necesaria para clasificar el reingreso.';
+  return null;
+}
 function abrirEditarSura(id) {
   const s = getState();
   const v = s.ventas.find(x => x.id === id);
@@ -13397,6 +13453,17 @@ function abrirEditarSura(id) {
   g('eSuraTel').value          = v.tomadorTel || v.telefono || '';
   g('eSuraCorreo').value       = v.tomadorCorreo || v.correo || '';
   g('eSuraCiudad').value       = v.ciudad || '';
+  g('eSuraTomNombre').value = v.tomadorNombre || v.nombre || '';
+  g('eSuraTomDoc').value = v.tomadorDoc || v.doc || '';
+  { const _as = v.asegurado || null; const _esT = _as ? !!_as.esTomador : true;
+    g('eSuraAseguradoEsTomador').checked = _esT;
+    g('eSuraAsegNombre').value = _as ? (_as.nombre || '') : (_esT ? (v.tomadorNombre || v.nombre || '') : '');
+    g('eSuraAsegDoc').value = _as ? (_as.doc || '') : (_esT ? (v.tomadorDoc || v.doc || '') : '');
+    g('eSuraAsegFechaNac').value = _as ? (_as.fechaNac || '') : (_esT ? (v.fechaNac || '') : '');
+    g('eSuraAseguradoConfirmado').checked = !!v.aseguradoConfirmado;
+    document.getElementById('eSuraAdicList').innerHTML = '';
+    (Array.isArray(v.aseguradosImport) ? v.aseguradosImport : []).forEach(a => eSuraAddAdic(a));
+    eSuraToggleAsegurado(); }
   g('eSuraPeriodicidad').value = v.periodicidad || 'MENSUAL';
   g('eSuraPrima').value        = v.prima || v.primaTotal || '';
   g('eSuraNotas').value        = v.notas || '';
@@ -13427,7 +13494,13 @@ async function guardarEdicionSura() {
   // Fechas (OT-2026-TARIFAS-ANIVERSARIO · N-7 / N-8): un campo vacío nunca borra un dato existente
   const _d = new Date();
   const _hoyIso = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
-  const _fnIn = productoEdit === 'SPD' ? '' : (g('eSuraFechaNac')?.value || '').trim();
+  const _asegFnIn = (g('eSuraAsegFechaNac')?.value || '').trim();
+const _fnIn = productoEdit === 'SPD' ? '' : (_asegFnIn || (g('eSuraFechaNac')?.value || '').trim());
+const _esTIn = !!(g('eSuraAseguradoEsTomador') || {}).checked;
+const _asegNomIn = (g('eSuraAsegNombre')?.value || '').trim();
+const _asegDocIn = (g('eSuraAsegDoc')?.value || '').replace(/\D/g, '');
+const _tomNomIn = (g('eSuraTomNombre')?.value || '').trim();
+const _tomDocIn = (g('eSuraTomDoc')?.value || '').replace(/\D/g, '');
   const _foIn = (g('eSuraFechaOrig')?.value || '').trim();
   if (_fnIn && (!/^\d{4}-\d{2}-\d{2}$/.test(_fnIn) || _fnIn > _hoyIso)) { showToast('La fecha de nacimiento no es válida o es futura'); return; }
   if (_foIn && (!/^\d{4}-\d{2}-\d{2}$/.test(_foIn) || _foIn > _hoyIso)) { showToast('La fecha original de afiliación no es válida o es futura'); return; }
@@ -13453,6 +13526,12 @@ async function guardarEdicionSura() {
     mesComp: 'IMPORTADO_SURA',
     ...(_fnIn && _edadIn !== null && !isNaN(_edadIn) ? { fechaNac: _fnIn, edad: _edadIn } : {}),
     ...(_foIn ? { fechaExpOriginal: _foIn, fechaExp: _foIn } : {}), // OP Fase 2f: expedición = afiliación
+// D9: tomador (cartera y pagos) y asegurado principal + adicionales
+...(_tomNomIn ? { tomadorNombre: _tomNomIn, nombre: _tomNomIn } : {}),
+...(_tomDocIn ? { tomadorDoc: _tomDocIn, doc: _tomDocIn } : {}),
+asegurado: { nombre: _esTIn ? (_tomNomIn || _asegNomIn) : _asegNomIn, tipoDoc: 'CC', doc: _esTIn ? (_tomDocIn || _asegDocIn) : _asegDocIn, fechaNac: _asegFnIn || _fnIn || '', esTomador: _esTIn },
+aseguradosImport: eSuraReadAdic(),
+aseguradoConfirmado: !!(g('eSuraAseguradoConfirmado') || {}).checked,
   };
 
   const _okE = await setState(s);
@@ -16020,7 +16099,7 @@ function _f2bCancelacionesDelDoc(doc) {
   const out = [];
   (getState().ventas || []).forEach(v => {
     // Sin documento de asegurado (registro antiguo), se usa el del tomador como respaldo.
-    const docsV = [v.doc || v.tomadorDoc].concat((Array.isArray(v.asegurados) ? v.asegurados : []).map(a => a && a.doc)).map(_f2bDigitos);
+    const docsV = [v.doc || v.tomadorDoc].concat((Array.isArray(v.asegurados) ? v.asegurados : []).map(a => a && a.doc)).concat(v.asegurado && v.asegurado.doc ? [v.asegurado.doc] : []).concat((Array.isArray(v.aseguradosImport) ? v.aseguradosImport : []).map(a => a && a.doc)).map(_f2bDigitos);
     if (!docsV.includes(doc)) return;
     const tomadorV = _f2bDigitos(v.tomadorDoc || v.doc);
     (Array.isArray(v.historialCancelaciones) ? v.historialCancelaciones : []).forEach(h => {
@@ -16046,6 +16125,10 @@ function _f2bPrecheck(modalTab) {
   if (!cfg) return null;
   const g = id => ((document.getElementById(id) || {}).value || '');
   if (g(cfg.tipo) !== 'NUEVO') return null;
+  const _suf = { spti:'SPTI', spd:'SPD', psm:'PSM', pac60:'PAC60' }[modalTab];
+  const _esReing = !!_suf && g('vReing' + _suf) === 'REINGRESO';
+  const _fCancIn = _esReing ? g('vFechaCancReing' + _suf) : '';
+  const _manualCanc = _esReing && /^\d{4}-\d{2}-\d{2}$/.test(_fCancIn) ? { fecha: _fCancIn, ventaId: null, producto: cfg.prod, actual: true, tomadorDoc: _f2bDigitos(g(cfg.doc)), poliza: '' } : null;
   const tomador = _f2bDigitos(g(cfg.doc));
   const fechaAlta = g(cfg.exp);
   const asegs = _f2bDocsAseguradosForm(modalTab);
@@ -16055,10 +16138,12 @@ function _f2bPrecheck(modalTab) {
   let mejor = null;
   docs.forEach(d => {
     if (!d) return;
-    const r = _f2bClasificarAlta(cfg.prod, fechaAlta, _f2bCancelacionesDelDoc(d), ctx);
+    const r0 = _f2bClasificarAlta(cfg.prod, fechaAlta, _f2bCancelacionesDelDoc(d).concat(_manualCanc ? [_manualCanc] : []), ctx);
+    const r = (r0.clase === 'REHABILITACION' && !(r0.cancelacion && r0.cancelacion.ventaId)) ? { clase: 'REINGRESO', cancelacion: r0.cancelacion } : r0;
     if (r.clase === 'NUEVO') return;
     if (!mejor || (r.clase === 'REHABILITACION' && mejor.clase !== 'REHABILITACION')) mejor = r;
   });
+  if (!mejor && _esReing) showToast('Según la fecha de cancelación indicada, la venta queda como nueva (más de 6 meses).');
   if (!mejor) return null;
   return { clase: mejor.clase, producto: cfg.prod, fechaAlta, cancelacion: mejor.cancelacion };
 }
@@ -16104,7 +16189,9 @@ async function guardarVenta() {
     }
   }
   // OP F2b: clasificación de altas voluntarias (solo ventas nuevas, no edición)
-  const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : null;
+  const _d12Err = (!_editId && _F2B_FORM[modalTab]) ? _d12Validar(modalTab) : null;
+if (_d12Err) { showToast(_d12Err); return; }
+const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : null;
   const _f2bIdsAntes = new Set((state.ventas || []).map(v => v.id));
   if (_f2bCtx && _f2bCtx.clase === 'REHABILITACION') {
     const _c = _f2bCtx.cancelacion;
@@ -18525,6 +18612,12 @@ function _baseComVol(venta) {
 }
 
 function registrarPago(ventaId, fechaPago) {
+  { const _vg = (getState().ventas || []).find(x => x.id === ventaId);
+    if (_vg && _vg._importadoSura) {
+      const _nAd = Array.isArray(_vg.aseguradosImport) ? _vg.aseguradosImport.length : 0;
+      if (_nAd > 0) { showToast('Póliza con asegurados adicionales: el registro de pagos queda bloqueado hasta habilitar la comisión por asegurado.'); return false; }
+      if (!_vg.aseguradoConfirmado) { showToast('Completa y confirma los datos del asegurado en Editar póliza importada antes de registrar pagos.'); return false; }
+    } }
   // OP Fase 2e: no se registran pagos antes de la fecha de expedición
   { const _vP = getState().ventas.find(x => x.id === ventaId);
     if (_f2eEsProyectada(_vP)) { showToast('⏳ Póliza proyectada: no se registran pagos antes de la expedición (' + _vP.fechaExp + ')'); return; } }
