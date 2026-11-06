@@ -8484,7 +8484,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
         <div class="form-group">
           <label class="form-label">📅 Fecha Expedición / Inicio Vigencia</label>
-          <input type="date" class="form-control" id="vFechaExpSPTI">
+          <input type="date" class="form-control" id="vFechaExpSPTI"><label style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:12px;"><input type="checkbox" id="vExpConfirmadaSURA_SPTI"> Fecha de expedición confirmada por SURA</label>
         </div>
         <div class="form-group">
           <label class="form-label">No. de Póliza</label>
@@ -8695,7 +8695,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
         <div class="form-group">
           <label class="form-label">📅 Fecha Expedición / Inicio Vigencia</label>
-          <input type="date" class="form-control" id="vFechaExpSPD">
+          <input type="date" class="form-control" id="vFechaExpSPD"><label style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:12px;"><input type="checkbox" id="vExpConfirmadaSURA_SPD"> Fecha de expedición confirmada por SURA</label>
         </div>
         <div class="form-group">
           <label class="form-label">Tipo Movimiento</label>
@@ -8906,7 +8906,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
         <div class="form-group">
           <label class="form-label">📅 Fecha Expedición / Inicio Vigencia</label>
-          <input type="date" class="form-control" id="vFechaExpPSM">
+          <input type="date" class="form-control" id="vFechaExpPSM"><label style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:12px;"><input type="checkbox" id="vExpConfirmadaSURA_PSM"> Fecha de expedición confirmada por SURA</label>
         </div>
         <div class="form-group">
           <label class="form-label">No. de Póliza</label>
@@ -9188,7 +9188,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </div>
         <div class="form-group">
           <label class="form-label">📅 Fecha Expedición / Inicio Vigencia</label>
-          <input type="date" class="form-control" id="vFechaExpPAC60">
+          <input type="date" class="form-control" id="vFechaExpPAC60"><label style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:12px;"><input type="checkbox" id="vExpConfirmadaSURA_PAC60"> Fecha de expedición confirmada por SURA</label>
         </div>
         <div class="form-group">
           <label class="form-label">No. de Póliza / Contrato</label>
@@ -16177,13 +16177,17 @@ async function guardarVenta() {
     }
   }
   if (_editId && !_modoEdicion) _editId = null; // OP Fase 2i: edición colgada, se descarta
+  let _expSURAConfirmada = false;
   state = structuredClone(getState()); // OP Fase 2e: trabajar sobre copia
 
   // OP Fase 2e: la expedición no puede ser anterior a hoy menos un día
   if (!_editId && _F2B_FORM[modalTab]) {
     const _e = ((document.getElementById(_F2B_FORM[modalTab].exp) || {}).value || '');
     const _dm = new Date(_cancelFechaLocalISO(new Date()) + 'T12:00:00'); _dm.setDate(_dm.getDate() - 1);
-    if (/^\d{4}-\d{2}-\d{2}$/.test(_e) && _e < _cancelFechaLocalISO(_dm)) {
+    const _sufE = { spti:'SPTI', spd:'SPD', psm:'PSM', pac60:'PAC60' }[modalTab];
+      const _confSURA = !!((document.getElementById('vExpConfirmadaSURA_' + _sufE) || {}).checked);
+      _expSURAConfirmada = _confSURA && /^\d{4}-\d{2}-\d{2}$/.test(_e);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(_e) && !_confSURA && _e < _cancelFechaLocalISO(_dm)) {
       showToast('⚠️ La fecha de expedición no puede ser anterior a un día antes de hoy');
       return;
     }
@@ -17120,6 +17124,9 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
         v.reingresoFechaCancelacion = _f2bCtx.cancelacion.fecha;
       }
     });
+  }
+  if (_expSURAConfirmada) {
+    state.ventas.forEach(v => { if (!_f2bIdsAntes.has(v.id)) { v.fechaExpConfirmadaSURA = true; v.fechaExpConfirmadaEn = new Date().toISOString(); } });
   }
   const _okV = await setState(state); // ← persiste a Firestore antes de mostrar el cambio
   if (_okV === false) return; // OP Fase 2e: no cerrar si no se guardó
@@ -19277,7 +19284,9 @@ function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
   const c = MP.cicloDeFecha(ancla, periodoDesde);
   const cAct = MP.cicloDeFecha(ancla, TARIFAS_FECHA_ACTIVACION);
   if (c === null || cAct === null) return bloq('FECHA_INVALIDA');
-  if (c <= cAct) return ok('GUARDADO', { valor: guardado });
+  // Corrección 05-nov-2026: un ciclo que empieza EXACTAMENTE el día de activación ya usa tarifa vigente.
+    const _inicioCiclo = c === 0 ? ancla : MP.aniversarioEn(ancla, c);
+    if (_inicioCiclo < TARIFAS_FECHA_ACTIVACION) return ok('GUARDADO', { valor: guardado });
 
   const fechaRenovacion = MP.aniversarioEn(ancla, c);
   const anio = parseInt(fechaRenovacion.slice(0, 4), 10);
