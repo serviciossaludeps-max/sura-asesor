@@ -19284,9 +19284,9 @@ function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
   const c = MP.cicloDeFecha(ancla, periodoDesde);
   const cAct = MP.cicloDeFecha(ancla, TARIFAS_FECHA_ACTIVACION);
   if (c === null || cAct === null) return bloq('FECHA_INVALIDA');
-  // Corrección 05-nov-2026: un ciclo que empieza EXACTAMENTE el día de activación ya usa tarifa vigente.
-    const _inicioCiclo = c === 0 ? ancla : MP.aniversarioEn(ancla, c);
-    if (_inicioCiclo < TARIFAS_FECHA_ACTIVACION) return ok('GUARDADO', { valor: guardado });
+      // Corrección 05-nov-2026 (regla automática): solo el primer ciclo conserva el valor guardado (F-3).
+    // Desde el primer aniversario, cada período se rige por la tabla de su año y la edad de cada persona: ya no depende de la fecha de activación.
+    if (c === 0) return ok('GUARDADO', { valor: guardado });
 
   const fechaRenovacion = MP.aniversarioEn(ancla, c);
   const anio = parseInt(fechaRenovacion.slice(0, 4), 10);
