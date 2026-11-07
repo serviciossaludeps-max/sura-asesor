@@ -18976,7 +18976,7 @@ function renderCarteraTabla(filas, pagos) {
         <td style="padding:10px 12px;font-family:var(--mono);font-size:12px;white-space:nowrap;">${expFmt}</td>
         <td style="padding:10px 12px;font-family:var(--mono);font-size:12px;white-space:nowrap;color:${est.estado==='PROXIMO'?'var(--amber)':'var(--text)'};">${proxFmt}</td>
         <td style="padding:10px 12px;font-family:var(--mono);font-size:13px;font-weight:700;color:${est.dias>0?est.color:'var(--text-muted)'};">${est.dias > 0 ? `+${est.dias}` : '—'}</td>
-        <td style="padding:10px 12px;font-family:var(--mono);color:var(--sura-lime);font-size:12px;">${fmtP(Math.round((v.primaTotal||v.prima||0)*factor))}</td>
+        <td style="padding:10px 12px;font-family:var(--mono);color:var(--sura-lime);font-size:12px;">${fmtP(Math.round(_primaCarteraVigente(v, factor)))}</td>
         <td style="padding:10px 12px;font-family:var(--mono);font-size:12px;">${tel || '—'}</td>
         <td style="padding:10px 12px;white-space:nowrap;">${protoBadge}</td>
         <td style="padding:10px 12px;white-space:nowrap;" onclick="event.stopPropagation()">
@@ -19318,13 +19318,35 @@ function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
 
 // Mismo cálculo del período que usa registrarPago (fechaExp + N × intervalo, N = pagos ya registrados).
 function _periodoSiguientePago(venta) {
+  // Corrección 05-nov-2026 (I-4): el próximo periodo sale de la FECHA del último pago, no del número de pagos.
+  // k = índice del último periodo cubierto por un pago; el siguiente es k + 1. Con pagos puntuales equivale al cálculo anterior.
   const meses = { MENSUAL: 1, TRIMESTRAL: 3, SEMESTRAL: 6, ANUAL: 12 };
   const intervalo = meses[venta.periodicidad] || 1;
-  const nAntes = getPagosVenta(venta.id).length;
-  const diaExp = new Date(venta.fechaExp + 'T12:00:00');
-  const desde = new Date(diaExp); desde.setMonth(desde.getMonth() + nAntes * intervalo);
-  const hasta = new Date(diaExp); hasta.setMonth(hasta.getMonth() + (nAntes + 1) * intervalo);
+  const ancla = new Date(venta.fechaExp + 'T12:00:00');
+  const fechas = (getPagosVenta(venta.id) || [])
+    .map(p => new Date(String(p.fecha || '').slice(0, 10) + 'T12:00:00'))
+    .filter(d => !isNaN(d));
+  let k = -1;
+  if (fechas.length) {
+    const ultimo = new Date(Math.max.apply(null, fechas.map(d => d.getTime())));
+    k = 0;
+    for (;;) {
+      const t = new Date(ancla); t.setMonth(t.getMonth() + (k + 1) * intervalo);
+      if (t <= ultimo) k++; else break;
+    }
+  }
+  const desde = new Date(ancla); desde.setMonth(desde.getMonth() + (k + 1) * intervalo);
+  const hasta = new Date(desde); hasta.setMonth(hasta.getMonth() + intervalo);
   return { desde: desde.toISOString().slice(0, 10), hasta: hasta.toISOString().slice(0, 10) };
+}
+
+// Corrección 05-nov-2026 (I-5): cartera muestra el valor del periodo vigente (misma resolución que el cobro).
+function _primaCarteraVigente(venta, factorDefault) {
+  try {
+    const r = resolverTarifaPeriodo(venta, _periodoSiguientePago(venta).desde);
+    if (r && r.estado !== 'BLOQUEADO' && r.valor !== null && r.valor !== undefined) return r.valor;
+  } catch (e) {}
+  return (venta.primaTotal || venta.prima || 0) * factorDefault;
 }
 
 function textoAvisoTarifa(r) {
