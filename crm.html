@@ -3980,11 +3980,11 @@
           <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
             <select class="form-control" style="width:200px;" id="concilFiltroEstado" onchange="concilFiltrarTabla()">
               <option value="">Todos los estados</option>
-              <option value="OK">✅ Pagadas OK</option>
-              <option value="DIFERENCIA">⚠️ Tarifa diferente</option>
-              <option value="NO_PAGADA">❌ No pagada (en informe SURA)</option>
-              <option value="SIN_CRUZAR">🔎 Sin cruzar</option>
-              <option value="EXTRA_SURA">💡 Ventas pasivas (no en mis registros)</option>
+              <option value="OK">Pagadas OK</option>
+              <option value="DIFERENCIA">Tarifa diferente</option>
+              <option value="NO_PAGADA">No pagada (en informe SURA)</option>
+              <option value="SIN_CRUZAR">Sin cruzar</option>
+              <option value="EXTRA_SURA">Ventas pasivas (no en mis registros)</option>
             </select>
             <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
               <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg></span>
@@ -4061,11 +4061,11 @@
             </select>
             <select class="form-control" style="width:190px;" id="hFiltroEstado" onchange="histRender()">
               <option value="">Todos los estados</option>
-              <option value="NUNCA_PAGADA">❌ Nunca pagada</option>
-              <option value="RECUPERADA">🔄 Recuperada</option>
-              <option value="DIFERENCIA">⚠️ Diferencia de tarifa</option>
-              <option value="NO_PAGADA">❌ No pagada (1 mes)</option>
-              <option value="SIN_CRUZAR">🔎 Sin cruzar</option>
+              <option value="NUNCA_PAGADA">Nunca pagada</option>
+              <option value="RECUPERADA">Recuperada</option>
+              <option value="DIFERENCIA">Diferencia de tarifa</option>
+              <option value="NO_PAGADA">No pagada (1 mes)</option>
+              <option value="SIN_CRUZAR">Sin cruzar</option>
             </select>
             <div style="position:relative;flex:1;min-width:180px;max-width:340px;">
               <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:.5;"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg></span>
@@ -4156,7 +4156,7 @@
                 <div class="stat-sub">USUARIO YA PAGADO</div>
               </div>
               <div class="stat-card" style="border-top:3px solid var(--amber);">
-                <div class="stat-label">⏳ Pendiente compensación</div>
+                <div class="stat-label"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Pendiente compensación</div>
                 <div class="stat-value" id="rvKpiPendiente" style="color:var(--amber);font-size:22px;">0</div>
                 <div class="stat-sub">PENDIENTE DE COMPENSACION</div>
               </div>
@@ -4216,19 +4216,19 @@
             <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
               <select class="form-control" style="width:240px;" id="revisionFiltroObs" onchange="revisionFiltrar()">
                 <option value="">Todas las observaciones</option>
-                <option value="USUARIO YA PAGADO">✅ Ya pagado</option>
-                <option value="PENDIENTE DE COMPENSACION">⏳ Pendiente compensación</option>
-                <option value="USUARIO NO PAGADO">❌ No pagado</option>
-                <option value="USUARIO A PAGAR EN PROXIMA LIQUIDACION">🔄 A pagar próxima</option>
-                <option value="USUARIO A PROCESAR EN PROXIMA LIQUIDACION">🔄 A procesar próxima</option>
-                <option value="DIAS ACUMULADOS PREVIO LIQUIDACION">📅 Días acumulados</option>
-                <option value="USUARIO NO GENERA PAGO COMISION">🚫 No genera pago</option>
+                <option value="USUARIO YA PAGADO">Ya pagado</option>
+                <option value="PENDIENTE DE COMPENSACION">Pendiente compensación</option>
+                <option value="USUARIO NO PAGADO">No pagado</option>
+                <option value="USUARIO A PAGAR EN PROXIMA LIQUIDACION">A pagar próxima</option>
+                <option value="USUARIO A PROCESAR EN PROXIMA LIQUIDACION">A procesar próxima</option>
+                <option value="DIAS ACUMULADOS PREVIO LIQUIDACION">Días acumulados</option>
+                <option value="USUARIO NO GENERA PAGO COMISION">No genera pago</option>
               </select>
               <select class="form-control" style="width:180px;" id="revisionFiltroCruce" onchange="revisionFiltrar()">
                 <option value="">Todos los cruces</option>
-                <option value="CRUZADO">🔗 Cruzado con app</option>
-                <option value="SOLO_SURA">🔎 Solo en SURA</option>
-                <option value="SIN_CRUZAR_MES">⚠️ Sin cruzar del mes</option>
+                <option value="CRUZADO">Cruzado con app</option>
+                <option value="SOLO_SURA">Solo en SURA</option>
+                <option value="SIN_CRUZAR_MES">Sin cruzar del mes</option>
               </select>
               <div style="position:relative;flex:1;min-width:200px;max-width:340px;">
                 <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg></span>
@@ -7042,7 +7042,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
               <div class="card-title" style="margin-bottom:2px;"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" /> <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" /> <circle cx="12" cy="12" r="2" /> <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" /> <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19" /></svg> Estado de Sincronización</div>
               <div style="font-size:12px;color:var(--text-muted);">Última exportación y estado del archivo en GitHub</div>
             </div>
-            <div id="syncStatusBadge" style="font-size:12px;padding:5px 14px;border-radius:20px;background:rgba(245,158,11,0.15);color:var(--amber);font-weight:600;">⏳ Sin configurar</div>
+            <div id="syncStatusBadge" style="font-size:12px;padding:5px 14px;border-radius:20px;background:rgba(245,158,11,0.15);color:var(--amber);font-weight:600;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Sin configurar</div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
             <div style="background:var(--surface2);border-radius:8px;padding:12px;border-left:3px solid var(--sura-blue);">
@@ -7327,7 +7327,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
               <div class="card-title" style="margin-bottom:2px;"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg> Backup Automático — Google Drive</div>
               <div style="font-size:12px;color:var(--text-muted);">Guarda tus datos directamente en tu Google Drive con un clic</div>
             </div>
-            <div id="driveStatusBadge" style="font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(245,158,11,0.15);color:var(--amber);font-weight:600;">⏳ Sin backup en Drive</div>
+            <div id="driveStatusBadge" style="font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(245,158,11,0.15);color:var(--amber);font-weight:600;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Sin backup en Drive</div>
           </div>
 
           <div id="driveNoAuth" style="">
@@ -22813,7 +22813,7 @@ function renderCierresAlertas() {
 
   el.innerHTML = alertas.map(a => `
     <div style="${urgencyStyle[a.urgency]} border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">
-      <span style="font-size:20px;">${a.urgency === 'critical' ? '🚨' : a.urgency === 'high' ? '⚠️' : '🔔'}</span>
+      <span style="font-size:20px;">${a.urgency === 'critical' ? '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18v-6a5 5 0 1 1 10 0v6" /> <path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z" /> <path d="M21 12h1" /> <path d="M18.5 4.5 18 5" /> <path d="M2 12h1" /> <path d="M12 2v1" /> <path d="m4.929 4.929.707.707" /> <path d="M12 12v6" /></svg>' : a.urgency === 'high' ? '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg>' : '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /> <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /></svg>'}</span>
       <div>
         <div style="font-weight:700;font-size:13.5px;">${a.tipo.icon} ${a.tipo.label} — ${a.mes}</div>
         <div style="font-size:12px;opacity:0.85;">${a.label} · ${a.limite.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'})} ${a.limite.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})}</div>
@@ -25506,11 +25506,11 @@ function importarBackup(event) {
       if (backup.cierres) setCierres(backup.cierres);
       if (backup.plantillas) { if (window.__FB_CACHE__) window.__FB_CACHE__.plantillas = backup.plantillas; if (window.FB) window.FB.set('plantillas', backup.plantillas); try { localStorage.setItem('sura_plantillas_v1', JSON.stringify(backup.plantillas)); } catch(e) {} }
       state = getState();
-      document.getElementById('backupImportMsg').innerHTML = `<span style="color:var(--green);">✅ Backup restaurado exitosamente. ${backup.datos.ventas.length} ventas cargadas.</span>`;
+      document.getElementById('backupImportMsg').innerHTML = `<span style="color:var(--green);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Backup restaurado exitosamente. ${backup.datos.ventas.length} ventas cargadas.</span>`;
       renderBackup();
       showToast('✅ Datos restaurados correctamente');
     } catch(err) {
-      document.getElementById('backupImportMsg').innerHTML = `<span style="color:var(--red);">❌ Error: ${err.message}</span>`;
+      document.getElementById('backupImportMsg').innerHTML = `<span style="color:var(--red);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> Error: ${err.message}</span>`;
     }
   };
   reader.readAsText(file);
@@ -25667,10 +25667,10 @@ function renderConfigAnio() {
   const alert = document.getElementById('configAnioAlerta');
   if (configAnioActivo < AÑO_ACTUAL) {
     alert.innerHTML = `<div class="alert" style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);color:var(--teal);">
-      📚 Año ${configAnioActivo} — <strong>Histórico</strong>. Puedes consultar pero los cambios no afectan los datos actuales.
+      <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /> <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg> Año ${configAnioActivo} — <strong>Histórico</strong>. Puedes consultar pero los cambios no afectan los datos actuales.
     </div>`;
   } else if (configAnioActivo > AÑO_ACTUAL) {
-    alert.innerHTML = `<div class="alert alert-info">🔮 Año ${configAnioActivo} — Configuración anticipada para el próximo año.</div>`;
+    alert.innerHTML = `<div class="alert alert-info"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /> <path d="M5 3v4" /> <path d="M19 17v4" /> <path d="M3 5h4" /> <path d="M17 19h4" /></svg> Año ${configAnioActivo} — Configuración anticipada para el próximo año.</div>`;
   } else {
     alert.innerHTML = '';
   }
@@ -25931,7 +25931,7 @@ function renderCampanasConfig() {
     <div class="card" style="border-left:3px solid var(--sura-blue);">
       <div style="display:flex;justify-content:space-between;margin-bottom:14px;">
         <input type="text" class="form-control" value="${c.nombre}" style="width:220px;font-weight:700;" onchange="campanasTemp[${i}].nombre=this.value" placeholder="Nombre campaña">
-        <button class="btn btn-danger btn-sm" onclick="campanasTemp.splice(${i},1);renderCampanasConfig()">🗑</button>
+        <button class="btn btn-danger btn-sm" onclick="campanasTemp.splice(${i},1);renderCampanasConfig()"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
       </div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Período</label><input type="text" class="form-control" value="${c.periodo}" onchange="campanasTemp[${i}].periodo=this.value" placeholder="Ej: Ene-Abr"></div>
@@ -27879,15 +27879,15 @@ function listarBackupsDrive() {
   el.style.display = '';
   el.innerHTML = `
     <div style="background:var(--surface2);border-radius:8px;padding:14px;font-size:12.5px;color:var(--text-muted);">
-      <div style="margin-bottom:10px;font-weight:600;color:var(--text);">📂 Cómo ver tus backups en Google Drive</div>
+      <div style="margin-bottom:10px;font-weight:600;color:var(--text);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg> Cómo ver tus backups en Google Drive</div>
       <div style="margin-bottom:6px;">1. Abre <strong style="color:var(--sura-lime);">drive.google.com</strong></div>
       <div style="margin-bottom:6px;">2. Busca archivos que empiecen con <strong style="color:var(--text);">sura_backup_</strong></div>
       <div style="margin-bottom:12px;">3. Para restaurar, descárgalo y usa "⬆️ Importar Backup" en esta misma página</div>
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-secondary btn-sm" onclick="window.open('https://drive.google.com/drive/search?q=sura_backup','_blank')">🔍 Buscar en Drive</button>
+        <button class="btn btn-secondary btn-sm" onclick="window.open('https://drive.google.com/drive/search?q=sura_backup','_blank')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg> Buscar en Drive</button>
         <button class="btn btn-secondary btn-sm" onclick="document.getElementById('driveListaBackups').style.display='none'">Cerrar</button>
       </div>
-      ${cfg.ultimo ? `<div style="margin-top:10px;font-size:11.5px;color:var(--green);">✅ Último backup registrado: ${new Date(cfg.ultimo).toLocaleString('es-CO')}</div>` : ''}
+      ${cfg.ultimo ? `<div style="margin-top:10px;font-size:11.5px;color:var(--green);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Último backup registrado: ${new Date(cfg.ultimo).toLocaleString('es-CO')}</div>` : ''}
       <div style="margin-top:6px;font-size:11.5px;color:var(--text-dim);">Total backups realizados: <strong>${cfg.conteo||0}</strong></div>
     </div>`;
 }
@@ -27900,7 +27900,7 @@ function desconectarDrive() {
   document.getElementById('driveAuth').style.display = 'none';
   document.getElementById('driveStatusBadge').style.background = 'rgba(245,158,11,0.15)';
   document.getElementById('driveStatusBadge').style.color = 'var(--amber)';
-  document.getElementById('driveStatusBadge').textContent = '⏳ Sin backup en Drive';
+  document.getElementById('driveStatusBadge').innerHTML = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Sin backup en Drive';
   showToast('Desconectado de Google Drive');
 }
 
@@ -27919,21 +27919,21 @@ function actualizarUIBackupDrive() {
     if (dias <= 3) {
       badge.style.background = 'rgba(34,197,94,0.15)';
       badge.style.color = 'var(--green)';
-      badge.textContent = '✅ Backup al día';
+      badge.innerHTML = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Backup al día';
     } else if (dias <= 7) {
       badge.style.background = 'rgba(245,158,11,0.15)';
       badge.style.color = 'var(--amber)';
-      badge.textContent = `⚠️ ${dias} días sin backup`;
+      badge.innerHTML = `<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> ${dias} días sin backup`;
     } else {
       badge.style.background = 'rgba(239,68,68,0.15)';
       badge.style.color = 'var(--red)';
-      badge.textContent = `🔴 ${dias} días sin backup`;
+      badge.innerHTML = `<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> ${dias} días sin backup`;
     }
   } else {
     document.getElementById('driveUltimoBackup').textContent = 'Nunca';
     badge.style.background = 'rgba(239,68,68,0.15)';
     badge.style.color = 'var(--red)';
-    badge.textContent = '🔴 Sin backup todavía';
+    badge.innerHTML = '<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Sin backup todavía';
   }
 }
 
@@ -27971,19 +27971,19 @@ function actualizarEstadoAlerta() {
   if (sel) sel.value = cfg.dias;
 
   if (cfg.dias === 0) {
-    el.innerHTML = '<span style="color:var(--text-dim);">🔕 Alertas desactivadas</span>';
+    el.innerHTML = '<span style="color:var(--text-dim);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5" /> <path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7" /> <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" /> <path d="m2 2 20 20" /></svg> Alertas desactivadas</span>';
     return;
   }
   if (!cfg.ultimo) {
-    el.innerHTML = '<span style="color:var(--red);">🔴 Nunca has hecho backup — ¡hazlo ahora!</span>';
+    el.innerHTML = '<span style="color:var(--red);"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Nunca has hecho backup — ¡hazlo ahora!</span>';
     return;
   }
   const diasSin = Math.floor((Date.now() - new Date(cfg.ultimo)) / 86400000);
   if (diasSin >= cfg.dias) {
-    el.innerHTML = `<span style="color:var(--amber);">⚠️ Llevas ${diasSin} día${diasSin!==1?'s':''} sin backup</span>`;
+    el.innerHTML = `<span style="color:var(--amber);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Llevas ${diasSin} día${diasSin!==1?'s':''} sin backup</span>`;
   } else {
     const falta = cfg.dias - diasSin;
-    el.innerHTML = `<span style="color:var(--green);">✅ Próxima alerta en ${falta} día${falta!==1?'s':''}</span>`;
+    el.innerHTML = `<span style="color:var(--green);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Próxima alerta en ${falta} día${falta!==1?'s':''}</span>`;
   }
 }
 
@@ -29639,12 +29639,12 @@ function renderSync() {
   const ult = cfg.ultimaExport ? new Date(cfg.ultimaExport) : null;
   if (ult) {
     const dias = Math.floor((Date.now() - ult) / 86400000);
-    if (dias === 0) { badge.style.background='rgba(34,197,94,0.15)'; badge.style.color='var(--green)'; badge.textContent='✅ Exportado hoy'; }
-    else if (dias <= 3) { badge.style.background='rgba(245,158,11,0.15)'; badge.style.color='var(--amber)'; badge.textContent=`⚠️ Hace ${dias} día(s)`; }
-    else { badge.style.background='rgba(239,68,68,0.15)'; badge.style.color='var(--red)'; badge.textContent=`🔴 Hace ${dias} días`; }
+    if (dias === 0) { badge.style.background='rgba(34,197,94,0.15)'; badge.style.color='var(--green)'; badge.innerHTML='<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Exportado hoy'; }
+    else if (dias <= 3) { badge.style.background='rgba(245,158,11,0.15)'; badge.style.color='var(--amber)'; badge.innerHTML=`<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Hace ${dias} día(s)`; }
+    else { badge.style.background='rgba(239,68,68,0.15)'; badge.style.color='var(--red)'; badge.innerHTML=`<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Hace ${dias} días`; }
     document.getElementById('syncUltimaExport').textContent = ult.toLocaleString('es-CO');
   } else {
-    badge.style.background='rgba(245,158,11,0.15)'; badge.style.color='var(--amber)'; badge.textContent='⏳ Sin exportar';
+    badge.style.background='rgba(245,158,11,0.15)'; badge.style.color='var(--amber)'; badge.innerHTML='<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Sin exportar';
     document.getElementById('syncUltimaExport').textContent = 'Nunca';
   }
 
@@ -29677,7 +29677,7 @@ function syncActualizarRepoLink() {
   if (!el) return;
   if (cfg.ghUser && cfg.ghRepo) {
     const url = `https://github.com/${cfg.ghUser}/${cfg.ghRepo}`;
-    el.innerHTML = `🔗 Tu repositorio: <a href="${url}" target="_blank" style="color:var(--sura-blue);text-decoration:underline;">${url}</a>`;
+    el.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg> Tu repositorio: <a href="${url}" target="_blank" style="color:var(--sura-blue);text-decoration:underline;">${url}</a>`;
   } else {
     el.textContent = '';
   }
@@ -29721,7 +29721,7 @@ function syncExportarDatos() {
   const msg = document.getElementById('syncExportMsg');
   if (msg) {
     msg.style.display = '';
-    msg.innerHTML = `✅ <strong>sura_datos_${fecha}.json</strong> descargado — sube este archivo a tu repositorio GitHub para sincronizar.`;
+    msg.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> <strong>sura_datos_${fecha}.json</strong> descargado — sube este archivo a tu repositorio GitHub para sincronizar.`;
   }
   actualizarSidebarSync();
   showToast('✅ Datos exportados. Súbelos a GitHub.');
@@ -29790,7 +29790,7 @@ function syncAplicarBackup(backup) {
     if (msg) {
       msg.style.display = '';
       msg.style.color = 'var(--green)';
-      msg.innerHTML = `✅ Datos importados correctamente desde <strong>${new Date(backup.fecha).toLocaleString('es-CO')}</strong>. Recargando...`;
+      msg.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Datos importados correctamente desde <strong>${new Date(backup.fecha).toLocaleString('es-CO')}</strong>. Recargando...`;
     }
     showToast('✅ Datos sincronizados correctamente');
     setTimeout(() => { initMultiAnio(); navigate('dashboard'); renderSync(); }, 1200);
@@ -32347,7 +32347,7 @@ async function adminCargarUsuarios() {
   } catch(e) {
     console.error('[Admin] Error cargando usuarios:', e.code, e.message);
     tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--red);">
-      ❌ Error al cargar usuarios<br>
+      <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> Error al cargar usuarios<br>
       <span style="font-size:11px;color:var(--text-dim);">${e.code === 'permission-denied' ? 'Sin permiso — actualiza las Security Rules de Firestore' : e.message}</span>
     </td></tr>`;
     return;
@@ -32381,13 +32381,13 @@ async function adminCargarUsuarios() {
   usuarios.sort((a,b) => (orden[a.estado]||9) - (orden[b.estado]||9));
 
   const estadoChip = {
-    aprobado:            '<span class="chip chip-green" style="font-size:10px;">✅ Aprobado</span>',
-    pendiente:           '<span class="chip chip-amber" style="font-size:10px;">⏳ Pendiente</span>',
-    rechazado:           '<span class="chip" style="font-size:10px;background:rgba(239,68,68,.15);color:var(--red);border-color:rgba(239,68,68,.3);">❌ Rechazado</span>',
-    suspendido_vigencia: '<span class="chip" style="font-size:10px;background:rgba(245,158,11,.15);color:var(--amber);border-color:rgba(245,158,11,.4);">⏰ Vencido</span>',
+    aprobado:            '<span class="chip chip-green" style="font-size:10px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Aprobado</span>',
+    pendiente:           '<span class="chip chip-amber" style="font-size:10px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Pendiente</span>',
+    rechazado:           '<span class="chip" style="font-size:10px;background:rgba(239,68,68,.15);color:var(--red);border-color:rgba(239,68,68,.3);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> Rechazado</span>',
+    suspendido_vigencia: '<span class="chip" style="font-size:10px;background:rgba(245,158,11,.15);color:var(--amber);border-color:rgba(245,158,11,.4);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <polyline points="12 6 12 12 16 14" /></svg> Vencido</span>',
   };
   const rolChip = {
-    admin:  '<span class="chip chip-purple" style="font-size:10px;">🛡️ Admin</span>',
+    admin:  '<span class="chip chip-purple" style="font-size:10px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /></svg> Admin</span>',
     asesor: '<span class="chip chip-blue"   style="font-size:10px;">Asesor</span>',
   };
 
@@ -32408,12 +32408,12 @@ async function adminCargarUsuarios() {
     const acciones = esMiCuenta
       ? '<span style="font-size:11px;color:var(--text-dim);">Tu cuenta</span>'
       : `<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;">
-          ${u.estado === 'pendiente'           ? `<button class="btn btn-secondary btn-sm" style="background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3);" onclick="adminAprobarConVigencia('${u.cc}','${nomSafe}')">✅ Aprobar</button>` : ''}
+          ${u.estado === 'pendiente'           ? `<button class="btn btn-secondary btn-sm" style="background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3);" onclick="adminAprobarConVigencia('${u.cc}','${nomSafe}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Aprobar</button>` : ''}
           ${u.estado === 'aprobado'            ? `<button class="btn btn-secondary btn-sm" style="background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.3);" onclick="adminCambiarEstado('${u.cc}','pendiente')">⏸ Suspender</button>` : ''}
-          ${u.estado === 'suspendido_vigencia' ? `<button class="btn btn-secondary btn-sm" style="background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3);" onclick="adminAprobarConVigencia('${u.cc}','${nomSafe}')">🔄 Renovar</button>` : ''}
+          ${u.estado === 'suspendido_vigencia' ? `<button class="btn btn-secondary btn-sm" style="background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3);" onclick="adminAprobarConVigencia('${u.cc}','${nomSafe}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg> Renovar</button>` : ''}
           ${u.estado === 'rechazado'           ? `<button class="btn btn-secondary btn-sm" onclick="adminAprobarConVigencia('${u.cc}','${nomSafe}')">Restaurar</button>` : ''}
-          ${u.estado !== 'rechazado'           ? `<button class="btn btn-danger btn-sm" onclick="adminCambiarEstado('${u.cc}','rechazado')" title="Rechazar">🚫</button>` : ''}
-          <button class="btn btn-secondary btn-sm" onclick="adminResetearPINde('${u.cc}','${nomSafe}')" title="Restablecer PIN">🔑</button>
+          ${u.estado !== 'rechazado'           ? `<button class="btn btn-danger btn-sm" onclick="adminCambiarEstado('${u.cc}','rechazado')" title="Rechazar"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m4.9 4.9 14.2 14.2" /></svg></button>` : ''}
+          <button class="btn btn-secondary btn-sm" onclick="adminResetearPINde('${u.cc}','${nomSafe}')" title="Restablecer PIN"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5" /> <path d="m21 2-9.6 9.6" /> <path d="m15.5 7.5 3 3L22 7l-3-3" /></svg></button>
         </div>`;
 
     return `<tr style="background:${bg};border-top:1px solid var(--border);">
@@ -37245,7 +37245,7 @@ function renderConciliacion() {
 
   const infoEl = document.getElementById('concilPeriodoInfo');
   if (infoEl) {
-    infoEl.innerHTML = `📅 <strong>Mes de pago: ${MESES_ES[mesPago]} ${anio}</strong> &nbsp;→&nbsp; 
+    infoEl.innerHTML = `<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg> <strong>Mes de pago: ${MESES_ES[mesPago]} ${anio}</strong> &nbsp;→&nbsp; 
       Mes compensado: <strong>${MESES_ES[mesCompens]} ${anioCompens}</strong> &nbsp;→&nbsp; 
       Ventas del período: <strong>${inicioStr}</strong> al <strong>${finStr}</strong>
       <span style="margin-left:12px;font-size:11px;color:var(--text-muted);">(DH6 de ${MESES_ES[mesVentas]} → DH5 de ${MESES_ES[mesCompens]})</span>`;
@@ -37511,10 +37511,10 @@ function concilRenderResultados(resultados) {
 
     resumenWrap.innerHTML = `
       <div style="padding:16px 18px;border-radius:12px;border:1px solid var(--border);background:var(--surface);">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">📋 Realidad del cruce vs. Pagadas — ${totalPeriodo} venta${totalPeriodo!==1?'s':''} del período</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Realidad del cruce vs. Pagadas — ${totalPeriodo} venta${totalPeriodo!==1?'s':''} del período</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
           <div>
-            <div style="font-size:12.5px;font-weight:700;color:var(--green);margin-bottom:6px;">✅ SE ESTÁN PAGANDO: ${seEstanPagando} · ${fmt(totalPagandoVal)}</div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--green);margin-bottom:6px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> SE ESTÁN PAGANDO: ${seEstanPagando} · ${fmt(totalPagandoVal)}</div>
             <div class="concil-resumen-line" onclick="concilFiltrarDesdeResumen('OK')" style="${lineaStyle}background:rgba(34,197,94,0.06);" onmouseover="this.style.background='rgba(34,197,94,0.14)'" onmouseout="this.style.background='rgba(34,197,94,0.06)'">
               <span>${ok.length} con tarifa exacta (OK)</span><span style="color:var(--text-dim);">→</span>
             </div>
@@ -37523,7 +37523,7 @@ function concilRenderResultados(resultados) {
             </div>
           </div>
           <div>
-            <div style="font-size:12.5px;font-weight:700;color:var(--red);margin-bottom:6px;">❌ NO SE ESTÁN PAGANDO: ${noSeEstanPag} · ${fmt(totalNoPagandoVal)} esperado</div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--red);margin-bottom:6px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> NO SE ESTÁN PAGANDO: ${noSeEstanPag} · ${fmt(totalNoPagandoVal)} esperado</div>
             <div class="concil-resumen-line" onclick="concilFiltrarDesdeResumen('NO_PAGADA')" style="${lineaStyle}background:rgba(239,68,68,0.06);" onmouseover="this.style.background='rgba(239,68,68,0.14)'" onmouseout="this.style.background='rgba(239,68,68,0.06)'">
               <span>${np.length} aparecen en "No pagadas" (con causa)</span><span style="color:var(--text-dim);">→</span>
             </div>
@@ -37651,8 +37651,8 @@ function concilRenderResultados(resultados) {
         <div style="font-size:15px;font-weight:700;color:${semColor};margin-bottom:3px;">${semTitulo}</div>
         <div style="font-size:12px;color:var(--text-muted);">${semDesc}</div>
       </div>
-      ${hayAccionUrgente ? `<button onclick="concilCopiarListaReclamaciones()" style="padding:8px 16px;border-radius:8px;background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.4);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">📋 Copiar lista para reclamar</button>
-      <a href="https://epsapps.suramericana.com/comisiones/menu/index.jsp" target="_blank" rel="noopener" style="padding:8px 16px;border-radius:8px;background:rgba(26,76,232,0.15);color:var(--sura-blue);border:1px solid rgba(26,76,232,0.3);font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;">🔗 Abrir portal SURA</a>` : ''}
+      ${hayAccionUrgente ? `<button onclick="concilCopiarListaReclamaciones()" style="padding:8px 16px;border-radius:8px;background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.4);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Copiar lista para reclamar</button>
+      <a href="https://epsapps.suramericana.com/comisiones/menu/index.jsp" target="_blank" rel="noopener" style="padding:8px 16px;border-radius:8px;background:rgba(26,76,232,0.15);color:var(--sura-blue);border:1px solid rgba(26,76,232,0.3);font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg> Abrir portal SURA</a>` : ''}
     </div>`;
 
     // ── BLOQUE 1: Plan de reclamación (casos accionables ordenados por valor) ─
@@ -37663,7 +37663,7 @@ function concilRenderResultados(resultados) {
       ].sort((a,b) => b._valor - a._valor);
 
       html += `<div style="padding:16px 18px;border-radius:12px;border:1px solid rgba(245,158,11,0.35);background:rgba(245,158,11,0.05);margin-bottom:14px;">
-        <div style="font-size:14px;font-weight:700;color:var(--amber);margin-bottom:10px;">🎯 Plan de reclamación — ${todosReclamables.length} caso${todosReclamables.length>1?'s':''} · ${fmt(totalRecuperable)} a recuperar</div>
+        <div style="font-size:14px;font-weight:700;color:var(--amber);margin-bottom:10px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></svg> Plan de reclamación — ${todosReclamables.length} caso${todosReclamables.length>1?'s':''} · ${fmt(totalRecuperable)} a recuperar</div>
         <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
           ${todosReclamables.map((r,i) => `
           <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);">
@@ -37676,7 +37676,7 @@ function concilRenderResultados(resultados) {
           </div>`).join('')}
         </div>
         <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);">
-          <strong style="color:var(--text);display:block;margin-bottom:6px;">📋 Pasos para reclamar en el portal SURA:</strong>
+          <strong style="color:var(--text);display:block;margin-bottom:6px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Pasos para reclamar en el portal SURA:</strong>
           <div style="display:flex;flex-direction:column;gap:4px;">
             <div>1. Ingresa al portal con tu código de asesor</div>
             <div>2. Ve a <strong>Comisiones → Reclamaciones → Nueva reclamación</strong></div>
@@ -37687,8 +37687,8 @@ function concilRenderResultados(resultados) {
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button onclick="concilCopiarListaReclamaciones()" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.35);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">📋 Copiar lista completa</button>
-          <a href="https://epsapps.suramericana.com/comisiones/menu/index.jsp" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;background:rgba(26,76,232,0.12);color:var(--sura-blue);border:1px solid rgba(26,76,232,0.25);font-size:12px;font-weight:700;text-decoration:none;">🔗 Abrir portal SURA</a>
+          <button onclick="concilCopiarListaReclamaciones()" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.35);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Copiar lista completa</button>
+          <a href="https://epsapps.suramericana.com/comisiones/menu/index.jsp" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;background:rgba(26,76,232,0.12);color:var(--sura-blue);border:1px solid rgba(26,76,232,0.25);font-size:12px;font-weight:700;text-decoration:none;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg> Abrir portal SURA</a>
         </div>
       </div>`;
     }
@@ -37701,7 +37701,7 @@ function concilRenderResultados(resultados) {
       const noReclamables = np.filter(r => !r.reclamableNP);
       if (noReclamables.length > 0) {
         html += `<div style="padding:14px 18px;border-radius:12px;border:1px solid rgba(239,68,68,0.25);background:rgba(239,68,68,0.04);margin-bottom:14px;">
-          <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px;">❌ No pagadas — plan de seguimiento por causa</div>
+          <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> No pagadas — plan de seguimiento por causa</div>
           <div style="display:flex;flex-direction:column;gap:8px;">`;
 
         Object.entries(grupos).forEach(([tipo, filas]) => {
@@ -37729,7 +37729,7 @@ function concilRenderResultados(resultados) {
     if (sinC.length > 0) {
       const totalSinC = sinC.reduce((s,r)=>s+r.comEsp,0);
       html += `<div style="padding:14px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.02);margin-bottom:14px;">
-        <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-bottom:8px;">🔎 Sin cruzar — ${sinC.length} venta${sinC.length>1?'s':''} · ${fmt(totalSinC)} · verificación requerida</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-bottom:8px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg> Sin cruzar — ${sinC.length} venta${sinC.length>1?'s':''} · ${fmt(totalSinC)} · verificación requerida</div>
         <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">
           ${sinC.map(r=>`<span style="font-family:var(--mono);font-size:10.5px;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid var(--border);">CC ${r.cedula}</span>`).join('')}
         </div>
@@ -37740,8 +37740,8 @@ function concilRenderResultados(resultados) {
           <div style="display:flex;gap:6px;"><span style="color:var(--amber);font-weight:700;flex-shrink:0;">4.</span><span><strong style="color:var(--amber);">Si ya debió pagar</strong> — radica reclamación en el portal con número de formulario y adjunta la afiliación original.</span></div>
         </div>
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-          <a href="https://epsapps.suramericana.com/comisiones/menu/index.jsp" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid rgba(255,255,255,0.12);font-size:11.5px;font-weight:700;text-decoration:none;">📋 Verificar en portal SURA →</a>
-          <a href="https://epsapps.suramericana.com/comisiones/menu/index.jsp" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.25);font-size:11.5px;font-weight:700;text-decoration:none;">🔗 Reclamar si ya debió pagar →</a>
+          <a href="https://epsapps.suramericana.com/comisiones/menu/index.jsp" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid rgba(255,255,255,0.12);font-size:11.5px;font-weight:700;text-decoration:none;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Verificar en portal SURA →</a>
+          <a href="https://epsapps.suramericana.com/comisiones/menu/index.jsp" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.25);font-size:11.5px;font-weight:700;text-decoration:none;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg> Reclamar si ya debió pagar →</a>
         </div>
       </div>`;
     }
@@ -37750,7 +37750,7 @@ function concilRenderResultados(resultados) {
     if (extra.length > 0) {
       const totalExtra = extra.reduce((s,r)=>s+r.suraPago,0);
       html += `<div style="padding:12px 16px;border-radius:12px;border:1px solid rgba(168,85,247,0.2);background:rgba(168,85,247,0.04);margin-bottom:14px;">
-        <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:4px;">💡 Ventas pasivas — ${extra.length} registro${extra.length>1?'s':''} · ${fmt(totalExtra)}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:4px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Ventas pasivas — ${extra.length} registro${extra.length>1?'s':''} · ${fmt(totalExtra)}</div>
         <div style="font-size:11.5px;color:var(--text-muted);">SURA pagó comisión a tu código por afiliados no registrados en tu app. Son ingresos adicionales — no requieren acción, solo registro para control.</div>
       </div>`;
     }
@@ -37855,7 +37855,7 @@ function concilRenderTabla(resultados) {
       }
       const causaDisplay = r.causa || '—';
       const explicacionCorta = r.explicacion ? `<span style="display:block;font-size:10px;color:var(--text-dim);margin-top:2px;">${r.explicacion.substring(0,80)}${r.explicacion.length>80?'…':''}</span>` : '';
-      const notaInconsistencia = r.reclamableNP ? '<span style="color:var(--amber);font-size:10px;font-weight:600;display:block;margin-top:1px;">⚠️ Revisar para reclamar</span>' : '';
+      const notaInconsistencia = r.reclamableNP ? '<span style="color:var(--amber);font-size:10px;font-weight:600;display:block;margin-top:1px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Revisar para reclamar</span>' : '';
 
       htmlRows += `<tr data-estado="${r.estado}" style="background:${i%2===0?'':(cfg.bg||'rgba(255,255,255,0.02)')};">
         <td style="padding:8px 10px;"><span style="font-size:11.5px;font-weight:700;color:${cfg.color||'var(--text)'};">${cfg.label||r.estado}</span></td>
@@ -38975,7 +38975,7 @@ function revisionRenderPanelSinCruzar(sinCruzarEnRevision) {
     grupos[k].push(r);
   });
 
-  var html = '<div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:10px;">⚠️ Ventas sin cruzar del mes — motivos según revisión SURA (' + sinCruzarEnRevision + ' identificadas)</div>';
+  var html = '<div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:10px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Ventas sin cruzar del mes — motivos según revisión SURA (' + sinCruzarEnRevision + ' identificadas)</div>';
   html += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Estas son las ' + sinCruzarEnRevision + ' ventas que quedaron "sin cruzar" en el cruce del mes y que aparecen en el informe de revisión SURA. Aquí se explica por qué SURA no las incluyó en pagadas ni no-pagadas.</div>';
   html += '<div style="display:flex;flex-direction:column;gap:8px;">';
 
@@ -39052,11 +39052,11 @@ function revisionRenderTabla() {
     var cruceChip;
     if (r.cruzado) {
       var vInfo = r.ventaApp ? ' · ' + (r.ventaApp.fecha || '') : '';
-      cruceChip = '<span style="font-size:10.5px;padding:2px 8px;border-radius:10px;background:rgba(6,182,212,0.1);color:var(--teal);border:1px solid rgba(6,182,212,0.3);">🔗 En app' + vInfo + '</span>';
+      cruceChip = '<span style="font-size:10.5px;padding:2px 8px;border-radius:10px;background:rgba(6,182,212,0.1);color:var(--teal);border:1px solid rgba(6,182,212,0.3);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg> En app' + vInfo + '</span>';
     } else if (r.eraSinCruzar) {
-      cruceChip = '<span style="font-size:10.5px;padding:2px 8px;border-radius:10px;background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.3);" title="Esta venta quedó \'sin cruzar\' en el cruce del mes">⚠️ Sin cruzar del mes</span>';
+      cruceChip = '<span style="font-size:10.5px;padding:2px 8px;border-radius:10px;background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.3);" title="Esta venta quedó \'sin cruzar\' en el cruce del mes"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Sin cruzar del mes</span>';
     } else {
-      cruceChip = '<span style="font-size:10.5px;padding:2px 8px;border-radius:10px;background:var(--surface3);color:var(--text-dim);border:1px solid var(--border);">🔎 Solo SURA</span>';
+      cruceChip = '<span style="font-size:10.5px;padding:2px 8px;border-radius:10px;background:var(--surface3);color:var(--text-dim);border:1px solid var(--border);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg> Solo SURA</span>';
     }
     var detalleCorto = r.detalle.length > 80 ? r.detalle.slice(0, 78) + '…' : r.detalle;
     var rowBg = i % 2 === 1 ? 'background:rgba(255,255,255,0.02);' : '';
