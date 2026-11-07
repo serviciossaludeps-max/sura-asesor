@@ -5693,8 +5693,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             <option value="">Todos los productos</option>
             <option value="SPTI">Solo SPTI</option>
             <option value="SPD">Solo SPD Plus</option>
-            <option value="PSM">🧩 Solo Modular</option>
-            <option value="PAC60">👴 Solo 60+</option>
+            <option value="PSM">Solo Modular</option>
+            <option value="PAC60">Solo 60+</option>
           </select>
           <select class="form-control" style="width:180px;" id="ctEstadoFiltro" onchange="renderCartera()">
             <option value="">Todos los estados</option>
@@ -5796,8 +5796,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
                 <option value="">Todos los productos</option>
                 <option value="SPTI">Solo SPTI</option>
                 <option value="SPD">Solo SPD Plus</option>
-                <option value="PSM">🧩 Solo Modular</option>
-                <option value="PAC60">👴 Solo 60+</option>
+                <option value="PSM">Solo Modular</option>
+                <option value="PAC60">Solo 60+</option>
               </select>
               <select class="form-control" style="width:160px;" id="ctPagosFiltroMes" onchange="renderHistorialPagos()">
                 <option value="">Todos los meses</option>
@@ -6032,11 +6032,11 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
               <div>
                 <label style="font-size:12px;color:var(--text-muted);margin-bottom:6px;display:block;">Tipo de análisis</label>
                 <select class="form-control" id="iaCarteraV2Tipo">
-                  <option value="prioridades">🎯 ¿A quiénes contactar hoy primero?</option>
-                  <option value="riesgo">⚠️ ¿Quiénes están en riesgo de cancelar?</option>
-                  <option value="oportunidades">💡 ¿Dónde están las mejores oportunidades?</option>
-                  <option value="mora">💳 ¿Cómo gestionar los clientes en mora?</option>
-                  <option value="estrategia">📅 ¿Cuál es la estrategia para esta semana?</option>
+                  <option value="prioridades">¿A quiénes contactar hoy primero?</option>
+                  <option value="riesgo">¿Quiénes están en riesgo de cancelar?</option>
+                  <option value="oportunidades">¿Dónde están las mejores oportunidades?</option>
+                  <option value="mora">¿Cómo gestionar los clientes en mora?</option>
+                  <option value="estrategia">¿Cuál es la estrategia para esta semana?</option>
                 </select>
               </div>
               <div>
@@ -6089,8 +6089,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
               <option value="">Todos los productos</option>
               <option value="SPTI">Solo SPTI</option>
               <option value="SPD">Solo SPD Plus</option>
-              <option value="PSM">🧩 Solo Modular</option>
-              <option value="PAC60">👴 Solo 60+</option>
+              <option value="PSM">Solo Modular</option>
+              <option value="PAC60">Solo 60+</option>
             </select>
           </div>
           <!-- KPIs de persistencia -->
@@ -6140,8 +6140,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
                 <option value="">Todos los productos</option>
                 <option value="SPTI">Solo SPTI</option>
                 <option value="SPD">Solo SPD Plus</option>
-                <option value="PSM">🧩 Solo Modular</option>
-                <option value="PAC60">👴 Solo 60+</option>
+                <option value="PSM">Solo Modular</option>
+                <option value="PAC60">Solo 60+</option>
               </select>
               <select class="form-control" style="width:160px;" id="renovHorizonteFiltro" onchange="renderRenovaciones()">
                 <option value="30">Próximos 30 días</option>
@@ -6333,11 +6333,12 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 
       <!-- ===== BUSCADOR GLOBAL ===== -->
       <div class="page" id="page-buscador">
-        <div style="margin-bottom:20px;">
+        <div style="margin-bottom:20px;position:relative;">
+          <svg class="search-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text-dim);"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg>
           <input type="text" class="form-control" id="buscadorInput"
-            placeholder="<svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg> Buscar por nombre, documento, empresa, NIT, correo, teléfono..."
+            placeholder="Buscar por nombre, documento, empresa, NIT, correo, teléfono..."
             oninput="debounceBuscador()"
-            style="font-size:15px;padding:14px 18px;">
+            style="font-size:15px;padding:14px 18px 14px 46px;">
         </div>
         <div id="buscadorStats" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;"></div>
         <div id="buscadorResultados"></div>
@@ -12606,7 +12607,7 @@ function renderVolComisiones() {
     const baseSinIVA = getSinIVABase(v);
     const rowBg = i%2===0?'':'background:rgba(255,255,255,0.015)';
     return `<tr style="${rowBg};border-top:1px solid var(--border);">
-      <td style="padding:9px 12px;font-weight:500;">${nombre}${v.tarifaCongelada ? ' <span title="Tarifa congelada 2026 — no reajusta en 2027" style="font-size:10px;color:var(--amber);font-weight:700;background:rgba(245,158,11,0.12);padding:1px 6px;border-radius:10px;border:1px solid rgba(245,158,11,0.3);">🧊 T.Fija</span>' : ''}</td>
+      <td style="padding:9px 12px;font-weight:500;">${nombre}${v.tarifaCongelada ? ' <span title="Tarifa congelada 2026 — no reajusta en 2027" style="font-size:10px;color:var(--amber);font-weight:700;background:rgba(245,158,11,0.12);padding:1px 6px;border-radius:10px;border:1px solid rgba(245,158,11,0.3);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> T.Fija</span>' : ''}</td>
       <td style="padding:9px 12px;"><span class="chip ${v.producto==='SPTI'?'chip-teal':v.producto==='SPD'?'chip-purple':v.producto==='PSM'?'chip-blue':'chip-green'}" style="font-size:10px;">${v.producto==='PAC60'?'60+':v.producto}</span></td>
       <td style="padding:9px 12px;font-size:12px;">${planLabel[v.plan]||v.plan||'—'}</td>
       <td style="padding:9px 12px;"><span class="chip chip-blue" style="font-size:10px;">${perLabel[v.periodicidad]||'—'}</span></td>
@@ -12619,8 +12620,8 @@ function renderVolComisiones() {
       <td style="padding:9px 12px;text-align:right;font-family:var(--mono);color:var(--teal);">${fmt(comAnual)}</td>
       <td style="padding:9px 12px;text-align:center;">
         ${isPagado
-          ? `<span class="chip chip-green" style="font-size:10px;">✅ Pagado</span>`
-          : `<span class="chip chip-amber" style="font-size:10px;">⏳ Pendiente</span>`}
+          ? `<span class="chip chip-green" style="font-size:10px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Pagado</span>`
+          : `<span class="chip chip-amber" style="font-size:10px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Pendiente</span>`}
       </td>
       <td style="padding:9px 12px;text-align:right;font-family:var(--mono);color:${isPagado?'var(--green)':'var(--text-dim)'};font-weight:${isPagado?'700':'400'};">
         ${isPagado ? fmt(comReal) : '—'}
@@ -12955,7 +12956,7 @@ function renderPagoMes() {
     });
 
     // Mostrar mensaje de estimado si no hay pagos reales
-    const nota = `<tr><td colspan="7" style="text-align:center;padding:10px;font-size:11.5px;background:rgba(245,158,11,0.08);color:var(--amber);border-radius:6px;">⚠️ No hay pagos registrados en ${mesNombre} ${anioPago}. Registra los pagos en Gestión de Cartera para ver el cálculo real.</td></tr>`;
+    const nota = `<tr><td colspan="7" style="text-align:center;padding:10px;font-size:11.5px;background:rgba(245,158,11,0.08);color:var(--amber);border-radius:6px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> No hay pagos registrados en ${mesNombre} ${anioPago}. Registra los pagos en Gestión de Cartera para ver el cálculo real.</td></tr>`;
     document.getElementById('pmVol1Body').innerHTML = nota;
     document.getElementById('pmVol1Vacio').style.display = 'none';
     document.getElementById('pmVol1Total').textContent = fmt(0);
@@ -15801,7 +15802,7 @@ function onFechaChange() {
 async function recalcularPBS2026() {
   const logEl = document.getElementById('recalcPBSLog');
   logEl.style.display = 'block';
-  logEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);">⏳ Analizando ventas PBS 2026...</div>`;
+  logEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Analizando ventas PBS 2026...</div>`;
 
   const s = getState();
   const ventas = s.ventas || [];
@@ -15881,7 +15882,7 @@ async function recalcularPBS2026() {
 
   if (nCambios === 0) {
     logEl.innerHTML = `<div class="alert alert-info" style="font-size:12px;">
-      ✅ Todas las <strong>${pbsVentas.length}</strong> ventas PBS 2026 ya tienen valores correctos. No hay nada que actualizar.
+      <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Todas las <strong>${pbsVentas.length}</strong> ventas PBS 2026 ya tienen valores correctos. No hay nada que actualizar.
     </div>`;
     return;
   }
@@ -15921,7 +15922,7 @@ async function recalcularPBS2026() {
     </div>
     <div style="display:flex;gap:10px;">
       <button class="btn btn-primary" onclick="confirmarRecalcPBS2026(${JSON.stringify(cambios).replace(/"/g,'&quot;')})">
-        ✅ Confirmar y guardar en Firestore
+        <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Confirmar y guardar en Firestore
       </button>
       <button class="btn btn-secondary" onclick="document.getElementById('recalcPBSLog').style.display='none'">
         Cancelar
@@ -15931,7 +15932,7 @@ async function recalcularPBS2026() {
 
 async function confirmarRecalcPBS2026(cambios) {
   const logEl = document.getElementById('recalcPBSLog');
-  logEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);">⏳ Aplicando cambios en Firestore...</div>`;
+  logEl.innerHTML = `<div style="font-size:12px;color:var(--text-muted);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Aplicando cambios en Firestore...</div>`;
 
   const s = getState();
   let actualizadas = 0;
@@ -15951,7 +15952,7 @@ async function confirmarRecalcPBS2026(cambios) {
   setState(s);
 
   logEl.innerHTML = `<div class="alert alert-info" style="font-size:12px;">
-    ✅ <strong>${actualizadas}</strong> ventas PBS 2026 actualizadas correctamente en Firestore.
+    <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> <strong>${actualizadas}</strong> ventas PBS 2026 actualizadas correctamente en Firestore.
     <br><span style="color:var(--text-muted);">Comisión y mes compensado recalculados con rangos acumulados reales.</span>
   </div>`;
 
@@ -18923,8 +18924,8 @@ function renderCarteraTabla(filas, pagos) {
     const protoDone = p1 && p2 && p3;
     const protoColor = protoDone ? 'var(--green)' : diasDesdeVenta <= 60 ? 'var(--amber)' : 'var(--text-dim)';
     const protoBadge = protoDone
-      ? `<span style="font-size:10px;color:var(--green);">✅ Completo</span>`
-      : `<span style="font-size:10px;color:${protoColor};">${[p1?'✅':'□','D1',p2?'✅':'□','D7',p3?'✅':'□','D30'].join(' ')}</span>`;
+      ? `<span style="font-size:10px;color:var(--green);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Completo</span>`
+      : `<span style="font-size:10px;color:${protoColor};">${[p1?'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>':'□','D1',p2?'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>':'□','D7',p3?'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>':'□','D30'].join(' ')}</span>`;
 
     // ── Historial de pagos (línea de tiempo) ─────────────────────────────
     const pagosVenta = getPagosVenta(v.id);
@@ -18946,13 +18947,13 @@ function renderCarteraTabla(filas, pagos) {
     const waBtns = tel ? `
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
         ${est.estado === 'PROXIMO'
-          ? `<button class="btn btn-secondary btn-sm" style="background:rgba(6,182,212,0.1);color:var(--teal);border-color:rgba(6,182,212,0.3);" onclick="enviarWACarteraV2('${tel}','${nombre.replace(/'/g,"\\'")}','PROXIMO','${v.producto}','${proxFmt}')">📱 Recordatorio vencimiento</button>`
+          ? `<button class="btn btn-secondary btn-sm" style="background:rgba(6,182,212,0.1);color:var(--teal);border-color:rgba(6,182,212,0.3);" onclick="enviarWACarteraV2('${tel}','${nombre.replace(/'/g,"\\'")}','PROXIMO','${v.producto}','${proxFmt}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> Recordatorio vencimiento</button>`
           : ''}
         ${['MORA','SUSPENDIDO','VENCIDO'].includes(est.estado)
-          ? `<button class="btn btn-secondary btn-sm" style="background:rgba(245,158,11,0.1);color:var(--amber);border-color:rgba(245,158,11,0.3);" onclick="enviarWACarteraV2('${tel}','${nombre.replace(/'/g,"\\'")}','${est.estado}','${v.producto}','${est.dias}')">📱 WhatsApp mora</button>`
+          ? `<button class="btn btn-secondary btn-sm" style="background:rgba(245,158,11,0.1);color:var(--amber);border-color:rgba(245,158,11,0.3);" onclick="enviarWACarteraV2('${tel}','${nombre.replace(/'/g,"\\'")}','${est.estado}','${v.producto}','${est.dias}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> WhatsApp mora</button>`
           : ''}
         ${est.estado === 'AL_DIA' && diasDesdeVenta <= 45
-          ? `<button class="btn btn-secondary btn-sm" style="background:rgba(34,197,94,0.1);color:var(--green);border-color:rgba(34,197,94,0.3);" onclick="enviarWACarteraV2('${tel}','${nombre.replace(/'/g,"\\'")}','BIENVENIDA','${v.producto}','')">📱 Bienvenida/activación</button>`
+          ? `<button class="btn btn-secondary btn-sm" style="background:rgba(34,197,94,0.1);color:var(--green);border-color:rgba(34,197,94,0.3);" onclick="enviarWACarteraV2('${tel}','${nombre.replace(/'/g,"\\'")}','BIENVENIDA','${v.producto}','')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> Bienvenida/activación</button>`
           : ''}
       </div>` : '';
 
@@ -18995,15 +18996,15 @@ function renderCarteraTabla(filas, pagos) {
         <td style="padding:10px 12px;white-space:nowrap;">${protoBadge}</td>
         <td style="padding:10px 12px;white-space:nowrap;" onclick="event.stopPropagation()">
           ${pagosVenta.length > 0
-            ? `<button class="btn btn-primary btn-sm" onclick="marcarPago('${v.id}', false)">💳 Pago</button>
+            ? `<button class="btn btn-primary btn-sm" onclick="marcarPago('${v.id}', false)"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2" /> <line x1="2" x2="22" y1="10" y2="10" /></svg> Pago</button>
                <button class="btn btn-secondary btn-sm" onclick="marcarPago('${v.id}', true)" title="Revertir último pago">↩</button>
                <span style="font-size:10px;color:var(--text-muted);margin-left:2px;">${pagosVenta.length}p</span>`
-            : `<button class="btn btn-primary btn-sm" onclick="marcarPago('${v.id}', false)">💳 Registrar pago</button>`}
+            : `<button class="btn btn-primary btn-sm" onclick="marcarPago('${v.id}', false)"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2" /> <line x1="2" x2="22" y1="10" y2="10" /></svg> Registrar pago</button>`}
         </td>
         <td style="padding:10px 12px;white-space:nowrap;" onclick="event.stopPropagation()">
-          <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')" title="Editar">✏️</button>
-          <button class="btn btn-danger btn-sm" onclick="cancelarVentaCartera('${v.id}')" title="Cancelar">⛔</button>
-          <button class="btn btn-secondary btn-sm" onclick="eliminarVentaCartera('${v.id}')" title="Eliminar">🗑</button>
+          <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')" title="Editar"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /> <path d="m15 5 4 4" /></svg></button>
+          <button class="btn btn-danger btn-sm" onclick="cancelarVentaCartera('${v.id}')" title="Cancelar"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m4.9 4.9 14.2 14.2" /></svg></button>
+          <button class="btn btn-secondary btn-sm" onclick="eliminarVentaCartera('${v.id}')" title="Eliminar"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
         </td>
       </tr>
       <tr id="${rowId}" style="display:none;background:var(--surface2);">
@@ -19012,7 +19013,7 @@ function renderCarteraTabla(filas, pagos) {
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
               <!-- Historial -->
               <div>
-                <div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">📋 Historial de pagos</div>
+                <div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Historial de pagos</div>
                 ${histHtml}
               </div>
               <!-- Protocolo + WA -->
@@ -19658,16 +19659,16 @@ function renderPersistencia() {
         <div class="stat-sub">${sub}</div>
       </div>`;
     grid.innerHTML =
-      kpiCard('📋 Total emitidas', tot, filtroP || 'todos los productos', 'var(--text-muted)') +
-      kpiCard('✅ Activas hoy', act, pctActual !== null ? pctActual.toFixed(1)+'% de retención' : '—', 'var(--green)') +
-      kpiCard('📍 Persistencia 3m', pctGlobal3 !== null ? pctGlobal3.toFixed(1)+'%' : '—',
-              pctGlobal3>=90?'🟢 Excelente':pctGlobal3>=75?'🟡 Aceptable':pctGlobal3!==null?'🔴 Revisar':'Sin datos suficientes',
+      kpiCard('<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Total emitidas', tot, filtroP || 'todos los productos', 'var(--text-muted)') +
+      kpiCard('<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Activas hoy', act, pctActual !== null ? pctActual.toFixed(1)+'% de retención' : '—', 'var(--green)') +
+      kpiCard('<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /> <circle cx="12" cy="10" r="3" /></svg> Persistencia 3m', pctGlobal3 !== null ? pctGlobal3.toFixed(1)+'%' : '—',
+              pctGlobal3>=90?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--green)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Excelente':pctGlobal3>=75?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Aceptable':pctGlobal3!==null?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Revisar':'Sin datos suficientes',
               pctGlobal3>=90?'var(--green)':pctGlobal3>=75?'var(--amber)':'var(--red)') +
-      kpiCard('📍 Persistencia 6m', pctGlobal6 !== null ? pctGlobal6.toFixed(1)+'%' : '—',
-              pctGlobal6>=80?'🟢 Cartera sana':pctGlobal6>=70?'🟡 En rango':pctGlobal6!==null?'🔴 Fidelización baja':'Sin datos suficientes',
+      kpiCard('<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /> <circle cx="12" cy="10" r="3" /></svg> Persistencia 6m', pctGlobal6 !== null ? pctGlobal6.toFixed(1)+'%' : '—',
+              pctGlobal6>=80?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--green)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Cartera sana':pctGlobal6>=70?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> En rango':pctGlobal6!==null?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Fidelización baja':'Sin datos suficientes',
               pctGlobal6>=80?'var(--green)':pctGlobal6>=70?'var(--amber)':'var(--red)') +
-      kpiCard('📍 Persistencia 12m', pctGlobal12 !== null ? pctGlobal12.toFixed(1)+'%' : '—',
-              pctGlobal12>=70?'🟢 SURA lo valora':pctGlobal12>=60?'🟡 Mejorable':pctGlobal12!==null?'🔴 Riesgo de rango':'Sin datos suficientes',
+      kpiCard('<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /> <circle cx="12" cy="10" r="3" /></svg> Persistencia 12m', pctGlobal12 !== null ? pctGlobal12.toFixed(1)+'%' : '—',
+              pctGlobal12>=70?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--green)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> SURA lo valora':pctGlobal12>=60?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Mejorable':pctGlobal12!==null?'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Riesgo de rango':'Sin datos suficientes',
               pctGlobal12>=70?'var(--green)':pctGlobal12>=60?'var(--amber)':'var(--red)');
   }
 
@@ -19697,7 +19698,7 @@ function renderPersistencia() {
     let tendencia = '—';
     if (vals.length >= 2) {
       const diff = vals[vals.length-1] - vals[0];
-      tendencia = diff > 5 ? '📈 Sube' : diff < -5 ? '📉 Baja' : '➡️ Estable';
+      tendencia = diff > 5 ? '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /> <polyline points="16 7 22 7 22 13" /></svg> Sube' : diff < -5 ? '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7" /> <polyline points="16 17 22 17 22 11" /></svg> Baja' : '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /></svg> Estable';
     }
 
     const pctBar = p => {
@@ -20479,7 +20480,7 @@ function renovRenderBandeja() {
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.096.533 4.063 1.476 5.782L0 24l6.393-1.454A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.885 9.885 0 01-5.04-1.38l-.361-.214-3.795.863.899-3.687-.235-.378A9.866 9.866 0 012.105 12C2.105 6.527 6.527 2.105 12 2.105c5.472 0 9.895 4.422 9.895 9.895 0 5.472-4.423 9.894-9.895 9.894z"/></svg>
             Enviar WhatsApp</a>` : `<button onclick="renovCopiarMensaje('${item.id}','${item.ventaId}')"
             style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;background:rgba(34,197,94,0.1);color:var(--green);font-size:11px;font-weight:700;border:1px solid rgba(34,197,94,0.25);cursor:pointer;font-family:var(--font);">
-            📋 Copiar mensaje</button>`}
+            <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Copiar mensaje</button>`}
           <button onclick="renovDescartarItem('${item.id}')"
             style="padding:5px 8px;border-radius:8px;background:transparent;color:var(--text-dim);font-size:11px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;font-family:var(--font);">✕</button>
         </div>
@@ -20871,22 +20872,22 @@ function renderRenovaciones() {
   if (kGrid) {
     kGrid.innerHTML = `
       <div class="stat-card" style="border-top:3px solid var(--red);">
-        <div class="stat-label">🔴 Esta semana</div>
+        <div class="stat-label"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Esta semana</div>
         <div class="stat-value" style="color:var(--red);">${tramo1.length}</div>
         <div class="stat-sub">Contacto urgente · ≤7 días</div>
       </div>
       <div class="stat-card" style="border-top:3px solid var(--amber);">
-        <div class="stat-label">🟡 Este mes</div>
+        <div class="stat-label"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Este mes</div>
         <div class="stat-value" style="color:var(--amber);">${tramo2.length}</div>
         <div class="stat-sub">Gestión proactiva · 8-30 días</div>
       </div>
       <div class="stat-card" style="border-top:3px solid var(--teal);">
-        <div class="stat-label">🔵 En el horizonte</div>
+        <div class="stat-label"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--blue)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> En el horizonte</div>
         <div class="stat-value" style="color:var(--teal);">${tramo3.length}</div>
         <div class="stat-sub">Planificar contacto · 31-${horizonte}d</div>
       </div>
       <div class="stat-card blue">
-        <div class="stat-label">💰 Prima en juego</div>
+        <div class="stat-label"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /> <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /> <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg> Prima en juego</div>
         <div class="stat-value" style="color:var(--sura-lime);font-size:18px;">${fmt(primaTotal)}</div>
         <div class="stat-sub">total en ${horizonte} días</div>
       </div>`;
@@ -20896,7 +20897,7 @@ function renderRenovaciones() {
   if (!lista) return;
 
   if (!conVenc.length) {
-    lista.innerHTML = `<div class="empty-state"><div class="icon">🎉</div><div>No hay pólizas que venzan en los próximos ${horizonte} días${filtroP?' para '+filtroP:''}.</div></div>`;
+    lista.innerHTML = `<div class="empty-state"><div class="icon"><svg class="ico" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.8 11.3 2 22l10.7-3.79" /> <path d="M4 3h.01" /> <path d="M22 8h.01" /> <path d="M15 2h.01" /> <path d="M22 20h.01" /> <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10" /> <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17" /> <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.52 9 6.23V7" /> <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" /></svg></div><div>No hay pólizas que venzan en los próximos ${horizonte} días${filtroP?' para '+filtroP:''}.</div></div>`;
     return;
   }
 
@@ -20953,15 +20954,15 @@ function renderRenovaciones() {
               </div>
               <!-- fecha y prima -->
               <div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">
-                📅 Vence <strong style="color:${urgColor};">${fmtFecha(proxVenc)}</strong>
+                <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg> Vence <strong style="color:${urgColor};">${fmtFecha(proxVenc)}</strong>
                 ${v.plan ? ` · ${v.plan}` : ''}
-                ${v.empresa ? ` · 🏢 ${v.empresa}` : ''}
+                ${v.empresa ? ` · <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></svg> ${v.empresa}` : ''}
               </div>
               <!-- contexto cliente -->
               <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-dim);margin-top:4px;">
-                <span>💳 ${fmt(primaSinIVA)} s/IVA &nbsp;·&nbsp; <strong>${fmt(primaConIVA)}</strong> c/IVA</span>
-                <span>📋 ${nPagos} pago${nPagos!==1?'s':''} registrado${nPagos!==1?'s':''}</span>
-                <span>🗓 ${antiguedad}</span>
+                <span><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2" /> <line x1="2" x2="22" y1="10" y2="10" /></svg> ${fmt(primaSinIVA)} s/IVA &nbsp;·&nbsp; <strong>${fmt(primaConIVA)}</strong> c/IVA</span>
+                <span><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> ${nPagos} pago${nPagos!==1?'s':''} registrado${nPagos!==1?'s':''}</span>
+                <span><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /> <path d="M8 14h.01" /> <path d="M12 14h.01" /> <path d="M16 14h.01" /> <path d="M8 18h.01" /> <path d="M12 18h.01" /> <path d="M16 18h.01" /></svg> ${antiguedad}</span>
               </div>
             </div>
             <!-- botones -->
@@ -20988,7 +20989,7 @@ function renderRenovaciones() {
           <div style="font-size:13px;font-weight:700;">${fmtSemana(sem.lunes)}</div>
           <div style="display:flex;gap:10px;align-items:center;">
             <span style="font-size:11.5px;color:var(--text-muted);">${sem.items.length} póliza${sem.items.length!==1?'s':''}</span>
-            <span style="font-size:11.5px;font-family:var(--mono);color:var(--sura-lime);">💰 ${fmt(primasSem)}</span>
+            <span style="font-size:11.5px;font-family:var(--mono);color:var(--sura-lime);"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /> <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /> <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg> ${fmt(primasSem)}</span>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;">${cards}</div>
@@ -21287,7 +21288,7 @@ function renderCancelados() {
   const tbody = document.getElementById('canceladosTabla');
 
   if (!cancelados.length) {
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--text-dim);">Sin pólizas canceladas 🎉</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--text-dim);">Sin pólizas canceladas <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.8 11.3 2 22l10.7-3.79" /> <path d="M4 3h.01" /> <path d="M22 8h.01" /> <path d="M15 2h.01" /> <path d="M22 20h.01" /> <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10" /> <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17" /> <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.52 9 6.23V7" /> <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" /></svg></td></tr>`;
     document.getElementById('canceladosCount').textContent = '';
     renderImpactoCancelaciones();
     return;
@@ -21329,8 +21330,8 @@ function renderCancelados() {
         ${imp.impacto > 0 ? `<br><span style="font-size:10px;color:var(--text-dim);">${imp.mesesPendientes} × ${fmt(imp.primaMens)}</span>` : ''}
       </td>
       <td style="padding:10px 12px;white-space:nowrap;">
-        <button class="btn btn-secondary btn-sm" onclick="reactivarPoliza('${v.id}')">♻️ Reactivar</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarVentaCartera('${v.id}')">🗑</button>
+        <button class="btn btn-secondary btn-sm" onclick="reactivarPoliza('${v.id}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" /></svg> Reactivar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarVentaCartera('${v.id}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
       </td>
     </tr>`;
   }).join('');
@@ -21461,7 +21462,7 @@ function renderImpactoCancelaciones() {
     <div style="background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:16px;border:1px solid var(--border);border-left:3px solid ${colorKpi};">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.07em;">📊 Indicador SURA — % Cancelación ${semestral}</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.07em;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18" /> <path d="M18 17V9" /> <path d="M13 17V5" /> <path d="M8 17v-3" /></svg> Indicador SURA — % Cancelación ${semestral}</div>
           <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px;">Meta: máx. ${metaTxt} de cancelación · Fórmula: pólizas vigentes totales × ${metaTxt}</div>
         </div>
         <div style="text-align:right;">
@@ -21486,7 +21487,7 @@ function renderImpactoCancelaciones() {
           <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">${metaTxt} del total</div>
         </div>
         <div style="background:${superaMeta ? 'rgba(220,38,38,0.1)' : 'rgba(52,211,153,0.08)'};border-radius:8px;padding:10px;border:1px solid ${superaMeta ? 'rgba(220,38,38,0.2)' : 'rgba(52,211,153,0.2)'};">
-          <div style="font-size:10px;color:${colorKpi};margin-bottom:3px;text-transform:uppercase;">${superaMeta ? '⚠️ Exceso' : '✅ Margen'}</div>
+          <div style="font-size:10px;color:${colorKpi};margin-bottom:3px;text-transform:uppercase;">${superaMeta ? '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Exceso' : '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Margen'}</div>
           <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:${colorKpi};">${superaMeta ? '+' + (cancelSemestre - canceladasPermitidas) : cancelRestantes}</div>
           <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">${superaMeta ? 'sobre la meta' : 'cancelaciones restantes'}</div>
         </div>
@@ -21495,7 +21496,7 @@ function renderImpactoCancelaciones() {
         <div style="width:${Math.min(parseFloat(pctRealCancelacion) / metaPct * 100, 100)}%;height:100%;background:${colorKpi};border-radius:4px;transition:width .5s;"></div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-dim);">
-        <span>${superaMeta ? '⛔ Superaste la meta — revisa causas de cancelación' : cancelRestantes === 0 ? '⚠️ En el límite — sin margen adicional' : 'Dentro del rango aceptable'}</span>
+        <span>${superaMeta ? '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m4.9 4.9 14.2 14.2" /></svg> Superaste la meta — revisa causas de cancelación' : cancelRestantes === 0 ? '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> En el límite — sin margen adicional' : 'Dentro del rango aceptable'}</span>
         <span style="color:${colorKpi};font-weight:600;">${pctRealCancelacion}% / ${metaTxt} meta</span>
       </div>
     </div>`;
@@ -21571,7 +21572,7 @@ function renderImpactoCancelaciones() {
         <div style="font-size:10.5px;color:var(--text-dim);margin-top:2px;">Lo que efectivamente entró</div>
       </div>
       <div style="background:rgba(220,38,38,0.08);border-radius:10px;padding:14px;border:1px solid rgba(220,38,38,0.25);">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--red);margin-bottom:6px;">⚠️ Impacto total a reponer</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--red);margin-bottom:6px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Impacto total a reponer</div>
         <div style="font-family:var(--mono);font-size:22px;font-weight:800;color:${colorImpacto};">−${fmt(totalImpacto)}</div>
         <div style="font-size:10.5px;color:var(--text-dim);margin-top:2px;">≈ ${planesEquivalentes.toFixed(1)} planes mensuales</div>
       </div>
@@ -21583,18 +21584,18 @@ function renderImpactoCancelaciones() {
       <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">Distribución de primas faltantes — Flujo SURA</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
         <div style="background:rgba(220,38,38,0.08);border-radius:8px;padding:12px;border:1px solid rgba(220,38,38,0.2);">
-          <div style="font-size:10px;color:var(--red);margin-bottom:4px;text-transform:uppercase;">📅 ${MESES_NOM[mesIdx]} — Mes cancelación</div>
+          <div style="font-size:10px;color:var(--red);margin-bottom:4px;text-transform:uppercase;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg> ${MESES_NOM[mesIdx]} — Mes cancelación</div>
           <div style="font-family:var(--mono);font-size:20px;font-weight:800;color:var(--red);">−${fmt(totalImpactoMesCancelacion)}</div>
           <div style="font-size:10.5px;color:var(--text-dim);margin-top:4px;">Se carga en este mes · afecta indicador de cancelaciones</div>
         </div>
         <div style="background:rgba(251,191,36,0.08);border-radius:8px;padding:12px;border:1px solid rgba(251,191,36,0.2);">
-          <div style="font-size:10px;color:var(--amber);margin-bottom:4px;text-transform:uppercase;">📅 ${mesSigNom} — Mes siguiente (excedente)</div>
+          <div style="font-size:10px;color:var(--amber);margin-bottom:4px;text-transform:uppercase;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg> ${mesSigNom} — Mes siguiente (excedente)</div>
           <div style="font-family:var(--mono);font-size:20px;font-weight:800;color:var(--amber);">−${fmt(totalImpactoSiguiente)}</div>
           <div style="font-size:10.5px;color:var(--text-dim);margin-top:4px;">Excedente proyección anual · solo primas, no cuenta como cancelación</div>
         </div>
       </div>
       <div style="font-size:11px;color:var(--text-dim);padding:8px;background:var(--surface3);border-radius:6px;">
-        💡 El excedente en ${mesSigNom} indica planes que debes reponer ese mes para cubrir la proyección anual afectada.
+        <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> El excedente en ${mesSigNom} indica planes que debes reponer ese mes para cubrir la proyección anual afectada.
       </div>
     </div>` : ''}
 
@@ -21859,10 +21860,10 @@ function renderCarteraAlertas(conEstado) {
   };
 
   const banners = [];
-  if (grupos.SUSPENDIDO.length)  banners.push(`<div class="alert alert-warning">🔴 <strong>${grupos.SUSPENDIDO.length} plan(es) suspendido(s) (día 35+):</strong> ${grupos.SUSPENDIDO.map(v=>tc(v.tomadorNombre||v.nombre||'')).join(', ')}</div>`);
-  if (grupos.MORA.length)        banners.push(`<div class="alert alert-warning" style="border-color:rgba(245,158,11,0.4);">🟡 <strong>${grupos.MORA.length} plan(es) en mora (día 31+):</strong> ${grupos.MORA.map(v=>tc(v.tomadorNombre||v.nombre||'')).join(', ')}</div>`);
-  if (grupos.VENCIDO.length)     banners.push(`<div class="alert alert-warning" style="border-color:rgba(6,182,212,0.4);background:rgba(6,182,212,0.05);">🟡 <strong>${grupos.VENCIDO.length} plan(es) vencido(s) sin pago (día 1–30):</strong> ${grupos.VENCIDO.map(v=>tc(v.tomadorNombre||v.nombre||'')).join(', ')}</div>`);
-  if (grupos.PROXIMO.length)     banners.push(`<div class="alert alert-info">🔵 <strong>${grupos.PROXIMO.length} plan(es) vence en 3 días o menos:</strong> ${grupos.PROXIMO.map(v=>tc(v.tomadorNombre||v.nombre||'')).join(', ')}</div>`);
+  if (grupos.SUSPENDIDO.length)  banners.push(`<div class="alert alert-warning"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> <strong>${grupos.SUSPENDIDO.length} plan(es) suspendido(s) (día 35+):</strong> ${grupos.SUSPENDIDO.map(v=>tc(v.tomadorNombre||v.nombre||'')).join(', ')}</div>`);
+  if (grupos.MORA.length)        banners.push(`<div class="alert alert-warning" style="border-color:rgba(245,158,11,0.4);"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> <strong>${grupos.MORA.length} plan(es) en mora (día 31+):</strong> ${grupos.MORA.map(v=>tc(v.tomadorNombre||v.nombre||'')).join(', ')}</div>`);
+  if (grupos.VENCIDO.length)     banners.push(`<div class="alert alert-warning" style="border-color:rgba(6,182,212,0.4);background:rgba(6,182,212,0.05);"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> <strong>${grupos.VENCIDO.length} plan(es) vencido(s) sin pago (día 1–30):</strong> ${grupos.VENCIDO.map(v=>tc(v.tomadorNombre||v.nombre||'')).join(', ')}</div>`);
+  if (grupos.PROXIMO.length)     banners.push(`<div class="alert alert-info"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--blue)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> <strong>${grupos.PROXIMO.length} plan(es) vence en 3 días o menos:</strong> ${grupos.PROXIMO.map(v=>tc(v.tomadorNombre||v.nombre||'')).join(', ')}</div>`);
 
   el.innerHTML = banners.join('');
 }
@@ -25103,9 +25104,9 @@ function renderCarteraSuraTabla() {
   else if (_carteraSuraFiltro === 'no_encontrado') data = data.filter(r => !r.enBD);
 
   const urgConfig = {
-    critico:     { color: 'var(--red)',   label: '🔴 Crítico',     bg: 'rgba(239,68,68,0.1)' },
-    urgente:     { color: 'var(--amber)', label: '🟡 Urgente',     bg: 'rgba(245,158,11,0.1)' },
-    seguimiento: { color: 'var(--teal)',  label: '🟠 Seguimiento', bg: 'rgba(6,182,212,0.08)' },
+    critico:     { color: 'var(--red)',   label: '<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Crítico',     bg: 'rgba(239,68,68,0.1)' },
+    urgente:     { color: 'var(--amber)', label: '<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Urgente',     bg: 'rgba(245,158,11,0.1)' },
+    seguimiento: { color: 'var(--teal)',  label: '<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg> Seguimiento', bg: 'rgba(6,182,212,0.08)' },
   };
 
   const tbody = document.getElementById('carteraSuraTabla');
@@ -25193,19 +25194,19 @@ ${cierre}`
       </td>
       <td style="padding:8px 12px;text-align:center;">
         ${r.enBD
-          ? '<span style="color:var(--green);font-size:11px;font-weight:600;">✅ En mi BD</span>'
+          ? '<span style="color:var(--green);font-size:11px;font-weight:600;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> En mi BD</span>'
           : `<button class="btn btn-sm" onclick="importarClienteDesdeCarteraSura(${JSON.stringify(r).replace(/"/g,'&quot;')})"
               style="background:rgba(26,76,232,0.1);color:var(--sura-blue);border:1px solid rgba(26,76,232,0.3);font-size:10.5px;padding:3px 8px;">
-              ➕ Importar
+              <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /> <path d="M12 5v14" /></svg> Importar
             </button>`}
       </td>
       <td style="padding:8px 12px;white-space:nowrap;">
         <div style="display:flex;gap:6px;">
           ${waLink
-            ? `<a href="${waLink}" target="_blank" class="btn btn-sm" style="background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);color:#25d366;font-size:11px;text-decoration:none;padding:4px 8px;border-radius:6px;">💬 WA</a>`
+            ? `<a href="${waLink}" target="_blank" class="btn btn-sm" style="background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);color:#25d366;font-size:11px;text-decoration:none;padding:4px 8px;border-radius:6px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg> WA</a>`
             : '<span style="font-size:10.5px;color:var(--text-dim);">Sin tel.</span>'}
           ${telLink
-            ? `<a href="${telLink}" class="btn btn-sm" style="background:rgba(26,76,232,0.1);border:1px solid rgba(26,76,232,0.25);color:var(--sura-blue);font-size:11px;text-decoration:none;padding:4px 8px;border-radius:6px;">📞 Llamar</a>`
+            ? `<a href="${telLink}" class="btn btn-sm" style="background:rgba(26,76,232,0.1);border:1px solid rgba(26,76,232,0.25);color:var(--sura-blue);font-size:11px;text-decoration:none;padding:4px 8px;border-radius:6px;"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg> Llamar</a>`
             : ''}
         </div>
       </td>
@@ -31750,10 +31751,10 @@ function iaCarteraV2RenderKpis() {
     : n >= 1000 ? '$' + (n/1000).toFixed(0) + 'K' : '$' + n;
 
   kpisEl.innerHTML = [
-    { label: 'Clientes en cartera', valor: total,       color: 'var(--sura-blue)', icon: '👥' },
-    { label: 'Con posible mora +30d', valor: conMora,   color: 'var(--red)',       icon: '⚠️' },
-    { label: 'Prima mensual total',  valor: fmt(primaTotal), color: 'var(--green)', icon: '💰' },
-    { label: 'Sin empresa asignada', valor: sinEmpresa, color: 'var(--amber)',     icon: '🏢' },
+    { label: 'Clientes en cartera', valor: total,       color: 'var(--sura-blue)', icon: '<svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>' },
+    { label: 'Con posible mora +30d', valor: conMora,   color: 'var(--red)',       icon: '<svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg>' },
+    { label: 'Prima mensual total',  valor: fmt(primaTotal), color: 'var(--green)', icon: '<svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /> <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /> <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg>' },
+    { label: 'Sin empresa asignada', valor: sinEmpresa, color: 'var(--amber)',     icon: '<svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></svg>' },
   ].map(k => `
     <div style="background:var(--surface2);border-radius:10px;padding:14px;text-align:center;">
       <div style="font-size:20px;margin-bottom:4px;">${k.icon}</div>
@@ -34448,12 +34449,12 @@ function renderProyeccionComisiones() {
     const color  = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--amber)' : 'var(--sura-blue)';
 
     rangoBar.innerHTML = `
-      <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;">📅 ${ventanaStr}</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg> ${ventanaStr}</div>
       <div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
         <div style="font-size:13px;font-weight:600;">Rango actual: <span style="color:${color};">${rAct.label}</span> · ${nCot} ventas cotizante</div>
         ${rIdx < 4
           ? `<div style="font-size:12px;color:var(--text-muted);">Faltan <strong style="color:var(--sura-lime);">${faltan}</strong> para ${rSig.label}</div>`
-          : '<div style="font-size:12px;color:var(--green);font-weight:700;">🏆 Rango máximo alcanzado</div>'}
+          : '<div style="font-size:12px;color:var(--green);font-weight:700;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /> <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /> <path d="M4 22h16" /> <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /> <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /> <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></svg> Rango máximo alcanzado</div>'}
       </div>
       <div style="height:10px;background:var(--surface3);border-radius:20px;overflow:hidden;">
         <div style="height:100%;width:${pct}%;background:${color};border-radius:20px;transition:width 0.5s ease;"></div>
@@ -34466,7 +34467,7 @@ function renderProyeccionComisiones() {
   const proyEl = document.getElementById('htProyeccionCierre');
   if (proyEl) {
     proyEl.innerHTML = `
-      <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">📊 Proyección al cierre del período compensado — ${MESES[mesIdx]} ${anio}</div>
+      <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18" /> <path d="M18 17V9" /> <path d="M13 17V5" /> <path d="M8 17v-3" /></svg> Proyección al cierre del período compensado — ${MESES[mesIdx]} ${anio}</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
         <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;">
           <div style="font-size:10.5px;color:var(--text-muted);margin-bottom:4px;">Ventas proyectadas</div>
@@ -36345,7 +36346,7 @@ function renderDashboardCancelaciones() {
     <!-- Indicador SURA de cancelaciones prematuras -->
     <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;border-left:3px solid ${colorIndicador};">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
-        <div style="font-size:12px;font-weight:700;color:${colorIndicador};">📊 Indicador SURA — Cancelaciones prematuras (dentro del año de vigencia)</div>
+        <div style="font-size:12px;font-weight:700;color:${colorIndicador};"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18" /> <path d="M18 17V9" /> <path d="M13 17V5" /> <path d="M8 17v-3" /></svg> Indicador SURA — Cancelaciones prematuras (dentro del año de vigencia)</div>
         <span style="font-size:18px;font-weight:800;color:${colorIndicador};">${prematuras.length} / ${total}</span>
       </div>
       <div style="height:6px;background:var(--surface3);border-radius:3px;margin-bottom:8px;overflow:hidden;">
@@ -36353,8 +36354,8 @@ function renderDashboardCancelaciones() {
       </div>
       <div style="font-size:11.5px;color:var(--text-muted);">
         ${prematuras.length === 0
-          ? '✅ Sin cancelaciones prematuras — tu indicador está limpio'
-          : `⚠️ ${prematuras.length} cancelación${prematuras.length>1?'es prematuras':' prematura'} (${pctPrematura}%) — estas afectan tu indicador SURA`}
+          ? '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Sin cancelaciones prematuras — tu indicador está limpio'
+          : `<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> ${prematuras.length} cancelación${prematuras.length>1?'es prematuras':' prematura'} (${pctPrematura}%) — estas afectan tu indicador SURA`}
       </div>
       ${prematuras.length > 0 ? `
         <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px;">
