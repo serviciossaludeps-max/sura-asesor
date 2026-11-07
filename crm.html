@@ -11075,7 +11075,7 @@ function getVentas2026(month) {
     // y no deben contar en KPIs ni conteos de producción del año actual
     if (v._importadoSura) return false;
     // OP F2b: un reingreso no suma en producción/presupuesto (sí suma en cartera)
-    if (v.tipo === 'REINGRESO') return false;
+    if (_esReingresoVenta(v)) return false;
     // Fallback: si fecha está vacía o es inválida, usar fechaExp
     const fechaRef = v.fecha || v.fechaExp || '';
     if (!fechaRef) return false;
@@ -11318,7 +11318,7 @@ function renderInicio() {
 
   // KPI voluntarios acumulados
   const accVol = ['SPTI','SPD','PSM','PAC60'].reduce((s2, prod) =>
-    s2 + s.ventas.filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto === prod && parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL).length, 0);
+    s2 + s.ventas.filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto === prod && parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL).length, 0);
   const elVol = document.getElementById('inicioKpiVol');
   if (elVol) elVol.textContent = accVol;
 
@@ -11600,8 +11600,8 @@ function renderDashboard() {
   const pbsVentas  = getVentasByProduct(selectedMonth, 'PBS').length;
   const sptiVentas = contarPolizas(getVentasByProduct(selectedMonth, 'SPTI'));
   const spdVentas  = contarPolizas(getVentasByProduct(selectedMonth, 'SPD'));
-  const psmVentasMes  = contarPolizas(state.ventas.filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto==='PSM'  && parseFechaLocal(v.fecha).getMonth()===selectedMonth && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL));
-  const pac60VentasMes = contarPolizas(state.ventas.filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto==='PAC60' && parseFechaLocal(v.fecha).getMonth()===selectedMonth && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL));
+  const psmVentasMes  = contarPolizas(state.ventas.filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto==='PSM'  && parseFechaLocal(v.fecha).getMonth()===selectedMonth && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL));
+  const pac60VentasMes = contarPolizas(state.ventas.filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto==='PAC60' && parseFechaLocal(v.fecha).getMonth()===selectedMonth && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL));
 
   const pbsPpto  = state.config.pbs[selectedMonth];
   const sptiPpto = state.config.spti[selectedMonth];
@@ -11617,8 +11617,8 @@ function renderDashboard() {
   const accPbs   = _mAcc.reduce((s,_,i) => s + getVentasByProduct(i,'PBS').length, 0);
   const accSpti  = _mAcc.reduce((s,_,i) => s + contarPolizas(getVentasByProduct(i,'SPTI')), 0);
   const accSpd   = _mAcc.reduce((s,_,i) => s + contarPolizas(getVentasByProduct(i,'SPD')), 0);
-  const accPsm   = contarPolizas(state.ventas.filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto==='PSM'  && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL && parseFechaLocal(v.fecha).getMonth()<=selectedMonth));
-  const accPac60 = contarPolizas(state.ventas.filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto==='PAC60' && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL && parseFechaLocal(v.fecha).getMonth()<=selectedMonth));
+  const accPsm   = contarPolizas(state.ventas.filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto==='PSM'  && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL && parseFechaLocal(v.fecha).getMonth()<=selectedMonth));
+  const accPac60 = contarPolizas(state.ventas.filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto==='PAC60' && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL && parseFechaLocal(v.fecha).getMonth()<=selectedMonth));
   const accCom   = _mAcc.reduce((s,_,i) => s + calcMesComisionTotal(i), 0);
 
   // Fill KPI row 1 — ventas
@@ -11702,8 +11702,8 @@ function renderDashboard() {
   _dashVolSeries = [
     { data: MESES.map((_,i) => contarPolizas(getVentasByProduct(i,'SPTI'))),  color: 'var(--teal)',   label: 'SPTI'     },
     { data: MESES.map((_,i) => contarPolizas(getVentasByProduct(i,'SPD'))),   color: 'var(--purple)', label: 'SPD Plus' },
-    { data: MESES.map((_,i) => contarPolizas(state.ventas.filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto==='PSM'   && parseFechaLocal(v.fecha).getMonth()===i && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL))), color: '#38BDF8', label: 'PSM' },
-    { data: MESES.map((_,i) => contarPolizas(state.ventas.filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto==='PAC60' && parseFechaLocal(v.fecha).getMonth()===i && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL))), color: 'var(--green)', label: '60+' },
+    { data: MESES.map((_,i) => contarPolizas(state.ventas.filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto==='PSM'   && parseFechaLocal(v.fecha).getMonth()===i && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL))), color: '#38BDF8', label: 'PSM' },
+    { data: MESES.map((_,i) => contarPolizas(state.ventas.filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto==='PAC60' && parseFechaLocal(v.fecha).getMonth()===i && parseFechaLocal(v.fecha).getFullYear()===AÑO_ACTUAL))), color: 'var(--green)', label: '60+' },
   ];
   _dashRenderVol();
 
@@ -11827,7 +11827,7 @@ function _dashConteoMes(prod, i, maxDia) {
   const okDia = v => !maxDia || parseFechaLocal(v.fecha).getDate() <= maxDia;
   if (prod === 'PBS') return getVentasByProduct(i, 'PBS').filter(okDia).length;
   if (prod === 'SPTI' || prod === 'SPD') return contarPolizas(getVentasByProduct(i, prod).filter(okDia));
-  return contarPolizas(state.ventas.filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto === prod && parseFechaLocal(v.fecha).getMonth() === i && parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL && okDia(v)));
+  return contarPolizas(state.ventas.filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto === prod && parseFechaLocal(v.fecha).getMonth() === i && parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL && okDia(v)));
 }
 function _dashDelta(prod, actual) {
   const hoy = new Date(), esActual = selectedMonth === hoy.getMonth(), dia = esActual ? hoy.getDate() : 0;
@@ -13434,6 +13434,9 @@ function _d12Validar(modalTab) {
   if (!suf) return null;
   const sel = document.getElementById('vReing' + suf);
   if (!sel || sel.value !== 'REINGRESO') return null;
+  const tipoEl = document.getElementById({ spti:'vTipoSPTI', spd:'vTipoSPD', psm:'vTipoMovPSM', pac60:'vTipoMovPAC60' }[modalTab]);
+  const tipoV = tipoEl ? tipoEl.value : '';
+  if (tipoV !== 'NUEVO' && tipoV !== 'AUMENTO') return 'Un reingreso solo puede registrarse como venta nueva o como aumento. Cambia el tipo de venta para continuar.';
   const f = ((document.getElementById('vFechaCancReing' + suf) || {}).value || '');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(f)) return 'Indica la fecha de cancelación de la póliza anterior: es necesaria para clasificar el reingreso.';
   return null;
@@ -16067,6 +16070,8 @@ const _F2B_FORM = {
   pac60: { tipo:'vTipoMovPAC60', doc:'vTomadorDocPAC60',  tdoc:'vTomadorTipoDocPAC60',  exp:'vFechaExpPAC60', prod:'PAC60', poliza:'vPolizaPAC60' }
 };
 function _f2bDigitos(x) { return String(x || '').replace(/\D/g, ''); }
+// D16 (06-nov-2026): una venta con reglas de reingreso no suma al presupuesto, aunque su tipo sea AUMENTO.
+function _esReingresoVenta(v) { return !!v && (v.tipo === 'REINGRESO' || !!v.reingresoClase); }
 // Suma n meses calendario a una fecha ISO (YYYY-MM-DD). Si el día no existe, usa el último del mes.
 function _f2bAddMeses(iso, n) {
   const [y, m, d] = iso.split('-').map(Number);
@@ -16124,7 +16129,8 @@ function _f2bPrecheck(modalTab) {
   const cfg = _F2B_FORM[modalTab];
   if (!cfg) return null;
   const g = id => ((document.getElementById(id) || {}).value || '');
-  if (g(cfg.tipo) !== 'NUEVO') return null;
+  const _tipoV = g(cfg.tipo);
+  if (_tipoV !== 'NUEVO' && _tipoV !== 'AUMENTO') return null;
   const _suf = { spti:'SPTI', spd:'SPD', psm:'PSM', pac60:'PAC60' }[modalTab];
   const _esReing = !!_suf && g('vReing' + _suf) === 'REINGRESO';
   const _fCancIn = _esReing ? g('vFechaCancReing' + _suf) : '';
@@ -16145,7 +16151,9 @@ function _f2bPrecheck(modalTab) {
   });
   if (!mejor && _esReing) showToast('Según la fecha de cancelación indicada, la venta queda como nueva (más de 6 meses).');
   if (!mejor) return null;
-  return { clase: mejor.clase, producto: cfg.prod, fechaAlta, cancelacion: mejor.cancelacion };
+  // D16: un aumento con cancelación previa de su mismo asegurado no reactiva póliza: se registra como reingreso.
+  const _claseF = (_tipoV === 'AUMENTO' && mejor.clase === 'REHABILITACION') ? 'REINGRESO' : mejor.clase;
+  return { clase: _claseF, producto: cfg.prod, fechaAlta, cancelacion: mejor.cancelacion };
 }
 // Comisión de rehabilitación: usa la edad vigente a la fecha de cada pago (desde la rehabilitación).
 // Copia temporal para el cálculo; el registro guardado no cambia.
@@ -17121,6 +17129,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
       if (!_f2bIdsAntes.has(v.id) && v.producto === _f2bCtx.producto && v.tipo === 'NUEVO') {
         v.tipo = 'REINGRESO';
         v.reingresoDe = _f2bCtx.cancelacion.ventaId;
+        v.reingresoClase = _f2bCtx.clase;
         v.reingresoFechaCancelacion = _f2bCtx.cancelacion.fecha;
       }
     });
@@ -41205,8 +41214,8 @@ function _agenteConstruirContexto() {
       PBS:   getVentasByProduct ? getVentasByProduct(mesActual, 'PBS').length : 0,
       SPTI:  getVentasByProduct ? contarPolizas(getVentasByProduct(mesActual, 'SPTI')) : 0,
       SPD:   getVentasByProduct ? contarPolizas(getVentasByProduct(mesActual, 'SPD')) : 0,
-      PSM:   (s.ventas||[]).filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto==='PSM'  && parseFechaLocal(v.fecha).getMonth()===mesActual && parseFechaLocal(v.fecha).getFullYear()===anio).length,
-      PAC60: (s.ventas||[]).filter(v => !v._importadoSura && v.tipo !== 'REINGRESO' && v.producto==='PAC60' && parseFechaLocal(v.fecha).getMonth()===mesActual && parseFechaLocal(v.fecha).getFullYear()===anio).length,
+      PSM:   (s.ventas||[]).filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto==='PSM'  && parseFechaLocal(v.fecha).getMonth()===mesActual && parseFechaLocal(v.fecha).getFullYear()===anio).length,
+      PAC60: (s.ventas||[]).filter(v => !v._importadoSura && !_esReingresoVenta(v) && v.producto==='PAC60' && parseFechaLocal(v.fecha).getMonth()===mesActual && parseFechaLocal(v.fecha).getFullYear()===anio).length,
     };
 
     // Metas del mes
