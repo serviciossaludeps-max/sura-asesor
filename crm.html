@@ -2698,8 +2698,8 @@
             <option value="PBS">PBS / EPS</option>
             <option value="SPTI">SPTI</option>
             <option value="SPD">SPD — Salud para Dos Plus</option>
-            <option value="PSM">🧩 Plan Modular</option>
-            <option value="PAC60">👴 Plan 60+</option>
+            <option value="PSM">Plan Modular</option>
+            <option value="PAC60">Plan 60+</option>
           </select>
           <select class="form-control" style="width:160px;" id="filterTipo" onchange="renderTabla()">
             <option value="">Todos los tipos</option>
@@ -4285,8 +4285,8 @@
             <select class="form-control" style="width:190px;" id="ptProductoVol" onchange="renderPlantillaVol()">
               <option value="SPTI">SPTI — Salud Para Todos</option>
               <option value="SPD">SPD — Salud para Dos Plus</option>
-              <option value="PSM">🧩 Plan Modular</option>
-              <option value="PAC60">👴 Plan Complementario 60+</option>
+              <option value="PSM">Plan Modular</option>
+              <option value="PAC60">Plan Complementario 60+</option>
             </select>
           </div>
           <div class="form-group" style="margin-bottom:0;">
@@ -5072,7 +5072,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
           <div id="pipEmpKpis" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;"></div>
           <!-- Filtros -->
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
-            <input type="text" id="pipEmpBuscar" placeholder="🔍 Buscar empresa..." oninput="renderPipEmp()"
+            <input type="text" id="pipEmpBuscar" placeholder="Buscar empresa..." oninput="renderPipEmp()"
               style="font-size:12px;padding:6px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font);width:200px;">
             <select id="pipEmpFiltroEtapa" onchange="renderPipEmp()" style="font-size:12px;padding:6px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font);">
               <option value="">Todas las etapas</option>
@@ -5080,8 +5080,8 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
               <option value="contactado">Contactado</option>
               <option value="cotizacion">Cotización enviada</option>
               <option value="negociacion">En negociación</option>
-              <option value="ganada">Ganada ✅</option>
-              <option value="perdida">Perdida ❌</option>
+              <option value="ganada">Ganada </option>
+              <option value="perdida">Perdida </option>
             </select>
             <select id="pipEmpFiltroProducto" onchange="renderPipEmp()" style="font-size:12px;padding:6px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font);">
               <option value="">Todos los productos</option>
@@ -5268,11 +5268,11 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
               </select>
               <select class="form-control" style="width:160px;" id="prosFiltroEstado" onchange="prosRenderTabla()">
                 <option value="">Todos los estados</option>
-                <option value="pendiente">⬜ Pendiente</option>
-                <option value="interesado">🟢 Interesado</option>
-                <option value="callback">🔵 Callback</option>
-                <option value="no_interesado">🔴 No interesado</option>
-                <option value="cerrado">✅ Cerrado / Vendido</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="interesado">Interesado</option>
+                <option value="callback">Callback</option>
+                <option value="no_interesado">No interesado</option>
+                <option value="cerrado">Cerrado / Vendido</option>
               </select>
               <select class="form-control" style="width:170px;" id="prosFiltrocamp" onchange="prosRenderTabla()">
                 <option value="">Todas las campañas</option>
@@ -5393,11 +5393,11 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
                 </div>
                 <div><label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Tipo</label>
                   <select id="agendaEvTipo" class="form-input" style="width:100%;">
-                    <option value="visita">🏢 Visita empresa</option>
-                    <option value="llamada">📞 Llamada</option>
-                    <option value="reunion">🤝 Reunión</option>
-                    <option value="seguimiento">📋 Seguimiento</option>
-                    <option value="otro">📌 Otro</option>
+                    <option value="visita">Visita empresa</option>
+                    <option value="llamada">Llamada</option>
+                    <option value="reunion">Reunión</option>
+                    <option value="seguimiento">Seguimiento</option>
+                    <option value="otro">Otro</option>
                   </select></div>
                 <div><label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px;">Descripción</label>
                   <textarea id="agendaEvDesc" class="form-input" rows="2" placeholder="Detalles del evento..." style="width:100%;resize:vertical;"></textarea></div>
@@ -5460,11 +5460,11 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
             <div class="form-group" style="margin-bottom:0;">
               <label class="form-label">Tipo de gestión</label>
               <select class="form-control" id="mgpTipo">
-                <option value="llamada">📞 Llamada</option>
-                <option value="whatsapp">💬 WhatsApp</option>
-                <option value="correo">📧 Correo</option>
-                <option value="visita">🏢 Visita</option>
-                <option value="no_contesta">📵 No contesta</option>
+                <option value="llamada">Llamada</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="correo">Correo</option>
+                <option value="visita">Visita</option>
+                <option value="no_contesta">No contesta</option>
               </select>
             </div>
             <!-- Observación -->
@@ -6419,7 +6419,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 
         <!-- Filtros -->
         <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-          <input type="text" class="form-control" id="empBuscar" placeholder="🔍 Buscar por nombre, NIT, ciudad..." oninput="renderEmpresas()" style="max-width:320px;">
+          <input type="text" class="form-control" id="empBuscar" placeholder="Buscar por nombre, NIT, ciudad..." oninput="renderEmpresas()" style="max-width:320px;">
           <select class="form-control" style="width:180px;" id="empFiltroSin" onchange="renderEmpresas()">
             <option value="">Toda siniestralidad</option>
             <option value="<=75%">≤ 75% (Baja)</option>
@@ -7470,7 +7470,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         <!-- Buscador -->
         <div style="margin-bottom:14px;" id="contactosBuscadorWrap" style="display:none;">
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <input type="text" class="form-control" id="contactosBuscar" placeholder="🔍 Buscar por nombre, cédula o teléfono..." oninput="renderTablaContactos()" style="max-width:380px;">
+            <input type="text" class="form-control" id="contactosBuscar" placeholder="Buscar por nombre, cédula o teléfono..." oninput="renderTablaContactos()" style="max-width:380px;">
             <select class="form-control" id="contactosEstadoFiltro" onchange="renderTablaContactos()" style="max-width:220px;">
               <option value="">Todos los estados</option>
               <option value="VIGENTE">Vigente</option>
@@ -8069,7 +8069,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
               <div class="card-title">3 · Configuración de envío</div>
               <div style="display:flex;flex-direction:column;gap:10px;">
                 <div class="form-group" style="margin-bottom:0;">
-                  <label class="form-label">⏱ Segundos entre mensajes</label>
+                  <label class="form-label"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <polyline points="12 6 12 12 16 14" /></svg> Segundos entre mensajes</label>
                   <div style="display:flex;align-items:center;gap:10px;">
                     <input type="range" id="wm_delay_seg" min="5" max="60" value="10"
                       style="flex:1;" oninput="wmActualizarDelayLabel()">
@@ -8197,7 +8197,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
               <button id="wm_btn_detener" onclick="wmDetenerEnvio()"
                 style="display:none;padding:12px 16px;border-radius:8px;cursor:pointer;font-size:13px;
                        background:rgba(240,82,82,0.15);color:var(--red);border:1px solid rgba(240,82,82,0.3);">
-                ⏹
+                <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" /></svg>
               </button>
             </div>
 
@@ -8263,7 +8263,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </label>
       </div>
       <div id="satLoadingMsg" style="display:none;margin-bottom:12px;" class="alert alert-info">
-        ⏳ Analizando radicado SAT con IA... un momento.
+        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Analizando radicado SAT con IA... un momento.
       </div>
       <div id="satResultMsg" style="display:none;margin-bottom:12px;"></div>
 
@@ -9429,7 +9429,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <select class="form-control" id="vExtraProductoSelect" style="max-width:260px;" onchange="onExtraProductoSelect()">
             <option value="">— Selecciona o crea nuevo —</option>
-            <option value="_nuevo">➕ Crear nuevo producto...</option>
+            <option value="_nuevo">Crear nuevo producto...</option>
           </select>
           <span id="vExtraProductoBadge" style="display:none;" class="chip chip-purple"></span>
         </div>
@@ -9642,12 +9642,12 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       <div class="form-group"><label class="form-label">Fecha</label><input type="date" class="form-control" id="aFecha"></div>
       <div class="form-group"><label class="form-label">Tipo de Actividad</label>
         <select class="form-control" id="aTipo">
-          <option value="LLAMADA">📞 Llamada</option>
-          <option value="VISITA">🏢 Visita empresa</option>
-          <option value="WHATSAPP">💬 WhatsApp</option>
-          <option value="CORREO">📧 Correo</option>
-          <option value="REUNION">🤝 Reunión</option>
-          <option value="SEGUIMIENTO">🔄 Seguimiento</option>
+          <option value="LLAMADA">Llamada</option>
+          <option value="VISITA">Visita empresa</option>
+          <option value="WHATSAPP">WhatsApp</option>
+          <option value="CORREO">Correo</option>
+          <option value="REUNION">Reunión</option>
+          <option value="SEGUIMIENTO">Seguimiento</option>
         </select>
       </div>
       <div class="form-group"><label class="form-label">Cliente / Empresa</label><input type="text" class="form-control" id="aCliente" placeholder="Nombre o empresa"></div>
@@ -9655,10 +9655,10 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Descripción</label><input type="text" class="form-control" id="aDescripcion" placeholder="¿Qué se hizo?"></div>
       <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Resultado</label>
         <select class="form-control" id="aResultado">
-          <option value="POSITIVO">✅ Positivo — avanza</option>
-          <option value="PENDIENTE">⏳ Pendiente — sin respuesta</option>
-          <option value="SEGUIMIENTO">🔄 Requiere seguimiento</option>
-          <option value="NO_INTERESADO">❌ No interesado</option>
+          <option value="POSITIVO">Positivo — avanza</option>
+          <option value="PENDIENTE">Pendiente — sin respuesta</option>
+          <option value="SEGUIMIENTO">Requiere seguimiento</option>
+          <option value="NO_INTERESADO">No interesado</option>
         </select>
       </div>
       <div class="form-group"><label class="form-label">Fecha seguimiento</label><input type="date" class="form-control" id="aSeguimiento"></div>
@@ -13965,7 +13965,7 @@ function renderTabla() {
 
   const tbody = document.getElementById('tablaVentas');
   if (ventas.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="icon">📋</div><div>No hay ventas con esos filtros</div></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg></div><div>No hay ventas con esos filtros</div></div></td></tr>';
     document.getElementById('tablaCount').textContent = '';
     return;
   }
@@ -13984,10 +13984,10 @@ function renderTabla() {
     const grupoChip = v.tramiteGrupo === 'SAT' ? 'chip-blue' : 'chip-purple';
     const isReg = v.registradoSistema;
     const regBtn = isReg
-      ? `<span title="✅ Registrado en sistema" style="font-size:16px;cursor:default;">✅</span>`
+      ? `<span title="✅ Registrado en sistema" style="font-size:16px;cursor:default;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>`
       : `<button class="btn btn-sm" onclick="toggleRegistradoSistema('${v.id}')" title="Marcar como registrado en sistema" style="background:rgba(34,197,94,0.1);color:var(--text-dim);border:1px solid rgba(34,197,94,0.2);padding:4px 7px;font-size:13px;">○</button>`;
     const notaBtn = v.notas
-      ? `<button class="btn btn-sm" onclick="verNotas('${v.id}')" title="${(v.notas||'').replace(/"/g,'&quot;')}" style="background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);padding:4px 7px;font-size:13px;">📝</button>`
+      ? `<button class="btn btn-sm" onclick="verNotas('${v.id}')" title="${(v.notas||'').replace(/"/g,'&quot;')}" style="background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);padding:4px 7px;font-size:13px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z" /></svg></button>`
       : '';
     return `<tr style="${isReg ? 'opacity:0.72;' : ''}">
       <td class="td-num">${ventas.length - idx}</td>
@@ -14006,8 +14006,8 @@ function renderTabla() {
       <td style="white-space:nowrap;display:flex;gap:3px;align-items:center;">
         ${regBtn}
         ${notaBtn}
-        <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')" title="Editar">✏️</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarVenta('${v.id}')" title="Eliminar">🗑</button>
+        <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')" title="Editar"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /> <path d="m15 5 4 4" /></svg></button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarVenta('${v.id}')" title="Eliminar"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
       </td>
     </tr>`;
   }).join('');
@@ -15763,7 +15763,7 @@ Responde ÚNICAMENTE con el JSON, sin texto adicional ni bloques de código.`;
     resultEl.style.display = '';
     resultEl.innerHTML = `
       <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:var(--radius-sm);padding:10px 14px;font-size:12.5px;color:var(--green);">
-        ✅ <strong>${filled} campos pre-llenados</strong> desde el radicado SAT.
+        <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> <strong>${filled} campos pre-llenados</strong> desde el radicado SAT.
         Completa los datos faltantes: empresa, cotizantes, siniestralidad, teléfono y correo.
       </div>`;
 
@@ -15787,7 +15787,7 @@ function onFechaChange() {
   if (esZonaCorte) {
     alertEl.style.display = 'flex';
     alertEl.className = 'alert alert-warning';
-    alertEl.innerHTML = `⚠️ <strong>Zona de corte:</strong> El día ${dia} está dentro de los primeros 5 días hábiles del mes. Esta venta compensa en <strong>${mesComp}</strong> (mes anterior).`;
+    alertEl.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> <strong>Zona de corte:</strong> El día ${dia} está dentro de los primeros 5 días hábiles del mes. Esta venta compensa en <strong>${mesComp}</strong> (mes anterior).`;
   } else {
     alertEl.style.display = 'none';
   }
@@ -15995,7 +15995,7 @@ function calcPreviewCom() {
   if (!el) return;
 
   if (tipo === 'BENEFICIARIO') {
-    el.innerHTML = `💰 Comisión estimada: <strong style="color:var(--green)">${fmt(10000)}</strong> · Tipo: <strong>Beneficiario</strong>`;
+    el.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /> <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /> <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg> Comisión estimada: <strong style="color:var(--green)">${fmt(10000)}</strong> · Tipo: <strong>Beneficiario</strong>`;
     return;
   }
 
@@ -16052,7 +16052,7 @@ function calcPreviewCom() {
   const mesNombre = MESES_NOMBRES[mesConteo] || '';
 
   el.innerHTML = `
-    💰 Comisión estimada: <strong style="color:var(--green);font-size:15px;">${fmt(com)}</strong>
+    <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /> <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /> <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg> Comisión estimada: <strong style="color:var(--green);font-size:15px;">${fmt(com)}</strong>
     · Rango: <strong>${rangoConEsta.label}</strong>${alertaRango}<br>
     <span style="font-size:11px;color:var(--text-muted);">
       Acumulado ${mesNombre}: <strong>${cotizantesAcumMes}</strong> cot. registrados
@@ -17538,11 +17538,11 @@ function renderPlantillaPBS() {
         ${v.tipo === 'BENEFICIARIO'
           ? `<span title="Beneficiario — se registra junto al cotizante" style="font-size:12px;color:var(--text-dim);">↳ Ben.</span>`
           : v.registradoSistema
-            ? `<span title="Registrado en SURA · click para abrir panel" style="font-size:15px;cursor:pointer;" onclick="abrirPanelRegistroSura('${v.id}')">✅</span>${bensBadge}`
+            ? `<span title="Registrado en SURA · click para abrir panel" style="font-size:15px;cursor:pointer;" onclick="abrirPanelRegistroSura('${v.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>${bensBadge}`
             : `<button class="btn btn-sm" onclick="toggleRegistradoSistema('${v.id}')" title="Marcar como registrado en SURA${nBens>0?' (incluye '+nBens+' beneficiario'+(nBens>1?'s':'')+')':''}" style="background:rgba(34,197,94,0.1);color:var(--text-dim);border:1px solid rgba(34,197,94,0.2);padding:3px 6px;font-size:12px;">○</button>${bensBadge}`}
-        ${v.notas ? `<button class="btn btn-sm" onclick="verNotas('${v.id}')" title="${notasTip}" style="background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);padding:3px 6px;font-size:12px;">📝</button>` : ''}
-        <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')" title="Editar">✏️</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarVentaDesdeTabla('${v.id}')" title="Eliminar">🗑</button>
+        ${v.notas ? `<button class="btn btn-sm" onclick="verNotas('${v.id}')" title="${notasTip}" style="background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);padding:3px 6px;font-size:12px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z" /></svg></button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')" title="Editar"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /> <path d="m15 5 4 4" /></svg></button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarVentaDesdeTabla('${v.id}')" title="Eliminar"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
       </td>
     </tr>`;
   }).join('');
@@ -17807,11 +17807,11 @@ function renderPlantillaVol() {
     const notasTip = (v.notas||'').replace(/"/g,'&quot;');
     return `<td style="padding:8px 10px;white-space:nowrap;">
       ${v.registradoSistema
-        ? `<span title="Registrado" style="font-size:15px;cursor:pointer;" onclick="toggleRegistradoSistema('${v.id}')">✅</span>`
+        ? `<span title="Registrado" style="font-size:15px;cursor:pointer;" onclick="toggleRegistradoSistema('${v.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>`
         : `<button class="btn btn-sm" onclick="toggleRegistradoSistema('${v.id}')" title="Marcar registrado" style="background:rgba(34,197,94,0.1);color:var(--text-dim);border:1px solid rgba(34,197,94,0.2);padding:3px 6px;font-size:12px;">○</button>`}
-      ${v.notas ? `<button class="btn btn-sm" onclick="verNotas('${v.id}')" title="${notasTip}" style="background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);padding:3px 6px;font-size:12px;">📝</button>` : ''}
-      <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')" title="Editar">✏️</button>
-      <button class="btn btn-danger btn-sm" onclick="eliminarVentaDesdeTabla('${v.id}')" title="Eliminar">🗑</button>
+      ${v.notas ? `<button class="btn btn-sm" onclick="verNotas('${v.id}')" title="${notasTip}" style="background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25);padding:3px 6px;font-size:12px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z" /></svg></button>` : ''}
+      <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')" title="Editar"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /> <path d="m15 5 4 4" /></svg></button>
+      <button class="btn btn-danger btn-sm" onclick="eliminarVentaDesdeTabla('${v.id}')" title="Eliminar"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
     </td>`;
   };
 
@@ -21937,12 +21937,12 @@ function renderCobertura() {
   const hoyInician = state.ventas.filter(v => v.producto==='PBS' && v.inicioCobertura === hoyStr);
   const alertEl = document.getElementById('coberturaAlertaHoy');
   if (hoyInician.length > 0) {
-    alertEl.innerHTML = `<div class="alert alert-success">🎉 <strong>${hoyInician.length} afiliado(s) inician cobertura HOY.</strong> Es el momento ideal para enviar el mensaje de bienvenida.</div>`;
+    alertEl.innerHTML = `<div class="alert alert-success"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.8 11.3 2 22l10.7-3.79" /> <path d="M4 3h.01" /> <path d="M22 8h.01" /> <path d="M15 2h.01" /> <path d="M22 20h.01" /> <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10" /> <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17" /> <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.52 9 6.23V7" /> <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" /></svg> <strong>${hoyInician.length} afiliado(s) inician cobertura HOY.</strong> Es el momento ideal para enviar el mensaje de bienvenida.</div>`;
   } else alertEl.innerHTML = '';
 
   const tbody = document.getElementById('coberturaTabla');
   if (!ventas.length) {
-    tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state"><div class="icon">📅</div><div>No hay registros con fecha de inicio de cobertura</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state"><div class="icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg></div><div>No hay registros con fecha de inicio de cobertura</div></div></td></tr>`;
     return;
   }
 
@@ -21966,15 +21966,15 @@ function renderCobertura() {
       <td style="max-width:160px;">
         ${v.notas
           ? `<div style="font-size:11.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;" title="${(v.notas||'').replace(/"/g,'&quot;')}">${v.notas}</div>
-             <button class="btn btn-secondary btn-sm" style="margin-top:3px;font-size:10px;padding:2px 7px;" onclick="editarNotaCobertura('${v.id}',this)" title="Editar nota">✏️ Editar</button>`
-          : `<button class="btn btn-secondary btn-sm" style="font-size:10px;padding:2px 7px;opacity:0.6;" onclick="editarNotaCobertura('${v.id}',this)" title="Agregar nota">📝 Nota</button>`
+             <button class="btn btn-secondary btn-sm" style="margin-top:3px;font-size:10px;padding:2px 7px;" onclick="editarNotaCobertura('${v.id}',this)" title="Editar nota"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /> <path d="m15 5 4 4" /></svg> Editar</button>`
+          : `<button class="btn btn-secondary btn-sm" style="font-size:10px;padding:2px 7px;opacity:0.6;" onclick="editarNotaCobertura('${v.id}',this)" title="Agregar nota"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /> <path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z" /></svg> Nota</button>`
         }
       </td>
       <td style="white-space:nowrap;">
-        ${v.telefono?`<button class="btn btn-secondary btn-sm" onclick="enviarWA('${v.telefono}','${v.nombre||''}','${v.empresa||''}','${v.inicioCobertura||''}','bienvenida')" title="WhatsApp Bienvenida">📱</button>`:''}
+        ${v.telefono?`<button class="btn btn-secondary btn-sm" onclick="enviarWA('${v.telefono}','${v.nombre||''}','${v.empresa||''}','${v.inicioCobertura||''}','bienvenida')" title="WhatsApp Bienvenida"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg></button>`:''}
         ${v.telefono&&prospB?`<button class="btn btn-secondary btn-sm" onclick="enviarWA('${v.telefono}','${v.nombre||''}','${v.empresa||''}','${v.inicioCobertura||''}','beneficiarios')" title="WhatsApp Beneficiarios">👨‍👩‍👧</button>`:''}
-        ${v.correo?`<a href="mailto:${v.correo}" class="btn btn-secondary btn-sm" title="Enviar correo">📧</a>`:''}
-        <button class="btn btn-secondary btn-sm" onclick="agregarProspectoDesdeVenta('${v.id}')" title="Agregar al pipeline">🎯</button>
+        ${v.correo?`<a href="mailto:${v.correo}" class="btn btn-secondary btn-sm" title="Enviar correo"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2" /> <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg></a>`:''}
+        <button class="btn btn-secondary btn-sm" onclick="agregarProspectoDesdeVenta('${v.id}')" title="Agregar al pipeline"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></svg></button>
       </td>
     </tr>`;
   }).join('');
@@ -22632,7 +22632,7 @@ function renderPlantillas() {
       </div>
       <textarea class="form-control" id="pl_${p.key}" rows="4" style="font-size:13px;resize:vertical;">${guardadas[p.key]||p.default}</textarea>
       <div style="margin-top:8px;display:flex;gap:8px;">
-        <button class="btn btn-secondary btn-sm" onclick="previewPlantilla('${p.key}')">👁 Preview</button>
+        <button class="btn btn-secondary btn-sm" onclick="previewPlantilla('${p.key}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /> <circle cx="12" cy="12" r="3" /></svg> Preview</button>
         <button class="btn btn-secondary btn-sm" onclick="resetPlantilla('${p.key}')">↩ Restaurar</button>
       </div>
     </div>
@@ -24024,7 +24024,7 @@ function renderSimulador() {
   // Cancelaciones impact
   const impEl = document.getElementById('simCancelacionesImpacto');
   if (cancelaciones > 0) {
-    impEl.innerHTML = `<div class="alert alert-warning">⚠️ Con ${cancelaciones} cancelación(es): SPTI neto = <strong>${sptiNeto}</strong> unidades. Necesitas reponer ${cancelaciones} venta(s) para mantener tu nivel.</div>`;
+    impEl.innerHTML = `<div class="alert alert-warning"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Con ${cancelaciones} cancelación(es): SPTI neto = <strong>${sptiNeto}</strong> unidades. Necesitas reponer ${cancelaciones} venta(s) para mantener tu nivel.</div>`;
   } else { impEl.innerHTML = ''; }
 
   const campanas = [
@@ -24082,18 +24082,18 @@ function renderSimulador() {
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:12.5px;">
         <div style="background:var(--surface2);border-radius:8px;padding:10px;">
           <div style="color:var(--text-dim);font-size:10px;text-transform:uppercase;margin-bottom:4px;">Falta SPTI</div>
-          <div style="font-weight:700;color:${parseFloat(faltaSpti)===0?'var(--green)':'var(--amber)'};">${faltaSpti === '0.0' ? '✅ Cumplido' : faltaSpti + ' und'}</div>
+          <div style="font-weight:700;color:${parseFloat(faltaSpti)===0?'var(--green)':'var(--amber)'};">${faltaSpti === '0.0' ? '<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Cumplido' : faltaSpti + ' und'}</div>
         </div>
         <div style="background:var(--surface2);border-radius:8px;padding:10px;">
           <div style="color:var(--text-dim);font-size:10px;text-transform:uppercase;margin-bottom:4px;">Regularidades</div>
-          <div style="font-weight:700;color:${cumpleRegs?'var(--green)':'var(--amber)'};">${regularidades}/${c.regsReq} ${cumpleRegs?'✅':('faltan '+faltaRegs)}</div>
+          <div style="font-weight:700;color:${cumpleRegs?'var(--green)':'var(--amber)'};">${regularidades}/${c.regsReq} ${cumpleRegs?'<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>':('faltan '+faltaRegs)}</div>
         </div>
         <div style="background:var(--surface2);border-radius:8px;padding:10px;">
           <div style="color:var(--text-dim);font-size:10px;text-transform:uppercase;margin-bottom:4px;">Consolación</div>
           <div style="font-weight:700;color:var(--teal);">${fmt(c.consolacion)}</div>
         </div>
       </div>
-      ${cancelaciones > 0 ? `<div class="alert alert-warning" style="margin-top:10px;font-size:12px;">⚠️ Tienes ${cancelaciones} cancelación(es) — el neto de ${sptiNeto} und es el que cuenta para esta campaña.</div>` : ''}
+      ${cancelaciones > 0 ? `<div class="alert alert-warning" style="margin-top:10px;font-size:12px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Tienes ${cancelaciones} cancelación(es) — el neto de ${sptiNeto} und es el que cuenta para esta campaña.</div>` : ''}
     </div>`;
   }).join('');
 }
@@ -24201,7 +24201,7 @@ function renderSemaforo() {
         return `<div style="background:${ok?'rgba(34,197,94,0.1)':'var(--surface2)'};border-radius:8px;padding:10px;text-align:center;border:1px solid ${ok?'rgba(34,197,94,0.3)':'transparent'};">
           <div style="font-size:10px;color:var(--text-dim);">${c.n}</div>
           <div style="font-size:16px;font-weight:700;color:${ok?'var(--green)':'var(--amber)'};">${regsAuto}/${c.r}</div>
-          <div style="font-size:10px;color:${ok?'var(--green)':'var(--text-dim)'};">${ok?'✅ Cumple':('faltan '+(c.r-regsAuto))}</div>
+          <div style="font-size:10px;color:${ok?'var(--green)':'var(--text-dim)'};">${ok?'<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Cumple':('faltan '+(c.r-regsAuto))}</div>
         </div>`;
       }).join('')}
     </div>
@@ -24387,7 +24387,7 @@ function simPBSBuscarEmpresa() {
   const registros = bdSin.registros || [];
 
   if (!registros.length) {
-    panel.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--amber);">⚠️ BD de siniestralidad no cargada. Ve a <strong>Empresas</strong> e importa el archivo.</div>';
+    panel.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--amber);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> BD de siniestralidad no cargada. Ve a <strong>Empresas</strong> e importa el archivo.</div>';
     panel.style.display = '';
     return;
   }
@@ -24476,13 +24476,13 @@ function simPBSSeleccionarEmpresa(dataStr) {
   if (info) {
     info.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
-        <span style="font-weight:700;font-size:13px;">🏢 ${data.nombre}</span>
+        <span style="font-weight:700;font-size:13px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></svg> ${data.nombre}</span>
         <span style="font-size:11px;color:var(--text-muted);">NIT: ${data.nit||'—'}</span>
-        <span style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(6,182,212,0.12);color:var(--teal);">📅 ${trimLabel}</span>
+        <span style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(6,182,212,0.12);color:var(--teal);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg> ${trimLabel}</span>
         <button style="margin-left:auto;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;" onclick="simPBSLimpiarEmpresa()">✕ Cambiar</button>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:6px;">${ciudadesHtml}</div>
-      ${regs.length > 1 ? '<div style="margin-top:6px;font-size:11px;color:var(--text-muted);">⚠️ Empresa con múltiples ciudades — se usó la siniestralidad más baja (mejor comisión). Ajusta si necesitas otra ciudad.</div>' : ''}
+      ${regs.length > 1 ? '<div style="margin-top:6px;font-size:11px;color:var(--text-muted);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Empresa con múltiples ciudades — se usó la siniestralidad más baja (mejor comisión). Ajusta si necesitas otra ciudad.</div>' : ''}
     `;
     info.style.display = '';
   }
@@ -24710,7 +24710,7 @@ function renderBuscador() {
   state = getState();
 
   if (!q || q.length < 2) {
-    el.innerHTML = `<div style="text-align:center;padding:48px;color:var(--text-dim);"><div style="font-size:32px;margin-bottom:12px;">🔍</div><div>Escribe al menos 2 caracteres para buscar</div></div>`;
+    el.innerHTML = `<div style="text-align:center;padding:48px;color:var(--text-dim);"><div style="font-size:32px;margin-bottom:12px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg></div><div>Escribe al menos 2 caracteres para buscar</div></div>`;
     statsEl.textContent = '';
     return;
   }
@@ -24749,10 +24749,10 @@ function renderBuscador() {
     // Datos SURA de la empresa si es PBS
     const suraDatos = (v.producto === 'PBS' && v.nit) ? getSuraDatos(v.nit) : null;
     const asesorBadge = suraDatos?.asesorAsignado
-      ? `<span style="font-size:10.5px;padding:2px 8px;border-radius:8px;background:rgba(168,85,247,0.1);color:var(--purple);border:1px solid rgba(168,85,247,0.2);">👤 ${suraDatos.asesorAsignado}</span>`
+      ? `<span style="font-size:10.5px;padding:2px 8px;border-radius:8px;background:rgba(168,85,247,0.1);color:var(--purple);border:1px solid rgba(168,85,247,0.2);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></svg> ${suraDatos.asesorAsignado}</span>`
       : '';
     const cotBadge = suraDatos?.cotizantesActivos != null
-      ? `<span style="font-size:10.5px;padding:2px 8px;border-radius:8px;background:rgba(6,182,212,0.1);color:var(--teal);border:1px solid rgba(6,182,212,0.2);">🏥 ${suraDatos.cotizantesActivos} cot. SURA</span>`
+      ? `<span style="font-size:10.5px;padding:2px 8px;border-radius:8px;background:rgba(6,182,212,0.1);color:var(--teal);border:1px solid rgba(6,182,212,0.2);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" /> <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" /> <circle cx="20" cy="10" r="2" /></svg> ${suraDatos.cotizantesActivos} cot. SURA</span>`
       : '';
     const sinBadge = suraDatos?.sinCat
       ? `<span style="font-size:10.5px;padding:2px 8px;border-radius:8px;background:rgba(245,158,11,0.08);color:var(--amber);">Sin. ${suraDatos.sinPct != null ? suraDatos.sinPct + '%' : suraDatos.sinCat}</span>`
@@ -24770,19 +24770,19 @@ function renderBuscador() {
         </div>
       </div>
       <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;font-size:12px;">
-        ${tel?`<span>📱 ${tel}</span>`:''}
-        ${correo?`<span>📧 ${correo}</span>`:''}
-        ${v.ciudad?`<span>📍 ${v.ciudad}</span>`:''}
+        ${tel?`<span><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> ${tel}</span>`:''}
+        ${correo?`<span><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2" /> <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg> ${correo}</span>`:''}
+        ${v.ciudad?`<span><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /> <circle cx="12" cy="10" r="3" /></svg> ${v.ciudad}</span>`:''}
         ${v.plan?`<span>Plan: ${v.plan}</span>`:''}
         ${v.primaTotal?`<span style="color:var(--sura-lime);">Prima: ${fmt(v.primaTotal)}</span>`:''}
       </div>
       ${(asesorBadge||cotBadge||sinBadge)?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">${cotBadge}${sinBadge}${asesorBadge}</div>`:''}
       <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-primary btn-sm" onclick="abrirPerfil360('${v.doc||v.tomadorDoc||''}','${v.id}')">👤 Perfil 360°</button>
-        <button class="btn btn-secondary btn-sm" onclick="abrirRedaccionIAVenta('${v.id}')">✍️ Mensaje IA</button>
-        <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')">✏️ Editar</button>
-        ${tel?`<button class="btn btn-secondary btn-sm" onclick="window.open('https://wa.me/57${tel.replace(/\D/g,'')}','_blank')">📱 WhatsApp</button>`:''}
-        ${correo?`<button class="btn btn-secondary btn-sm" onclick="window.location='mailto:${correo}'">📧 Email</button>`:''}
+        <button class="btn btn-primary btn-sm" onclick="abrirPerfil360('${v.doc||v.tomadorDoc||''}','${v.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /> <circle cx="12" cy="7" r="4" /></svg> Perfil 360°</button>
+        <button class="btn btn-secondary btn-sm" onclick="abrirRedaccionIAVenta('${v.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9" /> <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg> Mensaje IA</button>
+        <button class="btn btn-secondary btn-sm" onclick="editarVenta('${v.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /> <path d="m15 5 4 4" /></svg> Editar</button>
+        ${tel?`<button class="btn btn-secondary btn-sm" onclick="window.open('https://wa.me/57${tel.replace(/\D/g,'')}','_blank')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> WhatsApp</button>`:''}
+        ${correo?`<button class="btn btn-secondary btn-sm" onclick="window.location='mailto:${correo}'"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2" /> <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg> Email</button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -28298,7 +28298,7 @@ function renderCotizadorPersonas() {
             </div>`;
           }).join('') + `</div>`;
       } else {
-        tarifasHTML = `<div style="margin-top:8px;font-size:12px;color:var(--amber);">⚠️ Edad ${edad} fuera del rango SPTI (1–59 años)</div>`;
+        tarifasHTML = `<div style="margin-top:8px;font-size:12px;color:var(--amber);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Edad ${edad} fuera del rango SPTI (1–59 años)</div>`;
       }
 
     } else if (prod === 'SPD') {
@@ -28306,7 +28306,7 @@ function renderCotizadorPersonas() {
       const valBase = cotConIVA ? val : Math.round(val / IVA_FACTOR);
       const dctoMensual = val - SPD_TARIFAS.MENSUAL;
       tarifasHTML = `<div style="margin-top:10px;border-radius:8px;padding:12px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.25);">
-        <div style="font-size:10.5px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">💜 SPD — Salud Para Dos · Tarifa Única</div>
+        <div style="font-size:10.5px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg> SPD — Salud Para Dos · Tarifa Única</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
           ${[['MENSUAL','Mensual',0],['TRIMESTRAL','Trimestral',SPD_TARIFAS.TRIMESTRAL],['SEMESTRAL','Semestral',SPD_TARIFAS.SEMESTRAL],['ANUAL','Anual',SPD_TARIFAS.ANUAL]].map(([k,lbl,v])=>{
             const vShow = cotConIVA ? SPD_TARIFAS[k] : Math.round(SPD_TARIFAS[k]/IVA_FACTOR);
@@ -28345,9 +28345,9 @@ function renderCotizadorPersonas() {
           { key:'Maternidad', label:'Maternidad',  val: pMat,    disponible: edad>=15&&edad<=45 },
         ];
         tarifasHTML = `<div style="margin-top:10px;border-radius:8px;padding:12px;background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.2);">
-          <div style="font-size:10.5px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">🧩 Plan Modular · Rango ${k} años</div>
+          <div style="font-size:10.5px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z" /></svg> Plan Modular · Rango ${k} años</div>
           <div style="background:var(--surface3);border-radius:6px;padding:8px 10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:12px;font-weight:600;">🩺 Módulo Básico <span style="font-size:10px;color:var(--text-muted);">(incluido siempre)</span></span>
+            <span style="font-size:12px;font-weight:600;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" /> <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" /> <circle cx="20" cy="10" r="2" /></svg> Módulo Básico <span style="font-size:10px;color:var(--text-muted);">(incluido siempre)</span></span>
             <span style="font-family:var(--mono);font-weight:700;color:var(--teal);">${fmt(cotConIVA?pBasico:Math.round(pBasico/IVA_FACTOR))}/mes</span>
           </div>
           ${modRows.map(m => `
@@ -28364,7 +28364,7 @@ function renderCotizadorPersonas() {
           </div>
         </div>`;
       } else {
-        tarifasHTML = `<div style="margin-top:8px;font-size:12px;color:var(--amber);">⚠️ Ingresa la edad para ver tarifas (máx. 64 años)</div>`;
+        tarifasHTML = `<div style="margin-top:8px;font-size:12px;color:var(--amber);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Ingresa la edad para ver tarifas (máx. 64 años)</div>`;
       }
 
     } else if (prod === 'PAC60' && edad >= 60) {
@@ -28382,14 +28382,14 @@ function renderCotizadorPersonas() {
             const sel = p.conAnexo === opt.key;
             return `<div onclick="cotizadorUpdatePersona('${p.id}','conAnexo',${opt.key})"
               style="cursor:pointer;border-radius:8px;padding:10px 12px;border:2px solid ${sel?'var(--green)':'var(--border)'};background:${sel?'rgba(34,197,94,0.08)':'var(--surface3)'};transition:all 0.15s;">
-              <div style="font-size:10.5px;font-weight:700;color:${sel?'var(--green)':'var(--text-muted)'};text-transform:uppercase;margin-bottom:5px;">${sel?'✓ ':''} 👴 60+ ${opt.lbl}</div>
+              <div style="font-size:10.5px;font-weight:700;color:${sel?'var(--green)':'var(--text-muted)'};text-transform:uppercase;margin-bottom:5px;">${sel?'✓ ':''} <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 14h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16" /> <path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9" /> <path d="m2 15 6 6" /> <path d="M19.5 8.5c.7-.7 1.5-1.6 1.5-2.7A2.73 2.73 0 0 0 16 4a2.78 2.78 0 0 0-5 1.8c0 1.2.8 2 1.5 2.8L16 12Z" /></svg> 60+ ${opt.lbl}</div>
               <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:${sel?'var(--green)':'var(--text)'};">${fmt(opt.val)}<span style="font-size:11px;font-weight:400;color:var(--text-muted);">/mes</span></div>
               <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Rango ${rango} · ${cotConIVA?'c/IVA 5%':'s/IVA'}</div>
             </div>`;
           }).join('')}
         </div>`;
       } else if (edad > 0) {
-        tarifasHTML = `<div style="margin-top:8px;font-size:12px;color:var(--amber);">⚠️ PAC60 requiere 60–79 años para venta nueva</div>`;
+        tarifasHTML = `<div style="margin-top:8px;font-size:12px;color:var(--amber);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> PAC60 requiere 60–79 años para venta nueva</div>`;
       }
     } else if (edad > 0) {
       tarifasHTML = `<div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Ingresa la edad para ver tarifas disponibles.</div>`;
@@ -28697,44 +28697,44 @@ function cotizadorComparar() {
   // Coberturas por producto
   const COBERTURAS = {
     SPTI: [
-      '✅ Consulta externa (médico general)',
-      '✅ Consulta con especialista',
-      '✅ Urgencias 24/7',
-      '✅ Hospitalización',
-      '✅ Laboratorios y diagnósticos',
-      '✅ Terapias físicas y respiratorias',
-      '✅ Medicamentos formulados',
-      '✅ Cirugías programadas',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Consulta externa (médico general)',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Consulta con especialista',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Urgencias 24/7',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Hospitalización',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Laboratorios y diagnósticos',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Terapias físicas y respiratorias',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Medicamentos formulados',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Cirugías programadas',
       '⏳ Períodos de carencia aplican',
     ],
     SPD: [
-      '✅ Tomador + Asegurado incluidos',
-      '✅ Tarifa única sin importar la edad',
-      '✅ Consulta externa ilimitada',
-      '✅ Urgencias 24/7',
-      '✅ Hospitalización',
-      '✅ Laboratorios y diagnósticos',
-      '✅ Medicamentos formulados',
-      '✅ Cirugías programadas',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tomador + Asegurado incluidos',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa única sin importar la edad',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Consulta externa ilimitada',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Urgencias 24/7',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Hospitalización',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Laboratorios y diagnósticos',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Medicamentos formulados',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Cirugías programadas',
     ],
     PSM: [
-      '✅ Médicos especialistas directos',
-      '✅ Urgencias 24/7',
-      '✅ Laboratorios y diagnósticos',
-      '✅ Terapias físicas y respiratorias',
-      '✅ Copago fijo $30.000 por acceso',
-      '✅ Sin períodos de carencia',
-      '🧩 Módulos adicionales opcionales',
-      '✅ Atención Longevo (adulto mayor)',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Médicos especialistas directos',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Urgencias 24/7',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Laboratorios y diagnósticos',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Terapias físicas y respiratorias',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Copago fijo $30.000 por acceso',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Sin períodos de carencia',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z" /></svg> Módulos adicionales opcionales',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Atención Longevo (adulto mayor)',
     ],
     PAC60: [
-      '✅ Consulta directa con especialistas',
-      '✅ Atención domiciliaria incluida',
-      '✅ Dimensión Social y Física',
-      '✅ Odontología preventiva',
-      '✅ Prevención y bienestar',
-      '✅ Programa de envejecimiento activo',
-      '✅ Descuentos en medicamentos',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Consulta directa con especialistas',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Atención domiciliaria incluida',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Dimensión Social y Física',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Odontología preventiva',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Prevención y bienestar',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Programa de envejecimiento activo',
+      '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Descuentos en medicamentos',
     ],
   };
 
@@ -28794,16 +28794,16 @@ function cotizadorComparar() {
     <tbody>
       <!-- Prima -->
       <tr>
-        <td ${tdLabelStyle}>💰 Prima / ${perLabel}</td>
+        <td ${tdLabelStyle}><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /> <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /> <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg> Prima / ${perLabel}</td>
         ${cols.map(c => `<td ${tdStyle}>
           <div style="font-size:20px;font-weight:800;font-family:var(--mono);color:${c.color};">${fmt(c.prima)}</div>
-          ${c.dcto ? `<div style="font-size:10.5px;color:var(--green);margin-top:2px;">🏷 Dcto: ${fmt(c.dcto)}</div>` : ''}
+          ${c.dcto ? `<div style="font-size:10.5px;color:var(--green);margin-top:2px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" /> <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg> Dcto: ${fmt(c.dcto)}</div>` : ''}
           <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${cotConIVA ? 'Incluye IVA' : 'Sin IVA'}</div>
         </td>`).join('')}
       </tr>
       <!-- Comisión asesor -->
       <tr>
-        <td ${tdLabelStyle}>🎯 Tu comisión est.</td>
+        <td ${tdLabelStyle}><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="6" /> <circle cx="12" cy="12" r="2" /></svg> Tu comisión est.</td>
         ${cols.map(c => `<td ${tdStyle}>
           <div style="font-size:15px;font-weight:700;font-family:var(--mono);color:var(--green);">${fmt(c.comision)}</div>
           <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${Math.round(c.comPct * 100)}% sobre prima</div>
@@ -28811,17 +28811,17 @@ function cotizadorComparar() {
       </tr>
       <!-- Producto -->
       <tr>
-        <td ${tdLabelStyle}>📋 Producto</td>
+        <td ${tdLabelStyle}><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Producto</td>
         ${cols.map(c => `<td ${tdStyle}><span class="chip" style="background:${c.color}25;color:${c.color};font-size:11px;">${c.p.producto}</span></td>`).join('')}
       </tr>
       <!-- Periodicidad -->
       <tr>
-        <td ${tdLabelStyle}>🗓 Periodicidad</td>
+        <td ${tdLabelStyle}><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /> <path d="M8 14h.01" /> <path d="M12 14h.01" /> <path d="M16 14h.01" /> <path d="M8 18h.01" /> <path d="M12 18h.01" /> <path d="M16 18h.01" /></svg> Periodicidad</td>
         ${cols.map(c => `<td ${tdStyle} style="padding:10px 14px;text-align:center;border-top:1px solid var(--border);font-size:12.5px;">${per}</td>`).join('')}
       </tr>
       <!-- Separador coberturas -->
       <tr>
-        <td colspan="${cols.length + 1}" style="padding:8px 14px;background:var(--surface3);font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;border-top:2px solid var(--border);">✅ Coberturas incluidas</td>
+        <td colspan="${cols.length + 1}" style="padding:8px 14px;background:var(--surface3);font-size:10.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;border-top:2px solid var(--border);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Coberturas incluidas</td>
       </tr>
       ${Array.from({length: maxCob}, (_, i) => `<tr>
         <td ${tdLabelStyle} style="padding:7px 14px;font-size:11.5px;color:var(--text-muted);">Cobertura ${i + 1}</td>
@@ -28829,11 +28829,11 @@ function cotizadorComparar() {
       </tr>`).join('')}
       <!-- Total comparado si > 1 plan -->
       ${cols.length > 1 ? `<tr style="background:rgba(200,229,43,0.06);">
-        <td style="padding:12px 14px;font-weight:700;font-size:12.5px;border-top:2px solid var(--border);">💡 Prima más económica</td>
+        <td style="padding:12px 14px;font-weight:700;font-size:12.5px;border-top:2px solid var(--border);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Prima más económica</td>
         ${cols.map(c => {
           const menorPrima = Math.min(...cols.map(x => x.prima));
           const esMenor = c.prima === menorPrima;
-          return `<td style="padding:12px 14px;text-align:center;border-top:2px solid var(--border);">${esMenor ? '<span style="font-size:18px;">🏆</span><div style="font-size:10px;color:var(--green);font-weight:700;">Más económico</div>' : '—'}</td>`;
+          return `<td style="padding:12px 14px;text-align:center;border-top:2px solid var(--border);">${esMenor ? '<span style="font-size:18px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /> <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /> <path d="M4 22h16" /> <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /> <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /> <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></svg></span><div style="font-size:10px;color:var(--green);font-weight:700;">Más económico</div>' : '—'}</td>`;
         }).join('')}
       </tr>` : ''}
     </tbody>
@@ -29313,8 +29313,8 @@ body{font-family:Arial,sans-serif;color:#1f2937;background:#fff;font-size:13px;}
           <option value="contactado">Contactado</option>
           <option value="cotizacion">Cotización enviada</option>
           <option value="negociacion">En negociación</option>
-          <option value="ganada">Ganada ✅</option>
-          <option value="perdida">Perdida ❌</option>
+          <option value="ganada">Ganada </option>
+          <option value="perdida">Perdida </option>
         </select>
       </div>
       <div class="form-group">
@@ -29369,13 +29369,13 @@ function renderCotizaciones() {
   document.getElementById('cotKpi2').textContent = totalPersonas;
   document.getElementById('cotKpi3').textContent = fmt(totalPrimas);
   const lista = document.getElementById('cotizacionesLista');
-  if (!cots.length) { lista.innerHTML = '<div class="empty-state"><div class="icon">📋</div><div>No hay cotizaciones guardadas</div></div>'; return; }
+  if (!cots.length) { lista.innerHTML = '<div class="empty-state"><div class="icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg></div><div>No hay cotizaciones guardadas</div></div>'; return; }
   lista.innerHTML = cots.map(c => {
     const fecha = new Date(c.fecha+'T12:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
     const personas = c.personas||[];
     const esWeb = c.origen === 'cotizar_online' || c._remote;
     const badgeWeb = esWeb
-      ? `<span style="background:rgba(99,102,241,0.15);color:#818cf8;border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;">🌐 Web</span>`
+      ? `<span style="background:rgba(99,102,241,0.15);color:#818cf8;border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /> <path d="M2 12h20" /></svg> Web</span>`
       : '';
     const borderColor = esWeb ? '#818cf8' : 'var(--amber)';
     return `<div class="card" style="border-left:3px solid ${borderColor};">
@@ -29386,15 +29386,15 @@ function renderCotizaciones() {
             ${badgeWeb}
           </div>
           <div style="font-size:15px;font-weight:700;">${c.cliente?.nombre||'Sin nombre'}</div>
-          <div style="font-size:12px;color:var(--text-muted);">${fecha} · ${personas.length} persona(s)${c.cliente?.tel?' · 📱 '+c.cliente.tel:''}${c.cliente?.correo?' · ✉️ '+c.cliente.correo:''}</div>
-          ${esWeb && c.planLabel ? `<div style="font-size:11.5px;color:var(--purple);margin-top:3px;">📋 ${c.planLabel}${c.periodicidad?' · '+c.periodicidad:''}</div>` : ''}
+          <div style="font-size:12px;color:var(--text-muted);">${fecha} · ${personas.length} persona(s)${c.cliente?.tel?' · <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> '+c.cliente.tel:''}${c.cliente?.correo?' · <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2" /> <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg> '+c.cliente.correo:''}</div>
+          ${esWeb && c.planLabel ? `<div style="font-size:11.5px;color:var(--purple);margin-top:3px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> ${c.planLabel}${c.periodicidad?' · '+c.periodicidad:''}</div>` : ''}
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--sura-lime);">${fmt(c.total||0)}<span style="font-size:11px;color:var(--text-muted);font-weight:400;">/mes</span></div>
           <button class="btn btn-sm" style="background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3);" onclick="cotizacionConvertirVenta('${c.id}')" title="Convertir en venta">⚡ Registrar venta</button>
-          <button class="btn btn-secondary btn-sm" onclick="cotizacionReimprimir('${c.id}')" title="Imprimir PDF">🖨️ PDF</button>
-          ${esWeb ? `<button class="btn btn-sm" style="background:rgba(99,102,241,0.12);color:#818cf8;border:1px solid rgba(99,102,241,0.3);" onclick="cotizacionEnviarWa('${c.id}')" title="Enviar por WhatsApp">📲 WA</button>` : ''}
-          <button class="btn btn-danger btn-sm" onclick="cotizacionEliminar('${c.id}')">🗑</button>
+          <button class="btn btn-secondary btn-sm" onclick="cotizacionReimprimir('${c.id}')" title="Imprimir PDF"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9" /> <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /> <rect width="12" height="8" x="6" y="14" /></svg> PDF</button>
+          ${esWeb ? `<button class="btn btn-sm" style="background:rgba(99,102,241,0.12);color:#818cf8;border:1px solid rgba(99,102,241,0.3);" onclick="cotizacionEnviarWa('${c.id}')" title="Enviar por WhatsApp"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> WA</button>` : ''}
+          <button class="btn btn-danger btn-sm" onclick="cotizacionEliminar('${c.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">${personas.map(p=>{const color=COT_COLORS[p.producto]||'var(--sura-blue)';return `<span class="chip" style="background:${color}20;color:${color};font-size:10.5px;">${p.nombre||p.producto}${p.edad!=null?' · '+p.edad+'a':''} · ${fmt(p.primaCalc||cotizadorCalcPrima(p))}</span>`;}).join('')}</div>
@@ -33306,7 +33306,7 @@ function renderIPS() {
     <!-- Buscador -->
     <div class="card">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-        <span style="font-size:22px;">🏥</span>
+        <span style="font-size:22px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" /> <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" /> <circle cx="20" cy="10" r="2" /></svg></span>
         <div>
           <div style="font-size:15px;font-weight:700;">Buscador de IPS SURA</div>
           <div style="font-size:12px;color:var(--text-muted);">Ingresa la dirección y ciudad del afiliado — te mostramos las IPS básicas más cercanas y la red de urgencias disponible</div>
@@ -33337,14 +33337,14 @@ function renderIPS() {
     <div class="card" style="border:1px solid rgba(26,76,232,0.2);background:rgba(26,76,232,0.03);" id="ips_import_card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <div style="flex:1;min-width:200px;">
-          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">📥 Base de datos IPS · Firestore</div>
-          <div style="font-size:11.5px;color:var(--text-muted);" id="ips_db_status">⏳ Verificando BD en Firestore...</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12" /> <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></svg> Base de datos IPS · Firestore</div>
+          <div style="font-size:11.5px;color:var(--text-muted);" id="ips_db_status"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Verificando BD en Firestore...</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <label style="background:rgba(26,76,232,0.1);border:1px solid rgba(26,76,232,0.25);color:var(--sura-blue);
               border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">
-              📂 Importar JSON <span id="ipsAdminBadge" style="display:none;font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(26,76,232,0.25);font-weight:700;">Canal</span>
+              <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg> Importar JSON <span id="ipsAdminBadge" style="display:none;font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(26,76,232,0.25);font-weight:700;">Canal</span>
               <input type="file" accept=".json" style="display:none;" onchange="ipsImportarJSON(this)">
             </label>
             <button class="btn btn-secondary" style="font-size:12px;padding:7px 14px;" onclick="ipsMostrarAyudaImport()">
@@ -33358,25 +33358,25 @@ function renderIPS() {
         1. Descarga el <strong style="color:var(--text);">Extractor IPS SURA v5</strong> desde el chat donde lo generaste<br>
         2. Completa las 2 fases: <em>IPS Básicas</em> (15 departamentos) + <em>Urgencias médicas</em> (15 departamentos)<br>
         3. Al finalizar, haz clic en <strong style="color:var(--text);">⬇ Descargar .json</strong><br>
-        4. Vuelve aquí, haz clic en <strong style="color:var(--text);">📂 Importar JSON</strong> y selecciona el archivo<br>
+        4. Vuelve aquí, haz clic en <strong style="color:var(--text);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg> Importar JSON</strong> y selecciona el archivo<br>
         5. La BD se sube a Firestore y queda disponible en todos tus dispositivos automáticamente ✅
       </div>
     </div>
 
     <!-- Info general -->
     <div class="card" style="border:1px solid rgba(6,182,212,0.2);background:rgba(6,182,212,0.04);">
-      <div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:8px;">📋 Tipos de atención en red SURA PBS</div>
+      <div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Tipos de atención en red SURA PBS</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;font-size:12px;color:var(--text-muted);">
-        <div>🏥 <strong>IPS Básica</strong> — Consulta externa, laboratorio, terapias</div>
-        <div>🚨 <strong>Urgencias médicas</strong> — Atención 24h, emergencias</div>
+        <div><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" /> <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" /> <circle cx="20" cy="10" r="2" /></svg> <strong>IPS Básica</strong> — Consulta externa, laboratorio, terapias</div>
+        <div><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18v-6a5 5 0 1 1 10 0v6" /> <path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z" /> <path d="M21 12h1" /> <path d="M18.5 4.5 18 5" /> <path d="M2 12h1" /> <path d="M12 2v1" /> <path d="m4.929 4.929.707.707" /> <path d="M12 12v6" /></svg> <strong>Urgencias médicas</strong> — Atención 24h, emergencias</div>
         <div>👶 <strong>Urgencias pediátricas</strong> — Según red disponible por ciudad</div>
         <div>🤰 <strong>IPS maternas</strong> — Parto y urgencias obstétricas</div>
         <div>🦷 <strong>Urgencias odontológicas</strong> — Por ciudad disponible</div>
-        <div>💊 <strong>Distribuidores medicamentos</strong> — Farmacias red SURA</div>
+        <div><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" /> <path d="m8.5 8.5 7 7" /></svg> <strong>Distribuidores medicamentos</strong> — Farmacias red SURA</div>
       </div>
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dim);">
-        📞 Línea de prestadores SURA: <strong style="color:var(--text);">#888</strong> desde celular · 
-        🌐 Directorio completo: <a href="https://www.epssura.com/dir-medico" target="_blank" style="color:var(--sura-blue);">epssura.com/dir-medico</a>
+        <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg> Línea de prestadores SURA: <strong style="color:var(--text);">#888</strong> desde celular · 
+        <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /> <path d="M2 12h20" /></svg> Directorio completo: <a href="https://www.epssura.com/dir-medico" target="_blank" style="color:var(--sura-blue);">epssura.com/dir-medico</a>
       </div>
     </div>
   `;
@@ -33391,9 +33391,9 @@ function renderIPS() {
       const urgN   = Object.values(db.red).reduce((s,m) => s + (m.urgencias?.length||0), 0);
       const odontN = Object.values(db.red).reduce((s,m) => s + (m.urgOdont?.length||0), 0);
       const ambulN = Object.values(db.red).reduce((s,m) => s + (m.ambulancias?.length||0), 0);
-      statusEl.innerHTML = `<span style="color:var(--green);">✅ BD cargada · <strong>${munis}</strong> municipios · <strong>${basN}</strong> básicas · <strong>${urgN}</strong> urgencias · <strong>${odontN}</strong> odonto · <strong>${ambulN}</strong> ambulancias · generada ${db.generado||'?'}</span>`;
+      statusEl.innerHTML = `<span style="color:var(--green);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> BD cargada · <strong>${munis}</strong> municipios · <strong>${basN}</strong> básicas · <strong>${urgN}</strong> urgencias · <strong>${odontN}</strong> odonto · <strong>${ambulN}</strong> ambulancias · generada ${db.generado||'?'}</span>`;
     } else {
-      statusEl.innerHTML = `<span style="color:var(--amber);">⚠️ Sin BD importada — los resultados usan datos de referencia (solo ciudades principales). Importa el JSON del extractor para cobertura completa.</span>`;
+      statusEl.innerHTML = `<span style="color:var(--amber);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Sin BD importada — los resultados usan datos de referencia (solo ciudades principales). Importa el JSON del extractor para cobertura completa.</span>`;
     }
   });
 }
@@ -34647,7 +34647,7 @@ function renderMensajesCustom() {
   if (!cont) return;
   const msgs = getMensajesCustom();
   if (!msgs.length) {
-    cont.innerHTML = '<div class="empty-state" style="padding:20px 0;"><div class="icon">💬</div><div>Sin mensajes personalizados aún</div></div>';
+    cont.innerHTML = '<div class="empty-state" style="padding:20px 0;"><div class="icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg></div><div>Sin mensajes personalizados aún</div></div>';
     return;
   }
   cont.innerHTML = msgs.map(m => `
@@ -34661,9 +34661,9 @@ function renderMensajesCustom() {
         <div style="font-size:11px;color:var(--text-dim);margin-top:6px;">Variables: {nombre} {empresa} {fecha_cobertura}</div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0;">
-        <button class="btn btn-sm btn-secondary" onclick="setWaTabCustom('${m.id}')">👁 Previsualizar</button>
-        <button class="btn btn-sm btn-secondary" onclick="abrirModalMensajeCustom('${m.id}')">✏️</button>
-        <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.3);" onclick="eliminarMensajeCustom('${m.id}')">🗑</button>
+        <button class="btn btn-sm btn-secondary" onclick="setWaTabCustom('${m.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /> <circle cx="12" cy="12" r="3" /></svg> Previsualizar</button>
+        <button class="btn btn-sm btn-secondary" onclick="abrirModalMensajeCustom('${m.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /> <path d="m15 5 4 4" /></svg></button>
+        <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.3);" onclick="eliminarMensajeCustom('${m.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
       </div>
     </div>
   `).join('');
@@ -34675,7 +34675,7 @@ function renderBotonesCustomMasivo() {
   const msgs = getMensajesCustom().filter(m => m.masivo);
   cont.innerHTML = msgs.map(m => `
     <button class="btn btn-secondary" style="border-color:var(--purple);color:var(--purple);"
-      onclick="envioMasivoWhatsApp('custom_${m.id}')">📱 ${m.nombre}</button>
+      onclick="envioMasivoWhatsApp('custom_${m.id}')"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> ${m.nombre}</button>
   `).join('');
 }
 
@@ -36609,15 +36609,15 @@ function ssCalcularIndep() {
   if (ingresoMuyBajo) {
     indicEl.style.background = 'rgba(239,68,68,0.08)';
     indicEl.style.borderLeft = '3px solid var(--red)';
-    indicEl.innerHTML = `⚠️ El ingreso mensual (${ssFmt(ingreso)}) es inferior al SMMLV (${ssFmt(smmlv)}). El independiente debe cotizar mínimo sobre ${ssFmt(smmlv)}${factor < 1 ? ` proporcional a ${dias} días = ${ssFmt(smmlv * factor)}` : ''}.`;
+    indicEl.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> El ingreso mensual (${ssFmt(ingreso)}) es inferior al SMMLV (${ssFmt(smmlv)}). El independiente debe cotizar mínimo sobre ${ssFmt(smmlv)}${factor < 1 ? ` proporcional a ${dias} días = ${ssFmt(smmlv * factor)}` : ''}.`;
   } else if (usaSMMLV) {
     indicEl.style.background = 'rgba(245,158,11,0.1)';
     indicEl.style.borderLeft = '3px solid var(--amber)';
-    indicEl.innerHTML = `⚠️ El 40% del ingreso (${ssFmt(base40Mensual)}) no alcanza el SMMLV (${ssFmt(smmlv)}). <strong>Se usa el SMMLV como IBC mensual.</strong>${factor < 1 ? ` Proporcional a ${dias} días: ${ssFmt(baseCot)}.` : ''}`;
+    indicEl.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> El 40% del ingreso (${ssFmt(base40Mensual)}) no alcanza el SMMLV (${ssFmt(smmlv)}). <strong>Se usa el SMMLV como IBC mensual.</strong>${factor < 1 ? ` Proporcional a ${dias} días: ${ssFmt(baseCot)}.` : ''}`;
   } else {
     indicEl.style.background = 'rgba(34,197,94,0.08)';
     indicEl.style.borderLeft = '3px solid var(--green)';
-    indicEl.innerHTML = `✅ IBC = 40% de ${ssFmt(ingreso)} = <strong>${ssFmt(base40Mensual)}</strong>${factor < 1 ? ` × ${dias}/30 días = <strong>${ssFmt(baseCot)}</strong>` : '. Supera el SMMLV mínimo ✓'}.`;
+    indicEl.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> IBC = 40% de ${ssFmt(ingreso)} = <strong>${ssFmt(base40Mensual)}</strong>${factor < 1 ? ` × ${dias}/30 días = <strong>${ssFmt(baseCot)}</strong>` : '. Supera el SMMLV mínimo ✓'}.`;
   }
 
   // FSP sobre IBC proporcional
@@ -37602,23 +37602,23 @@ function concilRenderResultados(resultados) {
     let html = '';
 
     const CAUSA_LABELS = {
-      SINIESTRALIDAD:  { icon:'🔴', label:'Alta siniestralidad de empresa', color:'var(--red)',       reclamable: false,
+      SINIESTRALIDAD:  { icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--rose)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Alta siniestralidad de empresa', color:'var(--red)',       reclamable: false,
         pasos: ['Verifica el índice de siniestralidad de la empresa con tu jefe de zona.','Evalúa si la empresa puede mejorar su perfil antes del próximo trimestre.','No radiques reclamación — SURA no la acepta por esta causa.'] },
-      DIAS_COMPENSADOS:{ icon:'🟠', label:'Días compensados < 30',          color:'var(--amber)',      reclamable: false,
+      DIAS_COMPENSADOS:{ icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Días compensados < 30',          color:'var(--amber)',      reclamable: false,
         pasos: ['Confirma con el empleador que el afiliado completó los 30 días cotizados.','Si el empleador reportó tarde, solicita corrección de novedades en SURA.','Espera el siguiente ciclo de compensación — puede aparecer pagada el próximo mes.'] },
-      SIN_POLIZA:      { icon:'🟡', label:'Afiliado sin póliza activa',      color:'var(--amber)',      reclamable: false,
+      SIN_POLIZA:      { icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Afiliado sin póliza activa',      color:'var(--amber)',      reclamable: false,
         pasos: ['Verifica con el afiliado si la póliza fue emitida correctamente.','Contacta soporte SURA para revisar el estado del contrato.','Si aplica, gestiona la reactivación antes del siguiente corte.'] },
-      SIN_PAC_POLIZA:  { icon:'🟡', label:'Independiente sin PAC ni póliza', color:'var(--amber)',      reclamable: false,
+      SIN_PAC_POLIZA:  { icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Independiente sin PAC ni póliza', color:'var(--amber)',      reclamable: false,
         pasos: ['Solicita al afiliado que tramite su vinculación PAC con el empleador o de forma independiente.','Una vez vinculado, la comisión entrará en el siguiente período de compensación.'] },
-      DESAFILIACION:   { icon:'🟠', label:'Desafiliación / retiro',          color:'var(--amber)',      reclamable: true,
+      DESAFILIACION:   { icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--amber)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Desafiliación / retiro',          color:'var(--amber)',      reclamable: true,
         pasos: ['Verifica si la desafiliación fue voluntaria o por mora del empleador.','Si fue por error del empleador: solicita carta de la empresa y radica reclamación con CC del afiliado + NIT empresa.','Adjunta: afiliación original + novedad de retiro + carta empleador.'] },
-      DUPLICADO:       { icon:'🔵', label:'Venta duplicada',                  color:'var(--teal)',       reclamable: true,
+      DUPLICADO:       { icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--blue)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Venta duplicada',                  color:'var(--teal)',       reclamable: true,
         pasos: ['Identifica cuál de las dos afiliaciones es la correcta con el afiliado.','Solicita anulación de la duplicada en el portal SURA.','Radica reclamación indicando número de formulario correcto.'] },
-      DOCUMENTACION:   { icon:'🔵', label:'Documentación incompleta',         color:'var(--teal)',       reclamable: true,
+      DOCUMENTACION:   { icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--blue)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Documentación incompleta',         color:'var(--teal)',       reclamable: true,
         pasos: ['Obtén los documentos faltantes con el afiliado o empleador.','Sube la documentación en el portal de afiliaciones SURA.','Radica reclamación de comisión adjuntando el radicado de documentación.'] },
-      TRASLADO:        { icon:'🟤', label:'Traslado a otra EPS',              color:'var(--text-muted)', reclamable: false,
+      TRASLADO:        { icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--text-muted)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Traslado a otra EPS',              color:'var(--text-muted)', reclamable: false,
         pasos: ['El afiliado se trasladó a otra EPS — no hay comisión a reclamar.','Registra la cancelación en tu pipeline para actualizar tu cartera.'] },
-      OTRO:            { icon:'⚪', label:'Otra causa',                        color:'var(--text-dim)',   reclamable: true,
+      OTRO:            { icon:'<svg class="ico" width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--text-dim)"><circle cx="12" cy="12" r="8" fill="currentColor" stroke="none"/></svg>', label:'Otra causa',                        color:'var(--text-dim)',   reclamable: true,
         pasos: ['Consulta el código de no pago en la tabla de causas SURA.','Contacta a tu jefe de zona para determinar si aplica reclamación.','Si aplica: radica en el portal con CC del afiliado + número de formulario.'] },
     };
 
@@ -37632,15 +37632,15 @@ function concilRenderResultados(resultados) {
 
     let semColor, semIcono, semTitulo, semDesc;
     if (totalRecuperable > 0) {
-      semColor = 'var(--amber)'; semIcono = '⚠️';
+      semColor = 'var(--amber)'; semIcono = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg>';
       semTitulo = `Puedes recuperar hasta ${fmt(totalRecuperable)}`;
       semDesc = `Tienes ${difReclamables.length + npReclamables.length} caso${(difReclamables.length+npReclamables.length)>1?'s':''} accionables. Sigue el plan de reclamación abajo.`;
     } else if (hayVerificar) {
-      semColor = 'var(--text-muted)'; semIcono = '🔎';
+      semColor = 'var(--text-muted)'; semIcono = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg>';
       semTitulo = 'Sin reclamaciones urgentes — hay ventas por verificar';
       semDesc = `${sinC.length} venta${sinC.length>1?'s':''} no aparecen en los informes SURA. Verifica el período y la cédula.`;
     } else {
-      semColor = 'var(--green)'; semIcono = '✅';
+      semColor = 'var(--green)'; semIcono = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>';
       semTitulo = 'Todo en orden — sin reclamaciones pendientes';
       semDesc = `${ok.length} venta${ok.length>1?'s':''} confirmadas pagadas correctamente.`;
     }
@@ -37805,11 +37805,11 @@ function concilCopiarListaReclamaciones() {
 
 function concilRenderTabla(resultados) {
   const ESTADO_CONFIG = {
-    OK:          { color:'var(--green)',    bg:'rgba(34,197,94,0.08)',  label:'✅ OK' },
-    DIFERENCIA:  { color:'var(--amber)',    bg:'rgba(245,158,11,0.08)', label:'⚠️ Diferencia' },
-    NO_PAGADA:   { color:'var(--red)',      bg:'rgba(239,68,68,0.08)',  label:'❌ No pagada' },
-    SIN_CRUZAR:  { color:'var(--text-dim)', bg:'rgba(255,255,255,0.03)', label:'🔎 Sin cruzar' },
-    EXTRA_SURA:  { color:'var(--purple)',   bg:'rgba(168,85,247,0.08)', label:'💡 Venta pasiva' },
+    OK:          { color:'var(--green)',    bg:'rgba(34,197,94,0.08)',  label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> OK' },
+    DIFERENCIA:  { color:'var(--amber)',    bg:'rgba(245,158,11,0.08)', label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Diferencia' },
+    NO_PAGADA:   { color:'var(--red)',      bg:'rgba(239,68,68,0.08)',  label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> No pagada' },
+    SIN_CRUZAR:  { color:'var(--text-dim)', bg:'rgba(255,255,255,0.03)', label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg> Sin cruzar' },
+    EXTRA_SURA:  { color:'var(--purple)',   bg:'rgba(168,85,247,0.08)', label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Venta pasiva' },
   };
 
   const tbody = document.getElementById('concilTbody');
@@ -37827,8 +37827,8 @@ function concilRenderTabla(resultados) {
   sorted.forEach(r => { if (!grupos[r.estado]) grupos[r.estado] = []; grupos[r.estado].push(r); });
   const ORDEN_GRUPOS = ['DIFERENCIA','NO_PAGADA','SIN_CRUZAR','EXTRA_SURA','OK'];
   const SUBTOTAL_LABELS = {
-    OK:'✅ Subtotal Pagadas OK', DIFERENCIA:'⚠️ Subtotal Tarifas Diferentes',
-    NO_PAGADA:'❌ Subtotal No Pagadas', SIN_CRUZAR:'🔎 Subtotal Sin Cruzar', EXTRA_SURA:'💡 Subtotal Ventas Pasivas',
+    OK:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Subtotal Pagadas OK', DIFERENCIA:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Subtotal Tarifas Diferentes',
+    NO_PAGADA:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> Subtotal No Pagadas', SIN_CRUZAR:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg> Subtotal Sin Cruzar', EXTRA_SURA:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Subtotal Ventas Pasivas',
   };
 
   let htmlRows = '';
@@ -38950,14 +38950,14 @@ function revisionRenderPanelSinCruzar(sinCruzarEnRevision) {
 
   var filasSinCruzar = _revisionDatos.filter(function(r) { return r.eraSinCruzar; });
   var OBS_LABEL = {
-    'USUARIO YA PAGADO':                         '✅ Ya pagado — aparece en revisión SURA como pagado',
-    'PENDIENTE DE COMPENSACION':                  '⏳ Pendiente de compensación — aún no completa los días',
-    'USUARIO NO PAGADO':                          '❌ No pagado — SURA confirmó causa de no pago',
-    'USUARIO A PAGAR EN PROXIMA LIQUIDACION':     '🔄 Se pagará en la próxima liquidación',
-    'USUARIO A PROCESAR EN PROXIMA LIQUIDACION':  '🔄 Se procesará en la próxima liquidación',
-    'DIAS ACUMULADOS PREVIO LIQUIDACION':         '📅 Días acumulados previo liquidación',
-    'USUARIO NO GENERA PAGO COMISION':            '🚫 No genera pago de comisión',
-    'DIAS COMPENSADOS ACUMULADOS':                '📋 Días compensados acumulados',
+    'USUARIO YA PAGADO':                         '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Ya pagado — aparece en revisión SURA como pagado',
+    'PENDIENTE DE COMPENSACION':                  '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Pendiente de compensación — aún no completa los días',
+    'USUARIO NO PAGADO':                          '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> No pagado — SURA confirmó causa de no pago',
+    'USUARIO A PAGAR EN PROXIMA LIQUIDACION':     '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg> Se pagará en la próxima liquidación',
+    'USUARIO A PROCESAR EN PROXIMA LIQUIDACION':  '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg> Se procesará en la próxima liquidación',
+    'DIAS ACUMULADOS PREVIO LIQUIDACION':         '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg> Días acumulados previo liquidación',
+    'USUARIO NO GENERA PAGO COMISION':            '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m4.9 4.9 14.2 14.2" /></svg> No genera pago de comisión',
+    'DIAS COMPENSADOS ACUMULADOS':                '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Días compensados acumulados',
   };
   var OBS_COLOR = {
     'USUARIO YA PAGADO': 'var(--green)', 'PENDIENTE DE COMPENSACION': 'var(--amber)',
@@ -38999,11 +38999,11 @@ function revisionRenderPanelSinCruzar(sinCruzarEnRevision) {
     html += '</div>';
     // Acción recomendada según observación
     var accion = '';
-    if (obs === 'USUARIO YA PAGADO') accion = '💡 Estas ventas sí fueron pagadas por SURA en otro período — verifica en el cruce de ese mes.';
-    else if (obs === 'PENDIENTE DE COMPENSACION') accion = '⏳ Aún no completaron los 30 días compensados — aparecerán en el siguiente ciclo.';
-    else if (obs === 'USUARIO NO PAGADO') accion = '🔗 SURA confirmó la causa de no pago — revisa si aplica reclamación.';
-    else if (obs.indexOf('PROXIMA') !== -1) accion = '🔄 Se procesarán en la próxima liquidación — monitorea el siguiente mes.';
-    else if (obs === 'USUARIO NO GENERA PAGO COMISION') accion = '🚫 No hay comisión por esta venta según las reglas de SURA.';
+    if (obs === 'USUARIO YA PAGADO') accion = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" /></svg> Estas ventas sí fueron pagadas por SURA en otro período — verifica en el cruce de ese mes.';
+    else if (obs === 'PENDIENTE DE COMPENSACION') accion = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Aún no completaron los 30 días compensados — aparecerán en el siguiente ciclo.';
+    else if (obs === 'USUARIO NO PAGADO') accion = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg> SURA confirmó la causa de no pago — revisa si aplica reclamación.';
+    else if (obs.indexOf('PROXIMA') !== -1) accion = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg> Se procesarán en la próxima liquidación — monitorea el siguiente mes.';
+    else if (obs === 'USUARIO NO GENERA PAGO COMISION') accion = '<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m4.9 4.9 14.2 14.2" /></svg> No hay comisión por esta venta según las reglas de SURA.';
     if (accion) html += '<div style="font-size:11px;color:var(--text-dim);margin-top:6px;">' + accion + '</div>';
     html += '</div>';
   });
@@ -39032,14 +39032,14 @@ function revisionFiltrar() {
 
 function revisionRenderTabla() {
   var OBS_CFG = {
-    'USUARIO YA PAGADO':                         { label:'✅ Ya pagado',            color:'var(--green)',   bg:'rgba(34,197,94,0.09)' },
-    'PENDIENTE DE COMPENSACION':                  { label:'⏳ Pendiente',             color:'var(--amber)',   bg:'rgba(245,158,11,0.09)' },
-    'USUARIO NO PAGADO':                          { label:'❌ No pagado',             color:'var(--red)',     bg:'rgba(239,68,68,0.09)' },
-    'USUARIO A PAGAR EN PROXIMA LIQUIDACION':     { label:'🔄 Próxima liq.',          color:'var(--purple)',  bg:'rgba(168,85,247,0.09)' },
-    'USUARIO A PROCESAR EN PROXIMA LIQUIDACION':  { label:'🔄 Próxima proc.',         color:'var(--teal)',    bg:'rgba(6,182,212,0.09)' },
-    'DIAS ACUMULADOS PREVIO LIQUIDACION':         { label:'📅 Días acumulados',       color:'var(--sura-blue)', bg:'rgba(37,88,240,0.09)' },
-    'USUARIO NO GENERA PAGO COMISION':            { label:'🚫 No genera pago',        color:'var(--text-dim)',  bg:'var(--surface3)' },
-    'DIAS COMPENSADOS ACUMULADOS':                { label:'📋 Días compensados',      color:'var(--pink)',    bg:'rgba(236,72,153,0.09)' }
+    'USUARIO YA PAGADO':                         { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Ya pagado',            color:'var(--green)',   bg:'rgba(34,197,94,0.09)' },
+    'PENDIENTE DE COMPENSACION':                  { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Pendiente',             color:'var(--amber)',   bg:'rgba(245,158,11,0.09)' },
+    'USUARIO NO PAGADO':                          { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> No pagado',             color:'var(--red)',     bg:'rgba(239,68,68,0.09)' },
+    'USUARIO A PAGAR EN PROXIMA LIQUIDACION':     { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg> Próxima liq.',          color:'var(--purple)',  bg:'rgba(168,85,247,0.09)' },
+    'USUARIO A PROCESAR EN PROXIMA LIQUIDACION':  { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg> Próxima proc.',         color:'var(--teal)',    bg:'rgba(6,182,212,0.09)' },
+    'DIAS ACUMULADOS PREVIO LIQUIDACION':         { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /></svg> Días acumulados',       color:'var(--sura-blue)', bg:'rgba(37,88,240,0.09)' },
+    'USUARIO NO GENERA PAGO COMISION':            { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="m4.9 4.9 14.2 14.2" /></svg> No genera pago',        color:'var(--text-dim)',  bg:'var(--surface3)' },
+    'DIAS COMPENSADOS ACUMULADOS':                { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /> <path d="M12 11h4" /> <path d="M12 16h4" /> <path d="M8 11h.01" /> <path d="M8 16h.01" /></svg> Días compensados',      color:'var(--pink)',    bg:'rgba(236,72,153,0.09)' }
   };
 
   var tbody = document.getElementById('revisionTbody');
@@ -39184,11 +39184,11 @@ function histRender() {
   document.getElementById('hCount').textContent = total > 0 ? `${total} venta${total!==1?'s':''}` : '';
 
   const ESTADO_CFG = {
-    NUNCA_PAGADA: { label:'❌ Nunca pagada',    color:'var(--red)',       bg:'rgba(239,68,68,0.08)' },
-    RECUPERADA:   { label:'🔄 Recuperada',       color:'var(--amber)',     bg:'rgba(245,158,11,0.08)' },
-    DIFERENCIA:   { label:'⚠️ Diferencia tarifa',color:'var(--amber)',     bg:'rgba(245,158,11,0.06)' },
-    NO_PAGADA:    { label:'❌ No pagada',         color:'var(--red)',       bg:'rgba(239,68,68,0.05)' },
-    SIN_CRUZAR:   { label:'🔎 Sin cruzar',        color:'var(--text-muted)', bg:'rgba(255,255,255,0.02)' },
+    NUNCA_PAGADA: { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> Nunca pagada',    color:'var(--red)',       bg:'rgba(239,68,68,0.08)' },
+    RECUPERADA:   { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></svg> Recuperada',       color:'var(--amber)',     bg:'rgba(245,158,11,0.08)' },
+    DIFERENCIA:   { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg> Diferencia tarifa',color:'var(--amber)',     bg:'rgba(245,158,11,0.06)' },
+    NO_PAGADA:    { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> No pagada',         color:'var(--red)',       bg:'rgba(239,68,68,0.05)' },
+    SIN_CRUZAR:   { label:'<svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /> <path d="m21 21-4.3-4.3" /></svg> Sin cruzar',        color:'var(--text-muted)', bg:'rgba(255,255,255,0.02)' },
   };
   const MESES_ES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -39756,7 +39756,7 @@ function wmCargarAdjunto(input) {
   const quitar = document.getElementById('wm_adjunto_quitar');
   const nombre = document.getElementById('wm_adjunto_nombre');
   if (info) info.style.display = '';
-  if (info) info.innerHTML = `<span style="color:var(--amber);">⏳ Cargando archivo...</span>`;
+  if (info) info.innerHTML = `<span style="color:var(--amber);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></svg> Cargando archivo...</span>`;
 
   const reader = new FileReader();
   reader.onload = function(e) {
@@ -39766,13 +39766,13 @@ function wmCargarAdjunto(input) {
     if (nombre) nombre.textContent = file.name;
     if (info) {
       const isImg = tipo.startsWith('image/');
-      info.innerHTML = `<span style="color:var(--green);">✅ ${isImg ? '🖼️' : '📄'} ${file.name} listo (${(file.size/1024).toFixed(1)} KB)</span>`;
+      info.innerHTML = `<span style="color:var(--green);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> ${isImg ? '🖼️' : '📄'} ${file.name} listo (${(file.size/1024).toFixed(1)} KB)</span>`;
     }
     if (quitar) quitar.style.display = '';
     showToast('📎 Adjunto listo: ' + file.name);
   };
   reader.onerror = function() {
-    if (info) info.innerHTML = `<span style="color:var(--red);">❌ Error al leer el archivo</span>`;
+    if (info) info.innerHTML = `<span style="color:var(--red);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg> Error al leer el archivo</span>`;
     showToast('❌ Error leyendo el archivo');
     _wmAdjunto = null;
   };
