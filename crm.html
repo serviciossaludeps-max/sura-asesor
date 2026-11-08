@@ -1826,6 +1826,12 @@
   #fb-splash .bs-title { margin-top: 20px; }
   #fb-splash .bs-sub { margin-top: 10px; }
 </style>
+<style>
+  /* ===== Etiqueta de origen en Cartera (IS / IV) ===== */
+  .origen-chip { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; vertical-align: middle; }
+  .origen-is { background: rgba(37,88,240,0.16); color: var(--sura-blue); }
+  .origen-iv { background: rgba(6,182,212,0.16); color: var(--teal); }
+</style>
 </head>
 <body>
 
@@ -8728,12 +8734,12 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       <div class="tarifa-congelada-toggle" id="tcToggleSPTI">
         <label>
           <input type="checkbox" id="chkTarifaCongeladaSPTI" onchange="toggleTarifaCongelada('SPTI')">
-          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> Tarifa Congelada — Oferta Diciembre
+          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> Tarifa congelada (oferta)
         </label>
-        <span class="tarifa-congelada-badge"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa 2026 fijada</span>
+        <span class="tarifa-congelada-badge"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa congelada</span>
       </div>
       <div class="tarifa-congelada-info" id="tcInfoSPTI">
-        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1" /> <path d="M12 8v13" /> <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /> <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg> <strong>Oferta vigente:</strong> Esta póliza mantiene las tarifas 2026 durante todo 2027. El sistema no solicitará cambio de tarifa para este asegurado en enero de 2027.
+        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1" /> <path d="M12 8v13" /> <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /> <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg> <strong>Oferta vigente:</strong> La tarifa congelada aplica durante el primer ciclo de 12 meses desde la fecha de expedición. Después se aplica la tarifa vigente según la edad del asegurado.
       </div>
     </div>
 
@@ -8943,12 +8949,12 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       <div class="tarifa-congelada-toggle" id="tcToggleSPD">
         <label>
           <input type="checkbox" id="chkTarifaCongeladaSPD" onchange="toggleTarifaCongelada('SPD')">
-          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> Tarifa Congelada — Oferta Diciembre
+          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> Tarifa congelada (oferta)
         </label>
-        <span class="tarifa-congelada-badge"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa 2026 fijada</span>
+        <span class="tarifa-congelada-badge"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa congelada</span>
       </div>
       <div class="tarifa-congelada-info" id="tcInfoSPD">
-        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1" /> <path d="M12 8v13" /> <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /> <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg> <strong>Oferta vigente:</strong> Esta póliza mantiene la tarifa SPD Plus 2026 durante todo 2027. El sistema no aplicará incremento de tarifa en enero de 2027.
+        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1" /> <path d="M12 8v13" /> <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /> <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg> <strong>Oferta vigente:</strong> La tarifa congelada aplica durante el primer ciclo de 12 meses desde la fecha de expedición. Después se aplica la tarifa vigente según la edad del asegurado.
       </div>
     </div>
 
@@ -9225,12 +9231,12 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       <div class="tarifa-congelada-toggle" id="tcTogglePSM">
         <label>
           <input type="checkbox" id="chkTarifaCongeladaPSM" onchange="toggleTarifaCongelada('PSM')">
-          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> Tarifa Congelada — Oferta Diciembre
+          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> Tarifa congelada (oferta)
         </label>
-        <span class="tarifa-congelada-badge"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa 2026 fijada</span>
+        <span class="tarifa-congelada-badge"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa congelada</span>
       </div>
       <div class="tarifa-congelada-info" id="tcInfoPSM">
-        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1" /> <path d="M12 8v13" /> <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /> <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg> <strong>Oferta vigente:</strong> Esta póliza mantiene las tarifas modulares 2026 durante todo 2027. El sistema no aplicará incremento de tarifa en enero de 2027.
+        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1" /> <path d="M12 8v13" /> <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /> <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg> <strong>Oferta vigente:</strong> La tarifa congelada aplica durante el primer ciclo de 12 meses desde la fecha de expedición. Después se aplica la tarifa vigente según la edad del asegurado.
       </div>
     </div>
 
@@ -9463,12 +9469,12 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
       <div class="tarifa-congelada-toggle" id="tcTogglePAC60">
         <label>
           <input type="checkbox" id="chkTarifaCongeladaPAC60" onchange="toggleTarifaCongelada('PAC60')">
-          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> Tarifa Congelada — Oferta Diciembre
+          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> Tarifa congelada (oferta)
         </label>
-        <span class="tarifa-congelada-badge"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa 2026 fijada</span>
+        <span class="tarifa-congelada-badge"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg> Tarifa congelada</span>
       </div>
       <div class="tarifa-congelada-info" id="tcInfoPAC60">
-        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1" /> <path d="M12 8v13" /> <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /> <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg> <strong>Oferta vigente:</strong> Esta póliza Plan 60+ mantiene las tarifas 2026 durante todo 2027. El sistema no aplicará incremento de tarifa en enero de 2027.
+        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1" /> <path d="M12 8v13" /> <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /> <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg> <strong>Oferta vigente:</strong> La tarifa congelada aplica durante el primer ciclo de 12 meses desde la fecha de expedición. Después se aplica la tarifa vigente según la edad del asegurado.
       </div>
     </div>
 
@@ -15721,7 +15727,7 @@ function calcDatosPAC60() {
   pac60ActualizarResumenTotal();
 }
 
-// ── Tarifa Congelada — Oferta Diciembre ──────────────────────────────────────
+// ── Tarifa congelada (oferta) ──────────────────────────────────────
 // Activa/desactiva el toggle y muestra/oculta el banner informativo.
 // El campo tarifaCongelada:true + anioTarifa:YYYY se guarda en el objeto de venta
 // para que la cartera no aplique reajuste en enero del siguiente año.
@@ -19014,6 +19020,15 @@ function renderCartera() {
   renderCarteraAlertas(conEstado);
 }
 
+// Origen de la póliza (solo visual, no escribe datos). IS = importada desde cartera SURA · IV = importada desde Excel de voluntarios.
+// Ventas normales no llevan etiqueta.
+const ORIGEN_ETIQUETA = { SURA: 'IS', EXCEL: 'IV' };
+function _origenChipHTML(v) {
+  if (!v) return '';
+  if (v._importadoSura === true) return `<span class="origen-chip origen-is" title="Importada desde cartera SURA">${ORIGEN_ETIQUETA.SURA}</span>`;
+  if (v.origenImport === true) return `<span class="origen-chip origen-iv" title="Importada desde Excel de voluntarios">${ORIGEN_ETIQUETA.EXCEL}</span>`;
+  return '';
+}
 function renderCarteraTabla(filas, pagos) {
   const tbody = document.getElementById('carteraTabla');
   const perLabel = { MENSUAL:'Mensual', TRIMESTRAL:'Trimestral', SEMESTRAL:'Semestral', ANUAL:'Anual' };
@@ -19065,7 +19080,7 @@ function renderCarteraTabla(filas, pagos) {
   tbody.innerHTML = filas.map((v,i) => {
     const est = v._est;
     const rowBg = i%2===0 ? '' : 'rgba(255,255,255,0.015)';
-    const nombre = tc(v.tomadorNombre || v.nombre || '—');
+    const nombre = tc(v.tomadorNombre || v.nombre || '—') + _origenChipHTML(v);
     const tel = v.tomadorTel || v.telefono || '';
     const proxFmt = est.proxVenc ? est.proxVenc.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '—';
     const expFmt = v.fechaExp ? new Date(v.fechaExp+'T12:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '—';
