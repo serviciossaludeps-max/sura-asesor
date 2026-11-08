@@ -12698,7 +12698,7 @@ function renderVolComisiones() {
     const baseSinIVA = getSinIVABase(v);
     const rowBg = i%2===0?'':'background:rgba(255,255,255,0.015)';
     return `<tr style="${rowBg};border-top:1px solid var(--border);">
-      <td style="padding:9px 12px;font-weight:500;">${nombre}${v.tarifaCongelada ? ' <span title="Tarifa congelada 2026 — no reajusta en 2027" style="font-size:10px;color:var(--amber);font-weight:700;background:rgba(245,158,11,0.12);padding:1px 6px;border-radius:10px;border:1px solid rgba(245,158,11,0.3);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> T.Fija</span>' : ''}</td>
+      <td style="padding:9px 12px;font-weight:500;">${nombre}${v.tarifaCongelada ? ' <span title="Tarifa congelada: cubre los primeros 12 meses desde la expedición; desde el mes 13 aplica la tarifa vigente" style="font-size:10px;color:var(--amber);font-weight:700;background:rgba(245,158,11,0.12);padding:1px 6px;border-radius:10px;border:1px solid rgba(245,158,11,0.3);"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" x2="22" y1="12" y2="12" /> <line x1="12" x2="12" y1="2" y2="22" /> <path d="m20 16-4-4 4-4" /> <path d="m4 8 4 4-4 4" /> <path d="m16 4-4 4-4-4" /> <path d="m8 20 4-4 4 4" /></svg> T.Fija</span>' : ''}</td>
       <td style="padding:9px 12px;"><span class="chip ${v.producto==='SPTI'?'chip-teal':v.producto==='SPD'?'chip-purple':v.producto==='PSM'?'chip-blue':'chip-green'}" style="font-size:10px;">${v.producto==='PAC60'?'60+':v.producto}</span></td>
       <td style="padding:9px 12px;font-size:12px;">${planLabel[v.plan]||v.plan||'—'}</td>
       <td style="padding:9px 12px;"><span class="chip chip-blue" style="font-size:10px;">${perLabel[v.periodicidad]||'—'}</span></td>
@@ -19376,7 +19376,13 @@ function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
   if (!['SPTI', 'PSM', 'PAC60', 'SPD'].includes(prod)) return ok('FUERA_DE_ALCANCE');
   // Si el motor desplegado no trae las funciones nuevas, se conserva el cálculo anterior.
   if (!MP || typeof MP.cicloDeFecha !== 'function' || typeof MP.tablasDelAnio !== 'function') return ok('LEGADO', { valor: calcMontoPeriodoVenta(venta) });
-  if (venta.tarifaCongelada === true) return ok('CONGELADA');
+  // D17 (06-nov-2026): la tarifa congelada cubre solo el primer ciclo (12 meses desde la expedición).
+  // Desde el mes 13 se aplica la tarifa vigente de su año y la edad de cada persona en esa fecha.
+  if (venta.tarifaCongelada === true) {
+    const _aC = _anclaAniversario(venta);
+    const _cC = _aC ? MP.cicloDeFecha(_aC, periodoDesde) : null;
+    if (!_aC || _cC === null || _cC === 0) return ok('CONGELADA');
+  }
 
   const guardado = prod === 'SPD' ? null : _valorGuardadoPeriodo(venta);
   const hoy = (opciones && opciones.hoy) || _isoLocalHoy();
@@ -19415,7 +19421,8 @@ function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
     return bloq('FALTA_FECHA_NACIMIENTO', { anio, fechaRenovacion });
   }
   const tipoOk = ['NUEVO', 'RENOVACION', 'CANCELACION'].includes(venta.tipo) ? venta.tipo : 'NUEVO';
-  const ventaRef = Object.assign({}, venta, { edad: edades[0], tipo: tipoOk });
+  // D17: desde el mes 13 la póliza congelada se calcula como una normal con la tabla vigente.
+  const ventaRef = Object.assign({}, venta, { edad: edades[0], tipo: tipoOk, tarifaCongelada: false });
   const opts = { fechaRef: fechaRenovacion, incluirMensual: true };
   const valor = calcMontoSPTIPeriodo(ventaRef, opts) ?? calcMontoPSMPeriodo(ventaRef, opts) ?? calcMontoPAC60Periodo(ventaRef, opts);
   if (valor === null || valor === undefined) return bloq('TARIFA_NO_RESUELTA', { anio, fechaRenovacion });
@@ -23245,7 +23252,10 @@ function procesarVolSheet(sheetName) {
       prima:        hi(h => h.includes('VALOR') || h.includes('PRIMA') || h.includes('VLR')),
       telefono:     hi(h => h.includes('TELEF') || h.includes('CEL') || h.includes('MOVIL') || h.includes('MÓVIL')),
       correo:       hi(h => h.includes('CORREO') || h.includes('EMAIL') || h.includes('MAIL')),
-      ciudad:       hi(h => h.includes('CIUDAD') || h.includes('MUNICIPIO')),
+      ciudad: hi(h => h.includes('CIUDAD') || h.includes('MUNICIPIO')),
+      fechaNac: hi(h => h.includes('NACIMIENTO')),
+      tarifaCongelada: hi(h => h.includes('CONGEL')),
+      anioTarifa: hi(h => h.includes('AÑO TARIFA') || h.includes('ANIO TARIFA') || h.includes('AÑO OFERTA')),
     };
 
     console.log('🗺️ Mapeo voluntarios:', col);
@@ -23277,7 +23287,11 @@ function procesarVolSheet(sheetName) {
       const prima        = parseFloat(primaRaw) || 0;
       const telefono     = get(row, col.telefono);
       const correo       = get(row, col.correo);
-      const ciudad       = get(row, col.ciudad);
+      const ciudad = get(row, col.ciudad);
+      const fechaNacRaw = get(row, col.fechaNac);
+      const congRaw = get(row, col.tarifaCongelada).toUpperCase();
+      const tarifaCongelada = ['SI','SÍ','S','X','1','TRUE','VERDADERO'].includes(congRaw);
+      const anioTarifaRaw = parseInt(get(row, col.anioTarifa), 10);
       const fechaExp     = parseFechaVol(get(row, col.fechaExp));
 
       _volImportData.push({
@@ -23289,6 +23303,8 @@ function procesarVolSheet(sheetName) {
         plan: planRaw, producto, periodicidad,
         prima, telefono, correo, ciudad,
         nombre: tomadorNom,
+        fechaNac: parseFechaVol(fechaNacRaw), tarifaCongelada, anioTarifa: tarifaCongelada ? (anioTarifaRaw || null) : null,
+
       });
     }
 
@@ -23407,7 +23423,11 @@ function confirmarImportVol() {
       correo: v.correo || '',
       tomadorCorreo: v.correo || '',
       ciudad: v.ciudad || '',
-      origenImport: true,
+        fechaNac: v.fechaNac || '',
+        edad: (v.fechaNac && window.MotorProducto && typeof window.MotorProducto.edadEnFecha === 'function') ? (window.MotorProducto.edadEnFecha(v.fechaNac, v.fechaExp) ?? '') : '',
+        tarifaCongelada: !!v.tarifaCongelada,
+        anioTarifa: v.tarifaCongelada ? (v.anioTarifa || parseInt(String(v.fechaExp || '').slice(0, 4), 10) || null) : null,
+        origenImport: true,
     });
 
     if (polizaKey) claveExistente.add(claveKey);
