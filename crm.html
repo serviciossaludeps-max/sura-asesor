@@ -15070,6 +15070,18 @@ function _tcPrimerCicloActivo() {
   return { prima: prima, ancla: ancla };
 }
 
+// Prima guardada activa en edición: (a) póliza congelada en primer ciclo, o (b) edición SIN fecha de nacimiento.
+// En (b) no se puede calcular la edad, así que la tabla no aplica: se conserva la prima guardada en cualquier ciclo.
+function _primaGuardadaActiva() {
+  if (!_modoEdicion || !_editId) return null;
+  const pb = document.getElementById('vPrimaBaseSPTI');
+  const prima = parseFloat(pb && pb.dataset.tcPrima) || 0;
+  if (!prima) return null;
+  const fechaNac = document.getElementById('vFechaNacSPTI')?.value || '';
+  if (!fechaNac) return { prima: prima, motivo: 'sin_fecha_nacimiento' };
+  return _tcPrimerCicloActivo();   // con fecha: solo la congelada en primer ciclo
+}
+
 function calcDatosSPTI() {
   // Calc age from fecha nac
   const fn = document.getElementById('vFechaNacSPTI').value;
@@ -15135,7 +15147,7 @@ function calcDatosSPTI() {
     tarifa = SPTI_TARIFAS[plan][rangoEdad];
   }
   // Tarifa congelada · primer ciclo (D17): se conserva la prima pactada, sin descuento por periodicidad
-  const _tcT = _tcPrimerCicloActivo();
+  const _tcT = _primaGuardadaActiva();
   if (_tcT) {
     const _m = _tcT.prima;
     tarifa = { mensual: _m, trimestre: Math.round(_m * 3), dctoTrim: 0, semestre: Math.round(_m * 6), dctoSem: 0, anual: Math.round(_m * 12), dctoAnual: 0 };
@@ -15143,7 +15155,7 @@ function calcDatosSPTI() {
 
   // Set prima base solo si no fue editada manualmente
   const primaBaseEl = document.getElementById('vPrimaBaseSPTI');
-  if (!primaBaseEl.dataset.editado) {
+  if (!primaBaseEl.dataset.editado || _primaGuardadaActiva()) {
     _sptiSetProgramatico = true;          // bloquear listener antes de setear
     primaBaseEl.value = tarifa.mensual;
     _sptiSetProgramatico = false;         // restaurar después
@@ -16497,7 +16509,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
           const _pBase = parseFloat(document.getElementById('vPrimaBaseSPTI')?.value) || 0;
           const _pTot = _parse(document.getElementById('vPrimaTotalSPTI')?.value) || _pBase;
           let _pSinIVA = 0;
-          if (!_tcPrimerCicloActivo() && planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
+          if (!_primaGuardadaActiva() && planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
             const t = SPTI_TARIFAS[planEdit][rangoEdit];
             if (perEdit === 'TRIMESTRAL') _pSinIVA = Math.round(t.trimestre / IVA_FACTOR);
             else if (perEdit === 'SEMESTRAL') _pSinIVA = Math.round(t.semestre / IVA_FACTOR);
