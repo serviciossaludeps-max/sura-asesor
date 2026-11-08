@@ -13715,6 +13715,9 @@ function editarVenta(id) {
         // Restaurar toggle tarifa congelada
         const chkTcSPTI = s('chkTarifaCongeladaSPTI');
         if (chkTcSPTI) { chkTcSPTI.checked = !!v.tarifaCongelada; toggleTarifaCongelada('SPTI'); }
+        const _pbT = document.getElementById('vPrimaBaseSPTI');
+        if (_pbT) { _pbT.dataset.tcPrima = String(v.primaMensual || v.prima || ''); _pbT.dataset.tcAncla = _anclaAniversario(v) || ''; }
+        calcDatosSPTI(); // segunda pasada con la casilla ya restaurada
       // Asegurados adicionales y modo de registro: antes la edición no los restauraba
       if (Array.isArray(v.asegurados) && v.asegurados.length) {
         v.asegurados.forEach((a, i) => {
@@ -15026,6 +15029,30 @@ function sptiCopiarTomadorAsegurado() {
   }
 }
 
+// ── Tarifa congelada · primer ciclo (D17) ──────────────────────────────
+// La prima pactada se conserva durante el primer ciclo (12 meses desde la expedición).
+// Desde el mes 13 aplica la tabla vigente (MotorProducto.cicloDeFecha, mismo criterio que resolverTarifaPeriodo).
+// Solo en edición: requiere _modoEdicion y _editId, y los datos que deja llenarTabVoluntario en vPrimaBaseSPTI.
+function _hoyISO() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function _tcPrimerCicloActivo() {
+  if (!_modoEdicion || !_editId) return null;
+  const chk = document.getElementById('chkTarifaCongeladaSPTI');
+  if (!chk || !chk.checked) return null;
+  const pb = document.getElementById('vPrimaBaseSPTI');
+  const prima = parseFloat(pb && pb.dataset.tcPrima) || 0;
+  if (!prima) return null;
+  const ancla = (pb && pb.dataset.tcAncla) || '';
+  const MP = window.MotorProducto;
+  if (ancla && MP && typeof MP.cicloDeFecha === 'function') {
+    const ciclo = MP.cicloDeFecha(ancla, _hoyISO());
+    if (ciclo !== null && ciclo >= 1) return null;   // mes 13 en adelante: tarifa vigente
+  }
+  return { prima: prima, ancla: ancla };
+}
+
 function calcDatosSPTI() {
   // Calc age from fecha nac
   const fn = document.getElementById('vFechaNacSPTI').value;
@@ -15036,6 +15063,11 @@ function calcDatosSPTI() {
     edadNum = hoy.getFullYear() - nac.getFullYear();
     const m = hoy.getMonth() - nac.getMonth();
     if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edadNum--;
+    const _tcE = _tcPrimerCicloActivo();
+    if (_tcE && _tcE.ancla && window.MotorProducto && typeof window.MotorProducto.edadEnFecha === 'function') {
+      const _edadVenta = window.MotorProducto.edadEnFecha(fn, _tcE.ancla);
+      if (_edadVenta !== null) edadNum = _edadVenta;   // edad de venta, no la actual
+    }
     document.getElementById('vEdadSPTI').value = edadNum + ' años';
   } else {
     // Parse from field in case user typed it manually
@@ -15084,6 +15116,12 @@ function calcDatosSPTI() {
   // Respaldo: mismo cálculo exacto si el motor no cargó o alguna llamada devolvió null
   if (!tarifa) {
     tarifa = SPTI_TARIFAS[plan][rangoEdad];
+  }
+  // Tarifa congelada · primer ciclo (D17): se conserva la prima pactada, sin descuento por periodicidad
+  const _tcT = _tcPrimerCicloActivo();
+  if (_tcT) {
+    const _m = _tcT.prima;
+    tarifa = { mensual: _m, trimestre: Math.round(_m * 3), dctoTrim: 0, semestre: Math.round(_m * 6), dctoSem: 0, anual: Math.round(_m * 12), dctoAnual: 0 };
   }
 
   // Set prima base solo si no fue editada manualmente
@@ -16442,7 +16480,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
           const _pBase = parseFloat(document.getElementById('vPrimaBaseSPTI')?.value) || 0;
           const _pTot = _parse(document.getElementById('vPrimaTotalSPTI')?.value) || _pBase;
           let _pSinIVA = 0;
-          if (planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
+          if (!_tcPrimerCicloActivo() && planEdit && rangoEdit && SPTI_TARIFAS[planEdit]?.[rangoEdit]) {
             const t = SPTI_TARIFAS[planEdit][rangoEdit];
             if (perEdit === 'TRIMESTRAL') _pSinIVA = Math.round(t.trimestre / IVA_FACTOR);
             else if (perEdit === 'SEMESTRAL') _pSinIVA = Math.round(t.semestre / IVA_FACTOR);
