@@ -11525,17 +11525,18 @@ function renderAgendaDiaria() {
   function seccionHTML(emoji, titulo, color, bgColor, items, emptyMsg, renderItem) {
     if (!items.length) return '';
     const id = 'agSec_' + titulo.replace(/\s/g,'');
+    const colapsada = ['Para contactar hoy', 'Pólizas vencen esta semana'].includes(titulo);
     return `
-    <div class="agenda-section" style="border-left:3px solid ${color};">
+    <div class="agenda-section">
       <div class="agenda-sec-header" onclick="agendaToggleSec('${id}')">
         <div class="agenda-sec-label">
           <div class="agenda-sec-icon" style="background:${bgColor};">${emoji}</div>
           ${titulo}
           <span class="agenda-sec-count" style="background:${bgColor};color:${color};">${items.length}</span>
         </div>
-        <div class="agenda-chevron open" id="${id}_chev">▾</div>
+        <div class="agenda-chevron${colapsada ? '' : ' open'}" id="${id}_chev">▾</div>
       </div>
-      <div class="agenda-items" id="${id}_body">
+      <div class="agenda-items" id="${id}_body"${colapsada ? ' style="display:none"' : ''}>
         ${items.map(renderItem).join('')}
       </div>
     </div>`;
@@ -11646,7 +11647,7 @@ function renderAgendaDiaria() {
 
   // ── Estado vacío ──
   const emptyHTML = `
-    <div class="agenda-section" style="border-left:3px solid var(--green);">
+    <div class="agenda-section">
       <div class="agenda-empty">
         <div class="agenda-empty-icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></div>
         <div class="agenda-empty-text">Todo al día</div>
