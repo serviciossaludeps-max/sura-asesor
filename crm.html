@@ -1796,6 +1796,22 @@
   .sidebar-logo .brand-isotipo-wrap { transition: transform 0.3s ease; }
   .sidebar-logo .brand-isotipo-wrap:hover { transform: scale(1.08); }
 </style>
+<style>
+  /* ===== Botones secundarios de la cabecera de Inicio (OP botones) ===== */
+  .inicio-btn-sec {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .inicio-btn-sec:hover { background: var(--surface2); }
+</style>
 </head>
 <body>
 
@@ -2332,8 +2348,8 @@
             <!-- CTA -->
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px;position:relative;">
               <button onclick="navigate('dashboard')" style="background:#2558F0;color:#fff;border:none;border-radius:10px;padding:11px 22px;font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;letter-spacing:.01em;transition:background .15s;" onmouseover="this.style.background='#1A4CE8'" onmouseout="this.style.background='#2558F0'">Ir al Dashboard &rarr;</button>
-              <button onclick="navigate('cotizaciones')" style="background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;" onmouseover="this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.09)'" onmouseout="this.style.color='var(--text-muted)';this.style.background='rgba(255,255,255,0.05)'">Cotizaciones</button>
-              <button onclick="navigate('cartera')" style="background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;" onmouseover="this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.09)'" onmouseout="this.style.color='var(--text-muted)';this.style.background='rgba(255,255,255,0.05)'">Mi cartera</button>
+              <button class="inicio-btn-sec" onclick="navigate('cotizaciones')">Cotizaciones</button>
+              <button class="inicio-btn-sec" onclick="navigate('cartera')">Mi cartera</button>
             </div>
 
             <!-- KPIs -->
