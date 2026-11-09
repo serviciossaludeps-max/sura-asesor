@@ -11591,7 +11591,7 @@ function renderAgendaDiaria() {
         ? `<span class="agenda-item-tag" style="background:rgba(240,82,82,0.15);color:var(--red);">+${diasPendiente}d</span>`
         : `<span class="agenda-item-tag" style="background:rgba(37,88,240,0.15);color:var(--sura-blue);">Hoy</span>`;
       const prod = PROD_LABEL[p.producto] || p.producto || '—';
-      const msg = `Hola ${p.nombre?.split(' ')[0] || ''} 👋 Te escribo para darle seguimiento a la cotización de ${prod} SURA. ¿Tienes alguna duda o quieres continuar con la vinculación?`;
+      const msg = `Hola ${nombrePropio(p.nombre?.split(' ')[0] || '')} 👋 Te escribo para darle seguimiento a la cotización de ${prod} SURA. ¿Tienes alguna duda o quieres continuar con la vinculación?`;
       const wa = waUrl(p.telefono, msg);
       return `<div class="agenda-item">
         <div class="agenda-item-info">
@@ -11613,7 +11613,7 @@ function renderAgendaDiaria() {
       const ultima = p.updatedAt || p.fechaCreacion || '';
       const dias = ultima ? Math.floor((hoy - new Date(ultima)) / 86400000) : '?';
       const prod = PROD_LABEL[p.producto] || p.producto || '—';
-      const msg = `Hola ${p.nombre?.split(' ')[0] || ''} 👋 Hace unos días te compartí información sobre ${prod} SURA. ¿Pudiste revisarla? Con gusto te cuento más.`;
+      const msg = `Hola ${nombrePropio(p.nombre?.split(' ')[0] || '')} 👋 Hace unos días te compartí información sobre ${prod} SURA. ¿Pudiste revisarla? Con gusto te cuento más.`;
       const wa = waUrl(p.telefono, msg);
       return `<div class="agenda-item">
         <div class="agenda-item-info">
@@ -11635,7 +11635,7 @@ function renderAgendaDiaria() {
       const prod = PROD_LABEL[v.producto] || v.producto;
       const nombre = v.tomadorNombre || v.nombre || '—';
       const tel = v.tomadorTel || v.telefono || '';
-      const msg = `Hola ${nombre.split(' ')[0]} 👋 Tu plan *${prod} SURA* vence el *${pvLabel}*. Te escribo para que no pierdas ni un día de cobertura. ¿Te ayudo con el pago?`;
+      const msg = `Hola ${nombrePropio(nombre.split(' ')[0])} 👋 Tu plan *${prod} SURA* vence el *${pvLabel}*. Te escribo para que no pierdas ni un día de cobertura. ¿Te ayudo con el pago?`;
       const wa = waUrl(tel, msg);
       const urgTag = dias === 0
         ? `<span class="agenda-item-tag" style="background:rgba(240,82,82,0.2);color:var(--red);">Vence hoy</span>`
@@ -11669,7 +11669,7 @@ function renderAgendaDiaria() {
         if (mins < 1440) return `hace ${Math.floor(mins/60)}h`;
         return `hace ${Math.floor(mins/1440)}d`;
       })();
-      const msg = `Hola ${nombre.split(' ')[0]} 👋 Vi que cotizaste *${plan} SURA*${prima ? ' · Prima: *' + prima + '*' : ''}. Soy tu asesor y quiero ayudarte a resolver dudas y guiarte en el proceso. ¿Tienes un momento?`;
+      const msg = `Hola ${nombrePropio(nombre.split(' ')[0])} 👋 Vi que cotizaste *${plan} SURA*${prima ? ' · Prima: *' + prima + '*' : ''}. Soy tu asesor y quiero ayudarte a resolver dudas y guiarte en el proceso. ¿Tienes un momento?`;
       const wa = waUrl(tel, msg);
       return `<div class="agenda-item">
         <div class="agenda-item-info">
@@ -13459,6 +13459,34 @@ function _recalcKpiDia15(totalPasivas) {
 // =============================================
 // TITLE CASE helper
 // =============================================
+/* ── NOMBRE PROPIO (visualización, formularios, importación y WhatsApp) ── */
+const NOMBRE_EXCEPCIONES = ['la rotta','del valle','del río','del rio','los santos','las casas','la torre','del castillo'];
+function nombrePropio(texto) {
+  if (texto === null || texto === undefined) return '';
+  const t = String(texto).trim().replace(/\s+/g, ' ');
+  if (!t) return '';
+  const PART = new Set(['de','del','la','las','los','y','e']);
+  const lower = x => x.toLocaleLowerCase('es-CO');
+  const capWord = w => w.replace(/(^|[-'’])(\p{L})/gu, (m, sep, c) => sep + c.toLocaleUpperCase('es-CO'));
+  let out = t.split(' ').map((w, i) => {
+    const l = lower(w);
+    return (i > 0 && PART.has(l)) ? l : capWord(l);
+  }).join(' ');
+  const low = out.toLocaleLowerCase('es-CO');
+  NOMBRE_EXCEPCIONES.forEach(ex => {
+    const i = low.indexOf(ex);
+    if (i >= 0 && (i === 0 || low[i - 1] === ' ')) {
+      out = out.slice(0, i) + out.slice(i, i + ex.length).split(' ').map(capWord).join(' ') + out.slice(i + ex.length);
+    }
+  });
+  return out;
+}
+/* Normaliza los campos de nombre del formulario antes de guardar (solo registro nuevo/editado). */
+function _normalizarNombresFormulario() {
+  document.querySelectorAll('input[id^="v"][id*="Nombre"]:not(#vNuevoProdNombre)').forEach(inp => {
+    if (inp.value && inp.value.trim()) inp.value = nombrePropio(inp.value);
+  });
+}
 function tc(str) {
   if (!str) return '—';
   return str.toLowerCase().replace(/(?:^|\s|[-\/])\S/g, c => c.toUpperCase());
@@ -13930,7 +13958,7 @@ function guardarEdicion() {
 
   // Update all fields
   v.fecha = document.getElementById('eFecha').value;
-  v.nombre = document.getElementById('eNombre').value;
+  v.nombre = nombrePropio(document.getElementById('eNombre').value);
   v.tipoDoc = document.getElementById('eTipoDoc').value;
   v.doc = document.getElementById('eDoc').value;
   v.fechaNac = document.getElementById('eFechaNac').value;
@@ -16338,6 +16366,7 @@ function _ventaComisionEnFecha(venta, fechaPago) {
 }
 
 async function guardarVenta() {
+  _normalizarNombresFormulario(); // Nombre Propio antes de leer los campos
   // HALLAZGO-OP-007 (fix): refrescar 'state' aquí, al inicio, en vez de
   // confiar en la variable global (que puede llevar rato sin actualizarse
   // si el formulario estuvo abierto mientras llegaban cambios de otra
@@ -17688,7 +17717,7 @@ function renderPlantillaPBS() {
       <td style="font-family:var(--mono);font-size:11.5px;padding:8px 12px;">${v.formulario||'—'}</td>
       <td style="font-size:11px;color:var(--sura-lime);font-weight:600;padding:8px 12px;">${v.mesComp||'—'}</td>
       <td style="font-size:11.5px;padding:8px 12px;">${tramiteLabels[v.tramite]||v.tramite||'—'}</td>
-      <td style="font-weight:500;padding:8px 12px;">${v.nombre||'—'}</td>
+      <td style="font-weight:500;padding:8px 12px;">${v.nombre?nombrePropio(v.nombre):'—'}</td>
       <td style="font-family:var(--mono);font-size:12px;padding:8px 12px;">${v.doc||'—'}</td>
       <td style="padding:8px 12px;"><span class="chip chip-teal" style="font-size:10px;">${v.tipoDoc||'CC'}</span></td>
       <td style="font-family:var(--mono);font-size:11.5px;white-space:nowrap;padding:8px 12px;">${fnFmt}</td>
@@ -18004,7 +18033,7 @@ function renderPlantillaVol() {
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fechaExp)}</td>
         <td style="font-family:var(--mono);font-size:11px;padding:8px 10px;">${v.poliza||'—'}</td>
         <td style="font-size:11px;padding:8px 10px;">${v.tipo||v.tipoMov||'NUEVO'}</td>
-        <td style="font-weight:500;padding:8px 10px;">${tc(v.tomadorNombre||v.nombre||'—')}</td>
+        <td style="font-weight:500;padding:8px 10px;">${tc(nombrePropio(v.tomadorNombre||v.nombre||'—'))}</td>
         <td style="padding:8px 10px;"><span class="chip chip-teal" style="font-size:10px;">${v.tomadorTipoDoc||v.tipoDoc||'CC'}</span></td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.tomadorDoc||v.doc||'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.edad||'—'}</td>
@@ -18044,17 +18073,17 @@ function renderPlantillaVol() {
         <td style="font-family:var(--mono);color:var(--sura-lime);padding:8px 10px;">${fmt(v.primaMensual||v.prima||0)}</td>
         <td style="font-family:var(--mono);color:var(--green);padding:8px 10px;">${dctoLabel}</td>
         <td style="font-family:var(--mono);color:var(--sura-lime);padding:8px 10px;">${fmt(v.primaTotal||v.prima||0)}</td>
-        <td style="font-weight:500;padding:8px 10px;">${tc(v.tomadorNombre||v.nombre||'—')}</td>
+        <td style="font-weight:500;padding:8px 10px;">${tc(nombrePropio(v.tomadorNombre||v.nombre||'—'))}</td>
         <td style="padding:8px 10px;"><span class="chip chip-teal" style="font-size:10px;">${v.tomadorTipoDoc||'CC'}</span></td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.tomadorDoc||'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.edadTomador||v.edad||'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.tomadorTel||v.telefono||'—'}</td>
         <td style="font-size:12px;padding:8px 10px;">${v.tomadorCorreo||v.correo||'—'}</td>
-        <td style="font-weight:500;padding:8px 10px;">${tc(v.aseguradoNombre||'—')}</td>
+        <td style="font-weight:500;padding:8px 10px;">${tc(nombrePropio(v.aseguradoNombre||'—'))}</td>
         <td style="padding:8px 10px;"><span class="chip chip-teal" style="font-size:10px;">${v.aseguradoTipoDoc||'CC'}</span></td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.aseguradoDoc||'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.edadAsegurado||'—'}</td>
-        <td style="font-weight:500;padding:8px 10px;color:${v.asegurado2Nombre?'':'var(--text-dim)'};">${v.asegurado2Nombre?tc(v.asegurado2Nombre):'—'}</td>
+        <td style="font-weight:500;padding:8px 10px;color:${v.asegurado2Nombre?'':'var(--text-dim)'};">${v.asegurado2Nombre?tc(nombrePropio(v.asegurado2Nombre)):'—'}</td>
         <td style="padding:8px 10px;">${v.asegurado2Nombre?`<span class="chip chip-purple" style="font-size:10px;">${v.asegurado2TipoDoc||'CC'}</span>`:'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.asegurado2Doc||'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.asegurado2Edad||'—'}</td>
@@ -18076,7 +18105,7 @@ function renderPlantillaVol() {
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fecha)}</td>
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fechaExp)}</td>
         <td style="font-size:11px;padding:8px 10px;">${v.tipo||'NUEVO'}</td>
-        <td style="font-weight:500;padding:8px 10px;">${tc(v.tomadorNombre||v.nombre||'—')}</td>
+        <td style="font-weight:500;padding:8px 10px;">${tc(nombrePropio(v.tomadorNombre||v.nombre||'—'))}</td>
         <td style="padding:8px 10px;"><span class="chip chip-teal" style="font-size:10px;">${v.tomadorTipoDoc||v.tipoDoc||'CC'}</span></td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.tomadorDoc||v.doc||'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.edad||'—'}</td>
@@ -18105,7 +18134,7 @@ function renderPlantillaVol() {
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fecha)}</td>
         <td style="font-family:var(--mono);white-space:nowrap;padding:8px 10px;">${fmtD(v.fechaExp)}</td>
         <td style="font-size:11px;padding:8px 10px;">${v.tipo||'NUEVO'}</td>
-        <td style="font-weight:500;padding:8px 10px;">${tc(v.tomadorNombre||v.nombre||'—')}</td>
+        <td style="font-weight:500;padding:8px 10px;">${tc(nombrePropio(v.tomadorNombre||v.nombre||'—'))}</td>
         <td style="padding:8px 10px;"><span class="chip chip-teal" style="font-size:10px;">${v.tomadorTipoDoc||v.tipoDoc||'CC'}</span></td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.tomadorDoc||v.doc||'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.edad||'—'}</td>
@@ -18198,7 +18227,7 @@ function renderPlantilla() {
         <td style="font-family:var(--mono);font-size:11.5px;padding:8px 12px;">${v.formulario||'—'}</td>
         <td style="font-size:11px;color:var(--sura-lime);font-weight:600;padding:8px 12px;">${v.mesComp||'—'}</td>
         <td style="font-size:11.5px;padding:8px 12px;">${tramiteLabels[v.tramite]||v.tramite||'—'}</td>
-        <td style="font-weight:500;padding:8px 12px;">${v.nombre||'—'}</td>
+        <td style="font-weight:500;padding:8px 12px;">${v.nombre?nombrePropio(v.nombre):'—'}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 12px;">${v.doc||'—'}</td>
         <td style="padding:8px 12px;"><span class="chip chip-teal" style="font-size:10px;">${v.tipoDoc||'CC'}</span></td>
         <td style="font-family:var(--mono);font-size:11.5px;white-space:nowrap;padding:8px 12px;">${fnFmt}</td>
@@ -18276,13 +18305,13 @@ function renderPlantilla() {
           <td><span class="chip chip-purple" style="font-size:10px;">${perLabel[v.periodicidad]||v.periodicidad||'—'}</span></td>
           <td style="font-family:var(--mono);color:var(--text-muted);">${v.prima ? fmt(v.prima) : '—'}</td>
           <td style="font-family:var(--mono);color:var(--sura-lime);font-weight:700;">${v.primaTotal ? fmt(v.primaTotal) : '—'}</td>
-          <td style="font-weight:500;">${tc(v.tomadorNombre||v.nombre||'—')}</td>
+          <td style="font-weight:500;">${tc(nombrePropio(v.tomadorNombre||v.nombre||'—'))}</td>
           <td><span class="chip chip-teal" style="font-size:10px;">${v.tomadorTipoDoc||'CC'}</span></td>
           <td style="font-family:var(--mono);font-size:12px;">${v.tomadorDoc||v.doc||'—'}</td>
           <td style="font-family:var(--mono);font-size:12px;">${v.tomadorEdad||'—'}</td>
           <td style="font-family:var(--mono);font-size:12px;">${v.tomadorTel||v.telefono||'—'}</td>
           <td style="font-size:11.5px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${v.tomadorCorreo||v.correo||'—'}</td>
-          <td style="font-weight:500;">${tc(v.aseguradoNombre||'—')}</td>
+          <td style="font-weight:500;">${tc(nombrePropio(v.aseguradoNombre||'—'))}</td>
           <td><span class="chip chip-teal" style="font-size:10px;">${v.aseguradoTipoDoc||'CC'}</span></td>
           <td style="font-family:var(--mono);font-size:12px;">${v.aseguradoDoc||'—'}</td>
           <td style="font-family:var(--mono);font-size:12px;">${v.aseguradoEdad||'—'}</td>
@@ -19728,11 +19757,11 @@ function eliminarVentaCartera(id) {
 
 function enviarWACartera(tel, nombre, estado) {
   const msgs = {
-    PROXIMO: `Hola ${nombre}, te recordamos que en los próximos días vence el pago de tu plan de Salud Para Todos SURA. Para evitar contratiempos, recuerda realizarlo puntualmente. ¡Gracias! — Tu asesor SURA`,
-    MORA: `Hola ${nombre}, notamos que tu plan de salud complementario SURA tiene un saldo pendiente. Para evitar la suspensión de servicios, por favor realiza tu pago a la brevedad. ¿Necesitas ayuda? Con gusto te oriento. — Tu asesor SURA`,
-    SUSPENDIDO: `Hola ${nombre}, tu plan de salud SURA se encuentra actualmente suspendido por mora. Para restablecer los servicios, es necesario regularizar el pago. Te ayudo con el proceso. — Tu asesor SURA`,
-    CANCELACION: `Hola ${nombre}, te contactamos porque tu plan de salud SURA está en riesgo de cancelación definitiva. Por favor comunícate con nosotros urgente para encontrar una solución. — Tu asesor SURA`,
-    AL_DIA: `Hola ${nombre}, te recordamos que pronto vence el pago de tu plan SURA. Cualquier inquietud, con gusto te ayudo. — Tu asesor SURA`,
+    PROXIMO: `Hola ${nombrePropio(nombre)}, te recordamos que en los próximos días vence el pago de tu plan de Salud Para Todos SURA. Para evitar contratiempos, recuerda realizarlo puntualmente. ¡Gracias! — Tu asesor SURA`,
+    MORA: `Hola ${nombrePropio(nombre)}, notamos que tu plan de salud complementario SURA tiene un saldo pendiente. Para evitar la suspensión de servicios, por favor realiza tu pago a la brevedad. ¿Necesitas ayuda? Con gusto te oriento. — Tu asesor SURA`,
+    SUSPENDIDO: `Hola ${nombrePropio(nombre)}, tu plan de salud SURA se encuentra actualmente suspendido por mora. Para restablecer los servicios, es necesario regularizar el pago. Te ayudo con el proceso. — Tu asesor SURA`,
+    CANCELACION: `Hola ${nombrePropio(nombre)}, te contactamos porque tu plan de salud SURA está en riesgo de cancelación definitiva. Por favor comunícate con nosotros urgente para encontrar una solución. — Tu asesor SURA`,
+    AL_DIA: `Hola ${nombrePropio(nombre)}, te recordamos que pronto vence el pago de tu plan SURA. Cualquier inquietud, con gusto te ayudo. — Tu asesor SURA`,
   };
   const msg = msgs[estado] || msgs['AL_DIA'];
   const clean = tel.replace(/\D/g,'');
@@ -20389,7 +20418,7 @@ function _procesarLeadNuevo(lead) {
 // ── Plantillas de mensaje de renovación ─────────────────────────────────────
 const RENOV_PLANTILLAS = {
   urgente: (nombre, prod, fechaFmt, prima, asesor) =>
-`Hola ${nombre}!
+`Hola ${nombrePropio(nombre)}!
 
 Te escribo porque tu plan *${prod} SURA* tiene su fecha de pago el *${fechaFmt}* - ya estamos muy cerca y quiero que no pierdas ni un dia de cobertura.
 
@@ -20403,7 +20432,7 @@ Pago express SURA: https://www.segurossura.com.co/paginas/pago-express.aspx/
 *${asesor} - Asesor Canal Especializado en Salud SURA*`,
 
   proximo: (nombre, prod, fechaFmt, prima, asesor) =>
-`Hola ${nombre}, espero que estes muy bien.
+`Hola ${nombrePropio(nombre)}, espero que estes muy bien.
 
 Te cuento que tu plan *${prod} SURA* tiene su proxima fecha de pago el *${fechaFmt}*.
 
@@ -20419,7 +20448,7 @@ Pago express SURA: https://www.segurossura.com.co/paginas/pago-express.aspx/
 *${asesor} - Asesor Canal Especializado en Salud SURA*`,
 
   planificar: (nombre, prod, fechaFmt, prima, asesor) =>
-`Hola ${nombre}!
+`Hola ${nombrePropio(nombre)}!
 
 Como estas? Solo queria dejarte un recordatorio anticipado: tu plan *${prod} SURA* se renueva el *${fechaFmt}*.
 
@@ -23491,10 +23520,10 @@ function confirmarImportVol() {
       mesComp,
       poliza: v.poliza || '',
       tipo: 'NUEVO',
-      nombre: v.tomadorNombre || '',
-      tomadorNombre: v.tomadorNombre || '',
+      nombre: nombrePropio(v.tomadorNombre || ''),
+      tomadorNombre: nombrePropio(v.tomadorNombre || ''),
       tomadorDoc: v.tomadorDoc || '',
-      aseguradoNombre: v.aseguradoNombre || v.tomadorNombre || '',
+      aseguradoNombre: nombrePropio(v.aseguradoNombre || v.tomadorNombre || ''),
       aseguradoDoc: v.aseguradoDoc || v.tomadorDoc || '',
       plan: detectarPlanNombre(v.plan, v.producto),
       planRaw: v.plan || '',
@@ -29546,7 +29575,7 @@ body{font-family:Arial,sans-serif;color:#1f2937;background:#fff;font-size:13px;}
     const nombre = window._cotWhatsappNombre || 'el cliente';
     const asesor = (getState().config?.nombreAsesor || 'tu asesor SURA').trim();
     const msg    = encodeURIComponent(
-      `Hola ${nombre}, soy ${asesor}, asesor SURA. Te envío la cotización que solicitaste. ¿Tienes alguna duda sobre los planes o prima calculada? Con gusto te oriento.`
+      `Hola ${nombrePropio(nombre)}, soy ${asesor}, asesor SURA. Te envío la cotización que solicitaste. ¿Tienes alguna duda sobre los planes o prima calculada? Con gusto te oriento.`
     );
     const telCol = tel.startsWith('57') ? tel : '57' + tel;
     setTimeout(() => { window.open(`https://wa.me/${telCol}?text=${msg}`, '_blank'); }, 1200);
@@ -29607,7 +29636,7 @@ function cotizacionEnviarWa(id) {
   const plan     = c.planLabel || c.producto || '';
   const prima    = fmt(c.total || 0);
   const num      = c.numero || '';
-  const msg = `Hola ${nombre.split(' ')[0]} 👋\n\nTe comparto el detalle de tu cotización SURA:\n\n📋 *${num}*\n🏥 *Plan:* ${plan}\n💰 *Prima mensual:* ${prima}\n\n¿Tienes alguna duda o quieres continuar con la vinculación? Con gusto te ayudo.`;
+  const msg = `Hola ${nombrePropio(nombre.split(' ')[0])} 👋\n\nTe comparto el detalle de tu cotización SURA:\n\n📋 *${num}*\n🏥 *Plan:* ${plan}\n💰 *Prima mensual:* ${prima}\n\n¿Tienes alguna duda o quieres continuar con la vinculación? Con gusto te ayudo.`;
   const url = tel
     ? `https://wa.me/57${tel}?text=${encodeURIComponent(msg)}`
     : `https://wa.me/?text=${encodeURIComponent(msg)}`;
@@ -34934,13 +34963,13 @@ function enviarWACarteraV2(tel, nombre, estado, producto, extra) {
   let msg = '';
 
   if (estado === 'PROXIMO') {
-    msg = `¡Hola ${nombre}! 🔔\n\nTe recordamos que tu plan *${prodNombre}* vence el *${extra}*.\n\nPara mantener tu cobertura activa sin interrupciones, recuerda realizar el pago antes de esa fecha. ¡Cualquier duda estoy disponible!\n\nSoy *${asesor}*, tu asesor Canal Salud SURA. 💙`;
+    msg = `¡Hola ${nombrePropio(nombre)}! 🔔\n\nTe recordamos que tu plan *${prodNombre}* vence el *${extra}*.\n\nPara mantener tu cobertura activa sin interrupciones, recuerda realizar el pago antes de esa fecha. ¡Cualquier duda estoy disponible!\n\nSoy *${asesor}*, tu asesor Canal Salud SURA. 💙`;
   } else if (estado === 'MORA') {
-    msg = `¡Hola ${nombre}! 👋\n\nTe escribo porque tu plan *${prodNombre}* tiene un saldo pendiente de *${extra} días*.\n\nPara evitar la suspensión de tu cobertura, te agradecería ponerte al día a la brevedad. Si necesitas ayuda con el proceso de pago, con gusto te oriento.\n\nSoy *${asesor}*, tu asesor Canal Salud SURA. 🙏`;
+    msg = `¡Hola ${nombrePropio(nombre)}! 👋\n\nTe escribo porque tu plan *${prodNombre}* tiene un saldo pendiente de *${extra} días*.\n\nPara evitar la suspensión de tu cobertura, te agradecería ponerte al día a la brevedad. Si necesitas ayuda con el proceso de pago, con gusto te oriento.\n\nSoy *${asesor}*, tu asesor Canal Salud SURA. 🙏`;
   } else if (estado === 'SUSPENDIDO') {
-    msg = `¡Hola ${nombre}! ⚠️\n\nTu plan *${prodNombre}* se encuentra actualmente *suspendido* por mora de ${extra} días.\n\nPara restablecer tu cobertura es necesario regularizar el pago. Tienes tiempo antes de que se cancele definitivamente — te ayudo con el proceso.\n\nComunícate conmigo urgente. Soy *${asesor}*, tu asesor Canal Salud SURA. 🏥`;
+    msg = `¡Hola ${nombrePropio(nombre)}! ⚠️\n\nTu plan *${prodNombre}* se encuentra actualmente *suspendido* por mora de ${extra} días.\n\nPara restablecer tu cobertura es necesario regularizar el pago. Tienes tiempo antes de que se cancele definitivamente — te ayudo con el proceso.\n\nComunícate conmigo urgente. Soy *${asesor}*, tu asesor Canal Salud SURA. 🏥`;
   } else if (estado === 'BIENVENIDA') {
-    msg = `¡Hola ${nombre}! 🎉\n\nEs un gusto tenerte como cliente de *${prodNombre} SURA*.\n\nTe cuento que puedes gestionar tu plan desde la app SURA — descárgala y activa tu credencial digital. Ahí puedes:\n✅ Ver tu cobertura\n✅ Solicitar autorizaciones\n✅ Encontrar la red de servicios\n\n¿Necesitas ayuda para activarla? Con gusto te acompaño. Soy *${asesor}*, tu asesor Canal Salud SURA. 💙`;
+    msg = `¡Hola ${nombrePropio(nombre)}! 🎉\n\nEs un gusto tenerte como cliente de *${prodNombre} SURA*.\n\nTe cuento que puedes gestionar tu plan desde la app SURA — descárgala y activa tu credencial digital. Ahí puedes:\n✅ Ver tu cobertura\n✅ Solicitar autorizaciones\n✅ Encontrar la red de servicios\n\n¿Necesitas ayuda para activarla? Con gusto te acompaño. Soy *${asesor}*, tu asesor Canal Salud SURA. 💙`;
   }
 
   const clean = tel.replace(/\D/g,'');
@@ -35475,7 +35504,7 @@ Soy *${asesor}*, tu asesor de Canal Especializado en Salud SURA.`;
     }
 
   } else if (_waTab === 'prospecto') {
-    msg = `¡Hola ${nombre}! 🤝
+    msg = `¡Hola ${nombrePropio(nombre)}! 🤝
 
 Soy *${asesor}*, asesor especializado de *Seguros SURA* — Canal Salud.
 
@@ -35491,7 +35520,7 @@ Con este plan obtienes cobertura complementaria a tu EPS con beneficios como:
 Quedo atento(a) a tu respuesta. 😊`;
 
   } else if (_waTab === 'renovacion') {
-    msg = `¡Hola ${nombre}! 🔔
+    msg = `¡Hola ${nombrePropio(nombre)}! 🔔
 
 Te escribo porque tu plan *${nombreProd}* está próximo a renovarse.
 
@@ -35506,7 +35535,7 @@ Quería confirmarte que tu cobertura continuará activa y aprovechar para:
 Soy *${asesor}*, tu asesor de Canal Salud SURA. 🏥`;
 
   } else if (_waTab === 'radicado') {
-    msg = `¡Hola ${nombre}! 📋
+    msg = `¡Hola ${nombrePropio(nombre)}! 📋
 
 Te informo que tu trámite de afiliación ha sido *radicado exitosamente* en EPS SURA.
 
@@ -35816,7 +35845,7 @@ function actualizarComisionRapida() {
 }
 
 function guardarRegistroRapido() {
-  const nombre   = (document.getElementById('rqNombre')?.value || '').trim();
+  const nombre   = nombrePropio(document.getElementById('rqNombre')?.value || '');
   const doc      = (document.getElementById('rqDoc')?.value || '').trim();
   const fecha    = document.getElementById('rqFecha')?.value || '';
   const empresa  = (document.getElementById('rqEmpresa')?.value || '').trim();
