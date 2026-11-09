@@ -19213,10 +19213,11 @@ let _pagoVentaId = null;
 // consulta al momento de cobrar, para que el monto mostrado y el
 // efectivamente registrado sean siempre el correcto — para pólizas nuevas
 // y para las ya existentes.
-function _precioSPTIPersona(plan, edad, periodicidad) {
+function _precioSPTIPersona(plan, edad, periodicidad, tablas) {
   if (window.MotorProducto) {
-    const r = window.MotorProducto.calcularPrecioSPTI({ plan, edad, periodicidad });
+    const r = window.MotorProducto.calcularPrecioSPTI({ plan, edad, periodicidad }, tablas);
     if (r) return r.valor;
+    if (tablas) return null; // año con tablas propias: sin respaldo de la tabla de otro año
   }
   const rango = getRangoEdadSPTI(parseInt(edad));
   const tarifa = rango && SPTI_TARIFAS[plan] && SPTI_TARIFAS[plan][rango];
@@ -19241,7 +19242,7 @@ function calcMontoSPTIPeriodo(venta, opts) {
   // la edad de HOY, calculada desde fechaNac — nunca sobrescribe venta.edad.
   // Sin fechaNac (pólizas legadas), cae exactamente al comportamiento anterior.
   const edadTitular = _edadParaCalculo(venta.fechaNac, opts) ?? venta.edad;
-  const primaTitular = _precioSPTIPersona(venta.plan, edadTitular, venta.periodicidad);
+  const primaTitular = _precioSPTIPersona(venta.plan, edadTitular, venta.periodicidad, opts && opts.tablas);
   if (primaTitular === null) return null;
   // HALLAZGO SPTI-GRUPAL (fix): sumar cada asegurado adicional registrado
   // en venta.asegurados — antes esta función solo calculaba la parte del
@@ -19250,7 +19251,7 @@ function calcMontoSPTIPeriodo(venta, opts) {
   let total = primaTitular;
   for (const a of venta.asegurados) {
     const edadAi = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
-    const primaAi = _precioSPTIPersona(venta.plan, edadAi, venta.periodicidad);
+    const primaAi = _precioSPTIPersona(venta.plan, edadAi, venta.periodicidad, opts && opts.tablas);
     if (primaAi === null) return null; // un adicional sin tarifa válida invalida el recálculo del grupo — no se cobra un valor parcial; el llamador cae al respaldo (venta.primaTotal/prima guardado)
     total += primaAi;
   }
@@ -19297,10 +19298,11 @@ function calcMontoPSMPeriodo(venta, opts) {
       maternidad: _modulosMotor.includes('Maternidad'),
       periodicidad: venta.periodicidad,
       asegurados: _aseguradosVigentes
-    });
+    }, opts && opts.tablas);
     if (_rPSM) return _rPSM.valor;
   }
 
+  if (opts && opts.tablas) return null; // año con tablas propias: sin respaldo de otro año
   // Respaldo: cálculo legado exacto basado en rangoEdad ya guardado —
   // usado si no hay edad utilizable, si el motor no cargó, o si devolvió null
   const PSM_TARIFAS_M = window.BusinessConfig.pricing.PSM_TARIFAS;
@@ -19373,10 +19375,11 @@ function calcMontoPAC60Periodo(venta, opts) {
     const _rPAC60 = window.MotorProducto.calcularPrecioPAC60({
       edad: _edadTitularVigentePAC60, conAnexo: venta.conAnexo, periodicidad: venta.periodicidad,
       contexto: _contextoPAC60, asegurados: _aseguradosVigentesPAC60
-    });
+    }, opts && opts.tablas);
     if (_rPAC60) return _rPAC60.valor;
   }
 
+  if (opts && opts.tablas) return null; // año con tablas propias: sin respaldo de otro año
   const PAC60_TARIFAS_M = window.BusinessConfig.pricing.PAC60_TARIFAS;
   const PAC60_DCTOS_M = window.BusinessConfig.pricing.PAC60_DCTOS;
   if (!PAC60_TARIFAS_M || !venta.rangoEdad) return null;
@@ -19505,7 +19508,8 @@ function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
   const tipoOk = ['NUEVO', 'RENOVACION', 'CANCELACION'].includes(venta.tipo) ? venta.tipo : 'NUEVO';
   // D17: desde el mes 13 la póliza congelada se calcula como una normal con la tabla vigente.
   const ventaRef = Object.assign({}, venta, { edad: edades[0], tipo: tipoOk, tarifaCongelada: false });
-  const opts = { fechaRef: fechaRenovacion, incluirMensual: true };
+  // 2026 conserva su camino original (tablas por defecto); solo los años con tabla propia pasan sus tablas.
+  const opts = { fechaRef: fechaRenovacion, incluirMensual: true, tablas: (anio !== 2026 ? tablas : undefined) };
   const valor = calcMontoSPTIPeriodo(ventaRef, opts) ?? calcMontoPSMPeriodo(ventaRef, opts) ?? calcMontoPAC60Periodo(ventaRef, opts);
   if (valor === null || valor === undefined) return bloq('TARIFA_NO_RESUELTA', { anio, fechaRenovacion });
   return ok('RENOVACION', { valor, anioTabla: anio, edadRef: edades[0], fechaRenovacion });
