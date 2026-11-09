@@ -51,12 +51,12 @@ window.BusinessConfig.pricing = {
       for (const rango in sinIva[plan]) {
         const t = sinIva[plan][rango];
         out[plan][rango] = {
-          mensual: Math.round(t.mensual * ivaFactor),
-          trimestre: Math.round(t.trimestre * ivaFactor),
+          mensual: t.mensual === undefined ? undefined : Math.round(t.mensual * ivaFactor),
+          trimestre: t.trimestre === undefined ? undefined : Math.round(t.trimestre * ivaFactor),
           dctoTrim: t.dctoTrim,
-          semestre: Math.round(t.semestre * ivaFactor),
+          semestre: t.semestre === undefined ? undefined : Math.round(t.semestre * ivaFactor),
           dctoSem: t.dctoSem,
-          anual: Math.round(t.anual * ivaFactor),
+          anual: t.anual === undefined ? undefined : Math.round(t.anual * ivaFactor),
           dctoAnual: t.dctoAnual
         };
       }
@@ -96,6 +96,26 @@ window.BusinessConfig.pricing = {
  * SPD 2026 (aprobado por el PO): tarifa familiar fija sin IVA, vigencia del 1-abr al 31-dic-2026.
  */
 window.BusinessConfig.pricing.TARIFAS_POR_ANIO = {
+  // 2025 · SPTI (con IVA verificado; celdas ausentes = no reproducibles, pendientes de base SURA).
+  // Vigencia: 01-ene-2025 a 31-dic-2025 (confirmado por el PO). Sin SPD ni PSM/PAC60: no cargados.
+  2025: {
+    SPTI_SIN_IVA: {
+      PREFERENCIAL: {
+        '0-40': { mensual: 153154, semestre: 874793, dctoSem: 44131, anual: 1672166, dctoAnual: 165682 },
+        '41-50': { trimestre: 481909, semestre: 941027, anual: 1798771 },
+        '51-59': { mensual: 204142, trimestre: 597136, dctoTrim: 15290, semestre: 1166033, dctoSem: 58819, anual: 2228870, dctoAnual: 220834 },
+        '60-70': { mensual: 273040, semestre: 1559569, dctoSem: 78671, anual: 2981112, dctoAnual: 295368 },
+        '71+': { trimestre: 1199908, anual: 4478772 }
+      },
+      CLASICO: {
+        '0-40': { mensual: 134826, trimestre: 394380, dctoTrim: 10098, semestre: 770109, dctoSem: 38847, anual: 1472060, dctoAnual: 145852 },
+        '41-50': { trimestre: 431362, semestre: 842324, anual: 1610100 },
+        '51-59': { mensual: 184825, semestre: 1055692, dctoSem: 53258, anual: 2017953, dctoAnual: 199947 },
+        '60-70': { mensual: 252114, trimestre: 737459, dctoTrim: 18883, semestre: 1440042, dctoSem: 72642, anual: 2752637, dctoAnual: 272731 },
+        '71+': { mensual: 394950, trimestre: 1155269, dctoTrim: 29581, semestre: 2255902, dctoSem: 113798, anual: 4312152, dctoAnual: 427248 }
+      }
+    }
+  },
   2026: {
     SPTI_SIN_IVA: window.BusinessConfig.pricing.SPTI_SIN_IVA,
     PSM_TARIFAS: window.BusinessConfig.pricing.PSM_TARIFAS,
