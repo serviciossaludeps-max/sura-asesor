@@ -9,7 +9,7 @@ window.BusinessConfig = {};
 for (const f of ['constants', 'commissions', 'pricing']) require(path.join(REPO, 'business-config', f + '.js'));
 require(path.join(REPO, 'src/business-core/motors/producto/index.js'));
 require(path.join(REPO, 'src/business-core/motors/pago/index.js'));
-for (const f of ['resolver-edad', 'comision-asegurados', 'tarifa-resolver', 'pago-validador', 'reversion-calc']) {
+for (const f of ['resolver-edad', 'comision-asegurados', 'tarifa-resolver', 'periodo-importada', 'pago-validador', 'reversion-calc']) {
   require(path.join(REPO, 'src/business-core/motors/pago', f + '.js'));
 }
 const M = globalThis.MotorPagoE1;
@@ -100,8 +100,8 @@ t('Validador: monto cero se rechaza', () => {
 t('Validador: fecha inválida se rechaza', () => {
   assert.strictEqual(M.validarPago(SPTI_OK, [], { fecha: '2025-02-30', montoRecibido: 147480 }).motivo, 'FECHA_INVALIDA');
 });
-t('Validador: importada queda BLOQUEADA hasta su periodo desde cartera SURA', () => {
-  assert.strictEqual(M.validarPago({ ...SPTI_OK, importada: true }, [], { fecha: '2025-04-10', montoRecibido: 147480 }).motivo, 'IMPORTADA_PERIODO_PENDIENTE');
+t('Validador: importada sin dato de SURA queda BLOQUEADA (BR-020)', () => {
+  assert.strictEqual(M.validarPago({ ...SPTI_OK, importada: true }, [], { fecha: '2025-04-10', montoRecibido: 147480 }).motivo, 'SIN_DATO_SURA');
 });
 t('Validador: no escribe ni modifica pagos existentes', () => {
   const pagos = [{ periodoDesde: '2025-03-10' }];
