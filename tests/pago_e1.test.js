@@ -68,12 +68,12 @@ t('SPTI ciclo 0 con bases guardadas: dos asegurados suman 19.664 (caso Angie sin
   assert.strictEqual(r.comision, 19664);
   assert.deepStrictEqual(r.comisionPorAsegurado.map(d => d.comision), [9832, 9832]);
 });
-t('SPTI ciclo 0 sin base guardada: usa tabla con la edad del ancla', () => {
-  const p = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2025-03-10',
-    asegurados: [{ fechaNac: '1985-03-10' }] };
-  const r = C(p, '2025-04-10');
+t('SPTI ciclo 0 sin base guardada: usa la tabla del año del ancla (2026)', () => {
+  const p = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2026-03-10',
+    asegurados: [{ fechaNac: '1986-03-10' }] };
+  const r = C(p, '2026-04-10');
   assert.strictEqual(r.comision, 9832);
-  assert.strictEqual(r.comisionPorAsegurado[0].fuenteBase, 'TABLA');
+  assert.strictEqual(r.comisionPorAsegurado[0].fuenteBase, 'TABLA_ANIO');
 });
 t('SPTI ciclo 1: edad a la renovación (41) y tabla 41-50 = 10.754', () => {
   const p = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2025-03-10',
@@ -107,10 +107,10 @@ t('SPTI sin plan queda BLOQUEADO', () => {
   assert.strictEqual(C(p, '2025-04-10').motivo, 'FALTA_PLAN');
 });
 t('Si un asegurado está bloqueado, la póliza entera queda BLOQUEADA (sin valor parcial)', () => {
-  const p = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2025-03-10', asegurados: [
+  const p = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2026-03-10', asegurados: [
     { fechaNac: '1985-03-10' }, { }
   ]};
-  const r = C(p, '2025-04-10');
+  const r = C(p, '2026-04-10');
   assert.deepStrictEqual([r.estado, r.comision, r.motivo, r.comisionPorAsegurado.length], ['BLOQUEADO', null, 'FALTA_FECHA_NACIMIENTO', 0]);
 });
 t('Sin MotorProducto, bloquea sin respaldo silencioso', () => {
