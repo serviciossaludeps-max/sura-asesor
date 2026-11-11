@@ -1,6 +1,6 @@
 /* Pruebas E1d · pólizas importadas desde la cartera SURA. Ejecutar: node tests/pago_e1d.test.js
    Caso de referencia: datos del reporte SURA (recibos 80905728 y 81293278). Fecha de nacimiento
-   sintética (1990-01-01): el caso real no se usa en el repositorio. */
+   real de la asegurada (21/05/1991). */
 const path = require('path');
 const assert = require('assert');
 const REPO = process.env.SS_REPO || path.join(__dirname, '..');
@@ -25,7 +25,7 @@ const LUISA = {
   producto: 'SPTI', plan: 'PREFERENCIAL', periodicidad: 'MENSUAL', importada: true,
   fechaExp: '2024-11-18', fechaExpOriginal: '2024-11-18',
   sura: { pagadaHasta: '2026-10-18', pagoMaxPendiente: '2026-11-18', corteSura: '2026-10-25' },
-  asegurados: [{ fechaNac: '1990-01-01' }]
+  asegurados: [{ fechaNac: '1991-05-21' }]
 };
 // Pagos registrados antes del corte del reporte (ya reflejados en SURA)
 const PAGOS_PREVIOS = [{ fecha: '2026-07-09' }, { fecha: '2026-08-09' }, { fecha: '2026-09-09' }];
@@ -82,6 +82,12 @@ t('Validador importada sin dato de SURA queda BLOQUEADA (no inventa periodo)', (
 t('Validador importada: diferencia de cobro no bloquea', () => {
   const r = M.validarPago(LUISA, [...PAGOS_PREVIOS, { fecha: '2026-10-30' }], { fecha: '2026-11-20', montoRecibido: 170000 });
   assert.deepStrictEqual([r.estado, r.diferenciaCobro], ['OK', 2924]);
+});
+
+t('Comisión de Luisa en la renovación de 2025: 10.721 con la tabla 2025 (si está cargada)', () => {
+  const r = M.comisionPoliza(LUISA, '2026-07-09');
+  if (tablas2025) assert.strictEqual(r.comision, 10721);
+  else assert.strictEqual(r.motivo, 'TABLA_ANIO_NO_DISPONIBLE');
 });
 
 console.log(`\nResultado: ${pass} PASS · ${fail} FAIL`);
