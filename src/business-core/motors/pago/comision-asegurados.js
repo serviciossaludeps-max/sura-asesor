@@ -9,14 +9,15 @@
  *   - Si un asegurado está bloqueado, toda la póliza queda BLOQUEADA (sin valor parcial).
  *
  * PAC60 con varios asegurados: cada uno con su anexo y su base (igual que PSM).
- * Reutiliza MotorPago (calcularPorcentajeComision, calcularBaseComision), MotorProducto
+ * SPTI: base sin IVA de la tabla del año de la fecha de referencia (corrige E1c: antes usaba la 2026).
+ * Reutiliza MotorPago (calcularPorcentajeComision), MotorProducto
  * (cicloDeFecha, aniversarioEn, tablasDelAnio, calcularPrecioPSM, calcularPrecioPAC60)
  * y MotorPagoE1.resolverEdadReferencia. No reimplementa BR-009 ni BR-016.
  */
 (function (global) {
   'use strict';
 
-  const REGLA_VERSION = 'E1c.0';
+  const REGLA_VERSION = 'E2.0';
   const PRODUCTOS_E1B = ['SPTI', 'PSM', 'PAC60', 'SPD'];
   // Etiquetas de módulo guardadas por el CRM -> flag de calcularPrecioPSM
   const MODULO_FLAG = {
@@ -39,6 +40,15 @@
 
   function anioDe(fecha) {
     return parseInt(String(fecha).slice(0, 4), 10);
+  }
+
+  // Base sin IVA de SPTI desde las tablas del año indicado (no desde la tabla 2026 fija).
+  function baseSPTI(tables, poliza, edad) {
+    const campo = { MENSUAL: 'mensual', TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' }[poliza.periodicidad];
+    const rango = global.MotorProducto.getRangoEdadSPTI(edad);
+    const celda = tables && tables.SPTI_SIN_IVA && tables.SPTI_SIN_IVA[poliza.plan] && tables.SPTI_SIN_IVA[poliza.plan][rango];
+    const b = celda && campo ? celda[campo] : undefined;
+    return b > 0 ? b : null;
   }
 
   // ---------- SPD: una tarifa para la póliza ----------
@@ -131,8 +141,11 @@
         } else if (poliza.producto === 'SPTI') {
           if (!poliza.plan) return bloqueado('FALTA_PLAN', { rol });
           if (!poliza.periodicidad) return bloqueado('FALTA_PERIODICIDAD', { rol });
-          base = mpago.calcularBaseComision({ producto: 'SPTI', plan: poliza.plan, periodicidad: poliza.periodicidad, edad: r.edad });
-          fuenteBase = 'TABLA';
+          const tb0 = mp.tablasDelAnio(anioDe(r.fechaReferencia));
+          if (!tb0) return bloqueado('TABLA_ANIO_NO_DISPONIBLE', { rol });
+          base = baseSPTI(tb0, poliza, r.edad);
+          if (!base) return bloqueado('BASE_NO_DISPONIBLE', { rol });
+          fuenteBase = 'TABLA_ANIO';
         } else {
           return bloqueado('FALTA_BASE_GUARDADA', { rol });
         }
@@ -144,8 +157,8 @@
         let res;
         if (poliza.producto === 'SPTI') {
           if (!poliza.plan) return bloqueado('FALTA_PLAN', { rol });
-          base = mpago.calcularBaseComision({ producto: 'SPTI', plan: poliza.plan, periodicidad: poliza.periodicidad, edad: r.edad });
-          res = base > 0 ? { base, fuente: 'TABLA_ANIO' } : { motivo: 'BASE_NO_DISPONIBLE' };
+          const b = baseSPTI(tables, poliza, r.edad);
+          res = b ? { base: b, fuente: 'TABLA_ANIO' } : { motivo: 'BASE_NO_DISPONIBLE' };
         } else if (poliza.producto === 'PSM') {
           res = baseRenovacionPSM(a, r.edad, poliza.periodicidad, tables);
         } else {
