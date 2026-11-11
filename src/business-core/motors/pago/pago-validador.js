@@ -1,13 +1,13 @@
 /**
- * E1c · Validador de pagos (PagoValidador)
+ * E1c/E1d · Validador de pagos (PagoValidador)
  * src/business-core/motors/pago/pago-validador.js
  *
- * Diseño v1.3 §3.2, §6.5 y §7.2. Pura: no escribe nada; devuelve el resultado para que el llamador decida.
+ * Pura: no escribe nada; devuelve el resultado para que el llamador decida.
  *  - Idempotencia: misma altaKey -> DUPLICADO.
- *  - Periodo: [ancla + n*intervalo, ancla + (n+1)*intervalo], n = pagos vigentes (no compensados).
- *  - Mismo periodo ya pagado -> PERIODO_YA_PAGADO.
- *  - montoRecibido distinto de valorTarifa no bloquea: se registra como diferenciaCobro.
- *  - Importadas: BLOQUEADO hasta que se implemente su periodo desde la cartera SURA.
+ *  - No importada: periodo [ancla + n*intervalo, ancla + (n+1)*intervalo], n = pagos vigentes.
+ *  - Importada (E1d): periodo desde la cartera SURA (periodoSiguienteImportada).
+ *  - Periodo ya pagado -> PERIODO_YA_PAGADO.
+ *  - montoRecibido distinto de valorTarifa no bloquea: diferenciaCobro.
  */
 (function (global) {
   'use strict';
@@ -24,16 +24,26 @@
     const ancla = poliza.fechaExpOriginal || poliza.fechaExp;
     if (!ancla) return { estado: 'BLOQUEADO', motivo: 'FALTA_ANCLA' };
     if (mp.cicloDeFecha(ancla, nuevoPago.fecha) === null) return { estado: 'RECHAZADO', motivo: 'FECHA_INVALIDA' };
-    if (poliza.importada) return { estado: 'BLOQUEADO', motivo: 'IMPORTADA_PERIODO_PENDIENTE' };
     const pagos = Array.isArray(pagosExistentes) ? pagosExistentes : [];
     if (nuevoPago.altaKey && pagos.some(p => p.altaKey === nuevoPago.altaKey)) {
       return { estado: 'DUPLICADO', motivo: 'ALTA_KEY_REPETIDA', altaKey: nuevoPago.altaKey };
     }
-    const vigentes = pagos.filter(p => !p.compensado);
-    const intervalo = INTERVALO[poliza.periodicidad];
-    if (!intervalo) return { estado: 'BLOQUEADO', motivo: 'PERIODICIDAD_INVALIDA' };
-    const desde = mp.sumarMesesFinDeMes(ancla, vigentes.length * intervalo);
-    const hasta = mp.sumarMesesFinDeMes(ancla, (vigentes.length + 1) * intervalo);
+
+    let desde, hasta;
+    if (poliza.importada) {
+      const per = global.MotorPagoE1.periodoSiguienteImportada
+        ? global.MotorPagoE1.periodoSiguienteImportada(poliza, pagos)
+        : { estado: 'BLOQUEADO', motivo: 'PERIODO_IMPORTADA_NO_DISPONIBLE' };
+      if (per.estado !== 'OK') return { estado: 'BLOQUEADO', motivo: per.motivo };
+      desde = per.desde; hasta = per.hasta;
+    } else {
+      const intervalo = INTERVALO[poliza.periodicidad];
+      if (!intervalo) return { estado: 'BLOQUEADO', motivo: 'PERIODICIDAD_INVALIDA' };
+      const vigentes = pagos.filter(p => !p.compensado).length;
+      desde = mp.sumarMesesFinDeMes(ancla, vigentes * intervalo);
+      hasta = mp.sumarMesesFinDeMes(ancla, (vigentes + 1) * intervalo);
+    }
+
     if (pagos.some(p => p.periodoDesde === desde && !p.compensado)) {
       return { estado: 'PERIODO_YA_PAGADO', motivo: 'PERIODO_YA_PAGADO', periodo: { desde, hasta } };
     }
