@@ -19545,6 +19545,14 @@ function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
 }
 
 // Mismo cálculo del período que usa registrarPago (fechaExp + N × intervalo, N = pagos ya registrados).
+// Periodo del cobro vigente: importadas de cartera SURA usan la misma regla que el modal (corte + pagada hasta).
+function _periodoCobroVigente(venta) {
+  if (_f2gEsImportadaSura(venta)) {
+    const pi = _f2gPeriodoImportada(venta, getPagosVenta(venta.id));
+    if (pi && pi.desde) return { desde: pi.desde, hasta: pi.hasta };
+  }
+  return _periodoSiguientePago(venta);
+}
 function _periodoSiguientePago(venta) {
   // Corrección 05-nov-2026 (I-4): el próximo periodo sale de la FECHA del último pago, no del número de pagos.
   // k = índice del último periodo cubierto por un pago; el siguiente es k + 1. Con pagos puntuales equivale al cálculo anterior.
@@ -19571,7 +19579,7 @@ function _periodoSiguientePago(venta) {
 // Corrección 05-nov-2026 (I-5): cartera muestra el valor del periodo vigente (misma resolución que el cobro).
 function _primaCarteraVigente(venta, factorDefault) {
   try {
-    const r = resolverTarifaPeriodo(venta, _periodoSiguientePago(venta).desde);
+    const r = resolverTarifaPeriodo(venta, _periodoCobroVigente(venta).desde);
     if (r && r.estado !== 'BLOQUEADO' && r.valor !== null && r.valor !== undefined) return r.valor;
   } catch (e) {}
   return (venta.primaTotal || venta.prima || 0) * factorDefault;
@@ -19597,7 +19605,7 @@ function _editarPolizaDesdeAviso(id) {
 
 // Muestra en el modal de pago el importe y el aviso/bloqueo del PRÓXIMO período. Se llama al abrir y tras cada pago.
 function actualizarAvisoTarifaPago(venta) {
-  const per = _periodoSiguientePago(venta);
+  const per = _periodoCobroVigente(venta);
   const rt = resolverTarifaPeriodo(venta, per.desde);
   const base = venta.modoRegistro === 'sumado' ? (venta.primaTotal || venta.prima || 0) : (venta.prima || 0);
   const prima = (rt.valor !== null && rt.valor !== undefined) ? rt.valor : base;
