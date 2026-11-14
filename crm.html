@@ -1832,6 +1832,160 @@
   .origen-is { background: rgba(37,88,240,0.16); color: var(--sura-blue); }
   .origen-iv { background: rgba(6,182,212,0.16); color: var(--teal); }
 </style>
+<style id="vyloriam-saas-premium">
+/* ===== Vyloriam · Estándar visual SaaS Premium · SOLO CSS (sin cambios de lógica ni de onclick) ===== */
+
+/* 1. Layout global */
+body { padding: 8px; }
+.app { gap: 8px; }
+
+/* Sidebar flotante: fondo #0F172A en ambos temas, sin border-right */
+body:not(.theme-light) .sidebar,
+body.theme-light .sidebar {
+  top: 8px !important;
+  left: 8px !important;
+  bottom: 8px !important;
+  background: #0F172A !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 20px !important;
+  color: #CBD5E1;
+}
+.sidebar .logo-sub,
+body.theme-light .sidebar .logo-sub { color: #94A3B8 !important; }
+body .sidebar .brand-name { color: #F8FAFC !important; }
+body .sidebar .nav-section { color: #64748B !important; }
+body .sidebar .nav-item { color: #94A3B8 !important; }
+body .sidebar .nav-item:hover { background: rgba(255,255,255,0.06) !important; color: #F8FAFC !important; }
+body .sidebar .nav-item.active { background: rgba(37,88,240,0.28) !important; color: #FFFFFF !important; }
+body .sidebar .nav-item.active .icon svg { stroke: var(--sura-lime) !important; }
+body .sidebar #sidebarCollapseBtn { color: #94A3B8 !important; border-color: rgba(255,255,255,0.12) !important; }
+
+/* Área principal: tarjeta flotante */
+.main {
+  margin-left: 256px;
+  border-radius: 20px;
+  min-height: calc(100vh - 16px);
+  overflow: visible;
+}
+.main.sidebar-collapsed { margin-left: 72px; }
+body.theme-light .main {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+body:not(.theme-light) .main {
+  background: #121215;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+body .main .topbar { background: transparent !important; box-shadow: none !important; }
+body.theme-light .main .topbar { border-bottom-color: #E2E8F0 !important; }
+
+/* 2. Tokens de color */
+:root {
+  --text-heading: #1E293B;
+  --text-body: #334155;
+  --success: #047857;
+  --danger: #991B1B;
+  --border-color: #E2E8F0;
+}
+body.theme-light {
+  --bg: #F1F5F9;
+  --surface: #FFFFFF;
+  --surface2: #F8FAFC;
+  --surface3: #EEF2F7;
+  --surface4: #E2E8F0;
+  --border: #E2E8F0;
+  --border-hover: #CBD5E1;
+  --text: #1E293B;
+  --text-heading: #1E293B;
+  --text-body: #334155;
+  --text-muted: #64748B;
+  --text-dim: #94A3B8;
+  --green: #047857;
+  --red: #991B1B;
+  --success: #047857;
+  --danger: #991B1B;
+  --radius: 16px;
+}
+body:not(.theme-light) {
+  --surface: #121215;
+  --surface2: #1A1A1F;
+  --surface3: #222228;
+  --surface4: #2C2C34;
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.14);
+  --text: #F8FAFC;
+  --text-heading: #F8FAFC;
+  --text-body: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-dim: #64748B;
+  --green: #34D399;
+  --red: #F87171;
+  --success: #34D399;
+  --danger: #F87171;
+  --radius: 16px;
+}
+
+/* 3. Tarjetas y KPI */
+.card, .stat-card { border-radius: 16px; }
+body.theme-light .card,
+body.theme-light .stat-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.stat-value {
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+.stat-value .stat-unit,
+.stat-unit {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+/* 4. Responsive: móvil (< 900px). Sidebar pasa a barra superior; el menú se despliega con el hamburguesa (.open) */
+@media (max-width: 900px) {
+  body { padding: 0 !important; }
+  .app { flex-direction: column; }
+  body:not(.theme-light) .sidebar,
+  body.theme-light .sidebar {
+    position: sticky !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-height: 100vh;
+    border-radius: 0 !important;
+    transform: none !important;
+    overflow-y: auto;
+    z-index: 120;
+  }
+  .sidebar:not(.open) > *:not(.sidebar-logo) { display: none !important; }
+  .sidebar .sidebar-logo { padding: 12px 16px !important; }
+  .sidebar.collapsed .sidebar-logo { flex-direction: row !important; align-items: center !important; }
+  /* Si el menú quedó colapsado en escritorio, en móvil se muestra completo dentro de la barra */
+  .sidebar.collapsed .nav-section { display: block !important; }
+  .sidebar.collapsed .logo-sub,
+  .sidebar.collapsed #sidebarNombreAsesor { display: block !important; }
+  .sidebar.collapsed .nav-item { font-size: 13.5px !important; justify-content: flex-start !important; padding: 9px 12px !important; gap: 10px !important; width: auto !important; }
+  .sidebar.collapsed .nav-item .icon { margin: 0 !important; font-size: 16px !important; width: 20px !important; }
+  /* En móvil el hamburguesa reemplaza al botón de colapso */
+  .sidebar #sidebarCollapseArea { display: none !important; }
+  .main,
+  .main.sidebar-collapsed {
+    margin-left: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    min-height: 100vh;
+  }
+}
+</style>
 </head>
 <body>
 
