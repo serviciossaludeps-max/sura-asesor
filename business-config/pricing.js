@@ -96,23 +96,31 @@ window.BusinessConfig.pricing = {
  * SPD 2026 (aprobado por el PO): tarifa familiar fija sin IVA, vigencia del 1-abr al 31-dic-2026.
  */
 window.BusinessConfig.pricing.TARIFAS_POR_ANIO = {
-  // 2025 · SPTI (con IVA verificado; celdas ausentes = no reproducibles, pendientes de base SURA).
-  // Vigencia: 01-ene-2025 a 31-dic-2025 (confirmado por el PO). Sin SPD ni PSM/PAC60: no cargados.
+  // 2025 · SPTI. Fuente: tabla oficial SURA 2025 con IVA, convertida a sin IVA (÷ 1,05).
+  // Completa: 5 rangos x 4 periodicidades x 2 planes. Actualizado 16-nov-2026 (PO).
+  // Vigencia: 01-ene-2025 a 31-dic-2025. Sin SPD ni PSM/PAC60.
+  // PREFERENCIAL 0-40 mensual = 153154 (confirmado por PO: cartera SURA cobra 160.812 con IVA).
+  //   La tabla impresa de SURA muestra 160.811 en esa celda; se usa el valor de cartera.
+  // Pendiente de confirmar con cartera (seis celdas): SURA trunca el IVA en estas celdas y el CRM redondea,
+  //   así que el CRM puede cobrar 1 peso más que la tabla impresa:
+  //   SEMESTRAL PREFERENCIAL 71+; TRIMESTRAL CLASICO 51-59; TRIMESTRAL PREFERENCIAL 0-40 y 60-70;
+  //   MENSUAL CLASICO 41-50; MENSUAL PREFERENCIAL 41-50.
+  // Descuentos: meses x mensual - valor (regla verificada en 2026).
   2025: {
     SPTI_SIN_IVA: {
       PREFERENCIAL: {
-        '0-40': { mensual: 153154, semestre: 874793, dctoSem: 44131, anual: 1672166, dctoAnual: 165682 },
-        '41-50': { trimestre: 481909, semestre: 941027, anual: 1798771 },
-        '51-59': { mensual: 204142, trimestre: 597136, dctoTrim: 15290, semestre: 1166033, dctoSem: 58819, anual: 2228870, dctoAnual: 220834 },
-        '60-70': { mensual: 273040, semestre: 1559569, dctoSem: 78671, anual: 2981112, dctoAnual: 295368 },
-        '71+': { trimestre: 1199908, anual: 4478772 }
+        '0-40': { mensual:153154, trimestre:447990, dctoTrim:11472, semestre:874793, dctoSem:44131, anual:1672166, dctoAnual:165682 },
+        '41-50': { mensual:164750, trimestre:481909, dctoTrim:12341, semestre:941027, dctoSem:47473, anual:1798771, dctoAnual:178229 },
+        '51-59': { mensual:204142, trimestre:597136, dctoTrim:15290, semestre:1166033, dctoSem:58819, anual:2228870, dctoAnual:220834 },
+        '60-70': { mensual:273040, trimestre:798670, dctoTrim:20450, semestre:1559569, dctoSem:78671, anual:2981112, dctoAnual:295368 },
+        '71+': { mensual:410210, trimestre:1199908, dctoTrim:30722, semestre:2343070, dctoSem:118190, anual:4478772, dctoAnual:443748 }
       },
       CLASICO: {
-        '0-40': { mensual: 134826, trimestre: 394380, dctoTrim: 10098, semestre: 770109, dctoSem: 38847, anual: 1472060, dctoAnual: 145852 },
-        '41-50': { trimestre: 431362, semestre: 842324, anual: 1610100 },
-        '51-59': { mensual: 184825, semestre: 1055692, dctoSem: 53258, anual: 2017953, dctoAnual: 199947 },
-        '60-70': { mensual: 252114, trimestre: 737459, dctoTrim: 18883, semestre: 1440042, dctoSem: 72642, anual: 2752637, dctoAnual: 272731 },
-        '71+': { mensual: 394950, trimestre: 1155269, dctoTrim: 29581, semestre: 2255902, dctoSem: 113798, anual: 4312152, dctoAnual: 427248 }
+        '0-40': { mensual:134826, trimestre:394380, dctoTrim:10098, semestre:770109, dctoSem:38847, anual:1472060, dctoAnual:145852 },
+        '41-50': { mensual:147470, trimestre:431362, dctoTrim:11048, semestre:842324, dctoSem:42496, anual:1610100, dctoAnual:159540 },
+        '51-59': { mensual:184825, trimestre:540630, dctoTrim:13845, semestre:1055692, dctoSem:53258, anual:2017953, dctoAnual:199947 },
+        '60-70': { mensual:252114, trimestre:737459, dctoTrim:18883, semestre:1440042, dctoSem:72642, anual:2752637, dctoAnual:272731 },
+        '71+': { mensual:394950, trimestre:1155269, dctoTrim:29581, semestre:2255902, dctoSem:113798, anual:4312152, dctoAnual:427248 }
       }
     }
   },
