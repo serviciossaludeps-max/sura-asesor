@@ -18826,11 +18826,56 @@ function _baseComVol(venta) {
   return getSinIVABase(venta);
 }
 
+// OP-1 · comisión por asegurado para importadas con asegurados adicionales.
+// Base = suma de la base sin IVA de cada asegurado en la tabla de su ciclo.
+// Ciclo 1: edad a la expedición y tabla del año de expedición (oferta ene-2026 = tabla 2025).
+// Ciclo k>=2: edad al aniversario k y tabla del año del aniversario.
+// Tasa por año del cobro: 2024-2025 = 6 %, 2026 = 7 %.
+function _comisionGrupoImport(venta, fechaPago) {
+  const BCp = window.BusinessConfig && window.BusinessConfig.pricing;
+  const CAMPO = { MENSUAL: 'mensual', TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' };
+  const iso = d => (d ? String(d).slice(0, 10) : null);
+  const edadEn = (nac, f) => {
+    if (!nac || !f) return null;
+    const [ny, nm, nd] = nac.split('-').map(Number), [fy, fm, fd] = f.split('-').map(Number);
+    let e = fy - ny; if (fm < nm || (fm === nm && fd < nd)) e--; return e;
+  };
+  const rango = e => (e <= 40 ? '0-40' : e <= 50 ? '41-50' : e <= 59 ? '51-59' : e <= 70 ? '60-70' : '71+');
+  const addM = (s, n) => {
+    const [y, m, d] = s.split('-').map(Number), t = m - 1 + n;
+    const yy = y + Math.floor(t / 12), mm = ((t % 12) + 12) % 12;
+    const last = new Date(yy, mm + 1, 0).getDate();
+    return yy + '-' + String(mm + 1).padStart(2, '0') + '-' + String(Math.min(d, last)).padStart(2, '0');
+  };
+  const ancla = iso(venta.fechaExp), f = iso(fechaPago);
+  if (!ancla || !f) return { error: 'Falta fecha de expedición o de pago.' };
+  let k = 0; while (k < 200 && addM(ancla, 12 * (k + 1)) <= f) k++;
+  const fRef = k === 0 ? ancla : addM(ancla, 12 * k);
+  const anio = k === 0 ? (ancla.startsWith('2026-01') ? 2025 : parseInt(ancla.slice(0, 4), 10)) : parseInt(fRef.slice(0, 4), 10);
+  const tabla = anio === 2026 ? (BCp && BCp.SPTI_SIN_IVA)
+    : (BCp && BCp.TARIFAS_POR_ANIO && BCp.TARIFAS_POR_ANIO[anio] && BCp.TARIFAS_POR_ANIO[anio].SPTI_SIN_IVA);
+  if (!tabla) return { error: 'Falta la tabla SPTI del año ' + anio + ': no se calcula la comisión.' };
+  const campo = CAMPO[venta.periodicidad || 'MENSUAL'];
+  const fechas = [venta.fechaNac].concat(venta.aseguradosImport.map(a => a.fechaNac));
+  let base = 0; const asegurados = [];
+  for (const fn of fechas) {
+    const e = edadEn(fn, fRef);
+    if (e === null) return { error: 'Falta fecha de nacimiento de un asegurado.' };
+    const celda = tabla[venta.plan] && tabla[venta.plan][rango(e)];
+    if (!celda || typeof celda[campo] !== 'number') return { error: 'Celda vacía en la tabla ' + anio + ' (' + venta.plan + ' ' + rango(e) + ' ' + campo + ').' };
+    base += celda[campo];
+    asegurados.push({ edad: e, rango: rango(e), base: celda[campo] });
+  }
+  const anioCobro = parseInt(f.slice(0, 4), 10);
+  const tasa = anioCobro <= 2025 ? 0.06 : 0.07;
+  return { monto: Math.round(base * tasa), detalle: { ciclo: k + 1, anioTarifa: anio, tasa, base, asegurados } };
+}
+
 function registrarPago(ventaId, fechaPago) {
   { const _vg = (getState().ventas || []).find(x => x.id === ventaId);
     if (_vg && _vg._importadoSura) {
-      const _nAd = Array.isArray(_vg.aseguradosImport) ? _vg.aseguradosImport.length : 0;
-      if (_nAd > 0) { showToast('Póliza con asegurados adicionales: el registro de pagos queda bloqueado hasta habilitar la comisión por asegurado.'); return false; }
+      const _ads = Array.isArray(_vg.aseguradosImport) ? _vg.aseguradosImport : [];
+      if (_ads.length > 0 && (!_vg.fechaNac || _ads.some(a => !a || !a.fechaNac))) { showToast('Falta la fecha de nacimiento de un asegurado: no se puede calcular la comisión por asegurado.'); return false; }
       if (!_vg.aseguradoConfirmado) { showToast('Completa y confirma los datos del asegurado en Editar póliza importada antes de registrar pagos.'); return false; }
     } }
   // OP Fase 2e: no se registran pagos antes de la fecha de expedición
@@ -18871,7 +18916,10 @@ function registrarPago(ventaId, fechaPago) {
   registrarPago.ultimaAdvertencia = _rt.advertencia ? Object.assign({ estado: 'OK' }, _rt.advertencia) : null;
   const prima    = (_rt.valor !== null && _rt.valor !== undefined) ? _rt.valor : _primaBase;
   // BR-009/BR-016 centralizadas en MotorPago (ADR-007/011) — HALLAZGO-OP-002 cerrado
-  const comision = (window.MotorPago ? window.MotorPago.calcularComision(_ventaComisionEnFecha(venta, fechaPago)) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07));
+  // OP-1: importadas con asegurados adicionales -> comisión por asegurado (base sin IVA del grupo, tasa por año del cobro)
+  const _cg = (venta._importadoSura && Array.isArray(venta.aseguradosImport) && venta.aseguradosImport.length > 0) ? _comisionGrupoImport(venta, fechaPago) : null;
+  if (_cg && _cg.error) { registrarPago.ultimoBloqueo = { estado: 'BLOQUEADO', motivo: _cg.error }; return null; }
+  const comision = _cg ? _cg.monto : ((window.MotorPago ? window.MotorPago.calcularComision(_ventaComisionEnFecha(venta, fechaPago)) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07)));
 
   const nuevoPago = {
     id: Date.now().toString(36) + Math.random().toString(36).substr(2,4),
@@ -18880,6 +18928,7 @@ function registrarPago(ventaId, fechaPago) {
     periodoHasta,
     prima,
     comision,
+    ...(_cg ? { comisionDetalle: _cg.detalle } : {}),
   };
 
   const pagos = getPagos();
