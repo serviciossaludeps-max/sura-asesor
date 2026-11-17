@@ -18856,7 +18856,7 @@ function _comisionGrupoImport(venta, fechaPago) {
     : (BCp && BCp.TARIFAS_POR_ANIO && BCp.TARIFAS_POR_ANIO[anio] && BCp.TARIFAS_POR_ANIO[anio].SPTI_SIN_IVA);
   if (!tabla) return { error: 'Falta la tabla SPTI del año ' + anio + ': no se calcula la comisión.' };
   const campo = CAMPO[venta.periodicidad || 'MENSUAL'];
-  const fechas = [venta.fechaNac].concat(venta.aseguradosImport.map(a => a.fechaNac));
+  const fechas = [venta.fechaNac].concat(_aseguradosGrupo(venta).map(a => a.fechaNac));
   let base = 0; const asegurados = [];
   for (const fn of fechas) {
     const e = edadEn(fn, fRef);
@@ -18874,7 +18874,7 @@ function _comisionGrupoImport(venta, fechaPago) {
 function registrarPago(ventaId, fechaPago) {
   { const _vg = (getState().ventas || []).find(x => x.id === ventaId);
     if (_vg && _vg._importadoSura) {
-      const _ads = Array.isArray(_vg.aseguradosImport) ? _vg.aseguradosImport : [];
+      const _ads = _aseguradosGrupo(_vg);
       if (_ads.length > 0 && (!_vg.fechaNac || _ads.some(a => !a || !a.fechaNac))) { showToast('Falta la fecha de nacimiento de un asegurado: no se puede calcular la comisión por asegurado.'); return false; }
       if (!_vg.aseguradoConfirmado) { showToast('Completa y confirma los datos del asegurado en Editar póliza importada antes de registrar pagos.'); return false; }
     } }
@@ -18917,7 +18917,7 @@ function registrarPago(ventaId, fechaPago) {
   const prima    = (_rt.valor !== null && _rt.valor !== undefined) ? _rt.valor : _primaBase;
   // BR-009/BR-016 centralizadas en MotorPago (ADR-007/011) — HALLAZGO-OP-002 cerrado
   // OP-1: importadas con asegurados adicionales -> comisión por asegurado (base sin IVA del grupo, tasa por año del cobro)
-  const _cg = (venta._importadoSura && Array.isArray(venta.aseguradosImport) && venta.aseguradosImport.length > 0) ? _comisionGrupoImport(venta, fechaPago) : null;
+  const _cg = (venta._importadoSura && _aseguradosGrupo(venta).length > 0) ? _comisionGrupoImport(venta, fechaPago) : null;
   if (_cg && _cg.error) { registrarPago.ultimoBloqueo = { estado: 'BLOQUEADO', motivo: _cg.error }; return null; }
   const comision = _cg ? _cg.monto : ((window.MotorPago ? window.MotorPago.calcularComision(_ventaComisionEnFecha(venta, fechaPago)) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07)));
 
@@ -19312,6 +19312,22 @@ function _edadParaCalculo(fechaNac, opts) {
   return (opts && opts.fechaRef) ? window.MotorProducto.edadEnFecha(fechaNac, opts.fechaRef) : edadVigente(fechaNac);
 }
 
+// FASE A · asegurados del grupo (fuente única). Une venta.asegurados (alta manual) y
+// venta.aseguradosImport (importadas), sin duplicados. Solo adicionales; el titular es venta.fechaNac.
+function _aseguradosGrupo(venta) {
+  if (!venta) return [];
+  const lista = [].concat(Array.isArray(venta.asegurados) ? venta.asegurados : [],
+                          Array.isArray(venta.aseguradosImport) ? venta.aseguradosImport : []);
+  const vistos = new Set(); const out = [];
+  lista.forEach((a, i) => {
+    if (!a) return;
+    const clave = String(a.doc || a.documento || a.cedula || a.numDoc || ('idx' + i));
+    if (vistos.has(clave)) return;
+    vistos.add(clave); out.push(a);
+  });
+  return out;
+}
+
 function calcMontoSPTIPeriodo(venta, opts) {
   if (venta.producto !== 'SPTI' || !venta.plan || !venta.periodicidad) return null;
   if (venta.periodicidad === 'MENSUAL' && !(opts && opts.incluirMensual)) return null; // sin cambios: ese caso ya funcionaba bien
@@ -19323,11 +19339,11 @@ function calcMontoSPTIPeriodo(venta, opts) {
   const primaTitular = _precioSPTIPersona(venta.plan, edadTitular, venta.periodicidad, opts && opts.tablas);
   if (primaTitular === null) return null;
   // HALLAZGO SPTI-GRUPAL (fix): sumar cada asegurado adicional registrado
-  // en venta.asegurados — antes esta función solo calculaba la parte del
+  // en _aseguradosGrupo(venta) — antes esta función solo calculaba la parte del
   // titular, ignorando por completo a los adicionales en pólizas "sumado".
-  if (!Array.isArray(venta.asegurados) || venta.asegurados.length === 0) return primaTitular;
+  if (!Array.isArray(_aseguradosGrupo(venta)) || _aseguradosGrupo(venta).length === 0) return primaTitular;
   let total = primaTitular;
-  for (const a of venta.asegurados) {
+  for (const a of _aseguradosGrupo(venta)) {
     const edadAi = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
     const primaAi = _precioSPTIPersona(venta.plan, edadAi, venta.periodicidad, opts && opts.tablas);
     if (primaAi === null) return null; // un adicional sin tarifa válida invalida el recálculo del grupo — no se cobra un valor parcial; el llamador cae al respaldo (venta.primaTotal/prima guardado)
@@ -19363,11 +19379,11 @@ function calcMontoPSMPeriodo(venta, opts) {
     // (desde fechaNac). Si un adicional no tiene fechaNac, conserva su
     // rangoEdad guardado tal cual — no se inventa nada nuevo sobre datos legados.
     const _edadTitularVigente = _edadParaCalculo(venta.fechaNac, opts) ?? venta.edad;
-    const _aseguradosVigentes = Array.isArray(venta.asegurados) ? venta.asegurados.map(a => {
+    const _aseguradosVigentes = Array.isArray(_aseguradosGrupo(venta)) ? _aseguradosGrupo(venta).map(a => {
       const _edadAiVigente = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
       const _rangoAiVigente = window.MotorProducto.getRangoPSM(_edadAiVigente);
       return _rangoAiVigente ? { ...a, rangoEdad: _rangoAiVigente.key } : a;
-    }) : venta.asegurados;
+    }) : _aseguradosGrupo(venta);
     const _rPSM = window.MotorProducto.calcularPrecioPSM({
       edad: _edadTitularVigente,
       emd: _modulosMotor.includes('Atención Domiciliaria'),
@@ -19396,8 +19412,8 @@ function calcMontoPSMPeriodo(venta, opts) {
     if (!tabla || tabla[venta.rangoEdad] === undefined) return null; // dato insuficiente: no adivinar
     totalMensual += tabla[venta.rangoEdad] * PSM_IVA_M;
   }
-  if (Array.isArray(venta.asegurados)) {
-    for (const a of venta.asegurados) {
+  if (Array.isArray(_aseguradosGrupo(venta))) {
+    for (const a of _aseguradosGrupo(venta)) {
       if (!a.rangoEdad) return null;
       // Asegurados adicionales guardados con sus propios módulos (a.modulos) los
       // respeta; pólizas antiguas sin ese dato conservan el comportamiento previo
@@ -19445,11 +19461,11 @@ function calcMontoPAC60Periodo(venta, opts) {
     // clasificador administrativo es superconjunto exacto del de venta nueva
     // para <=79 (mismas claves 60-69/70-79), así que sirve para ambos casos.
     // Sin fechaNac, conserva el rangoEdad guardado tal cual (dato legado).
-    const _aseguradosVigentesPAC60 = Array.isArray(venta.asegurados) ? venta.asegurados.map(a => {
+    const _aseguradosVigentesPAC60 = Array.isArray(_aseguradosGrupo(venta)) ? _aseguradosGrupo(venta).map(a => {
       const _edadAiVigente = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
       const _rangoAiVigente = window.MotorProducto.getRangoPAC60Administrativo(_edadAiVigente);
       return _rangoAiVigente ? { ...a, rangoEdad: _rangoAiVigente } : a;
-    }) : venta.asegurados;
+    }) : _aseguradosGrupo(venta);
     const _rPAC60 = window.MotorProducto.calcularPrecioPAC60({
       edad: _edadTitularVigentePAC60, conAnexo: venta.conAnexo, periodicidad: venta.periodicidad,
       contexto: _contextoPAC60, asegurados: _aseguradosVigentesPAC60
@@ -19467,8 +19483,8 @@ function calcMontoPAC60Periodo(venta, opts) {
   if (!tarifaPrimaria || tarifaPrimaria[campoAnexo] === undefined) return null;
   let totalMensual = tarifaPrimaria[campoAnexo];
 
-  if (Array.isArray(venta.asegurados)) {
-    for (const a of venta.asegurados) {
+  if (Array.isArray(_aseguradosGrupo(venta))) {
+    for (const a of _aseguradosGrupo(venta)) {
       const t = a.rangoEdad && PAC60_TARIFAS_M[a.rangoEdad];
       if (!t || t[campoAnexo] === undefined) return null;
       totalMensual += t[campoAnexo];
@@ -19577,7 +19593,7 @@ function resolverTarifaPeriodo(venta, periodoDesde, opciones) {
     return ok('RENOVACION', { valor: Math.round(sinIva * iva), anioTabla: anio, fechaRenovacion });
   }
 
-  const personas = [venta.fechaNac].concat(Array.isArray(venta.asegurados) ? venta.asegurados.map(a => a.fechaNac) : []);
+  const personas = [venta.fechaNac].concat(Array.isArray(_aseguradosGrupo(venta)) ? _aseguradosGrupo(venta).map(a => a.fechaNac) : []);
   const edades = personas.map(f => MP.edadEnFecha(f, fechaRenovacion));
   if (edades.some(e => e === null)) {
     if (enTransicion) return ok('GUARDADO', { valor: guardado, advertencia: { motivo: 'FALTA_FECHA_NACIMIENTO', fechaRenovacion } });
@@ -19782,6 +19798,7 @@ function confirmarPago() {
   renderHistorialPagoModal(_pagoVentaId);
   const _vPagada = getState().ventas.find(x => x.id === _pagoVentaId);
   if (_vPagada) actualizarAvisoTarifaPago(_vPagada);
+  actualizarPreviewPago();
   renderCartera();
 }
 
