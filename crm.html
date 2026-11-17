@@ -18871,6 +18871,63 @@ function _comisionGrupoImport(venta, fechaPago) {
   return { monto: Math.round(base * tasa), detalle: { ciclo: k + 1, anioTarifa: anio, tasa, base, asegurados } };
 }
 
+// FASE A.2 · comisión por asegurado para PSM y PAC60 (grupo).
+// Base por asegurado = valor de su periodo con IVA ÷ 1,05 (mismo criterio de la tarifa).
+// Porcentaje por asegurado: PSM 12 % hasta 50 años y 6 % desde 51 (BR-016); PAC60 5 % (BR-009).
+// Edad de referencia: ciclo 1 = edad a la expedición; ciclo k >= 2 = edad al aniversario k.
+// Módulos PSM y anexo PAC60 de cada asegurado (a.modulos, a.conAnexo); el titular usa venta.modulos y venta.conAnexo.
+function _comisionGrupoPSMPAC60(venta, fechaPago) {
+  const MP = window.MotorProducto;
+  if (!MP) return { error: 'Motor de productos no disponible: no se calcula la comisión.' };
+  const iso = d => (d ? String(d).slice(0, 10) : null);
+  const edadEn = (nac, f) => {
+    if (!nac || !f) return null;
+    const [ny, nm, nd] = nac.split('-').map(Number), [fy, fm, fd] = f.split('-').map(Number);
+    let e = fy - ny; if (fm < nm || (fm === nm && fd < nd)) e--; return e;
+  };
+  const addM = (s, n) => {
+    const [y, m, d] = s.split('-').map(Number), t = m - 1 + n;
+    const yy = y + Math.floor(t / 12), mm = ((t % 12) + 12) % 12;
+    const last = new Date(yy, mm + 1, 0).getDate();
+    return yy + '-' + String(mm + 1).padStart(2, '0') + '-' + String(Math.min(d, last)).padStart(2, '0');
+  };
+  const ancla = iso(venta.fechaExp), f = iso(fechaPago);
+  if (!ancla || !f) return { error: 'Falta fecha de expedición o de pago.' };
+  let k = 0; while (k < 200 && addM(ancla, 12 * (k + 1)) <= f) k++;
+  const fRef = k === 0 ? ancla : addM(ancla, 12 * k);
+  const personas = [{ fechaNac: venta.fechaNac, modulos: venta.modulos || [], conAnexo: !!venta.conAnexo }]
+    .concat(_aseguradosGrupo(venta).map(a => ({ fechaNac: a.fechaNac, modulos: a.modulos || [], conAnexo: !!a.conAnexo })));
+  let total = 0; const detalle = [];
+  for (const p of personas) {
+    const e = edadEn(p.fechaNac, fRef);
+    if (e === null) return { error: 'Falta fecha de nacimiento de un asegurado: no se calcula la comisión.' };
+    let valor = null, pct = null;
+    if (venta.producto === 'PSM') {
+      const m = Array.isArray(p.modulos) ? p.modulos : [];
+      const r = MP.calcularPrecioPSM({ edad: e, emd: m.includes('Atención Domiciliaria'), altoCosto: m.includes('Alto Costo'),
+        cirugia: m.includes('Cirugía Ambulatoria'), maternidad: m.includes('Maternidad'), periodicidad: venta.periodicidad });
+      valor = r ? r.valor : null;
+      pct = e <= 50 ? 0.12 : 0.06;
+    } else {
+      const r = MP.calcularPrecioPAC60({ edad: e, conAnexo: p.conAnexo, periodicidad: venta.periodicidad,
+        contexto: e > 79 ? 'ADMINISTRATIVO' : 'VENTA_NUEVA', asegurados: [] });
+      valor = r ? r.valor : null;
+      pct = 0.05;
+    }
+    if (valor === null || valor === undefined) return { error: 'Sin tarifa para un asegurado (edad ' + e + '): no se calcula la comisión.' };
+    const base = Math.round(valor / 1.05);
+    const com = Math.round(pct * base);
+    total += com;
+    detalle.push({ edad: e, pct, base, comision: com });
+  }
+  return { monto: total, detalle: { ciclo: k + 1, producto: venta.producto, personas: detalle } };
+}
+// Despacho por producto: SPTI usa la tabla SPTI por asegurado; PSM y PAC60 usan el cálculo de arriba.
+function _comisionGrupo(venta, fechaPago) {
+  if (venta.producto === 'SPTI') return _comisionGrupoImport(venta, fechaPago);
+  if (venta.producto === 'PSM' || venta.producto === 'PAC60') return _comisionGrupoPSMPAC60(venta, fechaPago);
+  return null;
+}
 function registrarPago(ventaId, fechaPago) {
   { const _vg = (getState().ventas || []).find(x => x.id === ventaId);
     if (_vg && _vg._importadoSura) {
@@ -18917,7 +18974,7 @@ function registrarPago(ventaId, fechaPago) {
   const prima    = (_rt.valor !== null && _rt.valor !== undefined) ? _rt.valor : _primaBase;
   // BR-009/BR-016 centralizadas en MotorPago (ADR-007/011) — HALLAZGO-OP-002 cerrado
   // OP-1: importadas con asegurados adicionales -> comisión por asegurado (base sin IVA del grupo, tasa por año del cobro)
-  const _cg = (venta._importadoSura && _aseguradosGrupo(venta).length > 0) ? _comisionGrupoImport(venta, fechaPago) : null;
+  const _cg = (_aseguradosGrupo(venta).length > 0) ? _comisionGrupo(venta, fechaPago) : null;
   if (_cg && _cg.error) { registrarPago.ultimoBloqueo = { estado: 'BLOQUEADO', motivo: _cg.error }; return null; }
   const comision = _cg ? _cg.monto : ((window.MotorPago ? window.MotorPago.calcularComision(_ventaComisionEnFecha(venta, fechaPago)) : null) ?? Math.round(_baseComVol(venta) * (COM_PCT[venta.producto] || 0.07)));
 
