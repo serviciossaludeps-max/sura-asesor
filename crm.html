@@ -12332,7 +12332,7 @@ function renderVoluntarios() {
   const psmVentas = state.ventas.filter(v => v.producto === 'PSM');
   const psmMes  = contarPolizas(psmVentas.filter(v => parseFechaLocal(v.fecha).getMonth() === selectedMonth && parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL));
   const psmAcc  = contarPolizas(psmVentas.filter(v => parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL));
-  const psmComisionAcc = psmVentas.filter(v => parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL).reduce((s,v) => s + (v.comision||0), 0);
+  const psmComisionAcc = psmVentas.filter(v => parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL).reduce((s,v) => s + _comisionVisibleVenta(v), 0);
   const psmPrimaCartera = psmVentas.filter(v => v.tipo !== 'CANCELACION').reduce((s,v) => s + (v.prima||0), 0);
 
   document.getElementById('psmMes').textContent = psmMes;
@@ -12351,7 +12351,7 @@ function renderVoluntarios() {
         <td style="padding:8px 10px;font-family:var(--mono);font-size:11.5px;">${v.edad||'—'} <span style="font-size:10px;color:var(--text-dim);">(${v.rangoEdad||'—'})</span></td>
         <td style="padding:8px 10px;font-size:11px;color:var(--teal);">${v.modulos||'Básico'}</td>
         <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--sura-lime);font-weight:700;">${fmt(v.prima||0)}</td>
-        <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--green);font-weight:600;">${fmt(v.comision||0)} <span style="font-size:10px;color:var(--text-dim);">${v.comPct||''}%</span></td>
+        <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--green);font-weight:600;">${fmt(_comisionVisibleVenta(v))} <span style="font-size:10px;color:var(--text-dim);">${v.comPct||''}%</span></td>
         <td style="padding:8px 10px;font-family:var(--mono);font-size:11px;color:var(--text-muted);">${v.poliza||'—'}</td>
       </tr>`).join('');
   }
@@ -12360,7 +12360,7 @@ function renderVoluntarios() {
   const pac60Ventas = state.ventas.filter(v => v.producto === 'PAC60');
   const pac60Mes = contarPolizas(pac60Ventas.filter(v => parseFechaLocal(v.fecha).getMonth() === selectedMonth && parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL));
   const pac60Acc = contarPolizas(pac60Ventas.filter(v => parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL));
-  const pac60ComAcc = pac60Ventas.filter(v => parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL).reduce((s,v) => s + (v.comision||0), 0);
+  const pac60ComAcc = pac60Ventas.filter(v => parseFechaLocal(v.fecha).getFullYear() === AÑO_ACTUAL).reduce((s,v) => s + _comisionVisibleVenta(v), 0);
   const pac60PrimaCartera = pac60Ventas.filter(v => v.tipo !== 'CANCELACION').reduce((s,v) => s + (v.prima||0), 0);
 
   // Render PAC60 in voluntarios if elements exist
@@ -12381,7 +12381,7 @@ function renderVoluntarios() {
           <td style="padding:8px 10px;font-family:var(--mono);font-size:11.5px;">${v.edad||'—'} <span style="font-size:10px;color:var(--text-dim);">(${v.rangoEdad||'—'})</span></td>
           <td style="padding:8px 10px;font-size:11px;color:var(--green);">${v.plan||'—'}</td>
           <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--sura-lime);font-weight:700;">${fmt(v.prima||0)}</td>
-          <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--green);font-weight:600;">${fmt(v.comision||0)} <span style="font-size:10px;color:var(--text-dim);">5%</span></td>
+          <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--green);font-weight:600;">${fmt(_comisionVisibleVenta(v))} <span style="font-size:10px;color:var(--text-dim);">5%</span></td>
         </tr>`).join('');
     }
   }
@@ -12643,7 +12643,7 @@ function getVolComisionesSummary() {
       com = calcVolComisionVenta(v);
     } else {
       // PSM and PAC60: use stored comision directly
-      com = v.comision || 0;
+      com = _comisionVisibleVenta(v);
     }
     if (v.producto === 'SPTI') sptiProy += com;
     else if (v.producto === 'SPD') spdProy += com;
@@ -12681,8 +12681,8 @@ function renderVolComisiones() {
     const primaSPD  = spdV.reduce((s,v)  => s + getSinIVABase(v), 0);
     const comSpti  = Math.round(primaSpti * COM_SPTI_PCT);
     const comSpd   = Math.round(primaSPD  * COM_SPD_PCT);
-    const comPsm   = psmV.reduce((s,v)   => s + (v.comision || 0), 0);
-    const comPac60 = pac60V.reduce((s,v) => s + (v.comision || 0), 0);
+    const comPsm   = psmV.reduce((s,v)   => s + _comisionVisibleVenta(v), 0);
+    const comPac60 = pac60V.reduce((s,v) => s + _comisionVisibleVenta(v), 0);
     const total    = comSpti + comSpd + comPsm + comPac60;
     const isX2     = X2_MONTHS.includes(i);
     return `<tr class="${isX2?'highlight-row':''}">
@@ -13008,7 +13008,7 @@ function renderPagoMes() {
   function calcComVol(venta, prima) {
     if (venta.producto === 'SPTI') return Math.round((prima || getSinIVABase(venta)) * COM_SPTI_PCT);
     if (venta.producto === 'SPD')  return Math.round((prima || getSinIVABase(venta)) * COM_SPD_PCT);
-    if (venta.producto === 'PSM' || venta.producto === 'PAC60') return venta.comision || 0;
+    if (venta.producto === 'PSM' || venta.producto === 'PAC60') return _comisionVisibleVenta(venta);
     return venta.comision || 0; // PSM / PAC60 usan comisión almacenada
   }
 
@@ -18928,6 +18928,16 @@ function _comisionGrupo(venta, fechaPago) {
   if (venta.producto === 'PSM' || venta.producto === 'PAC60') return _comisionGrupoPSMPAC60(venta, fechaPago);
   return null;
 }
+// FASE A.3 · comisión que muestra la plantilla para PSM y PAC60: la del grupo vigente (hoy).
+// Si no se puede calcular (datos incompletos), se muestra la almacenada, como antes.
+function _comisionVisibleVenta(v) {
+  const guardada = v.comision || 0;
+  if ((v.producto === 'PSM' || v.producto === 'PAC60') && _aseguradosGrupo(v).length > 0) {
+    const r = _comisionGrupo(v, new Date().toISOString().slice(0, 10));
+    if (r && !r.error && r.monto != null) return r.monto;
+  }
+  return guardada;
+}
 function registrarPago(ventaId, fechaPago) {
   { const _vg = (getState().ventas || []).find(x => x.id === ventaId);
     if (_vg && _vg._importadoSura) {
@@ -19365,6 +19375,21 @@ function _precioSPTIPersona(plan, edad, periodicidad, tablas) {
 //   opts.fechaRef: la edad se toma en esa fecha (edadEnFecha) en vez de la de hoy (edadVigente).
 //   opts.incluirMensual: calcula también la periodicidad mensual (por defecto devuelven null en mensual).
 // Sin `opts` se comportan exactamente como antes. Solo los usa resolverTarifaPeriodo.
+// FASE A.4 · fecha de referencia para la edad de tarifa (regla R-EDAD).
+// Ciclo 1 (primeros 12 meses): edad a la expedición. Ciclo k >= 2: edad al aniversario k.
+// Si el cálculo ya trae opts.fechaRef (resolverTarifaPeriodo), se respeta.
+function _optsTarifa(venta, opts) {
+  if (opts && opts.fechaRef) return opts;
+  const MP = window.MotorProducto;
+  const ancla = venta && (venta.fechaExpOriginal || venta.fechaExp) ? String(venta.fechaExpOriginal || venta.fechaExp).slice(0, 10) : null;
+  if (!ancla || !MP || typeof MP.cicloDeFecha !== 'function' || typeof MP.aniversarioEn !== 'function') return opts;
+  const h = new Date();
+  const hoy = h.getFullYear() + '-' + String(h.getMonth() + 1).padStart(2, '0') + '-' + String(h.getDate()).padStart(2, '0');
+  const k = MP.cicloDeFecha(ancla, hoy);
+  if (k === null || k === undefined) return opts;
+  const ref = k === 0 ? ancla : MP.aniversarioEn(ancla, k);
+  return Object.assign({}, opts || {}, { fechaRef: ref });
+}
 function _edadParaCalculo(fechaNac, opts) {
   return (opts && opts.fechaRef) ? window.MotorProducto.edadEnFecha(fechaNac, opts.fechaRef) : edadVigente(fechaNac);
 }
@@ -19392,7 +19417,7 @@ function calcMontoSPTIPeriodo(venta, opts) {
   // Continuidad tarifaria por edad (autorizado por el PO): el próximo cobro usa
   // la edad de HOY, calculada desde fechaNac — nunca sobrescribe venta.edad.
   // Sin fechaNac (pólizas legadas), cae exactamente al comportamiento anterior.
-  const edadTitular = _edadParaCalculo(venta.fechaNac, opts) ?? venta.edad;
+  const edadTitular = _edadParaCalculo(venta.fechaNac, _optsTarifa(venta, opts)) ?? venta.edad;
   const primaTitular = _precioSPTIPersona(venta.plan, edadTitular, venta.periodicidad, opts && opts.tablas);
   if (primaTitular === null) return null;
   // HALLAZGO SPTI-GRUPAL (fix): sumar cada asegurado adicional registrado
@@ -19401,7 +19426,7 @@ function calcMontoSPTIPeriodo(venta, opts) {
   if (!Array.isArray(_aseguradosGrupo(venta)) || _aseguradosGrupo(venta).length === 0) return primaTitular;
   let total = primaTitular;
   for (const a of _aseguradosGrupo(venta)) {
-    const edadAi = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
+    const edadAi = _edadParaCalculo(a.fechaNac, _optsTarifa(venta, opts)) ?? a.edad;
     const primaAi = _precioSPTIPersona(venta.plan, edadAi, venta.periodicidad, opts && opts.tablas);
     if (primaAi === null) return null; // un adicional sin tarifa válida invalida el recálculo del grupo — no se cobra un valor parcial; el llamador cae al respaldo (venta.primaTotal/prima guardado)
     total += primaAi;
@@ -19435,12 +19460,31 @@ function calcMontoPSMPeriodo(venta, opts) {
     // asegurado adicional (modo sumado) se evalúan con su PROPIA edad vigente
     // (desde fechaNac). Si un adicional no tiene fechaNac, conserva su
     // rangoEdad guardado tal cual — no se inventa nada nuevo sobre datos legados.
-    const _edadTitularVigente = _edadParaCalculo(venta.fechaNac, opts) ?? venta.edad;
+    const _edadTitularVigente = _edadParaCalculo(venta.fechaNac, _optsTarifa(venta, opts)) ?? venta.edad;
     const _aseguradosVigentes = Array.isArray(_aseguradosGrupo(venta)) ? _aseguradosGrupo(venta).map(a => {
-      const _edadAiVigente = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
+      const _edadAiVigente = _edadParaCalculo(a.fechaNac, _optsTarifa(venta, opts)) ?? a.edad;
       const _rangoAiVigente = window.MotorProducto.getRangoPSM(_edadAiVigente);
       return _rangoAiVigente ? { ...a, rangoEdad: _rangoAiVigente.key } : a;
     }) : _aseguradosGrupo(venta);
+    // FASE A.3 · cada persona del grupo se calcula con SUS módulos (titular con venta.modulos,
+    // cada adicional con a.modulos) y se suman. Antes el motor solo sumaba el básico de los adicionales.
+    const _MP = window.MotorProducto;
+    const _adicionales = _aseguradosGrupo(venta);
+    const _edadAdi = a => (_edadParaCalculo(a.fechaNac, _optsTarifa(venta, opts)) ?? a.edad);
+    const _adiConEdad = _adicionales.every(a => _edadAdi(a) !== null && _edadAdi(a) !== undefined);
+    if (_adiConEdad) {
+      const _modsPSM = m => ({ emd: m.includes('Atención Domiciliaria'), altoCosto: m.includes('Alto Costo'),
+        cirugia: m.includes('Cirugía Ambulatoria'), maternidad: m.includes('Maternidad') });
+      const _rT = _MP.calcularPrecioPSM(Object.assign({ edad: _edadTitularVigente, periodicidad: venta.periodicidad }, _modsPSM(_modulosMotor)), opts && opts.tablas);
+      let _tot = _rT ? _rT.valor : null;
+      for (const a of _adicionales) {
+        if (_tot === null) break;
+        const _ma = Array.isArray(a.modulos) && a.modulos.length ? a.modulos : ['Básico'];
+        const _rA = _MP.calcularPrecioPSM(Object.assign({ edad: _edadAdi(a), periodicidad: venta.periodicidad }, _modsPSM(_ma)), opts && opts.tablas);
+        _tot = _rA ? _tot + _rA.valor : null;
+      }
+      if (_tot !== null) return _tot;
+    }
     const _rPSM = window.MotorProducto.calcularPrecioPSM({
       edad: _edadTitularVigente,
       emd: _modulosMotor.includes('Atención Domiciliaria'),
@@ -19512,14 +19556,14 @@ function calcMontoPAC60Periodo(venta, opts) {
     // origen de la póliza) — sale de la edad vigente del titular. >79 usa el
     // contexto administrativo (80-89/90+), <=79 sigue en venta nueva (60-69/70-79),
     // igual que hoy para pólizas que todavía no cruzan el límite.
-    const _edadTitularVigentePAC60 = _edadParaCalculo(venta.fechaNac, opts) ?? venta.edad;
+    const _edadTitularVigentePAC60 = _edadParaCalculo(venta.fechaNac, _optsTarifa(venta, opts)) ?? venta.edad;
     const _contextoPAC60 = _edadTitularVigentePAC60 > 79 ? 'ADMINISTRATIVO' : 'VENTA_NUEVA';
     // Cada asegurado adicional se evalúa con su PROPIA edad vigente — el
     // clasificador administrativo es superconjunto exacto del de venta nueva
     // para <=79 (mismas claves 60-69/70-79), así que sirve para ambos casos.
     // Sin fechaNac, conserva el rangoEdad guardado tal cual (dato legado).
     const _aseguradosVigentesPAC60 = Array.isArray(_aseguradosGrupo(venta)) ? _aseguradosGrupo(venta).map(a => {
-      const _edadAiVigente = _edadParaCalculo(a.fechaNac, opts) ?? a.edad;
+      const _edadAiVigente = _edadParaCalculo(a.fechaNac, _optsTarifa(venta, opts)) ?? a.edad;
       const _rangoAiVigente = window.MotorProducto.getRangoPAC60Administrativo(_edadAiVigente);
       return _rangoAiVigente ? { ...a, rangoEdad: _rangoAiVigente } : a;
     }) : _aseguradosGrupo(venta);
