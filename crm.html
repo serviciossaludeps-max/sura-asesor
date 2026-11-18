@@ -12350,7 +12350,7 @@ function renderVoluntarios() {
         <td style="padding:8px 10px;font-weight:600;">${tc(v.nombre||'—')}</td>
         <td style="padding:8px 10px;font-family:var(--mono);font-size:11.5px;">${v.edad||'—'} <span style="font-size:10px;color:var(--text-dim);">(${v.rangoEdad||'—'})</span></td>
         <td style="padding:8px 10px;font-size:11px;color:var(--teal);">${v.modulos||'Básico'}</td>
-        <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--sura-lime);font-weight:700;">${fmt(v.prima||0)}</td>
+        <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--sura-lime);font-weight:700;">${fmt(_primaVisibleVenta(v))}</td>
         <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--green);font-weight:600;">${fmt(_comisionVisibleVenta(v))} <span style="font-size:10px;color:var(--text-dim);">${v.comPct||''}%</span></td>
         <td style="padding:8px 10px;font-family:var(--mono);font-size:11px;color:var(--text-muted);">${v.poliza||'—'}</td>
       </tr>`).join('');
@@ -12380,7 +12380,7 @@ function renderVoluntarios() {
           <td style="padding:8px 10px;font-weight:600;">${tc(v.nombre||'—')}</td>
           <td style="padding:8px 10px;font-family:var(--mono);font-size:11.5px;">${v.edad||'—'} <span style="font-size:10px;color:var(--text-dim);">(${v.rangoEdad||'—'})</span></td>
           <td style="padding:8px 10px;font-size:11px;color:var(--green);">${v.plan||'—'}</td>
-          <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--sura-lime);font-weight:700;">${fmt(v.prima||0)}</td>
+          <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--sura-lime);font-weight:700;">${fmt(_primaVisibleVenta(v))}</td>
           <td style="padding:8px 10px;text-align:right;font-family:var(--mono);color:var(--green);font-weight:600;">${fmt(_comisionVisibleVenta(v))} <span style="font-size:10px;color:var(--text-dim);">5%</span></td>
         </tr>`).join('');
     }
@@ -13851,6 +13851,8 @@ function editarVenta(id) {
         if (s('chkMaternidad')) s('chkMaternidad').checked = modulos.includes('Maternidad');
         if (s('chkEMD')) s('chkEMD').checked = modulos.includes('EMD') || modulos.includes('Atención Domiciliaria');
         calcDatosPSM();
+        // FASE A.5 · restaurar todos los asegurados adicionales (antes solo se cargaba el titular)
+        (Array.isArray(v.asegurados) ? v.asegurados : []).forEach(a => _psmCargarAdicional(a));
         // Restaurar toggle tarifa congelada
         const chkTcPSM = s('chkTarifaCongeladaPSM');
         if (chkTcPSM) { chkTcPSM.checked = !!v.tarifaCongelada; toggleTarifaCongelada('PSM'); }
@@ -17879,7 +17881,7 @@ function ptVolDetalle(v, cols) {
     if (mensual == null && a._es1) mensual = Number(v.prima) || null;
     const periodo = a._es1 ? ptVolPeriodoAseg1(v, mensual) : (Number(a.primaTotal) || 0);
     if (mensual == null && !mostrarPeriodo) mensual = periodo || null;
-    const com = (mensual != null) ? Math.round(mensual * comPct) : null;
+    const com = (esPSM || esPAC) ? _comisionAseguradoVisible(v, a, mensual) : ((mensual != null) ? Math.round(mensual * comPct) : null);
     const rango = esSPTI
       ? ((typeof getRangoEdadSPTI === 'function' ? getRangoEdadSPTI(parseInt(a.edad)) : null) || '—')
       : (a.rangoEdad || '—');
@@ -18097,7 +18099,7 @@ function renderPlantillaVol() {
     if (!ventas.length) { tbody.innerHTML = empty(18); return; }
     tbody.innerHTML = ventas.map((v,i) => {
       const rBg = i%2===0?'':'style="background:rgba(255,255,255,0.02)"';
-      const com = Math.round((v.prima||0) * 0.12);
+      const com = _comisionVisibleVenta(v);
       const modulos = Array.isArray(v.modulos) ? v.modulos.join(', ') : (v.modulos||'—');
       return `<tr ${rBg} ${ptVolAttrs(v)}>
         <td style="color:var(--text-dim);font-family:var(--mono);padding:8px 10px;">${ptVolCaret(v)}${i+1}</td>
@@ -18111,7 +18113,7 @@ function renderPlantillaVol() {
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.edad||'—'}</td>
         <td style="font-size:11px;padding:8px 10px;">${v.rangoEdad||'—'}</td>
         <td style="font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:8px 10px;" title="${modulos}">${modulos}</td>
-        <td style="font-family:var(--mono);color:var(--sura-lime);padding:8px 10px;">${fmt(v.prima||0)}</td>
+        <td style="font-family:var(--mono);color:var(--sura-lime);padding:8px 10px;">${fmt(_primaVisibleVenta(v))}</td>
         <td style="font-family:var(--mono);color:var(--green);font-weight:700;padding:8px 10px;">${fmt(com)}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.tomadorTel||v.telefono||'—'}</td>
         <td style="font-size:12px;padding:8px 10px;">${v.tomadorCorreo||v.correo||'—'}</td>
@@ -18127,7 +18129,7 @@ function renderPlantillaVol() {
     if (!ventas.length) { tbody.innerHTML = empty(17); return; }
     tbody.innerHTML = ventas.map((v,i) => {
       const rBg = i%2===0?'':'style="background:rgba(255,255,255,0.02)"';
-      const com = Math.round((v.prima||0) * 0.05);
+      const com = _comisionVisibleVenta(v);
       return `<tr ${rBg} ${ptVolAttrs(v)}>
         <td style="color:var(--text-dim);font-family:var(--mono);padding:8px 10px;">${ptVolCaret(v)}${i+1}</td>
         <td style="font-family:var(--mono);font-size:11px;padding:8px 10px;">${v.poliza||'—'}</td>
@@ -18140,7 +18142,7 @@ function renderPlantillaVol() {
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.edad||'—'}</td>
         <td style="font-size:11px;padding:8px 10px;">${v.rangoEdad||'—'}</td>
         <td style="font-size:11px;padding:8px 10px;">${v.plan||'—'}</td>
-        <td style="font-family:var(--mono);color:var(--sura-lime);padding:8px 10px;">${fmt(v.prima||0)}</td>
+        <td style="font-family:var(--mono);color:var(--sura-lime);padding:8px 10px;">${fmt(_primaVisibleVenta(v))}</td>
         <td style="font-family:var(--mono);color:var(--green);font-weight:700;padding:8px 10px;">${fmt(com)}</td>
         <td style="font-family:var(--mono);font-size:12px;padding:8px 10px;">${v.tomadorTel||v.telefono||'—'}</td>
         <td style="font-size:12px;padding:8px 10px;">${v.tomadorCorreo||v.correo||'—'}</td>
@@ -18928,6 +18930,47 @@ function _comisionGrupo(venta, fechaPago) {
   if (venta.producto === 'PSM' || venta.producto === 'PAC60') return _comisionGrupoPSMPAC60(venta, fechaPago);
   return null;
 }
+// FASE A.5 · prima que muestra la fila (PSM/PAC60): la del grupo vigente, mensual.
+function _primaVisibleVenta(v) {
+  const guardada = v.prima || 0;
+  if ((v.producto === 'PSM' || v.producto === 'PAC60') && _aseguradosGrupo(v).length > 0 && (!v.periodicidad || v.periodicidad === 'MENSUAL')) {
+    const fn = v.producto === 'PSM' ? calcMontoPSMPeriodo : calcMontoPAC60Periodo;
+    let r = null;
+    try { r = fn(v, {}); } catch (e) { r = null; }
+    if (typeof r === 'number' && r > 0) return r;
+  }
+  return guardada;
+}
+// FASE A.5 · comisión de UN asegurado: base sin IVA x porcentaje BR-016 de su edad (PSM 12/6 %, PAC60 5 %).
+function _comisionAseguradoVisible(v, a, mensual) {
+  if (mensual == null) return null;
+  const IVA = (window.BusinessConfig && window.BusinessConfig.pricing && window.BusinessConfig.pricing.PSM_IVA) || 1.05;
+  const base = Math.round(mensual / IVA);
+  const pct = (window.MotorPago && typeof window.MotorPago.calcularPorcentajeComision === 'function')
+    ? window.MotorPago.calcularPorcentajeComision(v.producto, a.edad) : null;
+  if (pct == null) return null;
+  return Math.round(base * pct);
+}
+// FASE A.5 · restaura un asegurado adicional PSM en el formulario de edición.
+function _psmCargarAdicional(a) {
+  const antes = new Set(Array.from(document.querySelectorAll('[id^="vNombrePSM_"]')).map(e => e.id));
+  if (typeof psmAgregarAsegurado === 'function') psmAgregarAsegurado();
+  const nuevo = Array.from(document.querySelectorAll('[id^="vNombrePSM_"]')).find(e => !antes.has(e.id));
+  if (!nuevo) return;
+  const n = nuevo.id.slice('vNombrePSM_'.length);
+  const $ = id => document.getElementById(id + '_' + n);
+  const mods = Array.isArray(a.modulos) ? a.modulos : ['Básico'];
+  if ($('vNombrePSM')) $('vNombrePSM').value = a.nombre || '';
+  if ($('vTipoDocPSM')) $('vTipoDocPSM').value = a.tipoDoc || 'CC';
+  if ($('vDocPSM')) $('vDocPSM').value = a.doc || '';
+  if ($('vFechaNacPSM')) { $('vFechaNacPSM').value = a.fechaNac || ''; $('vFechaNacPSM').dispatchEvent(new Event('change')); }
+  if ($('chkEMD')) $('chkEMD').checked = mods.includes('Atención Domiciliaria') || mods.includes('EMD');
+  if ($('chkAltoCosto')) $('chkAltoCosto').checked = mods.includes('Alto Costo');
+  if ($('chkCirugia')) $('chkCirugia').checked = mods.includes('Cirugía Ambulatoria');
+  if ($('chkMaternidad')) $('chkMaternidad').checked = mods.includes('Maternidad');
+  if (typeof psmActualizarResumenTotal === 'function') psmActualizarResumenTotal();
+}
+
 // FASE A.3 · comisión que muestra la plantilla para PSM y PAC60: la del grupo vigente (hoy).
 // Si no se puede calcular (datos incompletos), se muestra la almacenada, como antes.
 function _comisionVisibleVenta(v) {
