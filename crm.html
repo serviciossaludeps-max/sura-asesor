@@ -8676,7 +8676,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
           </div>
           <div class="form-group">
             <label class="form-label">Fecha de Nacimiento</label>
-            <input type="date" class="form-control" id="vFechaNacSPTI" onchange="calcDatosSPTI()">
+            <input type="date" class="form-control" id="vFechaNacSPTI" onchange="calcDatosSPTI('fechaNac')">
           </div>
           <div class="form-group">
             <label class="form-label">Edad</label>
@@ -15119,22 +15119,30 @@ function _primaGuardadaActiva() {
   return _tcPrimerCicloActivo();   // con fecha: solo la congelada en primer ciclo
 }
 
-function calcDatosSPTI() {
+function calcDatosSPTI(origen) {
   // Calc age from fecha nac
   const fn = document.getElementById('vFechaNacSPTI').value;
   let edadNum = 0;
   if (fn) {
-    const nac = new Date(fn + 'T12:00:00');
-    const hoy = new Date();
-    edadNum = hoy.getFullYear() - nac.getFullYear();
-    const m = hoy.getMonth() - nac.getMonth();
-    if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edadNum--;
+    // FASE A.7: la edad de tarifa es la de la fecha de expedición (o la de la tarifa congelada), no la de hoy
     const _tcE = _tcPrimerCicloActivo();
-    if (_tcE && _tcE.ancla && window.MotorProducto && typeof window.MotorProducto.edadEnFecha === 'function') {
-      const _edadVenta = window.MotorProducto.edadEnFecha(fn, _tcE.ancla);
-      if (_edadVenta !== null) edadNum = _edadVenta;   // edad de venta, no la actual
+    const _fExp = (document.getElementById('vFechaExpSPTI') || {}).value || null;
+    const _ancla = (_tcE && _tcE.ancla) ? _tcE.ancla : _fExp;
+    const _edadAncla = (_ancla && window.MotorProducto && typeof window.MotorProducto.edadEnFecha === 'function')
+      ? window.MotorProducto.edadEnFecha(fn, _ancla) : null;
+    if (_edadAncla !== null && _edadAncla !== undefined) {
+      edadNum = _edadAncla;
+    } else {
+      const nac = new Date(fn + 'T12:00:00');
+      const hoy = new Date();
+      edadNum = hoy.getFullYear() - nac.getFullYear();
+      const m = hoy.getMonth() - nac.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edadNum--;
     }
     document.getElementById('vEdadSPTI').value = edadNum + ' años';
+    // FASE A.7: en EDICIÓN, cambiar la fecha de nacimiento solo actualiza la edad informativa.
+    // La prima guardada no se recalcula con la tabla de hoy.
+    if (_modoEdicion && origen === 'fechaNac') return;
   } else {
     // Parse from field in case user typed it manually
     edadNum = parseInt(document.getElementById('vEdadSPTI').value) || 0;
