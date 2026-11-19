@@ -44,18 +44,23 @@ t('póliza SPD de un asegurado pagada en 2025: 7 % sobre la base guardada (100.0
 });
 
 // --- comisión por asegurado SPTI, tasa del año de pago ---
+// Base guardada = tabla SIN IVA de 2025 (CLASICO 0-40 mensual = 134.826), opción A
 const GRUPO = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2025-03-10', asegurados: [
-  { fechaNac: '1985-03-10', primaTotalSinIVA: 140457 },
-  { fechaNac: '1990-06-01', primaTotalSinIVA: 140457 }
+  { fechaNac: '1985-03-10', primaTotalSinIVA: 134826 },
+  { fechaNac: '1990-06-01', primaTotalSinIVA: 134826 }
 ]};
-t('grupo SPTI pagado en 2025: cada asegurado 6 % y suma 16.854', () => {
+t('grupo SPTI pagado en 2025: cada asegurado 6 % y suma 16.180', () => {
   const r = E1.comisionPoliza(GRUPO, '2025-04-10');
   assert.strictEqual(r.estado, 'OK');
   assert.deepStrictEqual(r.comisionPorAsegurado.map(d => d.pct), [0.06, 0.06]);
-  assert.strictEqual(r.comision, 16854);
+  assert.strictEqual(r.comision, 16180);
 });
 t('grupo SPTI, primer ciclo pagado en 2026: cada asegurado 7 % y suma 19.664', () => {
-  const g26 = Object.assign({}, GRUPO, { fechaExp: '2026-01-10' });
+  // Primer ciclo 2026: la base guardada es la tabla SIN IVA de 2026 (CLASICO 0-40 mensual = 140.457)
+  const g26 = Object.assign({}, GRUPO, { fechaExp: '2026-01-10', asegurados: [
+    { fechaNac: '1985-03-10', primaTotalSinIVA: 140457 },
+    { fechaNac: '1990-06-01', primaTotalSinIVA: 140457 }
+  ]});
   const r = E1.comisionPoliza(g26, '2026-02-10');
   assert.strictEqual(r.estado, 'OK');
   assert.deepStrictEqual(r.comisionPorAsegurado.map(d => d.pct), [0.07, 0.07]);
