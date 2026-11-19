@@ -7341,6 +7341,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
           <!-- Botones acción -->
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-primary btn-sm" onclick="cotizadorImprimir()" style="background:var(--amber);"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9" /> <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /> <rect width="12" height="8" x="6" y="14" /></svg> Imprimir / PDF</button>
+<button class="btn btn-sm" onclick="abrirExportTarifas()" style="background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.35);">📊 Exportar plantilla de tarifas</button>
             <button class="btn btn-secondary btn-sm" onclick="cotizadorGuardar()"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /> <polyline points="17 21 17 13 7 13 7 21" /> <polyline points="7 3 7 8 15 8" /></svg> Guardar cotización</button>
             <button class="btn btn-sm" style="background:rgba(37,211,102,0.15);color:#25D366;border:1px solid rgba(37,211,102,0.35);" onclick="cotizadorCompartirWA()"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /> <path d="M12 18h.01" /></svg> Compartir WhatsApp</button>
             <button class="btn btn-sm" style="background:rgba(6,182,212,0.15);color:var(--teal);border:1px solid rgba(6,182,212,0.3);" onclick="cotizadorComparar()"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /> <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /> <path d="M7 21h10" /> <path d="M12 3v18" /> <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" /></svg> Comparar planes</button>
@@ -29400,6 +29401,185 @@ function cotizadorCompartirWA() {
   showToast('📱 Abriendo WhatsApp...');
 }
 
+// ── EXPORTAR PLANTILLA DE TARIFAS (SpreadsheetML · Excel 2003 XML, con bordes y colores) ──
+function _xmlEscT(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _pctT(n){ return Math.round(n*10000)/10000; }
+function _hojasTarifas(producto, anio){
+  const BC = window.BusinessConfig || {}, P = BC.pricing || {}, C = BC.constants || {};
+  const IVA = C.IVA_FACTOR || 1.05;
+  const reg = (P.TARIFAS_POR_ANIO && P.TARIFAS_POR_ANIO[anio]) || null;
+  const MES = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
+  const PER = ['MENSUAL','TRIMESTRAL','SEMESTRAL','ANUAL'];
+  const CAMPO = { MENSUAL:'mensual', TRIMESTRAL:'trimestre', SEMESTRAL:'semestre', ANUAL:'anual' };
+  const COLS_PERIODO = ['Producto / Plan','Rango de edad','Periodicidad','Valor sin IVA','IVA 5 %','Valor con IVA','Descuento (c/IVA)','% descuento'];
+  const FMT_PERIODO = ['txt','txt','txt','num','num','num','num','pct'];
+
+  if (producto === 'SPTI') {
+    const sinIva = anio === 2026 ? P.SPTI_SIN_IVA : (reg && reg.SPTI_SIN_IVA);
+    if (!sinIva) return null;
+    const con = P.computeSPTIConIVA(sinIva, IVA);
+    const filas = [];
+    ['PREFERENCIAL','CLASICO'].forEach(plan => {
+      ['0-40','41-50','51-59','60-70','71+'].forEach(r => {
+        const cel = con[plan] && con[plan][r]; if (!cel) return;
+        PER.forEach(per => {
+          const k = CAMPO[per]; if (cel[k] === undefined) return;
+          const sin = sinIva[plan][r][k];
+          const dK = { TRIMESTRAL:'dctoTrim', SEMESTRAL:'dctoSem', ANUAL:'dctoAnual' }[per];
+          const d = dK ? (cel[dK] || 0) : 0;
+          const base = cel.mensual * MES[per];
+          filas.push([plan + ' — ' + (plan==='PREFERENCIAL'?'Preferencial':'Clásico'), r + ' años', per.charAt(0)+per.slice(1).toLowerCase(),
+            sin, Math.round(cel[k]-sin), cel[k], d, base ? _pctT(d/base) : 0]);
+        });
+      });
+    });
+    return [{ titulo:'SPTI — Salud Para Todos · Tarifas ' + anio + ' · Venta nueva 0–59 años (rangos 60+ solo continuidad)',
+      bloques:[{ cols:COLS_PERIODO, fmt:FMT_PERIODO, filas }] }];
+  }
+
+  if (producto === 'SPD') {
+    const spd = anio === 2026 && P.TARIFAS_POR_ANIO && P.TARIFAS_POR_ANIO[2026] && P.TARIFAS_POR_ANIO[2026].SPD;
+    if (!spd) return null;
+    const filas = [];
+    const mensualCon = Math.round(spd.sinIVA.MENSUAL * IVA);
+    PER.forEach(per => {
+      const sin = spd.sinIVA[per]; const con = Math.round(sin * IVA);
+      const d = per === 'MENSUAL' ? 0 : Math.round(mensualCon * MES[per] - con);
+      const base = mensualCon * MES[per];
+      filas.push(['SPD — Salud Para Dos Plus', 'Tarifa única', per.charAt(0)+per.slice(1).toLowerCase(), sin, con - sin, con, d, base ? _pctT(d/base) : 0]);
+    });
+    return [{ titulo:'SPD — Salud Para Dos Plus · Tarifa ' + anio + ' (vigencia ' + spd.vigenciaDesde + ' a ' + spd.vigenciaHasta + ')',
+      bloques:[{ cols:COLS_PERIODO, fmt:FMT_PERIODO, filas }] }];
+  }
+
+  if (producto === 'PSM') {
+    if (anio !== 2026 || !P.PSM_TARIFAS) return null;
+    const T = P.PSM_TARIFAS, IV = P.PSM_IVA || IVA;
+    const rangos = ['0-14','15-20','21-25','26-30','31-40','41-45','46-50','51-55','56-59','60-65','66-70','71+'];
+    const filasMod = rangos.map(r => [r, T.basico[r], Math.round(T.basico[r]*IV), Math.round(T.emd[r]*IV), Math.round(T.altoCosto[r]*IV), Math.round(T.cirugia[r]*IV), Math.round(T.maternidad[r]*IV)]);
+    const filasPer = PER.map(per => [per.charAt(0)+per.slice(1).toLowerCase(), MES[per], P.PSM_DCTOS[per] || 0]);
+    return [{ titulo:'PSM — Plan Salud Modular · Tarifas ' + anio + ' · Mensual por rango y módulo (módulos se suman por persona)',
+      bloques:[
+        { titulo:'Tarifa mensual por rango de edad', cols:['Rango de edad','Básico (s/IVA)','Básico (c/IVA)','EMD (c/IVA)','Alto costo (c/IVA)','Cirugía (c/IVA)','Maternidad (c/IVA)'],
+          fmt:['txt','num','num','num','num','num','num'], filas:filasMod },
+        { titulo:'Descuento por periodicidad (aplica sobre el total del período)', cols:['Periodicidad','Meses','% descuento'],
+          fmt:['txt','txt','pct'], filas:filasPer }
+      ] }];
+  }
+
+  if (producto === 'PAC60') {
+    if (anio !== 2026 || !P.PAC60_TARIFAS) return null;
+    const filas = [];
+    ['60-69','70-79','80-89','90+'].forEach(r => {
+      const uso = (r==='60-69'||r==='70-79') ? 'Venta nueva' : 'Solo administrativo (renovación)';
+      [['sinAnexo','Sin anexo'],['conAnexo','Con anexo']].forEach(([k, lbl]) => {
+        PER.forEach(per => {
+          const con = P.PAC60_TARIFAS[r][k] * MES[per];      // tarifa mensual con IVA x meses
+          const dcto = Math.round(con * (P.PAC60_DCTOS[per] || 0));
+          const periodo = con - dcto;
+          const sin = Math.round(periodo / IVA);
+          filas.push(['Plan 60+ · ' + lbl, r + ' años · ' + uso, per.charAt(0)+per.slice(1).toLowerCase(), sin, periodo - sin, periodo, dcto, con ? _pctT(dcto/con) : 0]);
+        });
+      });
+    });
+    return [{ titulo:'PAC60 — Plan 60+ · Tarifas ' + anio + ' · Venta nueva solo 60–79 años (BR-015)',
+      bloques:[{ cols:COLS_PERIODO, fmt:FMT_PERIODO, filas }] }];
+  }
+  return null;
+}
+function _xmlTarifas(producto, anio, hojas){
+  const ST = `
+  <Style ss:ID="titulo"><Font ss:Bold="1" ss:Size="13" ss:Color="#FFFFFF"/><Interior ss:Color="#003087" ss:Pattern="Solid"/><Alignment ss:Vertical="Center"/></Style>
+  <Style ss:ID="bloque"><Font ss:Bold="1" ss:Size="11" ss:Color="#003087"/></Style>
+  <Style ss:ID="cab"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#1A4CE8" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>${BRD()}</Style>
+  <Style ss:ID="txt">${BRD()}</Style>
+  <Style ss:ID="txtZ"><Interior ss:Color="#EEF4FF" ss:Pattern="Solid"/>${BRD()}</Style>
+  <Style ss:ID="num"><NumberFormat ss:Format="#,##0"/><Alignment ss:Horizontal="Right"/>${BRD()}</Style>
+  <Style ss:ID="numZ"><NumberFormat ss:Format="#,##0"/><Alignment ss:Horizontal="Right"/><Interior ss:Color="#EEF4FF" ss:Pattern="Solid"/>${BRD()}</Style>
+  <Style ss:ID="pct"><NumberFormat ss:Format="0.00%"/><Alignment ss:Horizontal="Right"/>${BRD()}</Style>
+  <Style ss:ID="pctZ"><NumberFormat ss:Format="0.00%"/><Alignment ss:Horizontal="Right"/><Interior ss:Color="#EEF4FF" ss:Pattern="Solid"/>${BRD()}</Style>`;
+  function BRD(){ return ['Bottom','Left','Right','Top'].map(p => `<Border ss:Position="${p}" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#9FB3D9"/>`).join('').replace(/^/, '<Borders>') + '</Borders>'; }
+  const rowXml = (cells, h) => `<Row${h?` ss:Height="${h}"`:''}>${cells.join('')}</Row>`;
+  const cell = (val, style, merge) => {
+    const m = merge ? ` ss:MergeAcross="${merge}"` : '';
+    if (typeof val === 'number' && isFinite(val)) return `<Cell ss:StyleID="${style}"${m}><Data ss:Type="Number">${val}</Data></Cell>`;
+    return `<Cell ss:StyleID="${style}"${m}><Data ss:Type="String">${_xmlEscT(val)}</Data></Cell>`;
+  };
+  const ncols = Math.max(...hojas[0].bloques.map(b => b.cols.length), 8);
+  const cuerpo = [];
+  cuerpo.push(rowXml([cell(hojas[0].titulo, 'titulo', ncols-1)], 26));
+  cuerpo.push(rowXml([cell('Generado por el CRM · ' + new Date().toLocaleDateString('es-CO') + ' · Valores de la tabla vigente. Los descuentos ya están aplicados en el valor con IVA.', 'bloque')]));
+  hojas[0].bloques.forEach(b => {
+    cuerpo.push(rowXml([]));
+    if (b.titulo) cuerpo.push(rowXml([cell(b.titulo, 'bloque')]));
+    cuerpo.push(rowXml(b.cols.map(c => cell(c, 'cab')), 32));
+    b.filas.forEach((f, i) => {
+      const z = i % 2 === 1;
+      cuerpo.push(rowXml(f.map((v, j) => {
+        const kind = b.fmt[j];
+        const st = kind === 'num' ? (z?'numZ':'num') : kind === 'pct' ? (z?'pctZ':'pct') : (z?'txtZ':'txt');
+        return cell(v, st);
+      })));
+    });
+  });
+  const hoja = `<Worksheet ss:Name="${_xmlEscT(producto)}"><Table>${cuerpo.join('')}</Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><PageSetup><Layout x:Orientation="Landscape"/></PageSetup><FitToPage/><Print><FitHeight>0</FitHeight></Print><Selected/><FreezePanes/><FrozenNoSplit/><SplitHorizontal>3</SplitHorizontal><TopRowBottomPane>3</TopRowBottomPane></WorksheetOptions></Worksheet>`;
+  return `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">
+<Styles>${ST}
+</Styles>
+${hoja}
+</Workbook>`;
+}
+function abrirExportTarifas(){
+  if (!document.getElementById('modalExportTarifas')) {
+    document.body.insertAdjacentHTML('beforeend', `
+<div class="modal-overlay" id="modalExportTarifas">
+  <div class="modal-content" style="max-width:440px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Exportar plantilla de tarifas</h3>
+      <button class="modal-close" onclick="closeModal('modalExportTarifas')">×</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Producto</label>
+      <select class="form-control" id="expTarifasProd">
+        <option value="SPTI">SPTI — Salud Para Todos</option>
+        <option value="SPD">SPD — Salud Para Dos Plus</option>
+        <option value="PSM">PSM — Plan Salud Modular</option>
+        <option value="PAC60">PAC60 — Plan 60+</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Año de tarifas</label>
+      <select class="form-control" id="expTarifasAnio">
+        <option value="2026">2026 (vigente)</option>
+        <option value="2025">2025 (solo SPTI)</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalExportTarifas')">Cancelar</button>
+      <button class="btn btn-primary" onclick="generarExportTarifas()">📊 Generar Excel</button>
+    </div>
+  </div>
+</div>`);
+  }
+  openModal('modalExportTarifas');
+}
+function generarExportTarifas(){
+  const prod = document.getElementById('expTarifasProd').value;
+  const anio = parseInt(document.getElementById('expTarifasAnio').value, 10);
+  const hojas = _hojasTarifas(prod, anio);
+  if (!hojas) { alert('No hay tabla de ' + prod + ' para ' + anio + '.'); return; }
+  const blob = new Blob([_xmlTarifas(prod, anio, hojas)], { type: 'application/vnd.ms-excel' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Plantilla_Tarifas_' + prod + '_' + anio + '.xml';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  closeModal('modalExportTarifas');
+}
+
 function cotizadorImprimir() {
   const nombre = document.getElementById('cNombre')?.value || 'Cliente';
   // Calcular total usando primaCalc guardado como fallback (cubre cotizaciones web)
@@ -29757,75 +29937,6 @@ body{font-family:Arial,sans-serif;color:#1f2937;background:#fff;font-size:13px;}
 </div>
 <script>window.onload=function(){window.print();}<\/script>
 
-<!-- ═══════════════════════════════════════════════════════
-     MODAL PIPELINE EMPRESA
-═══════════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="modalPipEmp">
-  <div class="modal-content" style="max-width:560px;">
-    <div class="modal-header">
-      <h3 class="modal-title"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></svg> Oportunidad de Empresa</h3>
-      <button class="modal-close" onclick="closeModal('modalPipEmp')">×</button>
-    </div>
-    <input type="hidden" id="pipEmpModalId">
-    <div class="form-grid" style="grid-template-columns:1fr 1fr;">
-      <div class="form-group" style="grid-column:1/-1;">
-        <label class="form-label">Empresa *</label>
-        <input type="text" class="form-control" id="pipEmpNombre" placeholder="Nombre de la empresa" oninput="pipEmpAutocompletar()" autocomplete="off">
-        <div id="pipEmpSugerencias" style="display:none;position:absolute;z-index:200;background:var(--surface);border:1px solid var(--border);border-radius:8px;width:100%;max-height:180px;overflow-y:auto;margin-top:2px;"></div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">NIT</label>
-        <input type="text" class="form-control" id="pipEmpNIT" placeholder="NIT de la empresa">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Ciudad</label>
-        <input type="text" class="form-control" id="pipEmpCiudad" placeholder="Ciudad">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Producto objetivo *</label>
-        <select class="form-control" id="pipEmpProducto">
-          <option value="">— Selecciona —</option>
-          <option value="PBS">PBS</option>
-          <option value="SPTI">SPTI</option>
-          <option value="SPD">SPD Plus</option>
-          <option value="PSM">Modular</option>
-          <option value="PAC60">60+</option>
-          <option value="VARIOS">Varios productos</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Etapa</label>
-        <select class="form-control" id="pipEmpEtapa">
-          <option value="prospecto">Prospecto</option>
-          <option value="contactado">Contactado</option>
-          <option value="cotizacion">Cotización enviada</option>
-          <option value="negociacion">En negociación</option>
-          <option value="ganada">Ganada </option>
-          <option value="perdida">Perdida </option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Prima estimada mensual ($)</label>
-        <input type="number" class="form-control" id="pipEmpPrima" placeholder="Ej: 5000000" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Próximo seguimiento</label>
-        <input type="date" class="form-control" id="pipEmpProxContacto">
-      </div>
-      <div class="form-group" style="grid-column:1/-1;">
-        <label class="form-label">Contacto en la empresa</label>
-        <input type="text" class="form-control" id="pipEmpContacto" placeholder="Nombre · Cargo · Teléfono">
-      </div>
-      <div class="form-group" style="grid-column:1/-1;">
-        <label class="form-label">Nota / último contacto</label>
-        <input type="text" class="form-control" id="pipEmpNota" placeholder="Ej: Reunión agendada, esperan propuesta formal">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalPipEmp')">Cancelar</button>
-      <button class="btn btn-primary" onclick="pipEmpGuardar()">💾 Guardar Oportunidad</button>
-    </div>
-  </div>
 </div>
 </body></html>`;
   const w = window.open('', '_blank'); w.document.write(html); w.document.close();
