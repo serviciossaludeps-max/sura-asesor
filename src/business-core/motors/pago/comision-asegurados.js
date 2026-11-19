@@ -79,7 +79,7 @@
       if (!base) return bloqueado('TARIFA_NO_RESUELTA');
     }
 
-    const pct = mpago.calcularPorcentajeComision('SPD');
+    const pct = mpago.calcularPorcentajeComision('SPD', null, fechaPago || new Date());   // tasa del año de pago
     if (pct === null || pct === undefined) return bloqueado('PORCENTAJE_NO_DISPONIBLE');
     const detalle = [{
       rol: 'POLIZA', edadReferencia: null, fechaReferencia, ciclo, base, fuenteBase, pct,
