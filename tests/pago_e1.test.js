@@ -58,12 +58,23 @@ t('Bloquea con fecha de pago inválida (30 de febrero)', () => {
 });
 
 // ---------- Comisión por asegurado (I-2 + C-1) ----------
-t('SPTI ciclo 0 con bases guardadas: dos asegurados suman 19.664 (caso Angie sintético)', () => {
+// Tasa SPTI por AÑO DE PAGO: 6 % en 2024–2025, 7 % en 2026 (OP MotorPago).
+t('SPTI ciclo 0 con bases guardadas: dos asegurados, pago 2025 (6 %) suman 16.854', () => {
   const p = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2025-03-10', asegurados: [
     { fechaNac: '1985-03-10', primaTotalSinIVA: 140457 },
     { fechaNac: '1990-06-01', primaTotalSinIVA: 140457 }
   ]};
   const r = C(p, '2025-04-10');
+  assert.strictEqual(r.estado, 'OK');
+  assert.strictEqual(r.comision, 16854);
+  assert.deepStrictEqual(r.comisionPorAsegurado.map(d => d.comision), [8427, 8427]);
+});
+t('SPTI ciclo 0 con bases guardadas: dos asegurados, pago 2026 en primer ciclo (7 %) suman 19.664 (caso Angie sintético)', () => {
+  const p = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2026-01-10', asegurados: [
+    { fechaNac: '1985-03-10', primaTotalSinIVA: 140457 },
+    { fechaNac: '1990-06-01', primaTotalSinIVA: 140457 }
+  ]};
+  const r = C(p, '2026-02-10');
   assert.strictEqual(r.estado, 'OK');
   assert.strictEqual(r.comision, 19664);
   assert.deepStrictEqual(r.comisionPorAsegurado.map(d => d.comision), [9832, 9832]);
