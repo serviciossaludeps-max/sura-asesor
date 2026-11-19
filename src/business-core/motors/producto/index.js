@@ -216,6 +216,20 @@
       for (const a of p.asegurados) {
         if (!a.rangoEdad || T.basico[a.rangoEdad] === undefined) return null;
         totalMensual += T.basico[a.rangoEdad] * IVA;
+        // Módulos de este asegurado (opcional). Sin 'modulos' se conserva el comportamiento anterior: solo básico.
+        if (Array.isArray(a.modulos)) {
+          const m = a.modulos.map(String);
+          const sumar = (tabla, cond) => {
+            if (!cond) return true;
+            if (!tabla || tabla[a.rangoEdad] === undefined) return false;
+            totalMensual += tabla[a.rangoEdad] * IVA;
+            return true;
+          };
+          if (!sumar(T.emd, m.includes('Atención Domiciliaria') || m.includes('EMD'))) return null;
+          if (!sumar(T.altoCosto, m.includes('Alto Costo'))) return null;
+          if (!sumar(T.cirugia, m.includes('Cirugía Ambulatoria'))) return null;
+          if (!sumar(T.maternidad, m.includes('Maternidad'))) return null;
+        }
       }
     }
 
