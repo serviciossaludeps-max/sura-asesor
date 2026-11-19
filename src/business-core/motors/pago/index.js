@@ -65,12 +65,12 @@
       if (!e || e <= 0) return null; // sin edad no se puede aplicar BR-016 — no adivinar
       return e <= 50 ? 0.12 : 0.06;
     }
-    // SPTI: la tasa depende del AÑO DE PAGO (6 % en 2024–2025, 7 % en 2026).
+    // SPTI y SPD: la tasa depende del AÑO DE PAGO (SPTI 6 %/7 %; SPD 7 %/8 %).
     // Sin fecha de pago se conserva el comportamiento anterior (COM_PCT).
     // Para un año sin tasa definida devuelve null: no se inventa un porcentaje.
-    if (producto === 'SPTI' && commissions.COM_PCT_SPTI_POR_ANIO && fechaPago) {
+    if ((producto === 'SPTI' || producto === 'SPD') && commissions.COM_PCT_POR_ANIO && commissions.COM_PCT_POR_ANIO[producto] && fechaPago) {
       const anio = fechaPago instanceof Date ? fechaPago.getFullYear() : parseInt(String(fechaPago).slice(0, 4), 10);
-      const tasa = commissions.COM_PCT_SPTI_POR_ANIO[anio];
+      const tasa = commissions.COM_PCT_POR_ANIO[producto][anio];
       return tasa === undefined ? null : tasa;
     }
     return commissions.COM_PCT[producto] ?? null;
