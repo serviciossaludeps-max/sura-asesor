@@ -15119,6 +15119,11 @@ function _primaGuardadaActiva() {
   return _tcPrimerCicloActivo();   // con fecha: solo la congelada en primer ciclo
 }
 
+// OP-2 · valor del período elegido (la prima base de una venta no mensual es el valor del período, no el mensual)
+function _valorPeriodoSPTI(tarifa, per) {
+  const k = { MENSUAL: 'mensual', TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' }[per] || 'mensual';
+  return Number(tarifa && tarifa[k]) || 0;
+}
 function calcDatosSPTI(origen) {
   // Calc age from fecha nac
   const fn = document.getElementById('vFechaNacSPTI').value;
@@ -15195,14 +15200,18 @@ function calcDatosSPTI(origen) {
   const _tcT = _primaGuardadaActiva();
   if (_tcT) {
     const _m = _tcT.prima;
-    tarifa = { mensual: _m, trimestre: Math.round(_m * 3), dctoTrim: 0, semestre: Math.round(_m * 6), dctoSem: 0, anual: Math.round(_m * 12), dctoAnual: 0 };
+    // OP-2: la prima pactada es el valor del período (no se multiplica por meses); conserva su descuento
+    const _kP = { MENSUAL: 'mensual', TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' }[periodicidad] || 'mensual';
+    const _dK = { trimestre: 'dctoTrim', semestre: 'dctoSem', anual: 'dctoAnual' }[_kP];
+    tarifa = Object.assign({}, tarifa, { [_kP]: _m });
+    if (_dK) tarifa[_dK] = Number(_tcT.dcto) || 0;
   }
 
   // Set prima base solo si no fue editada manualmente
   const primaBaseEl = document.getElementById('vPrimaBaseSPTI');
   if (!primaBaseEl.dataset.editado || _primaGuardadaActiva()) {
     _sptiSetProgramatico = true;          // bloquear listener antes de setear
-    primaBaseEl.value = tarifa.mensual;
+    primaBaseEl.value = _valorPeriodoSPTI(tarifa, periodicidad);   // OP-2
     _sptiSetProgramatico = false;         // restaurar después
   }
 
@@ -15266,7 +15275,7 @@ function calcTotalSPTI() {
     // Fallback: multiply prima base × months
     const primaBase = parseFloat(document.getElementById('vPrimaBaseSPTI').value) || 0;
     const meses = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
-    const total = primaBase * (meses[periodicidad] || 1);
+    const total = primaBase;   // OP-2: la prima base es el valor del período
     document.getElementById('vPrimaTotalSPTI').value = fmt(total);
     document.getElementById('vDctoSPTI').value = periodicidad === 'MENSUAL' ? 'Sin descuento' : '(selecciona plan y edad)';
   }
@@ -15292,7 +15301,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Sin tarifa — calcular total simple sin descuento
       const primaBase = parseFloat(el.value) || 0;
       const meses = { MENSUAL:1, TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 };
-      document.getElementById('vPrimaTotalSPTI').value = fmt(primaBase * (meses[per]||1));
+      document.getElementById('vPrimaTotalSPTI').value = fmt(primaBase);   // OP-2
       document.getElementById('vDctoSPTI').value = per === 'MENSUAL' ? 'Sin descuento' : '(selecciona plan y edad)';
     }
   });
