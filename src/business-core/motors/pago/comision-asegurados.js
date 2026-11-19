@@ -109,6 +109,26 @@
   }
 
   // ---------- Póliza con asegurados (SPTI, PSM, PAC60) ----------
+  // Opción A (decisión del PO): en SPTI, la base guardada del primer ciclo debe coincidir con la tabla SIN IVA
+  // de la fecha de referencia (tolerancia 1 peso por redondeo). Enero 2026 admite también la tabla 2025 (oferta).
+  // Si no coincide, la comisión queda BLOQUEADA: no se calcula con un valor que puede ser la prima con IVA.
+  function validarBaseGuardadaSPTI(poliza, r, guardada, mp) {
+    const campo = { MENSUAL: 'mensual', TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' }[poliza.periodicidad];
+    const rango = mp.getRangoEdadSPTI(r.edad);
+    const anios = [anioDe(r.fechaReferencia)];
+    if (/^2026-01-/.test(String(r.fechaReferencia))) anios.push(2025);
+    const esperados = [];
+    anios.forEach(an => {
+      const tb = mp.tablasDelAnio(an);
+      const celda = tb && tb.SPTI_SIN_IVA && tb.SPTI_SIN_IVA[poliza.plan] && tb.SPTI_SIN_IVA[poliza.plan][rango];
+      const v = celda && campo ? celda[campo] : undefined;
+      if (v > 0) esperados.push(v);
+    });
+    if (!esperados.length) return { ok: false, motivo: 'TABLA_NO_DISPONIBLE', guardada, rango };
+    if (esperados.some(v => Math.abs(guardada - v) <= 1)) return { ok: true };
+    return { ok: false, motivo: 'NO_COINCIDE_TABLA_SIN_IVA', guardada, esperados, rango };
+  }
+
   function comisionPoliza(poliza, fechaPago) {
     const mpago = global.MotorPago;
     const mp = global.MotorProducto;
@@ -138,6 +158,12 @@
         // Primer ciclo: prima guardada al vender (F-3). Póliza de un asegurado puede usar la del grupo.
         const guardada = a.primaTotalSinIVA || (aseg.length === 1 ? poliza.primaTotalSinIVA : 0) || 0;
         if (guardada > 0) {
+          if (poliza.producto === 'SPTI') {
+            if (!poliza.plan) return bloqueado('FALTA_PLAN', { rol });
+            if (!poliza.periodicidad) return bloqueado('FALTA_PERIODICIDAD', { rol });
+            const v = validarBaseGuardadaSPTI(poliza, r, guardada, mp);
+            if (!v.ok) return bloqueado('BASE_GUARDADA_INCONSISTENTE', { rol, detalle: v });
+          }
           base = guardada; fuenteBase = 'GUARDADO';
         } else if (poliza.producto === 'SPTI') {
           if (!poliza.plan) return bloqueado('FALTA_PLAN', { rol });
