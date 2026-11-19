@@ -53,9 +53,10 @@
    *
    * @param {string} producto - 'SPTI' | 'SPD' | 'PSM' | 'PAC60'
    * @param {number|string} [edad] - requerida solo para PSM
+   * @param {string|Date} [fechaPago] - solo SPTI: la tasa es la del año de pago
    * @returns {number} porcentaje (ej. 0.07), o null si no se puede calcular
    */
-  function calcularPorcentajeComision(producto, edad) {
+  function calcularPorcentajeComision(producto, edad, fechaPago) {
     const commissions = _commissions();
     if (!commissions || !commissions.COM_PCT) return null;
 
@@ -63,6 +64,14 @@
       const e = parseInt(edad);
       if (!e || e <= 0) return null; // sin edad no se puede aplicar BR-016 — no adivinar
       return e <= 50 ? 0.12 : 0.06;
+    }
+    // SPTI: la tasa depende del AÑO DE PAGO (6 % en 2024–2025, 7 % en 2026).
+    // Sin fecha de pago se conserva el comportamiento anterior (COM_PCT).
+    // Para un año sin tasa definida devuelve null: no se inventa un porcentaje.
+    if (producto === 'SPTI' && commissions.COM_PCT_SPTI_POR_ANIO && fechaPago) {
+      const anio = fechaPago instanceof Date ? fechaPago.getFullYear() : parseInt(String(fechaPago).slice(0, 4), 10);
+      const tasa = commissions.COM_PCT_SPTI_POR_ANIO[anio];
+      return tasa === undefined ? null : tasa;
     }
     return commissions.COM_PCT[producto] ?? null;
   }
