@@ -33,7 +33,15 @@ t('PSM no cambia por la fecha: 40 años 12 %, 55 años 6 % (BR-016)', () => {
   assert.strictEqual(MPago.calcularPorcentajeComision('PSM', 55, '2025-05-01'), 0.06);
 });
 t('PAC60 no cambia por la fecha: 5 %', () => assert.strictEqual(MPago.calcularPorcentajeComision('PAC60', 65, '2025-05-01'), 0.05));
-t('SPD no cambia por la fecha: 8 %', () => assert.strictEqual(MPago.calcularPorcentajeComision('SPD', null, '2025-05-01'), 0.08));
+t('SPD pagado en 2025 -> 7 %', () => assert.strictEqual(MPago.calcularPorcentajeComision('SPD', null, '2025-05-01'), 0.07));
+t('SPD pagado en 2026 -> 8 %', () => assert.strictEqual(MPago.calcularPorcentajeComision('SPD', null, '2026-05-01'), 0.08));
+t('SPD sin fecha de pago conserva 8 % (compatibilidad)', () => assert.strictEqual(MPago.calcularPorcentajeComision('SPD', null), 0.08));
+t('SPD pagado en un año sin tasa -> null', () => assert.strictEqual(MPago.calcularPorcentajeComision('SPD', null, '2024-05-01'), null));
+t('póliza SPD de un asegurado pagada en 2025: 7 % sobre la base guardada (100.000 -> 7.000)', () => {
+  const r = E1.comisionPoliza({ producto: 'SPD', periodicidad: 'MENSUAL', fechaExp: '2025-03-10', primaTotalSinIVA: 100000 }, '2025-04-10');
+  assert.strictEqual(r.estado, 'OK');
+  assert.strictEqual(r.comision, 7000);
+});
 
 // --- comisión por asegurado SPTI, tasa del año de pago ---
 const GRUPO = { producto: 'SPTI', plan: 'CLASICO', periodicidad: 'MENSUAL', fechaExp: '2025-03-10', asegurados: [
