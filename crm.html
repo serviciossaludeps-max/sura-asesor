@@ -12592,6 +12592,8 @@ function calcVolComisionVenta(v) {
     }
   }
 
+  const _gS = _baseSinIVAGrupoSPTI(v);   // OP-3: grupo SPTI (suma por asegurado)
+  if (_gS) baseSinIVA = _gS;
   // For SPD or SPTI without table match: use stored primaTotalSinIVA if > 1000 (valid), else approximate
   if (!baseSinIVA) {
     const stored = v.primaTotalSinIVA || 0;
@@ -12611,7 +12613,29 @@ function calcVolComisionVenta(v) {
   return Math.round(baseSinIVA * pct);
 }
 
+// OP-3 · base sin IVA del GRUPO SPTI (titular + adicionales) para el período de la venta.
+// Cada persona aporta su tabla según su edad (fecha de nacimiento a la fecha de referencia del ciclo).
+// Sin adicionales devuelve null y se usa el cálculo de siempre.
+function _baseSinIVAGrupoSPTI(v) {
+  if (!v || v.producto !== 'SPTI' || !v.plan || !v.periodicidad) return null;
+  const adis = _aseguradosGrupo(v);
+  if (!adis.length) return null;
+  const campo = { MENSUAL: 'mensual', TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' }[v.periodicidad] || 'mensual';
+  const opts = _optsTarifa(v, null);
+  const personas = [{ fechaNac: v.fechaNac, edad: v.edad }].concat(adis.map(a => ({ fechaNac: a.fechaNac, edad: a.edad })));
+  let total = 0;
+  for (const p of personas) {
+    const ed = _edadParaCalculo(p.fechaNac, opts) ?? p.edad;
+    const rango = getRangoEdadSPTI(parseInt(ed, 10));
+    const t = rango && SPTI_SIN_IVA[v.plan] && SPTI_SIN_IVA[v.plan][rango];
+    if (!t || t[campo] === undefined || t[campo] === null) return null;
+    total += t[campo];
+  }
+  return total;
+}
 function getSinIVABase(v) {
+  const _gS = _baseSinIVAGrupoSPTI(v);   // OP-3: grupo SPTI
+  if (_gS) return _gS;
   if (v.producto === 'SPTI' && v.plan && v.periodicidad) {
     const rangoEdad = getRangoEdadSPTI(parseInt(v.edad));
     if (rangoEdad && SPTI_SIN_IVA[v.plan] && SPTI_SIN_IVA[v.plan][rangoEdad]) {
