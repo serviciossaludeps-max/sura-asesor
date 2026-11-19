@@ -3197,6 +3197,7 @@
           <button class="tab-pill" onclick="setComTab('total',this)"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /> <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /> <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg> Resumen Total</button>
           <button class="tab-pill" onclick="setComTab('proyeccion',this)"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /> <polyline points="16 7 22 7 22 13" /></svg> Proyección</button>
           <button class="tab-pill" onclick="setComTab('pagomes',this)" style="background:rgba(200,229,43,0.08);border-color:rgba(200,229,43,0.3);color:var(--sura-lime);"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4" /> <path d="M16 2v4" /> <rect width="18" height="18" x="3" y="4" rx="2" /> <path d="M3 10h18" /> <path d="M8 14h.01" /> <path d="M12 14h.01" /> <path d="M16 14h.01" /> <path d="M8 18h.01" /> <path d="M12 18h.01" /> <path d="M16 18h.01" /></svg> Pago del Mes</button>
+<button class="tab-pill" onclick="setComTab('ajustes',this)">Ajustes pendientes</button>
         </div>
 
         <!-- ── PBS TAB ── -->
@@ -3395,6 +3396,13 @@
         </div>
 
         <!-- ── PAGO DEL MES TAB ── -->
+<div id="comTabAjustes" style="display:none;">
+  <div class="card" style="padding:16px;">
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Ajustes de comisión pendientes de liquidación (solo lectura). Un valor negativo es un descuento en la próxima liquidación.</div>
+    <div id="comAjustesResumen" style="font-size:14px;font-weight:600;margin-bottom:10px;"></div>
+    <div id="comAjustesTabla" style="overflow-x:auto;"></div>
+  </div>
+</div>
         <div id="comTabPagomes" style="display:none;">
 
           <!-- Selector de mes proyectado -->
@@ -12556,18 +12564,55 @@ function renderCampanas() {
 // =============================================
 // COMISIONES — TAB SWITCHER
 // =============================================
+// Ajustes de comisión pendientes de liquidación (solo lectura)
+function renderAjustesPendientes() {
+  const esc = (x) => String(x == null ? '' : x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmtPeso = (n) => (n < 0 ? '−' : '') + '$' + Math.abs(Math.round(Number(n) || 0)).toLocaleString('es-CO');
+  const filas = [];
+  ((getState() || {}).ventas || []).forEach(v => (v.ajustesComision || []).forEach(a => {
+    if (a && a.estado === 'PENDIENTE_LIQUIDACION') filas.push({ v, a });
+  }));
+  filas.sort((x, y) => String(x.a.creadoEn || '').localeCompare(String(y.a.creadoEn || '')));
+  const total = filas.reduce((s, f) => s + (Number(f.a.diferencia) || 0), 0);
+  const res = document.getElementById('comAjustesResumen');
+  if (res) res.textContent = filas.length
+    ? filas.length + ' ajuste(s) pendiente(s) · total ' + fmtPeso(total)
+    : 'No hay ajustes pendientes de liquidación.';
+  const cont = document.getElementById('comAjustesTabla');
+  if (!cont) return;
+  if (!filas.length) { cont.innerHTML = ''; return; }
+  const th = 'style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-muted);"';
+  const td = 'style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:13px;"';
+  const tdn = 'style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:13px;text-align:right;font-family:var(--mono);"';
+  cont.innerHTML = '<table style="width:100%;border-collapse:collapse;">'
+    + '<thead><tr><th ' + th + '>Póliza</th><th ' + th + '>Producto</th><th ' + th + '>Asegurado</th>'
+    + '<th ' + th + ' style="text-align:right;">Comisión pagada</th><th ' + th + ' style="text-align:right;">Comisión correcta</th>'
+    + '<th ' + th + ' style="text-align:right;">Diferencia</th><th ' + th + '>Creado</th><th ' + th + '>Motivo</th></tr></thead><tbody>'
+    + filas.map(f => '<tr>'
+      + '<td ' + td + '>' + esc(f.v.poliza || '—') + '</td>'
+      + '<td ' + td + '>' + esc(f.v.producto || '—') + '</td>'
+      + '<td ' + td + '>' + esc(f.v.nombre || '—') + '</td>'
+      + '<td ' + tdn + '>' + fmtPeso(f.a.comisionPagada) + '</td>'
+      + '<td ' + tdn + '>' + fmtPeso(f.a.comisionCorrecta) + '</td>'
+      + '<td ' + tdn + '>' + fmtPeso(f.a.diferencia) + '</td>'
+      + '<td ' + td + '>' + esc(String(f.a.creadoEn || '').slice(0, 10)) + '</td>'
+      + '<td ' + td + '>' + esc(f.a.motivo || '—') + '</td>'
+      + '</tr>').join('')
+    + '</tbody></table>';
+}
 function setComTab(tab, btn) {
-  ['PBS','Vol','Total','Proyeccion','Pagomes'].forEach(t => {
+  ['PBS','Vol','Total','Proyeccion','Pagomes','Ajustes'].forEach(t => {
     const el = document.getElementById(`comTab${t}`);
     if (el) el.style.display = 'none';
   });
-  const map = { pbs: 'PBS', voluntarios: 'Vol', total: 'Total', proyeccion: 'Proyeccion', pagomes: 'Pagomes' };
+  const map = { pbs: 'PBS', voluntarios: 'Vol', total: 'Total', proyeccion: 'Proyeccion', pagomes: 'Pagomes', ajustes: 'Ajustes' };
   const show = document.getElementById(`comTab${map[tab] || 'PBS'}`);
   if (show) show.style.display = '';
   document.querySelectorAll('#page-comisiones .tab-pill').forEach(p => p.classList.remove('active'));
   if (btn) btn.classList.add('active');
   if (tab === 'voluntarios') renderVolComisiones();
   if (tab === 'total') renderTotalComisiones();
+  if (tab === 'ajustes') renderAjustesPendientes();
   if (tab === 'proyeccion') renderProyeccionComisiones();
   if (tab === 'pagomes') renderPagoMes();
 }
