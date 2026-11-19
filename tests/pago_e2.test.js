@@ -50,9 +50,11 @@ t('Sombra Luisa: con tabla 2025 coincide (10.721); sin ella, no evaluable por ta
   if (tablas2025) assert.deepStrictEqual(filas.map(f => f.resultado), ['COINCIDE', 'COINCIDE', 'COINCIDE']);
   else assert.ok(filas.every(f => f.resultado === 'NO_EVALUABLE' && f.motivo === 'TABLA_ANIO_NO_DISPONIBLE'));
 });
-t('Sombra SPD: pago igual coincide; pago distinto queda como DIFERENCIA de 500', () => {
+// SPD pagado en 2025 = 7 % (regla por año de pago). El CRM registró 8 % (8.000) y 7,5 % (7.500):
+// ambos pagos quedan como DIFERENCIA y deben clasificarse (A/C/D). Antes el motor usaba 8 % y los daba como correctos.
+t('Sombra SPD 2025: el CRM registró 8.000 y 7.500; el motor (7 %) da 7.000: dos DIFERENCIAS', () => {
   const filas = S.evaluarVenta(VENTA_SPD);
-  assert.deepStrictEqual([filas[0].resultado, filas[1].resultado, filas[1].diferencia], ['COINCIDE', 'DIFERENCIA', 500]);
+  assert.deepStrictEqual([filas[0].resultado, filas[0].diferencia, filas[1].resultado, filas[1].diferencia], ['DIFERENCIA', -1000, 'DIFERENCIA', -500]);
 });
 t('Sombra: sin fecha de nacimiento es NO_EVALUABLE (no se estima)', () => {
   const f = S.evaluarVenta(VENTA_SIN_NACIMIENTO)[0];
@@ -70,8 +72,8 @@ t('Resumen: cuenta por resultado y deja las diferencias para clasificar', () => 
   const filas = EXPORT.ventas.flatMap(v => S.evaluarVenta(v));
   const r = S.resumir(filas);
   assert.strictEqual(r.total, filas.length);
-  assert.strictEqual(r.DIFERENCIA, 1);
-  assert.strictEqual(r.porClasificar, 1);
+  assert.strictEqual(r.DIFERENCIA, 2);   // SPD 2025: dos pagos registrados a otra tasa
+  assert.strictEqual(r.porClasificar, 2);
   assert.strictEqual(r.criterioSinDiferenciasSinClasificar, false);
   assert.ok(r.noEvaluablePorMotivo.FALTA_FECHA_NACIMIENTO >= 1);
 });
@@ -89,3 +91,5 @@ t('Adaptador: importada toma el periodo SURA; venta con adicionales no asume pri
 
 console.log(`\nResultado: ${pass} PASS · ${fail} FAIL`);
 process.exit(fail ? 1 : 0);
+
+
