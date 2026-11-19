@@ -15,6 +15,9 @@ window.BusinessConfig = window.BusinessConfig || {};
 
 window.BusinessConfig.commissions = {
   COM_PCT: { SPTI: 0.07, SPD: 0.08, PSM: 0.12, PAC60: 0.05 },
-  // Tasa SPTI según el año de pago (OP MotorPago). Años no listados: sin tasa.
-  COM_PCT_SPTI_POR_ANIO: { 2024: 0.06, 2025: 0.06, 2026: 0.07 }
+  // Tasa según el AÑO DE PAGO (SPTI y SPD). Años no listados: sin tasa (no se inventa).
+  COM_PCT_POR_ANIO: {
+    SPTI: { 2024: 0.06, 2025: 0.06, 2026: 0.07 },
+    SPD:  { 2025: 0.07, 2026: 0.08 }
+  }
 };
