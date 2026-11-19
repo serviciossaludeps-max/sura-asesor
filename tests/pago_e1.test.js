@@ -218,10 +218,10 @@ t('PAC60 ciclo 1 con varios asegurados: cada uno con su anexo (17.067 + 18.438)'
 });
 
 // ---------- E1b: SPD (una tarifa, sin regla de asegurados) ----------
-t('SPD ciclo 0: una comisión de la póliza sobre la prima guardada (8 %)', () => {
+t('SPD ciclo 0, pago 2025: 7 % sobre la prima guardada (100.000 -> 7.000)', () => {
   const p = { producto: 'SPD', periodicidad: 'MENSUAL', fechaExp: '2025-05-10', primaTotalSinIVA: 100000, asegurados: [{}] };
   const r = C(p, '2025-06-10');
-  assert.deepStrictEqual([r.estado, r.comision, r.comisionPorAsegurado.length], ['OK', 8000, 1]);
+  assert.deepStrictEqual([r.estado, r.comision, r.comisionPorAsegurado.length], ['OK', 7000, 1]);
 });
 t('SPD ciclo 1 con tabla 2026 vigente = 7.366 (92.070 × 8 %)', () => {
   const p = { producto: 'SPD', periodicidad: 'MENSUAL', fechaExp: '2025-05-10', primaTotalSinIVA: 100000, asegurados: [{}] };
