@@ -78,5 +78,17 @@ assertEq('PSM edad negativa (sin rango válido) -> null', MP.calcularPrecioPSM({
 assertEq('PSM con asegurado sin rangoEdad -> null', MP.calcularPrecioPSM({ edad: 35, periodicidad: 'MENSUAL', asegurados: [{}] }), null);
 assertEq('SPTI plan inexistente -> null', MP.calcularPrecioSPTI({ plan: 'INEXISTENTE', edad: 30, periodicidad: 'MENSUAL' }), null);
 
+console.log('\n--- PSM: módulos por asegurado adicional (fix N-PSM-ADI) ---');
+const _psmTit = { edad: 35, periodicidad: 'MENSUAL' };
+const _sinMod = MP.calcularPrecioPSM({ ..._psmTit, asegurados: [{ rangoEdad: '0-14' }] });
+const _conEmd = MP.calcularPrecioPSM({ ..._psmTit, asegurados: [{ rangoEdad: '0-14', modulos: ['Básico', 'Atención Domiciliaria'] }] });
+const _emdEsperado = 21771 * 1.05; // EMD 0-14 con IVA
+assertEq('adicional sin modulos -> igual al comportamiento anterior (solo básico)',
+  MP.calcularPrecioPSM({ ..._psmTit, asegurados: [{ rangoEdad: '0-14', modulos: ['Básico'] }] }).valor, _sinMod.valor);
+assertEq('adicional con EMD suma el EMD de su rango (+-1 por redondeo)',
+  Math.abs((_conEmd.valor - _sinMod.valor) - _emdEsperado) <= 1, true);
+assertEq('adicional con modulo sin tabla en su rango -> null',
+  MP.calcularPrecioPSM({ ..._psmTit, asegurados: [{ rangoEdad: 'NO-EXISTE', modulos: ['Atención Domiciliaria'] }] }), null);
+
 console.log(`\n${fallos === 0 ? '✅' : '❌'} ${total - fallos}/${total} pruebas pasaron` + (fallos ? ` — ${fallos} FALLO(S)` : ''));
 process.exit(fallos === 0 ? 0 : 1);
