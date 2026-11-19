@@ -798,65 +798,56 @@
   /* Highlight months */
   .highlight-row td { background: rgba(200,229,43,0.04) !important; }
 
-  /* ---- BOTÓN FLOTANTE REGISTRO RÁPIDO ---- */
-  .fab-btn {
+  /* ---- COLUMNA DE ACCESOS FLOTANTES: agente (arriba) · captura WA · registro rápido (abajo) ---- */
+  /* Escritorio: el agente (56px) tiene centro x = 52px desde el borde; los círculos de 48px usan right: 28px. */
+  .fab-btn, .fab-wa {
     position: fixed;
-    bottom: 28px;
-    right: 32px;
-    left: auto;
-    transform: none;
     z-index: 998;
-    background: var(--sura-blue);
-    color: #fff;
+    width: 48px;
+    height: 48px;
+    min-width: 0;
+    padding: 0;
     border: none;
-    border-radius: 50px;
-    padding: 13px 24px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: grab;
+    border-radius: 999px;
+    color: #fff;
     display: flex;
+    flex-direction: row-reverse;
     align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 20px rgba(26,76,232,0.45);
-    transition: box-shadow 0.15s, opacity 0.22s cubic-bezier(.25,.8,.25,1), transform 0.22s cubic-bezier(.25,.8,.25,1);
+    justify-content: flex-start;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
     font-family: var(--font);
-    letter-spacing: 0.02em;
-    user-select: none;
-    touch-action: none;
-  }
-  .fab-btn:hover { box-shadow: 0 6px 28px rgba(26,76,232,0.55); }
-  .fab-btn.dragging { cursor: grabbing; opacity: 0.9; box-shadow: 0 8px 32px rgba(26,76,232,0.6); transition: none; }
-  .fab-btn.fab-hidden, .fab-wa.fab-hidden { opacity: 0 !important; pointer-events: none !important; transform: translateY(12px) scale(.92) !important; }
-  @media (max-width:900px) { .fab-btn { bottom: 16px; right: 16px; padding: 11px 20px; font-size: 13px; } }
-  .fab-wa {
-    position: fixed;
-    bottom: 90px;
-    right: 32px;
-    z-index: 997;
-    background: #25D366;
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    padding: 11px 20px;
     font-size: 13px;
     font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    box-shadow: 0 4px 16px rgba(37,211,102,0.45);
-    transition: box-shadow 0.15s, opacity 0.22s cubic-bezier(.25,.8,.25,1), transform 0.22s cubic-bezier(.25,.8,.25,1);
-    font-family: var(--font);
     letter-spacing: 0.02em;
     user-select: none;
+    transition: width .24s cubic-bezier(.25,.8,.25,1), box-shadow .2s, opacity .22s cubic-bezier(.25,.8,.25,1), transform .22s cubic-bezier(.25,.8,.25,1);
   }
-  .fab-wa:hover { box-shadow: 0 6px 24px rgba(37,211,102,0.6); }
+  .fab-btn { right: 28px; bottom: 24px; background: var(--sura-blue); box-shadow: 0 4px 16px rgba(26,76,232,0.45); cursor: grab; touch-action: none; }
+  .fab-wa  { right: 28px; bottom: 84px; background: #25D366; box-shadow: 0 4px 16px rgba(37,211,102,0.45); cursor: pointer; }
+  .fab-ico { flex: 0 0 48px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 22px; line-height: 1; }
+  .fab-ico svg { width: 22px; height: 22px; }
+  .fab-txt { max-width: 0; opacity: 0; overflow: hidden; padding-right: 0; transition: max-width .24s cubic-bezier(.25,.8,.25,1), opacity .2s, padding .24s; }
+  @media (hover: hover) and (pointer: fine) {
+    .fab-btn:hover { width: 176px; box-shadow: 0 6px 24px rgba(26,76,232,0.55); }
+    .fab-wa:hover  { width: 196px; box-shadow: 0 6px 22px rgba(37,211,102,0.55); }
+    .fab-btn:hover .fab-txt, .fab-wa:hover .fab-txt { max-width: 150px; opacity: 1; padding-right: 2px; }
+  }
+  .fab-btn:focus-visible, .fab-wa:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .fab-btn.dragging { cursor: grabbing; opacity: 0.9; box-shadow: 0 8px 32px rgba(26,76,232,0.6); transition: none; }
+  .fab-btn.fab-hidden, .fab-wa.fab-hidden { opacity: 0 !important; pointer-events: none !important; transform: translateY(12px) scale(.92) !important; }
+  @media (max-width:900px) {
+    .fab-btn, .fab-wa { width: 44px; height: 44px; }
+    .fab-ico { flex: 0 0 44px; width: 44px; height: 44px; }
+    .fab-btn { right: 20px; bottom: 16px; }
+    .fab-wa  { right: 20px; bottom: 70px; }
+  }
   @keyframes slideLoad {
     0%   { transform: translateX(-100%); }
     50%  { transform: translateX(60%); }
     100% { transform: translateX(200%); }
   }
-  @media (max-width:900px) { .fab-wa { bottom: 72px; right: 16px; padding: 9px 16px; font-size: 12px; } }
 
   /* ── AGENDA DIARIA ── */
   .agenda-wrap{padding:0 36px 32px;}
@@ -1731,6 +1722,8 @@
   }
   body:not(.theme-light) .fab-btn { background: #2563EB !important; opacity: 1 !important; }
   body:not(.theme-light) .fab-wa { background: #16A34A !important; opacity: 1 !important; }
+  body:not(.theme-light) #agente-fab img { filter: drop-shadow(0 4px 14px rgba(37,88,240,0.45)); }
+  body.theme-light #agente-fab img { filter: drop-shadow(0 4px 12px rgba(37,88,240,0.3)); }
 </style>
 <style id="ux-menos-es-mas">
   /* ===== UX · MENOS ES MÁS · pills de la cinta y badges x2 (solo CSS) ===== */
@@ -10128,9 +10121,9 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 
 <!-- BOTÓN FLOTANTE REGISTRO RÁPIDO -->
 <!-- FAB: Captura rápida prospecto WhatsApp -->
-<button class="fab-wa" id="fabWA" onclick="abrirCapturaWA()" title="Capturar prospecto desde WhatsApp">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.555 4.118 1.525 5.847L.057 23.5l5.8-1.52A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.003-1.368l-.359-.213-3.722.976.993-3.622-.234-.372A9.818 9.818 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-  Captura WA
+<button class="fab-wa" id="fabWA" onclick="abrirCapturaWA()" title="Captura WhatsApp" aria-label="Captura WhatsApp">
+  <span class="fab-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.555 4.118 1.525 5.847L.057 23.5l5.8-1.52A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.003-1.368l-.359-.213-3.722.976.993-3.622-.234-.372A9.818 9.818 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg></span>
+  <span class="fab-txt">Captura WhatsApp</span>
 </button>
 
 <!-- MODAL: Captura rápida prospecto WhatsApp -->
@@ -10181,20 +10174,21 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
   </div>
 </div>
 
-<button class="fab-btn" id="fabBtn" title="Registro rápido PBS (arrastrable)">
-  <span style="font-size:20px;line-height:1;">＋</span> Registro rápido
+<button class="fab-btn" id="fabBtn" title="Registro rápido PBS (arrastrable)" aria-label="Registro rápido">
+  <span class="fab-ico" aria-hidden="true">＋</span>
+  <span class="fab-txt">Registro rápido</span>
 </button>
 
 <script>
 (function() {
-  const FAB_KEY = 'sura_fab_pos';
+  const FAB_KEY = 'sura_fab_pos_v2';
   const btn = document.getElementById('fabBtn');
   if (!btn) return;
 
   // ── Restaurar posición guardada ──────────────────────────────────────────
   function aplicarPos(pos) {
-    btn.style.right  = pos.right  != null ? pos.right  + 'px' : '32px';
-    btn.style.bottom = pos.bottom != null ? pos.bottom + 'px' : '28px';
+    btn.style.right  = pos.right  != null ? pos.right  + 'px' : '28px';
+    btn.style.bottom = pos.bottom != null ? pos.bottom + 'px' : '24px';
     btn.style.left   = 'auto';
     btn.style.top    = 'auto';
   }
@@ -41755,21 +41749,26 @@ const _agente = {
 function _agenteInyectarHTML() {
   if (document.getElementById('agente-panel')) return;
   const html = `
-  <!-- Botón flotante del agente -->
-  <button id="agente-fab" onclick="_agenteToggle()" title="Asistente SURA" style="
-    position:fixed;bottom:24px;right:24px;z-index:9990;
-    width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
-    background:linear-gradient(135deg,var(--sura-blue),#7c3aed);
-    box-shadow:0 4px 20px rgba(37,88,240,0.5);
-    display:flex;align-items:center;justify-content:center;
-    font-size:22px;transition:transform .2s,box-shadow .2s;
-  " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></button>
+  <!-- Botón flotante del agente (icono Vyloriam Agent) -->
+  <style>
+  #agente-fab{position:fixed;bottom:144px;right:24px;z-index:9990;width:56px;height:56px;padding:0;border:none;border-radius:50%;background:transparent;cursor:pointer;transition:transform .2s ease;}
+  #agente-fab img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;}
+  #agente-fab:hover{transform:scale(1.06);}
+  #agente-fab:focus-visible{outline:2px solid var(--sura-blue);outline-offset:4px;}
+  #agente-fab[data-tip]::after{content:attr(data-tip);position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(4px);background:#0F172A;color:#fff;font:600 12px var(--font);padding:6px 10px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;}
+  #agente-fab:hover::after{opacity:1;transform:translateY(-50%) translateX(0);}
+  @media (hover:none){#agente-fab::after{display:none;}}
+  @media (max-width:900px){#agente-fab{width:52px;height:52px;bottom:124px;right:16px;}#agente-panel{bottom:186px !important;max-height:calc(100vh - 210px) !important;}}
+  body:not(.theme-light) #agente-fab img{filter:drop-shadow(0 4px 14px rgba(37,88,240,.45));}
+  body.theme-light #agente-fab img{filter:drop-shadow(0 4px 12px rgba(37,88,240,.3));}
+  </style>
+  <button id=\"agente-fab\" onclick=\"_agenteToggle()\" aria-label=\"Abrir agente inteligente\" data-tip=\"Hablar con mi agente\"><img src=\"vyloriam-agent-icon-512.png\" alt=\"\" aria-hidden=\"true\"></button>
 
   <!-- Panel del agente -->
   <div id="agente-panel" style="
-    position:fixed;bottom:88px;right:24px;z-index:9991;
+    position:fixed;bottom:212px;right:24px;z-index:9991;
     width:360px;max-width:calc(100vw - 32px);
-    height:520px;max-height:calc(100vh - 110px);
+    height:520px;max-height:calc(100vh - 230px);
     background:var(--surface);border:1px solid var(--border);
     border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,0.45);
     display:none;flex-direction:column;overflow:hidden;
