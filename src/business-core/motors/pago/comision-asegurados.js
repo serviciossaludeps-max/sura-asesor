@@ -122,6 +122,7 @@
     }
     if (poliza.producto === 'SPD') return comisionSPD(poliza, fechaPago);
 
+    const fechaRefPago = fechaPago || new Date();   // la tasa SPTI depende del año de pago
     const aseg = Array.isArray(poliza.asegurados) ? poliza.asegurados : [];
     if (aseg.length === 0) return bloqueado('SIN_ASEGURADOS');
 
@@ -169,7 +170,7 @@
       }
       if (!base || base <= 0) return bloqueado('BASE_NO_DISPONIBLE', { rol });
 
-      const pct = mpago.calcularPorcentajeComision(poliza.producto, r.edad);
+      const pct = mpago.calcularPorcentajeComision(poliza.producto, r.edad, fechaRefPago);
       if (pct === null || pct === undefined) return bloqueado('PORCENTAJE_NO_DISPONIBLE', { rol });
 
       detalle.push({
