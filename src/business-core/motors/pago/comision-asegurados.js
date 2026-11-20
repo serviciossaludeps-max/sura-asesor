@@ -129,7 +129,7 @@
     return { ok: false, motivo: 'NO_COINCIDE_TABLA_SIN_IVA', guardada, esperados, rango };
   }
 
-  function comisionPoliza(poliza, fechaPago) {
+  function comisionPoliza(poliza, fechaPago, opts) {
     const mpago = global.MotorPago;
     const mp = global.MotorProducto;
     const resolver = global.MotorPagoE1 && global.MotorPagoE1.resolverEdadReferencia;
@@ -205,8 +205,33 @@
       });
     }
 
+    // Cobro parcial o escalonado: la comisión es sobre lo COBRADO sin IVA (regla confirmada por el PO).
+    // Si el cobro es completo (o mayor), no cambia nada. Se reparte entre asegurados por su base esperada.
+    let cobroParcial = null;
+    if (opts && opts.montoRecibido !== undefined && opts.montoRecibido !== null) {
+      const monto = Number(opts.montoRecibido);
+      if (!isFinite(monto) || monto <= 0) return bloqueado('MONTO_RECIBIDO_INVALIDO');
+      const IVA = (global.BusinessConfig && global.BusinessConfig.constants && global.BusinessConfig.constants.IVA_FACTOR) || 1.05;
+      const baseCobrada = Math.round(monto / IVA);
+      const baseEsperada = detalle.reduce((acc, d) => acc + d.base, 0);
+      if (baseCobrada < baseEsperada) {
+        let acum = 0;
+        detalle.forEach((d, i) => {
+          d.baseEsperada = d.base;
+          if (i < detalle.length - 1) {
+            d.base = Math.round(d.base * baseCobrada / baseEsperada);
+            acum += d.base;
+          } else {
+            d.base = baseCobrada - acum;   // el último absorbe el redondeo: la suma es exacta
+          }
+          d.comision = Math.round(d.base * d.pct);
+        });
+        cobroParcial = { montoRecibido: monto, baseCobrada, baseEsperada };
+      }
+    }
+
     const total = detalle.reduce((acc, d) => acc + d.comision, 0);
-    return { estado: 'OK', comision: total, comisionPorAsegurado: detalle, motivo: null, reglaVersion: REGLA_VERSION };
+    return { estado: 'OK', comision: total, comisionPorAsegurado: detalle, motivo: null, reglaVersion: REGLA_VERSION, cobroParcial };
   }
 
   global.MotorPagoE1 = Object.assign(global.MotorPagoE1 || {}, { comisionPoliza, REGLA_VERSION });
