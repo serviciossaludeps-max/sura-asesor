@@ -107,6 +107,12 @@ window.BusinessConfig.pricing.TARIFAS_POR_ANIO = {
   //   MENSUAL CLASICO 41-50; MENSUAL PREFERENCIAL 41-50.
   // Descuentos: meses x mensual - valor (regla verificada en 2026).
   2025: {
+    // SPD 2025 (confirmado por el PO). Vigencia: pendiente de confirmar; se asume el año calendario 2025.
+    SPD: {
+      vigenciaDesde: '2025-01-01',
+      vigenciaHasta: '2025-12-31',
+      sinIVA: { MENSUAL: 87603, TRIMESTRAL: 257633, SEMESTRAL: 501848, ANUAL: 956465 }
+    },
     SPTI_SIN_IVA: {
       PREFERENCIAL: {
         '0-40': { mensual:153154, trimestre:447990, dctoTrim:11472, semestre:874793, dctoSem:44131, anual:1672166, dctoAnual:165682 },
