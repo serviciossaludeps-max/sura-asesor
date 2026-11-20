@@ -107,7 +107,7 @@ window.BusinessConfig.pricing.TARIFAS_POR_ANIO = {
   //   MENSUAL CLASICO 41-50; MENSUAL PREFERENCIAL 41-50.
   // Descuentos: meses x mensual - valor (regla verificada en 2026).
   2025: {
-    // SPD 2025 (confirmado por el PO). Vigencia: pendiente de confirmar; se asume el año calendario 2025.
+    // SPD 2025 (confirmado por el PO el 20-nov-2026). Vigencia comercial: 1-ene-2025 a 31-dic-2025.
     SPD: {
       vigenciaDesde: '2025-01-01',
       vigenciaHasta: '2025-12-31',
