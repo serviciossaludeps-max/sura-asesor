@@ -200,38 +200,89 @@
       if (pct === null || pct === undefined) return bloqueado('PORCENTAJE_NO_DISPONIBLE', { rol });
 
       detalle.push({
-        rol, edadReferencia: r.edad, fechaReferencia: r.fechaReferencia, ciclo: r.ciclo,
-        base, fuenteBase, pct, comision: Math.round(base * pct)
+        rol, aseguradoRef: (a.doc !== undefined && a.doc !== null && String(a.doc) !== '') ? String(a.doc) : null,
+        edadReferencia: r.edad, fechaReferencia: r.fechaReferencia, ciclo: r.ciclo,
+        base, fuenteBase, pct
       });
     }
 
-    // Cobro parcial o escalonado: la comisión es sobre lo COBRADO sin IVA (regla confirmada por el PO).
-    // Si el cobro es completo (o mayor), no cambia nada. Se reparte entre asegurados por su base esperada.
-    let cobroParcial = null;
-    if (opts && opts.montoRecibido !== undefined && opts.montoRecibido !== null) {
-      const monto = Number(opts.montoRecibido);
+    // ── Cobros (H-1 y H-2) ──────────────────────────────────────────────────────────────
+    // H-1: un cobro parcial pertenece a UN asegurado identificado por su documento (aseguradoRef).
+    //      No se reparte proporcionalmente entre asegurados. Sin identificador confiable: bloqueo explícito.
+    // H-2: por asegurado y periodo, comisionAcumulada = round(min(baseAcumulada, baseEsperada) × pct);
+    //      pago = comisionAcumulada − comisionYaPagada (cobros previos del mismo asegurado y periodo).
+    // C-1: cada asegurado se redondea individualmente; el pago de la póliza es la suma de los individuales.
+    const IVA = (global.BusinessConfig && global.BusinessConfig.constants && global.BusinessConfig.constants.IVA_FACTOR) || 1.05;
+    const cobro = opts || {};
+    const previos = Array.isArray(cobro.cobrosPrevios) ? cobro.cobrosPrevios : [];
+    const vacio = (x) => x === undefined || x === null || x === '';
+
+    let monto = null;
+    if (!vacio(cobro.montoRecibido)) {
+      monto = Number(cobro.montoRecibido);
       if (!isFinite(monto) || monto <= 0) return bloqueado('MONTO_RECIBIDO_INVALIDO');
-      const IVA = (global.BusinessConfig && global.BusinessConfig.constants && global.BusinessConfig.constants.IVA_FACTOR) || 1.05;
-      const baseCobrada = Math.round(monto / IVA);
-      const baseEsperada = detalle.reduce((acc, d) => acc + d.base, 0);
-      if (baseCobrada < baseEsperada) {
-        let acum = 0;
-        detalle.forEach((d, i) => {
-          d.baseEsperada = d.base;
-          if (i < detalle.length - 1) {
-            d.base = Math.round(d.base * baseCobrada / baseEsperada);
-            acum += d.base;
-          } else {
-            d.base = baseCobrada - acum;   // el último absorbe el redondeo: la suma es exacta
-          }
-          d.comision = Math.round(d.base * d.pct);
-        });
-        cobroParcial = { montoRecibido: monto, baseCobrada, baseEsperada };
-      }
+    }
+    const baseEsperadaTotal = detalle.reduce((acc, d) => acc + d.base, 0);
+    const baseCobrada = monto !== null ? Math.round(monto / IVA) : null;
+    const esParcial = baseCobrada !== null && baseCobrada < baseEsperadaTotal;
+
+    if (esParcial || previos.length > 0) {
+      const refs = detalle.map(d => d.aseguradoRef);
+      if (refs.some(ref => ref === null)) return bloqueado('FALTA_ASEGURADO');
+      if (new Set(refs).size !== refs.length) return bloqueado('IDENTIFICADOR_DUPLICADO');
+      if (vacio(cobro.periodoDesde)) return bloqueado('FALTA_PERIODO_COBRO');
+    }
+    if (esParcial) {
+      if (vacio(cobro.aseguradoRef)) return bloqueado('FALTA_ASEGURADO');
+      if (!detalle.some(d => d.aseguradoRef === String(cobro.aseguradoRef))) return bloqueado('ASEGURADO_NO_ENCONTRADO');
+    }
+    for (const p of previos) {
+      if (vacio(p.aseguradoRef) || vacio(p.periodoDesde)) return bloqueado('COBRO_PREVIO_INCOMPLETO');
     }
 
-    const total = detalle.reduce((acc, d) => acc + d.comision, 0);
-    return { estado: 'OK', comision: total, comisionPorAsegurado: detalle, motivo: null, reglaVersion: REGLA_VERSION, cobroParcial };
+    // Idempotencia: un cobro que ya figura entre los previos (mismo id) no se cuenta dos veces.
+    const idActual = vacio(cobro.id) ? null : String(cobro.id);
+    const previosValidos = previos.filter(p => idActual === null || String(p.id) !== idActual);
+    const periodo = vacio(cobro.periodoDesde) ? null : String(cobro.periodoDesde);
+
+    const resultado = [];
+    let totalPago = 0;
+    for (const d of detalle) {
+      const mis = previosValidos.filter(p => String(p.aseguradoRef) === String(d.aseguradoRef) && String(p.periodoDesde) === String(periodo));
+      const baseCobradaPrev = mis.reduce((acc, p) => acc + (Number(p.baseCobrada) || 0), 0);
+      const comisionYaPagada = mis.reduce((acc, p) => acc + (Number(p.comision) || 0), 0);
+
+      let baseCobradaPago, baseAcumulada;
+      if (esParcial) {
+        // H-1: solo el asegurado asignado recibe base de este cobro; los demás no se alteran.
+        baseCobradaPago = String(d.aseguradoRef) === String(cobro.aseguradoRef) ? baseCobrada : 0;
+        baseAcumulada = baseCobradaPrev + baseCobradaPago;
+      } else {
+        // Cobro completo: el período del asegurado queda cubierto; se paga lo que falte.
+        baseCobradaPago = Math.max(0, d.base - baseCobradaPrev);
+        baseAcumulada = baseCobradaPrev + baseCobradaPago;
+      }
+      const tope = Math.min(baseAcumulada, d.base);                // H-2: nunca sobre la base esperada
+      const comisionAcumulada = Math.round(tope * d.pct);          // C-1: redondeo individual
+      const pagoNuevo = comisionAcumulada - comisionYaPagada;
+      if (pagoNuevo < 0) return bloqueado('COMISION_ACUMULADA_INCONSISTENTE', { rol: d.rol });
+
+      resultado.push({
+        rol: d.rol, aseguradoRef: d.aseguradoRef,
+        edadReferencia: d.edadReferencia, fechaReferencia: d.fechaReferencia, ciclo: d.ciclo,
+        base: d.base, fuenteBase: d.fuenteBase, pct: d.pct,
+        baseCobradaPrev, baseCobradaPago, baseAcumulada,
+        excedenteBase: Math.max(0, baseAcumulada - d.base),
+        comisionAcumulada, comisionYaPagada, comision: pagoNuevo
+      });
+      totalPago += pagoNuevo;
+    }
+
+    const cobroParcial = esParcial ? {
+      id: idActual, aseguradoRef: String(cobro.aseguradoRef), periodoDesde: periodo,
+      montoRecibido: monto, baseCobrada, baseEsperadaTotal
+    } : null;
+    return { estado: 'OK', comision: totalPago, comisionPorAsegurado: resultado, motivo: null, reglaVersion: REGLA_VERSION, cobroParcial };
   }
 
   global.MotorPagoE1 = Object.assign(global.MotorPagoE1 || {}, { comisionPoliza, REGLA_VERSION });
