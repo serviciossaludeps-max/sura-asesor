@@ -143,8 +143,15 @@
     if (poliza.producto === 'SPD') return comisionSPD(poliza, fechaPago);
 
     const fechaRefPago = fechaPago || new Date();   // la tasa SPTI depende del año de pago
-    const aseg = Array.isArray(poliza.asegurados) ? poliza.asegurados : [];
-    if (aseg.length === 0) return bloqueado('SIN_ASEGURADOS');
+    // Opción 2 (aprobada): venta individual sin array de asegurados. El titular es el único asegurado y sus datos
+    // viven a nivel de venta (doc, fechaNac, modulos, conAnexo, primaTotalSinIVA). Igual que el adaptador de la sombra E2.
+    // Si la venta declara más de un asegurado y no hay array, no se puede inferir a los demás: bloqueo explícito.
+    const tieneArray = Array.isArray(poliza.asegurados) && poliza.asegurados.length > 0;
+    if (!tieneArray && Number(poliza.numAsegurados) > 1) return bloqueado('ASEGURADOS_NO_REGISTRADOS');
+    const aseg = tieneArray ? poliza.asegurados : [{
+      rol: 'TITULAR', doc: poliza.doc, fechaNac: poliza.fechaNac, modulos: poliza.modulos,
+      conAnexo: poliza.conAnexo, primaTotalSinIVA: poliza.primaTotalSinIVA, primaTotal: poliza.primaTotal
+    }];
 
     const detalle = [];
     for (let i = 0; i < aseg.length; i++) {
