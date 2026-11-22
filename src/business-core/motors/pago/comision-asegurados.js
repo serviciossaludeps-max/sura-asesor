@@ -43,6 +43,15 @@
   }
 
   // Base sin IVA de SPTI desde las tablas del año indicado (no desde la tabla 2026 fija).
+  // P-11: días comerciales (30/360) entre dos fechas 'YYYY-MM-DD'. Null si alguna fecha no tiene ese formato.
+  function diasComerciales(desde, hasta) {
+    const p = (f) => { const m = typeof f === 'string' && f.match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? [+m[1], +m[2], +m[3]] : null; };
+    const a = p(desde), b = p(hasta);
+    if (!a || !b) return null;
+    const d1 = Math.min(a[2], 30), d2 = Math.min(b[2], 30);
+    return (b[0] - a[0]) * 360 + (b[1] - a[1]) * 30 + (d2 - d1);
+  }
+
   function baseSPTI(tables, poliza, edad) {
     const campo = { MENSUAL: 'mensual', TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' }[poliza.periodicidad];
     const rango = global.MotorProducto.getRangoEdadSPTI(edad);
@@ -150,7 +159,8 @@
     if (!tieneArray && Number(poliza.numAsegurados) > 1) return bloqueado('ASEGURADOS_NO_REGISTRADOS');
     const aseg = tieneArray ? poliza.asegurados : [{
       rol: 'TITULAR', doc: poliza.doc, fechaNac: poliza.fechaNac, modulos: poliza.modulos,
-      conAnexo: poliza.conAnexo, primaTotalSinIVA: poliza.primaTotalSinIVA, primaTotal: poliza.primaTotal
+      conAnexo: poliza.conAnexo, primaTotalSinIVA: poliza.primaTotalSinIVA, primaTotal: poliza.primaTotal,
+      inicioCobertura: poliza.inicioCobertura
     }];
 
     const detalle = [];
@@ -201,6 +211,20 @@
         if (res.motivo) return bloqueado(res.motivo, { rol });
         base = res.base; fuenteBase = res.fuente;
       }
+      // P-11 (aprobado 22-nov-2026): prorrateo por inicio de cobertura. Solo primera cuota (ciclo 0).
+      // Días no cubiertos = días 30/360 entre el inicio de la cuota (fechaExp) y el inicio de cobertura del asegurado.
+      // Base de la cuota = base completa × (30 − días no cubiertos) / 30. Sin fecha de inicio: no se aplica.
+      let prorrateo = null;
+      if (r.ciclo === 0 && a.inicioCobertura !== undefined && a.inicioCobertura !== null) {
+        const d = diasComerciales(poliza.fechaExp, a.inicioCobertura);
+        if (d === null) return bloqueado('FECHA_INICIO_COBERTURA_INVALIDA', { rol });
+        if (d >= 30) return bloqueado('INICIO_COBERTURA_FUERA_DE_CUOTA', { rol });
+        if (d > 0) {
+          prorrateo = { inicioCobertura: a.inicioCobertura, diasNoCubiertos: d, diasCubiertos: 30 - d };
+          base = Math.round(base * (30 - d) / 30);
+          fuenteBase = fuenteBase + '+PRORRATEO';
+        }
+      }
       if (!base || base <= 0) return bloqueado('BASE_NO_DISPONIBLE', { rol });
 
       const pct = mpago.calcularPorcentajeComision(poliza.producto, r.edad, fechaRefPago);
@@ -209,7 +233,10 @@
       detalle.push({
         rol, aseguradoRef: (a.doc !== undefined && a.doc !== null && String(a.doc) !== '') ? String(a.doc) : null,
         edadReferencia: r.edad, fechaReferencia: r.fechaReferencia, ciclo: r.ciclo,
-        base, fuenteBase, pct
+        base, fuenteBase, pct,
+        prorrateo: !!prorrateo,
+        inicioCobertura: prorrateo ? prorrateo.inicioCobertura : null,
+        diasNoCubiertos: prorrateo ? prorrateo.diasNoCubiertos : 0
       });
     }
 
@@ -278,6 +305,7 @@
         rol: d.rol, aseguradoRef: d.aseguradoRef,
         edadReferencia: d.edadReferencia, fechaReferencia: d.fechaReferencia, ciclo: d.ciclo,
         base: d.base, fuenteBase: d.fuenteBase, pct: d.pct,
+        prorrateo: d.prorrateo, inicioCobertura: d.inicioCobertura, diasNoCubiertos: d.diasNoCubiertos,
         baseCobradaPrev, baseCobradaPago, baseAcumulada,
         excedenteBase: Math.max(0, baseAcumulada - d.base),
         comisionAcumulada, comisionYaPagada, comision: pagoNuevo
