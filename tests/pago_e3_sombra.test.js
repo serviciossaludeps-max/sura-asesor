@@ -66,5 +66,21 @@ t('E8 venta sin pagos no genera filas; pagos de otra venta no se mezclan', () =>
   assert.strictEqual(r.pagosEvaluados, 1); assert.strictEqual(r.filas[0].ventaId, 'v2');
 });
 
+t('E9 importada SPTI con adicional en aseguradosImport y sin array: NO_EVALUABLE IMPORTADA_CON_ADICIONALES_FUERA_DE_MOTOR', () => {
+  const v = Object.assign({}, VENTA_SPTI, { id: 'v9', poliza: '090001626273', asegurados: [], aseguradosImport: [{ doc: '1033677151', fechaNac: '2004-02-16' }] });
+  const r = E3.ejecutar([v], { v9: [{ id: 'p12', fecha: '2026-10-30', comision: 22253 }] });
+  assert.strictEqual(r.resumen.NO_EVALUABLE, 1);
+  assert.strictEqual(r.filas[0].motivo, 'IMPORTADA_CON_ADICIONALES_FUERA_DE_MOTOR');
+});
+t('E10 SPD con adicional en aseguradosImport NO se excluye (tarifa unica por poliza)', () => {
+  const v = { id: 'v10', poliza: '090001595427', producto: 'SPD', periodicidad: 'MENSUAL', fechaExp: '2026-08-22', asegurados: [], aseguradosImport: [{ doc: '9', fechaNac: '2000-01-01' }] };
+  const r = E3.ejecutar([v], { v10: [{ id: 'p13', fecha: '2026-09-22', comision: 1 }] });
+  assert.notStrictEqual(r.filas[0].motivo, 'IMPORTADA_CON_ADICIONALES_FUERA_DE_MOTOR');
+});
+t('E11 SPTI importada solo titular (sin aseguradosImport) sigue evaluándose', () => {
+  const r = E3.ejecutar([VENTA_SPTI], { v1: [{ id: 'p14', fecha: '2026-09-22', comision: 11138 }] });
+  assert.strictEqual(r.resumen.COINCIDE, 1);
+});
+
 console.log('\nResultado: ' + pass + ' PASS · ' + fail + ' FAIL');
 process.exit(fail ? 1 : 0);
