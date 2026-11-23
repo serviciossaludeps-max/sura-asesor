@@ -7,6 +7,15 @@
 (function (global) {
   'use strict';
 
+  // Opción B (aprobada por el PO, 23-nov-2026): importadas con adicionales en aseguradosImport y sin array
+  // asegurados. El motor no lee aseguradosImport; quedan fuera de la sombra hasta que E3 defina su estructura.
+  // SPD no se excluye: su tarifa es única por póliza y no depende de los asegurados.
+  function esImportadaConAdicionalesFueraDeMotor(v) {
+    if (v.producto !== 'SPTI' && v.producto !== 'PSM' && v.producto !== 'PAC60') return false;
+    const sinArray = !Array.isArray(v.asegurados) || v.asegurados.length === 0;
+    return sinArray && Array.isArray(v.aseguradosImport) && v.aseguradosImport.length > 0;
+  }
+
   function ejecutar(ventas, pagosPorVenta) {
     const E1 = global.MotorPagoE1, E2 = global.MotorPagoE2;
     if (!E1) return { estado: 'NO_DISPONIBLE', motivo: 'MOTOR_PAGO_E1_NO_CARGADO', filas: [], resumen: {} };
@@ -24,6 +33,10 @@
           pagoId: p.id || null, pagoFecha: String(p.fecha || '').slice(0, 10),
           registrado: Number(p.comision)
         };
+        if (esImportadaConAdicionalesFueraDeMotor(v)) {
+          fila.resultado = 'NO_EVALUABLE'; fila.motivo = 'IMPORTADA_CON_ADICIONALES_FUERA_DE_MOTOR';
+          filas.push(fila); return;
+        }
         if (errorAdaptar) { fila.resultado = 'ERROR'; fila.motivo = 'ADAPTADOR: ' + errorAdaptar; filas.push(fila); return; }
         let r;
         try { r = E1.comisionPoliza(poliza, fila.pagoFecha); }
