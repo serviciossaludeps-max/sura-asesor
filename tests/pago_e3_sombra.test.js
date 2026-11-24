@@ -82,5 +82,24 @@ t('E11 SPTI importada solo titular (sin aseguradosImport) sigue evaluándose', (
   assert.strictEqual(r.resumen.COINCIDE, 1);
 });
 
+// Caso de prueba: el motor da 11.138 para el pago del 22/09; el CRM registró 17.679 (diferencia de 6.541).
+const AJ_PRUEBA = { id: 'AJ-PRUEBA-1', poliza: '1001', comisionPagada: 17679, comisionCorrecta: 11138, diferencia: -6541, estado: 'PENDIENTE_LIQUIDACION' };
+t('E12 diferencia con ajuste pendiente que coincide: DIFERENCIA_CON_AJUSTE (no cuenta como nueva)', () => {
+  const v = Object.assign({}, VENTA_SPTI, { id: 'v12', ajustesComision: [Object.assign({}, AJ_PRUEBA)] });
+  const r = E3.ejecutar([v], { v12: [{ id: 'p15', fecha: '2026-09-22', comision: 17679 }] });
+  assert.strictEqual(r.filas[0].resultado, 'DIFERENCIA_CON_AJUSTE'); assert.strictEqual(r.filas[0].ajuste, 'AJ-PRUEBA-1');
+  assert.strictEqual(r.resumen.DIFERENCIA_CON_AJUSTE, 1); assert.strictEqual(r.resumen.DIFERENCIA, 0);
+});
+t('E13 un mismo ajuste no cubre dos pagos (sin doble conteo)', () => {
+  const v = Object.assign({}, VENTA_SPTI, { id: 'v13', ajustesComision: [Object.assign({}, AJ_PRUEBA)] });
+  const r = E3.ejecutar([v], { v13: [{ id: 'p16', fecha: '2026-09-22', comision: 17679 }, { id: 'p17', fecha: '2026-10-22', comision: 17679 }] });
+  assert.strictEqual(r.resumen.DIFERENCIA_CON_AJUSTE, 1); assert.strictEqual(r.resumen.DIFERENCIA, 1);
+});
+t('E14 ajuste con valores distintos no se usa: queda DIFERENCIA', () => {
+  const v = Object.assign({}, VENTA_SPTI, { id: 'v14', ajustesComision: [Object.assign({}, AJ_PRUEBA, { comisionPagada: 1 })] });
+  const r = E3.ejecutar([v], { v14: [{ id: 'p18', fecha: '2026-09-22', comision: 17679 }] });
+  assert.strictEqual(r.filas[0].resultado, 'DIFERENCIA');
+});
+
 console.log('\nResultado: ' + pass + ' PASS · ' + fail + ' FAIL');
 process.exit(fail ? 1 : 0);
