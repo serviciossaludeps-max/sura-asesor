@@ -10,6 +10,12 @@
   // Opción B (aprobada por el PO, 23-nov-2026): importadas con adicionales en aseguradosImport y sin array
   // asegurados. El motor no lee aseguradosImport; quedan fuera de la sombra hasta que E3 defina su estructura.
   // SPD no se excluye: su tarifa es única por póliza y no depende de los asegurados.
+  // Opción A (aprobada por el PO, 23-nov-2026): pólizas canceladas con pagos sin fecha de nacimiento.
+  // Se clasifican como NO_EVALUABLE aceptado. No se corrige ningún dato. Condición: verificar en el CRM
+  // que el estado es cancelado y que no hay pagos posteriores a la cancelación.
+  const POLIZAS_CANCELADAS_ACEPTADAS = ['1642318', '1648606', '1648600', '1648624', '1649227', '1668208', '1668200', '1670358', '090001630836', '090001593465', '090001614977'];
+  function esCanceladaAceptada(v) { return POLIZAS_CANCELADAS_ACEPTADAS.indexOf(String(v.poliza)) !== -1; }
+
   function esImportadaConAdicionalesFueraDeMotor(v) {
     if (v.producto !== 'SPTI' && v.producto !== 'PSM' && v.producto !== 'PAC60') return false;
     const sinArray = !Array.isArray(v.asegurados) || v.asegurados.length === 0;
@@ -34,6 +40,10 @@
           pagoId: p.id || null, pagoFecha: String(p.fecha || '').slice(0, 10),
           registrado: Number(p.comision)
         };
+        if (esCanceladaAceptada(v)) {
+          fila.resultado = 'NO_EVALUABLE'; fila.motivo = 'POLIZA_CANCELADA_ACEPTADA_PO';
+          filas.push(fila); return;
+        }
         if (esImportadaConAdicionalesFueraDeMotor(v)) {
           fila.resultado = 'NO_EVALUABLE'; fila.motivo = 'IMPORTADA_CON_ADICIONALES_FUERA_DE_MOTOR';
           filas.push(fila); return;
