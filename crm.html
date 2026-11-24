@@ -10434,6 +10434,17 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
 <script src="src/business-core/motors/validacion/index.js?v=a357667f"></script>
 <!-- MotorProducto — Business Core Fase 1 (ADR-007/ADR-011) -->
 <script src="src/business-core/motors/producto/index.js?v=1bd42e4a"></script>
+<!-- E3 · Sombra del MotorPago: solo lectura. Los scripts se cargan, pero no se ejecutan en ninguna pantalla. -->
+<script src="src/business-core/motors/pago/resolver-edad.js?v=e3"></script>
+<script src="src/business-core/motors/pago/comision-asegurados.js?v=e3"></script>
+<script src="src/business-core/motors/pago/sombra.js?v=e3"></script>
+<script src="src/business-core/motors/pago/e3-sombra.js?v=e3"></script>
+<script>
+  // E3 · Ejecución bajo demanda desde la consola. No se llama desde ninguna pantalla ni modifica comisiones.
+  window.__SOMBRA_E3__ = function () {
+    return window.MotorPagoE3.ejecutar(getState().ventas || [], getPagos());
+  };
+</script>
 <script>
   // Salvaguarda: si business-config/*.js no cargó (ruta rota, red, caché,
   // o el archivo se abrió aislado sin su carpeta hermana), se usan los
@@ -21844,7 +21855,7 @@ function renderCancelados() {
         ${imp.impacto > 0 ? `<br><span style="font-size:10px;color:var(--text-dim);">${imp.mesesPendientes} × ${fmt(imp.primaMens)}</span>` : ''}
       </td>
       <td style="padding:10px 12px;white-space:nowrap;">
-        <button class="btn btn-secondary btn-sm" onclick="reactivarPoliza('${v.id}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" /></svg> Reactivar</button>
+        ${_btnCorregirFecha(v)}<button class="btn btn-secondary btn-sm" onclick="reactivarPoliza('${v.id}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /> <path d="M3 3v5h5" /></svg> Reactivar</button>
         <button class="btn btn-danger btn-sm" onclick="eliminarVentaCartera('${v.id}')"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /> <line x1="10" x2="10" y1="11" y2="17" /> <line x1="14" x2="14" y1="11" y2="17" /></svg></button>
       </td>
     </tr>`;
@@ -35621,6 +35632,68 @@ function cancelarVentaCartera(id) {
 
   // Cerrar al hacer click fuera del box
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
+// ── Corrección de fecha de cancelación (autorizada por el PO, 23-nov-2026) ──
+// Solo para cancelaciones registradas con día 1 (defecto del modal anterior). Cambia la fecha y deja historial.
+// NO recalcula los indicadores de impacto (cancelacionMes, cancelacionImpactoMes, etc.): eso requiere autorización aparte.
+function _btnCorregirFecha(v) {
+  const f = String(v.fechaCancelacion || '');
+  if (!/^\d{4}-\d{2}-01$/.test(f)) return '';
+  return '<button class="btn btn-secondary btn-sm" style="margin-right:6px;" onclick="corregirFechaCancelacion(\'' + v.id + '\')">Corregir fecha</button>';
+}
+
+function corregirFechaCancelacion(id) {
+  const v = getState().ventas.find(x => x.id === id);
+  if (!v) return;
+  const hoyISO = _cancelFechaLocalISO(new Date());
+  const min = (v.fechaExp && /^\d{4}-\d{2}-\d{2}$/.test(v.fechaExp)) ? v.fechaExp : '';
+  const actual = String(v.fechaCancelacion || '').slice(0, 10);
+  const nombre = tc(v.tomadorNombre || v.nombre || '—');
+  const previo = document.getElementById('modalCorregirFechaCanc');
+  if (previo) previo.remove();
+  const overlay = document.createElement('div');
+  overlay.id = 'modalCorregirFechaCanc';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;">Corregir fecha de cancelación</div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:16px;">${v.producto} · <strong>${nombre}</strong> · registrada: ${actual}</div>
+      <label style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:600;display:block;margin-bottom:6px;">Fecha efectiva correcta (según SURA)</label>
+      <input type="date" id="corrFechaCanc" value="${actual}" ${min ? 'min="' + min + '"' : ''} max="${hoyISO}" style="width:100%;padding:9px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:var(--font);">
+      <div style="font-size:10.5px;color:var(--text-dim);margin-top:5px;margin-bottom:16px;">Solo cambia la fecha de la cancelación y deja registro en el historial. Los indicadores de impacto no se recalculan.</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('modalCorregirFechaCanc').remove()">Cancelar</button>
+        <button class="btn btn-primary btn-sm" onclick="confirmarCorreccionFechaCancelacion('${v.id}')">Guardar fecha</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function confirmarCorreccionFechaCancelacion(id) {
+  const inp = document.getElementById('corrFechaCanc');
+  if (!inp) return;
+  const nueva = inp.value;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(nueva)) { showToast('Elige la fecha correcta'); return; }
+  const hoyISO = _cancelFechaLocalISO(new Date());
+  const s = getState();
+  const vi = s.ventas.findIndex(x => x.id === id);
+  if (vi < 0) return;
+  const v = s.ventas[vi];
+  if (v.fechaExp && /^\d{4}-\d{2}-\d{2}$/.test(v.fechaExp) && nueva < v.fechaExp) { showToast('La fecha es anterior a la expedición'); return; }
+  if (nueva > hoyISO) { showToast('La fecha no puede ser posterior a hoy'); return; }
+  const anterior = v.fechaCancelacion || null;
+  s.ventas[vi].fechaCancelacion = nueva;
+  s.ventas[vi].fechaEfectivaCancelacion = nueva;
+  s.ventas[vi].historialCancelaciones = (Array.isArray(v.historialCancelaciones) ? v.historialCancelaciones : []).concat([{
+    origen: 'CORRECCION_FECHA', fechaAnterior: anterior, fechaEfectiva: nueva, fechaRegistro: hoyISO,
+    motivo: 'Corrección de fecha de cancelación (registrada en día 1)'
+  }]);
+  setState(s);
+  const ov = document.getElementById('modalCorregirFechaCanc');
+  if (ov) ov.remove();
+  renderCancelados();
+  showToast('Fecha de cancelación corregida a ' + nueva);
 }
 
 function confirmarCancelacionModal(id) {
