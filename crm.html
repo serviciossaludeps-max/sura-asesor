@@ -35636,7 +35636,7 @@ function cancelarVentaCartera(id) {
 
 // ── Corrección de fecha de cancelación (autorizada por el PO, 23-nov-2026) ──
 // Solo para cancelaciones registradas con día 1 (defecto del modal anterior). Cambia la fecha y deja historial.
-// NO recalcula los indicadores de impacto (cancelacionMes, cancelacionImpactoMes, etc.): eso requiere autorización aparte.
+// Recalcula los indicadores de impacto solo si cambia el mes (opción A, autorizada por el PO).
 function _btnCorregirFecha(v) {
   const f = String(v.fechaCancelacion || '');
   if (!/^\d{4}-\d{2}-01$/.test(f)) return '';
@@ -35661,7 +35661,7 @@ function corregirFechaCancelacion(id) {
       <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:16px;">${v.producto} · <strong>${nombre}</strong> · registrada: ${actual}</div>
       <label style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:600;display:block;margin-bottom:6px;">Fecha efectiva correcta (según SURA)</label>
       <input type="date" id="corrFechaCanc" value="${actual}" ${min ? 'min="' + min + '"' : ''} max="${hoyISO}" style="width:100%;padding:9px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-family:var(--font);">
-      <div style="font-size:10.5px;color:var(--text-dim);margin-top:5px;margin-bottom:16px;">Solo cambia la fecha de la cancelación y deja registro en el historial. Los indicadores de impacto no se recalculan.</div>
+      <div style="font-size:10.5px;color:var(--text-dim);margin-top:5px;margin-bottom:16px;">Cambia la fecha y deja registro en el historial. Si cambia el mes, se recalculan los indicadores de impacto; dentro del mismo mes no se modifican.</div>
       <div style="display:flex;gap:8px;justify-content:flex-end;">
         <button class="btn btn-secondary btn-sm" onclick="document.getElementById('modalCorregirFechaCanc').remove()">Cancelar</button>
         <button class="btn btn-primary btn-sm" onclick="confirmarCorreccionFechaCancelacion('${v.id}')">Guardar fecha</button>
@@ -35683,11 +35683,28 @@ function confirmarCorreccionFechaCancelacion(id) {
   if (v.fechaExp && /^\d{4}-\d{2}-\d{2}$/.test(v.fechaExp) && nueva < v.fechaExp) { showToast('La fecha es anterior a la expedición'); return; }
   if (nueva > hoyISO) { showToast('La fecha no puede ser posterior a hoy'); return; }
   const anterior = v.fechaCancelacion || null;
+  // Opción A (aprobada por el PO): recalcular impactos SOLO si cambia el mes.
+  // Misma cadena que confirmarCancelacionModal (registro original): mes base 0 y _f2cImpactoCancelacion.
+  const mesNuevo = parseInt(nueva.slice(5, 7), 10) - 1;
+  const anioNuevo = parseInt(nueva.slice(0, 4), 10);
+  const cambioMes = (v.cancelacionMes !== mesNuevo) || (v.cancelacionAnio !== anioNuevo);
+  const previoImpacto = { cancelacionMes: v.cancelacionMes, cancelacionAnio: v.cancelacionAnio, cancelacionImpactoMes: v.cancelacionImpactoMes, cancelacionImpactoSiguiente: v.cancelacionImpactoSiguiente };
+  let nuevoImpacto = null;
+  if (cambioMes) {
+    const pList = getPagos()[v.id] || [];
+    const primaMens = calcPrimaMensualSinIVA(v);
+    const _ctxC = _f2cContextoImpacto(v, pList, nueva);
+    const _regC = _f2cImpactoCancelacion({ primaMens, pagos: _ctxC.pList, periodicidad: v.periodicidad, esNoPago: !!v.cancelacionEsNoPago, fechaEfectiva: nueva, suraPeriodos: _ctxC.suraPeriodos });
+    nuevoImpacto = { cancelacionMes: mesNuevo, cancelacionAnio: anioNuevo, cancelacionImpactoMes: _regC.impactoMesCancelacion, cancelacionImpactoSiguiente: _regC.impactoMesSiguiente };
+  }
   s.ventas[vi].fechaCancelacion = nueva;
   s.ventas[vi].fechaEfectivaCancelacion = nueva;
+  if (nuevoImpacto) Object.assign(s.ventas[vi], nuevoImpacto);
   s.ventas[vi].historialCancelaciones = (Array.isArray(v.historialCancelaciones) ? v.historialCancelaciones : []).concat([{
     origen: 'CORRECCION_FECHA', fechaAnterior: anterior, fechaEfectiva: nueva, fechaRegistro: hoyISO,
-    motivo: 'Corrección de fecha de cancelación (registrada en día 1)'
+    motivo: 'Corrección de fecha de cancelación (registrada en día 1)',
+    recalculoImpacto: cambioMes,
+    valoresAnteriores: previoImpacto
   }]);
   setState(s);
   const ov = document.getElementById('modalCorregirFechaCanc');
