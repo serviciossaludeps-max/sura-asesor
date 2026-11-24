@@ -22,6 +22,7 @@
     if (!E2) return { estado: 'NO_DISPONIBLE', motivo: 'SOMBRA_E2_NO_CARGADA', filas: [], resumen: {} };
 
     const filas = [];
+    const ajustesUsados = new Set();
     (ventas || []).forEach(v => {
       const pagos = (pagosPorVenta && pagosPorVenta[v.id]) || [];
       if (!pagos.length) return;
@@ -47,12 +48,19 @@
           fila.motor = r.comision;
           fila.diferencia = fila.registrado - r.comision;
           fila.resultado = fila.diferencia === 0 ? 'COINCIDE' : 'DIFERENCIA';
+          if (fila.resultado === 'DIFERENCIA') {
+            // Error del CRM ya tratado: ajuste pendiente con la misma póliza, comisión pagada y comisión correcta.
+            const aj = (v.ajustesComision || []).find(a => a && a.estado === 'PENDIENTE_LIQUIDACION'
+              && a.poliza === fila.poliza && Number(a.comisionPagada) === fila.registrado
+              && Number(a.comisionCorrecta) === r.comision && !ajustesUsados.has(a.id));
+            if (aj) { fila.resultado = 'DIFERENCIA_CON_AJUSTE'; fila.ajuste = aj.id; ajustesUsados.add(aj.id); }
+          }
         }
         filas.push(fila);
       });
     });
 
-    const resumen = { COINCIDE: 0, DIFERENCIA: 0, NO_EVALUABLE: 0, ERROR: 0, noEvaluablePorMotivo: {} };
+    const resumen = { COINCIDE: 0, DIFERENCIA: 0, DIFERENCIA_CON_AJUSTE: 0, NO_EVALUABLE: 0, ERROR: 0, noEvaluablePorMotivo: {} };
     filas.forEach(f => {
       resumen[f.resultado] = (resumen[f.resultado] || 0) + 1;
       if (f.resultado === 'NO_EVALUABLE') resumen.noEvaluablePorMotivo[f.motivo] = (resumen.noEvaluablePorMotivo[f.motivo] || 0) + 1;
