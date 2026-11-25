@@ -15405,11 +15405,12 @@ function calcTotalSPD() {
     if (elTotal) elTotal.value = '';
     return;
   }
-  const val = SPD_TARIFAS[per] || SPD_TARIFAS.MENSUAL;
+  const _TS = _tcSelSPDActiva() ? _tcSPDTabla(_tcSelSPDActiva()) : SPD_TARIFAS;
+  const val = _TS[per] || _TS.MENSUAL;
   if (primaEl) primaEl.value = fmt(val);
   // Mostrar descuento si aplica
   if (dctoEl) {
-    const dcto = per !== 'MENSUAL' ? Math.round(SPD_TARIFAS.MENSUAL * { TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 }[per] - val) : 0;
+    const dcto = per !== 'MENSUAL' ? Math.round(_TS.MENSUAL * { TRIMESTRAL:3, SEMESTRAL:6, ANUAL:12 }[per] - val) : 0;
     dctoEl.value = dcto > 0 ? `Dcto: ${fmt(dcto)}` : 'Sin descuento';
   }
   // Keep vPrimaTotalSPD in sync for guardarVenta compatibility
@@ -15878,6 +15879,8 @@ function _tcVigencia(prod, anio) {
   const b = T && T[anio];
   if (!b) return null;
   if (prod === 'SPD') return b.SPD ? { desde: b.SPD.vigenciaDesde, hasta: b.SPD.vigenciaHasta, tablas: { SPD: b.SPD } } : null;
+  if (prod === 'PSM') return (b.PSM_TARIFAS && b.PSM_VIGENCIA) ? { desde: b.PSM_VIGENCIA.vigenciaDesde, hasta: b.PSM_VIGENCIA.vigenciaHasta, tablas: { PSM_TARIFAS: b.PSM_TARIFAS, PSM_IVA: b.PSM_IVA, PSM_DCTOS: b.PSM_DCTOS } } : null;
+  if (prod === 'PAC60') return (b.PAC60_TARIFAS && b.PAC60_VIGENCIA) ? { desde: b.PAC60_VIGENCIA.vigenciaDesde, hasta: b.PAC60_VIGENCIA.vigenciaHasta, tablas: { PAC60_TARIFAS: b.PAC60_TARIFAS, PAC60_DCTOS: b.PAC60_DCTOS } } : null;
   if (prod === 'SPTI') return (b.SPTI_SIN_IVA && b.SPTI_VIGENCIA) ? { desde: b.SPTI_VIGENCIA.vigenciaDesde, hasta: b.SPTI_VIGENCIA.vigenciaHasta, tablas: { SPTI_SIN_IVA: b.SPTI_SIN_IVA } } : null;
   return null;
 }
@@ -15893,6 +15896,15 @@ function _tcVersionPara(prod, anio, mes) {
     if (vg && vg.desde <= fecha && fecha <= vg.hasta) return { anioTabla: Number(y), tablas: vg.tablas };
   }
   return null;
+}
+// SPD: tabla de la versión elegida con IVA (sin IVA x 1,05, igual que la tabla vigente).
+function _tcSPDTabla(sel) {
+  const s = sel.tablas.SPD.sinIVA; const r = x => Math.round(x * IVA_FACTOR);
+  return { MENSUAL: r(s.MENSUAL), TRIMESTRAL: r(s.TRIMESTRAL), SEMESTRAL: r(s.SEMESTRAL), ANUAL: r(s.ANUAL) };
+}
+function _tcSelSPDActiva() {
+  const c = document.getElementById('chkTarifaCongeladaSPD');
+  return (c && c.checked) ? _tcSeleccionActual('SPD') : null;
 }
 function _tcHasta(fExp) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(fExp || '');
@@ -15920,9 +15932,10 @@ function _tcCambioSelector(prod) {
   const pb = document.getElementById('vPrimaBaseSPTI');
   if (prod === 'SPTI' && pb) pb.readOnly = !!(chk && chk.checked);   // D2: sin precio libre en congeladas
   if (prod === 'SPTI' && typeof calcDatosSPTI === 'function') calcDatosSPTI();
+  if (prod === 'SPD' && typeof calcTotalSPD === 'function') calcTotalSPD();
 }
 function _tcInicializar() {
-  ['SPTI'].forEach(prod => {
+  ['SPTI', 'SPD', 'PSM', 'PAC60'].forEach(prod => {
     const info = document.getElementById('tcInfo' + prod);
     if (!info || document.getElementById('tcAnio' + prod)) return;
     const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -17203,6 +17216,8 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
     const ciudadPSM = document.getElementById('vCiudadPSM').value;
     const modoRegistroPSM = document.querySelector('input[name="psmModoRegistro"]:checked')?.value || 'individual';
     const tcFlag = !!(document.getElementById('chkTarifaCongeladaPSM')?.checked);
+    const _tcSelPSM = tcFlag ? _tcSeleccionActual('PSM') : null;
+    if (tcFlag && !_tcSelPSM) { alert('La tarifa congelada requiere año y mes de tarifa válidos para PSM.'); return; }
     const mesCompPSM = getMesKey(parseFechaLocal(fecha).getFullYear(), parseFechaLocal(fecha).getMonth());
     // Recopilar asegurados adicionales
     const aseguradosPSM = [];
@@ -17259,7 +17274,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
         comision: Math.round(primaSinIVASum * comPctPSM),
         ramo: 'FAMILIAR', tipoNegocio: 'NUEVO', comPct: edadNum <= 50 ? 12 : 6,
         rango: k, criterio: '—', tramite: '—', bd: '—',
-        tarifaCongelada: tcFlag, anioTarifa: tcFlag ? AÑO_ACTUAL : null,
+        tarifaCongelada: tcFlag, anioTarifa: _tcSelPSM ? _tcSelPSM.anioSel : null, tarifaAnio: _tcSelPSM ? _tcSelPSM.anioSel : null, tarifaMes: _tcSelPSM ? _tcSelPSM.mes : null, tarifaVersionId: _tcSelPSM ? _tcSelPSM.version : null, tarifaHasta: _tcSelPSM ? _tcSelPSM.hasta : null,
       });
     } else {
       // Registros individuales — Asegurado 1
@@ -17285,7 +17300,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
         comision: Math.round(primaSinIVA1 * comPct1),
         ramo: 'FAMILIAR', tipoNegocio: 'NUEVO', comPct: edadNum <= 50 ? 12 : 6,
         rango: k, criterio: '—', tramite: '—', bd: '—',
-        tarifaCongelada: tcFlag, anioTarifa: tcFlag ? AÑO_ACTUAL : null,
+        tarifaCongelada: tcFlag, anioTarifa: _tcSelPSM ? _tcSelPSM.anioSel : null, tarifaAnio: _tcSelPSM ? _tcSelPSM.anioSel : null, tarifaMes: _tcSelPSM ? _tcSelPSM.mes : null, tarifaVersionId: _tcSelPSM ? _tcSelPSM.version : null, tarifaHasta: _tcSelPSM ? _tcSelPSM.hasta : null,
       });
       // Asegurados adicionales individuales
       aseguradosPSM.forEach((a, ai) => {
@@ -17309,7 +17324,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
           comision: Math.round(primaSinIVAAi * comPctAi),
           ramo: 'FAMILIAR', tipoNegocio: 'NUEVO', comPct: (parseInt(a.edad)||0) <= 50 ? 12 : 6,
           rango: a.rangoEdad, criterio: '—', tramite: '—', bd: '—',
-          tarifaCongelada: tcFlag, anioTarifa: tcFlag ? AÑO_ACTUAL : null,
+          tarifaCongelada: tcFlag, anioTarifa: _tcSelPSM ? _tcSelPSM.anioSel : null, tarifaAnio: _tcSelPSM ? _tcSelPSM.anioSel : null, tarifaMes: _tcSelPSM ? _tcSelPSM.mes : null, tarifaVersionId: _tcSelPSM ? _tcSelPSM.version : null, tarifaHasta: _tcSelPSM ? _tcSelPSM.hasta : null,
         });
       });
     }
@@ -17368,6 +17383,8 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
     const ciudadPAC  = document.getElementById('vCiudadPAC60').value;
     const modoRegistroPAC = document.querySelector('input[name="pac60ModoRegistro"]:checked')?.value || 'individual';
     const tcFlagPAC = !!(document.getElementById('chkTarifaCongeladaPAC60')?.checked);
+    const _tcSelPAC = tcFlagPAC ? _tcSeleccionActual('PAC60') : null;
+    if (tcFlagPAC && !_tcSelPAC) { alert('La tarifa congelada requiere año y mes de tarifa válidos para Plan 60+.'); return; }
     const mesCompPAC = getMesKey(parseFechaLocal(fecha).getFullYear(), parseFechaLocal(fecha).getMonth());
     // Asegurados adicionales PAC60
     const aseguradosPAC = [];
@@ -17411,7 +17428,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
         notas: document.getElementById('vNotasPAC60').value,
         comision: Math.round(pSinIVA * PAC60_COM_PCT), comPct: 5,
         rango: rangoAseg, criterio: '—', tramite: '—', bd: '—',
-        tarifaCongelada: tcFlagPAC, anioTarifa: tcFlagPAC ? AÑO_ACTUAL : null,
+        tarifaCongelada: tcFlagPAC, anioTarifa: _tcSelPAC ? _tcSelPAC.anioSel : null, tarifaAnio: _tcSelPAC ? _tcSelPAC.anioSel : null, tarifaMes: _tcSelPAC ? _tcSelPAC.mes : null, tarifaVersionId: _tcSelPAC ? _tcSelPAC.version : null, tarifaHasta: _tcSelPAC ? _tcSelPAC.hasta : null,
       });
     };
     if (modoRegistroPAC === 'sumado' && aseguradosPAC.length > 0) {
@@ -17437,7 +17454,11 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
       return alert('El plan Estándar de SPD todavía no tiene tarifa cargada. Selecciona Plus, o espera a que se habilite Estándar.');
     }
     const per = document.getElementById('vPeriodicidadSPD').value;
-    const primaMen = SPD_TARIFAS[per] || SPD_TARIFAS.MENSUAL;
+    const _tcFlagSPD = !!(document.getElementById('chkTarifaCongeladaSPD')?.checked);
+    const _tcSelSPD = _tcFlagSPD ? _tcSeleccionActual('SPD') : null;
+    if (_tcFlagSPD && !_tcSelSPD) { alert('La tarifa congelada requiere año y mes de tarifa válidos para SPD.'); return; }
+    const _TSPD = _tcSelSPD ? _tcSPDTabla(_tcSelSPD) : SPD_TARIFAS;
+    const primaMen = _TSPD[per] || _TSPD.MENSUAL;
     // SPD es una tarifa ÚNICA para la pareja (tomador+asegurado, o los 2
     // asegurados) — nunca se multiplica por 2 ni se reparte en 2 registros.
     const primaTotal = primaMen;
@@ -17466,7 +17487,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
       ciudad: document.getElementById('vCiudadSPD').value,
       notas: document.getElementById('vNotasSPD').value,
       comision: 0, rango: '—', criterio: '—', empresa: '—', tramite: '—',
-      tarifaCongelada: tcFlagSPD, anioTarifa: tcFlagSPD ? AÑO_ACTUAL : null,
+      tarifaCongelada: tcFlagSPD, anioTarifa: _tcSelSPD ? _tcSelSPD.anioSel : null, tarifaAnio: _tcSelSPD ? _tcSelSPD.anioSel : null, tarifaMes: _tcSelSPD ? _tcSelSPD.mes : null, tarifaVersionId: _tcSelSPD ? _tcSelSPD.version : null, tarifaHasta: _tcSelSPD ? _tcSelSPD.hasta : null,
     };
     const aseg1SPD = {
       aseguradoNombre: document.getElementById('vAseguradoNombre').value,
