@@ -15251,10 +15251,10 @@ function calcDatosSPTI(origen) {
   // fórmula, tarifa ni descuento — solo se reempaqueta la respuesta del motor.
   let tarifa = null;
   if (window.MotorProducto) {
-    const rMensual    = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'MENSUAL' });
-    const rTrimestral = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'TRIMESTRAL' });
-    const rSemestral  = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'SEMESTRAL' });
-    const rAnual      = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'ANUAL' });
+    const rMensual    = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'MENSUAL' }, _tcTablasActivas('SPTI'));
+    const rTrimestral = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'TRIMESTRAL' }, _tcTablasActivas('SPTI'));
+    const rSemestral  = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'SEMESTRAL' }, _tcTablasActivas('SPTI'));
+    const rAnual      = window.MotorProducto.calcularPrecioSPTI({ plan, edad: edadNum, periodicidad: 'ANUAL' }, _tcTablasActivas('SPTI'));
     if (rMensual && rTrimestral && rSemestral && rAnual) {
       tarifa = {
         mensual: rMensual.mensual,
@@ -15870,6 +15870,77 @@ function toggleTarifaCongelada(producto) {
     info.classList.remove('visible');
   }
 }
+
+// ── Tarifa congelada con año y mes (diseño aprobado 24-nov-2026) · fase 2a: SPTI ──
+// Año y mes eligen la versión de tabla (por vigencia). El precio sale de esa tabla (decisión D2).
+function _tcVigencia(prod, anio) {
+  const T = window.BusinessConfig && window.BusinessConfig.pricing && window.BusinessConfig.pricing.TARIFAS_POR_ANIO;
+  const b = T && T[anio];
+  if (!b) return null;
+  if (prod === 'SPD') return b.SPD ? { desde: b.SPD.vigenciaDesde, hasta: b.SPD.vigenciaHasta, tablas: { SPD: b.SPD } } : null;
+  if (prod === 'SPTI') return (b.SPTI_SIN_IVA && b.SPTI_VIGENCIA) ? { desde: b.SPTI_VIGENCIA.vigenciaDesde, hasta: b.SPTI_VIGENCIA.vigenciaHasta, tablas: { SPTI_SIN_IVA: b.SPTI_SIN_IVA } } : null;
+  return null;
+}
+function _tcOpciones(prod) {
+  const T = window.BusinessConfig.pricing.TARIFAS_POR_ANIO;
+  return Object.keys(T).map(Number).filter(y => _tcVigencia(prod, y)).sort((a, b) => a - b);
+}
+function _tcVersionPara(prod, anio, mes) {
+  const fecha = anio + '-' + String(mes).padStart(2, '0') + '-01';
+  const T = window.BusinessConfig.pricing.TARIFAS_POR_ANIO;
+  for (const y of Object.keys(T)) {
+    const vg = _tcVigencia(prod, Number(y));
+    if (vg && vg.desde <= fecha && fecha <= vg.hasta) return { anioTabla: Number(y), tablas: vg.tablas };
+  }
+  return null;
+}
+function _tcHasta(fExp) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(fExp || '');
+  if (!m) return null;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1 + 12, Number(m[3]) - 1, 12);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function _tcSeleccionActual(prod) {
+  const a = document.getElementById('tcAnio' + prod), m = document.getElementById('tcMes' + prod);
+  if (!a || !m || !a.value || !m.value) return null;
+  const sel = _tcVersionPara(prod, Number(a.value), Number(m.value));
+  if (!sel) return null;
+  const fExp = (document.getElementById('vFechaExp' + prod) || {}).value || '';
+  return { anioSel: Number(a.value), mes: Number(m.value), version: prod + '-' + sel.anioTabla, hasta: _tcHasta(fExp), tablas: sel.tablas };
+}
+// Tablas alternativas para el cálculo del formulario. undefined = tabla vigente (comportamiento de siempre).
+function _tcTablasActivas(prod) {
+  const chk = document.getElementById('chkTarifaCongelada' + prod);
+  if (!chk || !chk.checked || prod !== 'SPTI') return undefined;
+  const sel = _tcSeleccionActual(prod);
+  return sel ? sel.tablas : undefined;
+}
+function _tcCambioSelector(prod) {
+  const chk = document.getElementById('chkTarifaCongelada' + prod);
+  const pb = document.getElementById('vPrimaBaseSPTI');
+  if (prod === 'SPTI' && pb) pb.readOnly = !!(chk && chk.checked);   // D2: sin precio libre en congeladas
+  if (prod === 'SPTI' && typeof calcDatosSPTI === 'function') calcDatosSPTI();
+}
+function _tcInicializar() {
+  ['SPTI'].forEach(prod => {
+    const info = document.getElementById('tcInfo' + prod);
+    if (!info || document.getElementById('tcAnio' + prod)) return;
+    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const optA = _tcOpciones(prod).map(a => '<option value="' + a + '">' + a + '</option>').join('');
+    const optM = meses.map((n, i) => '<option value="' + (i + 1) + '">' + n + '</option>').join('');
+    info.insertAdjacentHTML('beforeend',
+      '<div style="display:flex;gap:10px;margin-top:10px;">' +
+        '<div style="flex:1;"><label class="form-label">Año de la tarifa</label>' +
+          '<select class="form-control" id="tcAnio' + prod + '" onchange="_tcCambioSelector(\'' + prod + '\')"><option value="">—</option>' + optA + '</select></div>' +
+        '<div style="flex:1;"><label class="form-label">Mes de la tarifa</label>' +
+          '<select class="form-control" id="tcMes' + prod + '" onchange="_tcCambioSelector(\'' + prod + '\')"><option value="">—</option>' + optM + '</select></div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--text-dim);margin-top:6px;">El precio sale de la tabla del año y mes elegidos. Aplica al primer ciclo (12 meses desde la expedición).</div>');
+    const chk = document.getElementById('chkTarifaCongelada' + prod);
+    if (chk) chk.addEventListener('change', () => _tcCambioSelector(prod));
+  });
+}
+document.addEventListener('DOMContentLoaded', _tcInicializar);
 
 // Helper: devuelve el año de la tarifa que aplica para una venta.
 // Si tarifaCongelada es true, devuelve anioTarifa; si no, devuelve el año actual.
@@ -17002,6 +17073,9 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
     const periodicidad = document.getElementById('vPeriodicidadSPTI').value;
     const edadRaw = document.getElementById('vEdadSPTI').value;
     const rangoEdad = getRangoEdadSPTI(parseInt(edadRaw));
+    const _tcFlag = !!(document.getElementById('chkTarifaCongeladaSPTI')?.checked);
+    const _tcSel = _tcFlag ? _tcSeleccionActual('SPTI') : null;
+    if (_tcFlag && !_tcSel) { alert('La tarifa congelada requiere año y mes de tarifa válidos para SPTI.'); return; }
     let primaTotalSinIVA = 0, dctoNum = 0;
     if (plan && rangoEdad && SPTI_TARIFAS[plan] && SPTI_TARIFAS[plan][rangoEdad]) {
       const t = SPTI_TARIFAS[plan][rangoEdad];
@@ -17011,6 +17085,11 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
       else primaTotalSinIVA = Math.round(t.mensual / IVA_FACTOR);
     } else {
       primaTotalSinIVA = Math.round(primaTotal / IVA_FACTOR);
+    }
+    if (_tcSel && plan && rangoEdad) {
+      const _cmp = { TRIMESTRAL: 'trimestre', SEMESTRAL: 'semestre', ANUAL: 'anual' }[periodicidad] || 'mensual';
+      const _sv = _tcSel.tablas.SPTI_SIN_IVA[plan] && _tcSel.tablas.SPTI_SIN_IVA[plan][rangoEdad];
+      if (_sv && _sv[_cmp] !== undefined) primaTotalSinIVA = Number(_sv[_cmp]);
     }
     const sptiTomadorNombre = document.getElementById('vNombreSPTI').value;
     const sptiTomadorDoc    = document.getElementById('vDocSPTI').value;
@@ -17068,7 +17147,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
       notas: document.getElementById('vNotasSPTI').value,
       ciudad: sptiCiudad,
       comision: 0, rango: '—', criterio: '—', empresa: '—', tramite: '—',
-      tarifaCongelada: tcFlagSPTI, anioTarifa: tcFlagSPTI ? AÑO_ACTUAL : null,
+      tarifaCongelada: tcFlagSPTI, anioTarifa: _tcSel ? _tcSel.anioSel : null, tarifaAnio: _tcSel ? _tcSel.anioSel : null, tarifaMes: _tcSel ? _tcSel.mes : null, tarifaVersionId: _tcSel ? _tcSel.version : null, tarifaHasta: _tcSel ? _tcSel.hasta : null,
     };
     if (modoRegistroSPTI === 'sumado' && aseguradosSPTI.length > 0) {
       const primaSTot = primaTotal + aseguradosSPTI.reduce((s, a) => s + a.primaTotal, 0);
