@@ -104,19 +104,21 @@ window.BusinessConfig.pricing.TARIFAS_POR_ANIO = {
   // Pendiente de confirmar con cartera (seis celdas): SURA trunca el IVA en estas celdas y el CRM redondea,
   //   así que el CRM puede cobrar 1 peso más que la tabla impresa:
   //   SEMESTRAL PREFERENCIAL 71+; TRIMESTRAL CLASICO 51-59; TRIMESTRAL PREFERENCIAL 0-40 y 60-70;
-  //   MENSUAL CLASICO 41-50; MENSUAL PREFERENCIAL 41-50.
+  //   MENSUAL CLASICO 41-50. (MENSUAL PREFERENCIAL 41-50 confirmado por cartera SURA: 164.749.)
   // Descuentos: meses x mensual - valor (regla verificada en 2026).
   2025: {
+    SPTI_VIGENCIA: { vigenciaDesde: '2025-01-01', vigenciaHasta: '2025-12-31' },
     // SPD 2025 (confirmado por el PO el 20-nov-2026). Vigencia comercial: 1-ene-2025 a 31-dic-2025.
     SPD: {
+      // Confirmado por el PO (24-nov-2026): la tarifa 2025 siguió vigente hasta marzo de 2026.
       vigenciaDesde: '2025-01-01',
-      vigenciaHasta: '2025-12-31',
+      vigenciaHasta: '2026-03-31',
       sinIVA: { MENSUAL: 87603, TRIMESTRAL: 257633, SEMESTRAL: 501848, ANUAL: 956465 }
     },
     SPTI_SIN_IVA: {
       PREFERENCIAL: {
         '0-40': { mensual:153154, trimestre:447990, dctoTrim:11472, semestre:874793, dctoSem:44131, anual:1672166, dctoAnual:165682 },
-        '41-50': { mensual:164750, trimestre:481909, dctoTrim:12341, semestre:941027, dctoSem:47473, anual:1798771, dctoAnual:178229 },
+        '41-50': { mensual:164749, trimestre:481909, dctoTrim:12341, semestre:941027, dctoSem:47473, anual:1798771, dctoAnual:178229 },
         '51-59': { mensual:204142, trimestre:597136, dctoTrim:15290, semestre:1166033, dctoSem:58819, anual:2228870, dctoAnual:220834 },
         '60-70': { mensual:273040, trimestre:798670, dctoTrim:20450, semestre:1559569, dctoSem:78671, anual:2981112, dctoAnual:295368 },
         '71+': { mensual:410210, trimestre:1199908, dctoTrim:30722, semestre:2343070, dctoSem:118190, anual:4478772, dctoAnual:443748 }
@@ -131,6 +133,7 @@ window.BusinessConfig.pricing.TARIFAS_POR_ANIO = {
     }
   },
   2026: {
+    SPTI_VIGENCIA: { vigenciaDesde: '2026-01-01', vigenciaHasta: '2026-12-31' },
     SPTI_SIN_IVA: window.BusinessConfig.pricing.SPTI_SIN_IVA,
     PSM_TARIFAS: window.BusinessConfig.pricing.PSM_TARIFAS,
     PSM_IVA: window.BusinessConfig.pricing.PSM_IVA,
