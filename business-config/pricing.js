@@ -134,6 +134,8 @@ window.BusinessConfig.pricing.TARIFAS_POR_ANIO = {
   },
   2026: {
     SPTI_VIGENCIA: { vigenciaDesde: '2026-01-01', vigenciaHasta: '2026-12-31' },
+    PSM_VIGENCIA: { vigenciaDesde: '2026-01-01', vigenciaHasta: '2026-12-31' },
+    PAC60_VIGENCIA: { vigenciaDesde: '2026-01-01', vigenciaHasta: '2026-12-31' },
     SPTI_SIN_IVA: window.BusinessConfig.pricing.SPTI_SIN_IVA,
     PSM_TARIFAS: window.BusinessConfig.pricing.PSM_TARIFAS,
     PSM_IVA: window.BusinessConfig.pricing.PSM_IVA,
