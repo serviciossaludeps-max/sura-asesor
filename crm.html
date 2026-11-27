@@ -9875,7 +9875,7 @@ En este día tan especial quiero enviarte mis mejores deseos. Es un honor acompa
         </select>
       </div>
       <div class="form-group"><label class="form-label">Fecha de Venta</label>
-        <input type="date" class="form-control" id="eFecha"></div>
+        <input type="date" class="form-control" id="eFecha" onchange="calcEdadAgilEdit()"></div>
       <div class="form-group"><label class="form-label">Mes Compensado</label>
         <input type="text" class="form-control" id="eMesComp" style="background:var(--surface3);color:var(--sura-lime);font-weight:600;"></div>
       <div class="form-group"><label class="form-label">Trámite *</label>
@@ -10644,11 +10644,76 @@ function getRango(cotizantes) {
   return { n: 5, label: 'Rango 5 (48+)' };
 }
 
-function calcComision(tipo, criterio, cotizantes) {
-  if (tipo === 'BENEFICIARIO') return 10000;
+function calcComision(tipo, criterio, cotizantes, edadRad, fechaRad, tramite) {
+  if (tipo === 'BENEFICIARIO') return calcBeneficiarioPBS({ edad: edadRad, criterio, tramite, fechaRad }).total ?? 0;
   const rango = getRango(cotizantes);
   const row = COM_TABLE[criterio] || COM_TABLE['<=75%'];
   return row[rango.n - 1] || 0;
+}
+
+// ── PBS · Comisión de beneficiarios y proyección de grupo familiar ─────────
+// Reglas aprobadas por el CEO/PO (PBS v5.2.3, §4.1, §4.2, §4.4, §6.7; decisiones D1–D4).
+// Funciones puras: no escriben en estado, Firestore ni localStorage.
+const PBS_CAMPANA = {
+  INICIO: '2025-06-01',
+  EDAD_MIN: 2,
+  EDAD_MAX: 15,
+  CANALES_ELEGIBLES: ['SAT', 'FORM.DIGITAL', 'FORM.FIRMA.VIRTUAL'],
+  CANALES_EXCLUIDOS: ['AFIL.TRAMITES.ADM']
+};
+// Años cumplidos a la fecha de referencia. Devuelve null si falta alguna fecha.
+function edadEnFecha(fechaNacStr, fechaRefStr) {
+  if (!fechaNacStr || !fechaRefStr) return null;
+  const nac = new Date(fechaNacStr + 'T12:00:00');
+  const ref = new Date(fechaRefStr + 'T12:00:00');
+  if (isNaN(nac) || isNaN(ref)) return null;
+  let e = ref.getFullYear() - nac.getFullYear();
+  const m = ref.getMonth() - nac.getMonth();
+  if (m < 0 || (m === 0 && ref.getDate() < nac.getDate())) e--;
+  return e;
+}
+// Comisión de un beneficiario: base + campaña. Pura.
+// Base: 10.000 si edad a la radicación <= 59 y siniestralidad < 91 %; si no, 0.
+// Campaña: 10.000 si edad 2–15, siniestralidad < 91 %, radicación >= 01-jun-2025 y canal elegible.
+function calcBeneficiarioPBS({ edad, criterio, tramite, fechaRad }) {
+  if (edad === null || edad === undefined || edad === '' || !fechaRad) {
+    return { edad: null, base: null, campana: null, total: null, estadoCampana: 'pendiente de fecha' };
+  }
+  const alta = String(criterio || '').startsWith('>=91');
+  const base = (edad <= 59 && !alta) ? 10000 : 0;
+  let campana = 0, estadoCampana = 'no aplica';
+  if (edad >= PBS_CAMPANA.EDAD_MIN && edad <= PBS_CAMPANA.EDAD_MAX && !alta && fechaRad >= PBS_CAMPANA.INICIO) {
+    if (PBS_CAMPANA.CANALES_EXCLUIDOS.includes(tramite)) estadoCampana = 'excluida (trámite administrativo)';
+    else if (PBS_CAMPANA.CANALES_ELEGIBLES.includes(tramite)) { campana = 10000; estadoCampana = 'elegible'; }
+    else estadoCampana = 'canal no reconocido';
+  }
+  return { edad, base, campana, total: base + campana, estadoCampana };
+}
+// Proyección del grupo familiar desde la lista de beneficiarios en memoria. Pura.
+function calcProyeccionGrupoPBS({ criterio, fechaRad, tramite, beneficiarios }) {
+  const items = (beneficiarios || []).map(b => {
+    const edad = edadEnFecha(b.fechaNac, fechaRad);
+    return { nombre: b.nombre || '(sin nombre)', ...calcBeneficiarioPBS({ edad, criterio, tramite, fechaRad }) };
+  });
+  return {
+    items,
+    total: items.reduce((s, i) => s + (i.total || 0), 0),
+    pendientes: items.filter(i => i.total === null).length
+  };
+}
+const _escPBS = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Muestra en la vista previa el valor proyectado del grupo familiar (solo lectura).
+function _pintarGrupoPBS(el, criterio, fechaRad, tramite) {
+  const lista = (beneficiariosData || []).filter(b => b.nombre || b.doc);
+  if (!lista.length) return;
+  const g = calcProyeccionGrupoPBS({ criterio, fechaRad, tramite, beneficiarios: lista });
+  const fmt = n => '$' + Number(n).toLocaleString('es-CO');
+  const lineas = g.items.map(i => i.total === null
+    ? `${_escPBS(i.nombre)}: pendiente de fecha de nacimiento o de radicación`
+    : `${_escPBS(i.nombre)} (${i.edad} años): base ${fmt(i.base)}` + (i.campana ? ' + campaña ' + fmt(i.campana) : (i.estadoCampana !== 'no aplica' ? ' · campaña ' + _escPBS(i.estadoCampana) : ''))
+  ).join('<br>');
+  el.insertAdjacentHTML('beforeend',
+    `<div style="margin-top:6px;font-size:12px;">Grupo familiar proyectado (${g.items.length} beneficiario${g.items.length === 1 ? '' : 's'}): <strong>${fmt(g.total)}</strong>${g.pendientes ? ' · ' + g.pendientes + ' pendiente(s)' : ''}<br><span style="color:var(--text-muted);">${lineas}</span></div>`);
 }
 
 function getState() {
@@ -10931,12 +10996,14 @@ function agregarBeneficiario() {
   const id = 'ben' + benefIdCounter;
   beneficiariosData.push({ id, nombre:'', tipoDoc:'CC', doc:'', fechaNac:'', edad:'', estado:'' });
   renderBeneficiarios();
+  calcPreviewCom();
   document.getElementById('beneficiariosEmpty').style.display = 'none';
 }
 
 function eliminarBeneficiario(id) {
   beneficiariosData = beneficiariosData.filter(b => b.id !== id);
   renderBeneficiarios();
+  calcPreviewCom();
   actualizarContadorBenef();
   if (!beneficiariosData.length) document.getElementById('beneficiariosEmpty').style.display = '';
 }
@@ -10946,18 +11013,17 @@ function calcEdadBenef(id) {
   if (!b) return;
   const fn = document.getElementById('bFechaNac_' + id)?.value;
   if (!fn) return;
-  const nac = new Date(fn + 'T12:00:00');
-  const hoy = new Date();
-  let edad = hoy.getFullYear() - nac.getFullYear();
-  const m = hoy.getMonth() - nac.getMonth();
-  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
-  b.edad = edad;
+  // H7a: la edad se calcula a la fecha de radicación (campo vFecha), no a la fecha de hoy.
+  const fechaRad = document.getElementById('vFecha')?.value || '';
+  const edad = edadEnFecha(fn, fechaRad);
+  b.edad = edad === null ? '' : edad;
   b.fechaNac = fn;
-  // Ágil si < 18 (menores siempre ágil) o <= 40
-  b.estado = edad <= 40 ? 'AGIL' : 'NO AGIL';
+  // Estado Ágil: regla existente de beneficiario (divergencia documentada, sin cambio en esta entrega)
+  b.estado = edad === null ? '' : (edad <= 40 ? 'AGIL' : 'NO AGIL');
   const edEl  = document.getElementById('bEdad_' + id);
   const estEl = document.getElementById('bEstado_' + id);
-  if (edEl)  edEl.value  = edad + ' años';
+  if (edEl)  edEl.value  = (edad === null ? '' : edad + ' años');
+  calcPreviewCom();
   if (estEl) { estEl.value = b.estado; estEl.style.color = b.estado === 'AGIL' ? 'var(--green)' : 'var(--amber)'; }
 }
 
@@ -14034,6 +14100,14 @@ function guardarEdicion() {
   if (idx < 0) return;
   const v = state.ventas[idx];
 
+  // D3: advertencia si la nueva fecha de radicación cambia el mes compensado
+  const _fechaNueva = document.getElementById('eFecha').value;
+  const _fechaAnterior = v.fecha;
+  if (_fechaNueva && _fechaNueva !== _fechaAnterior) {
+    const _mcA = calcMesCompensado(_fechaAnterior).mesComp;
+    const _mcN = calcMesCompensado(_fechaNueva).mesComp;
+    if (_mcA !== _mcN && !confirm('La nueva fecha de radicación cambia el mes compensado de ' + _mcA + ' a ' + _mcN + '. Esto puede afectar la conciliación de liquidaciones ya cargadas. ¿Continuar?')) return;
+  }
   // Update all fields
   v.fecha = document.getElementById('eFecha').value;
   v.nombre = nombrePropio(document.getElementById('eNombre').value);
@@ -14063,13 +14137,23 @@ function guardarEdicion() {
 
   // Recalc comision if PBS
   if (v.producto === 'PBS') {
-    v.comision = calcComision(v.tipo, v.criterio, v.cotizantes);
+    v.comision = calcComision(v.tipo, v.criterio, v.cotizantes, v.edad, v.fecha, v.tramite);
     v.rango = getRango(v.cotizantes).label;
 
     // Actualizar beneficiarios vinculados (heredan datos del cotizante)
     state.ventas.forEach(ben => {
       if (ben.cotizanteId === _editId && ben.tipo === 'BENEFICIARIO') {
         ben.fecha       = v.fecha;
+        // D4: si cambió la fecha de radicación, el beneficiario recalcula edad, estado y comisión
+        if (v.fecha !== _fechaAnterior) {
+          const _e = edadEnFecha(ben.fechaNac, v.fecha);
+          const _cb = calcBeneficiarioPBS({ edad: _e, criterio: v.criterio, tramite: v.tramite, fechaRad: v.fecha });
+          ben.edad = _e === null ? '' : _e;
+          ben.estado = _e === null ? '' : (_e <= 40 ? 'AGIL' : 'NO AGIL');
+          ben.comision = _cb.total ?? 0;
+          ben.comisionBase = _cb.base;
+          ben.campana = _cb.campana;
+        }
         ben.mesComp     = v.mesComp;
         ben.empresa     = v.empresa;
         ben.nit         = v.nit;
@@ -14099,11 +14183,8 @@ function guardarEdicion() {
 function calcEdadAgilEdit() {
   const fn = document.getElementById('eFechaNac').value;
   if (!fn) return;
-  const nac = new Date(fn + 'T12:00:00');
-  const hoy = new Date();
-  let edad = hoy.getFullYear() - nac.getFullYear();
-  const m = hoy.getMonth() - nac.getMonth();
-  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+  const edad = edadEnFecha(fn, document.getElementById('eFecha').value);
+  if (edad === null) return;
   document.getElementById('eEdad').value = edad + ' años';
   document.getElementById('eEstadoAgil').value = (edad >= 18 && edad <= 40) ? 'AGIL' : 'NO AGIL';
 }
@@ -16151,6 +16232,8 @@ Responde ÚNICAMENTE con el JSON, sin texto adicional ni bloques de código.`;
 
 function onFechaChange() {
   const fecha = document.getElementById('vFecha').value;
+  calcEdadAgil();
+  beneficiariosData.forEach(b => calcEdadBenef(b.id));
   const { mesComp, esZonaCorte, dia } = calcMesCompensado(fecha);
   document.getElementById('vMesComp').value = mesComp;
 
@@ -16333,14 +16416,12 @@ async function confirmarRecalcPBS2026(cambios) {
 function calcEdadAgil() {
   const fn = document.getElementById('vFechaNac').value;
   if (!fn) return;
-  const nac = new Date(fn + 'T12:00:00');
-  const hoy = new Date();
-  let edad = hoy.getFullYear() - nac.getFullYear();
-  const m = hoy.getMonth() - nac.getMonth();
-  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
-
+  // H7b: edad y Ágil a la fecha de radicación (campo vFecha).
+  const fechaRad = document.getElementById('vFecha')?.value || '';
+  const edad = edadEnFecha(fn, fechaRad);
   const edadEl = document.getElementById('vEdad');
   const estadoEl = document.getElementById('vEstado');
+  if (edad === null) { edadEl.value = ''; estadoEl.value = ''; return; }
   edadEl.value = edad + ' años';
 
   if (edad >= 18 && edad <= 40) {
@@ -16366,7 +16447,11 @@ function calcPreviewCom() {
   if (!el) return;
 
   if (tipo === 'BENEFICIARIO') {
-    el.innerHTML = `<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /> <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /> <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></svg> Comisión estimada: <strong style="color:var(--green)">${fmt(10000)}</strong> · Tipo: <strong>Beneficiario</strong>`;
+    const _edad = edadEnFecha(document.getElementById('vFechaNac')?.value || '', fechaStr);
+    const _b = calcBeneficiarioPBS({ edad: _edad, criterio, tramite: document.getElementById('vTramite')?.value || '', fechaRad: fechaStr });
+    el.innerHTML = _b.total === null
+      ? '· Beneficiario individual: <em>ingresa fecha de nacimiento y fecha de radicación</em>'
+      : `· Beneficiario individual (${_edad} años a la radicación): base <strong>$${Number(_b.base).toLocaleString('es-CO')}</strong>${_b.campana ? ' + campaña <strong>$' + Number(_b.campana).toLocaleString('es-CO') + '</strong>' : ''} = <strong>$${Number(_b.total).toLocaleString('es-CO')}</strong>${(_b.estadoCampana !== 'no aplica' && !_b.campana) ? ' · campaña ' + _b.estadoCampana : ''}`;
     return;
   }
 
@@ -16430,6 +16515,7 @@ function calcPreviewCom() {
       + <strong>${cotizantes}</strong> esta empresa = <strong>${cotizantesTotales}</strong> total
       ${fechaStr ? '' : ' · <em style="color:var(--amber);">Ingresa la fecha para el mes exacto</em>'}
     </span>`;
+  _pintarGrupoPBS(el, criterio, fechaStr, document.getElementById('vTramite')?.value || '');
 }
 
 
@@ -16929,7 +17015,8 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
     // ── Comisión real según acumulado del mes COMPENSADO ────────────────
     let com, rango;
     if (tipo === 'BENEFICIARIO') {
-      com   = 10000;
+      const _edadInd = edadEnFecha(document.getElementById('vFechaNac').value, fecha);
+      com   = calcBeneficiarioPBS({ edad: _edadInd, criterio, tramite: document.getElementById('vTramite').value, fechaRad: fecha }).total ?? 0;
       rango = 'N/A';
     } else {
       // Usar mes compensado para el conteo (ventas primeros días = mes anterior)
@@ -17002,6 +17089,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
     const benValidos = beneficiariosData.filter(b => b.nombre || b.doc);
     benValidos.forEach(b => {
       const benId = Date.now().toString(36) + Math.random().toString(36).substr(2) + '_ben';
+      const _cb = calcBeneficiarioPBS({ edad: edadEnFecha(b.fechaNac, fecha), criterio, tramite, fechaRad: fecha });
       state.ventas.push({
         id: benId,
         producto: 'PBS',
@@ -17011,7 +17099,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
         tipoDoc: b.tipoDoc || 'CC',
         doc: b.doc || '',
         fechaNac: b.fechaNac || '',
-        edad: b.edad || '',
+        edad: edadEnFecha(b.fechaNac, fecha) ?? (b.edad || ''),
         estado: b.estado || estado,
         // Datos heredados del cotizante
         empresa: empNombre, nit: empNIT,
@@ -17023,7 +17111,9 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
         correo: document.getElementById('vCorreo').value,
         inicioCobertura: document.getElementById('vInicioCobertura').value,
         ciudad,
-        comision: 10000,
+        comision: _cb.total ?? 0,
+        comisionBase: _cb.base,
+        campana: _cb.campana,
         rango,
         notas: document.getElementById('vNotasPBS').value,
         cotizanteId: id, // referencia al cotizante padre
