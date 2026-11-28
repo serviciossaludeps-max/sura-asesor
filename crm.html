@@ -10713,13 +10713,26 @@ function _pintarGrupoPBS(el, criterio, fechaRad, tramite) {
     ? `${_escPBS(i.nombre)}: pendiente de fecha de nacimiento o de radicación`
     : `${_escPBS(i.nombre)} (${i.edad} años): base ${fmt(i.base)}` + (i.campana ? ' + campaña ' + fmt(i.campana) : (i.estadoCampana !== 'no aplica' ? ' · campaña ' + _escPBS(i.estadoCampana) : ''))
   ).join('<br>');
-  el.insertAdjacentHTML('afterend',
+  (document.getElementById('avisoAgilPBS') || el).insertAdjacentHTML('afterend',
     `<div id="grupoPBSPreview" class="alert alert-info" style="display:block;margin-top:8px;margin-bottom:0;font-size:12px;line-height:1.5;">
       <div style="font-weight:600;margin-bottom:4px;">Grupo familiar proyectado (${g.items.length} beneficiario${g.items.length === 1 ? '' : 's'}): <span style="color:var(--sura-blue,#1a4fa0);">${fmt(g.total)}</span>${g.pendientes ? ' · ' + g.pendientes + ' pendiente(s)' : ''}</div>
       <div style="color:var(--text-muted);">${lineas}</div>
     </div>`);
 }
 
+// Regla aprobada (PBS v5.2.3, §6.7): la fila «≥91 % excepcionadas» solo aplica a cotizantes Ágiles.
+// Si el estado es No Ágil, el criterio pasa a «≥91 % No Ágil» (comisión 0), igual que el importador de SURA.
+function _normalizarCriterioPBS(prefijo) {
+  const selId = prefijo === 'v' ? 'vSiniestralidad' : 'eCriterio';
+  const estId = prefijo === 'v' ? 'vEstado' : 'eEstadoAgil';
+  const sel = document.getElementById(selId), est = document.getElementById(estId);
+  if (!sel || !est) return false;
+  if (sel.value === '>=91% EXCEPCIONADA' && est.value === 'NO AGIL') {
+    sel.value = '>=91% NO AGIL';
+    return true;
+  }
+  return false;
+}
 function getState() {
   if (window.__FB_CACHE__) return window.__FB_CACHE__.estado || {};
   // Firebase aun no ha cargado — devolver objeto vacio para evitar datos obsoletos de localStorage
@@ -14125,6 +14138,7 @@ function guardarEdicion() {
   v.tramite = document.getElementById('eTramite').value;
   v.tramiteGrupo = getTramiteGrupo(v.tramite);
   v.tipo = document.getElementById('eTipo').value;
+  _normalizarCriterioPBS('e');
   v.criterio = document.getElementById('eCriterio').value;
   v.cotizantes = parseInt(document.getElementById('eCotizantes').value) || 0;
   v.bd = document.getElementById('eBD').value;
@@ -14191,6 +14205,7 @@ function calcEdadAgilEdit() {
   if (edad === null) return;
   document.getElementById('eEdad').value = edad + ' años';
   document.getElementById('eEstadoAgil').value = (edad >= 18 && edad <= 40) ? 'AGIL' : 'NO AGIL';
+  _normalizarCriterioPBS('e');
 }
 
 function renderTabla() {
@@ -16435,6 +16450,7 @@ function calcEdadAgil() {
     estadoEl.value = 'NO AGIL';
     estadoEl.style.color = 'var(--amber)';
   }
+  calcPreviewCom();
 }
 
 // Grupo de trámite para conteo: SAT vs FORMULARIO
@@ -16443,13 +16459,16 @@ function getTramiteGrupo(tramite) {
 }
 
 function calcPreviewCom() {
+  const _cambioAgil = _normalizarCriterioPBS('v');
   const tipo      = document.getElementById('vTipo')?.value || 'COTIZANTE';
   const criterio  = document.getElementById('vSiniestralidad')?.value || '<=75%';
   const cotizantes = parseInt(document.getElementById('vCotizantes')?.value) || 0;
   const fechaStr  = document.getElementById('vFecha')?.value || '';
   const el        = document.getElementById('comPreview');
   document.getElementById('grupoPBSPreview')?.remove();
+  document.getElementById('avisoAgilPBS')?.remove();
   if (!el) return;
+  if (_cambioAgil) el.insertAdjacentHTML('afterend', '<div id="avisoAgilPBS" class="alert alert-info" style="display:block;margin-top:6px;margin-bottom:0;font-size:12px;">Cotizante No Ágil: la fila «≥91 % excepcionadas» solo aplica a cotizantes Ágiles. Se registra como «≥91 % No Ágil», sin comisión.</div>');
 
   if (tipo === 'BENEFICIARIO') {
     const _edad = edadEnFecha(document.getElementById('vFechaNac')?.value || '', fechaStr);
@@ -17014,6 +17033,7 @@ const _f2bCtx = (!_editId && _F2B_FORM[modalTab]) ? _f2bPrecheck(modalTab) : nul
     const fecha = document.getElementById('vFecha').value;
     if (!fecha) return alert('Ingresa la fecha');
     const tipo      = document.getElementById('vTipo').value;
+    _normalizarCriterioPBS('v');
     const criterio  = document.getElementById('vSiniestralidad').value;
     const cotizantes = parseInt(document.getElementById('vCotizantes').value) || 0;
 
