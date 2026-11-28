@@ -14113,8 +14113,10 @@ function editarVenta(id) {
 
 function guardarEdicion() {
   state = getState();
-  const idx = state.ventas.findIndex(x => x.id === _editId);
-  if (idx < 0) return;
+  // La edición PBS guarda el id en el campo oculto eId (la rama PBS de editarVenta deja _editId en null).
+  const _idEd = _editId || document.getElementById('eId')?.value || null;
+  const idx = state.ventas.findIndex(x => x.id === _idEd);
+  if (idx < 0) { alert('No se encontró el registro que intentas guardar. Cierra la ventana y vuelve a abrirlo desde la plantilla.'); return; }
   const v = state.ventas[idx];
 
   // D3: advertencia si la nueva fecha de radicación cambia el mes compensado
@@ -14155,12 +14157,13 @@ function guardarEdicion() {
 
   // Recalc comision if PBS
   if (v.producto === 'PBS') {
-    v.comision = calcComision(v.tipo, v.criterio, v.cotizantes, v.edad, v.fecha, v.tramite);
+    // v.edad viene del formulario como texto («14 años»): se usa el número
+    v.comision = calcComision(v.tipo, v.criterio, v.cotizantes, parseInt(v.edad, 10), v.fecha, v.tramite);
     v.rango = getRango(v.cotizantes).label;
 
     // Actualizar beneficiarios vinculados (heredan datos del cotizante)
     state.ventas.forEach(ben => {
-      if (ben.cotizanteId === _editId && ben.tipo === 'BENEFICIARIO') {
+      if (ben.cotizanteId === _idEd && ben.tipo === 'BENEFICIARIO') {
         ben.fecha       = v.fecha;
         // D4: si cambió la fecha de radicación, el beneficiario recalcula edad, estado y comisión
         if (v.fecha !== _fechaAnterior) {
